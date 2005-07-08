@@ -1,0 +1,9 @@
+
+Library that containes classes and functions that are used by more than
+one processor. In particular it contains the geometry classes that are used
+until we have the geometry for reconstruction package (GEAR).
+
+ NB: this is work in progress and only done for the simulation workshop tutorial
+     there needs to be more generic solution and definition of the software structure....
+
+
