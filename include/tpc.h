@@ -18,7 +18,7 @@ class Tpc {
 
  public:
   Tpc();
-  Tpc(float, float, float, unsigned int, float, float, float);
+  Tpc(float, float, float, unsigned int, float, float, float, float, float);
   ~Tpc();
 
   /**

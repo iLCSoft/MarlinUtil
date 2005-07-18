@@ -340,8 +340,8 @@ int ClusterShapes::Fit3DProfile(float& chi2, float& a, float& b, float& c, float
   }
   chi2 = chi2/max((float)1.0,(float)(_nHits - 4));
   
-  delete xl;
-  delete xt;
+  delete[] xl;
+  delete[] xt;
 
   gsl_matrix_free(A);
   gsl_vector_free(z);
@@ -411,8 +411,8 @@ float ClusterShapes::getChi2Fit3DProfile(float a, float b, float c, float d) {
 
   chi2 = chi2/max((float)1.0,(float)(_nHits - 4));
   
-  delete xl;
-  delete xt;
+  delete[] xl;
+  delete[] xt;
   
   return chi2;
   
