@@ -136,6 +136,7 @@ class ClusterShapes {
    *              z[i] and the fitted function
    *
    * INPUTS:
+   * parametrisation : 
    * max_iter   : maximal number of iterations, which should be 
    *              performed in the fit
    * status_out : if set to 1, only the initial parameters of
@@ -143,8 +144,11 @@ class ClusterShapes {
    *              parameter. The entries of dparameter are
    *              set to 0.0
    */
-  int FitHelix(int max_iter, int status_out, float* parameter, float* dparameter,
-	       float& chi2, float& distmax);
+
+  // CHANGE DOCUMENTATION!!!!
+ 
+  int FitHelix(int max_iter, int status_out, int parametrisation,
+	       float* parameter, float* dparameter, float& chi2, float& distmax);
 
   /**
    * distance to the centre of gravity measured from IP
@@ -256,9 +260,9 @@ class ClusterShapes {
 
 
   // private methods for non-linear, multidim. fitting (helix)
-  // static int funct(const gsl_vector* par, void* data, gsl_vector* f);
-  // static int dfunct(const gsl_vector* par, void* d, gsl_matrix* J);
-  // static int fdf(const gsl_vector* par, void* d, gsl_vector* f, gsl_matrix* J);
+  // static int functParametrisation1(const gsl_vector* par, void* data, gsl_vector* f);
+  // static int dfunctParametrisation1(const gsl_vector* par, void* d, gsl_matrix* J);
+  // static int fdfParametrisation1(const gsl_vector* par, void* d, gsl_vector* f, gsl_matrix* J);
 
 
 };
