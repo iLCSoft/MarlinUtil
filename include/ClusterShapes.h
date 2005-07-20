@@ -8,53 +8,49 @@
 #include <sstream>
 #include <cstdlib>
 
-#include <math.h> 
-#include <cmath>
+#include <math.h>
 
 #include <gsl/gsl_vector.h>
-#include <gsl/gsl_matrix.h> 
+#include <gsl/gsl_matrix.h>
 #include <gsl/gsl_blas.h>
-#include <gsl/gsl_linalg.h> 
+#include <gsl/gsl_linalg.h>
 #include <gsl/gsl_eigen.h>
 #include <gsl/gsl_multifit_nlin.h>
-#include <gsl/gsl_rng.h> 
+#include <gsl/gsl_rng.h>
 
-
-
-using namespace std;
 
 
 
 /**
- *    Utility class to derive properties of clusters (that means sets of points), 
+ *    Utility class to derive properties of clusters (that means sets of points),
  *    such as centre of gravity, axes of inertia and so on.
  *
  *    @authors V. Morgunov (ITEP/DESY), A. Raspereza (DESY), O. Wendt (DESY)
  *    @version $ld: $
  *
  */
-class ClusterShapes { 
-  
+class ClusterShapes {
+
  public:
 
   /**
-   *    Constructor: 
+   *    Constructor:
    *    nhits : number of hits in the cluster
    *    a     : amplitudes of elements ('cells') of the cluster. Stored in an array,
    *            with one entry for each element ('cell'). Each entry is depending on
    *            coordinates x,y,z (Cartesian), which are stored in the arrays x,y,z.
    *    x,y,z : array of coordinates corresponding to the array of amplitudes a.
    *
-   *    
+   *
    */
   ClusterShapes(int nhits, float* a, float* x, float* y, float* z);
-  
+
   ~ClusterShapes();
 
 
-  /** 
+  /**
    * returns the number of elements of the cluster
-   */     
+   */
   int getNumberOfHits();
 
   /**
@@ -62,7 +58,7 @@ class ClusterShapes {
    */
   float getTotalAmplitude();
 
-  /** 
+  /**
    * returns an 'vector' from the origin to the centre of gravity
    * (weighted with the amplitudes per element) of the cluster
    */
@@ -103,7 +99,7 @@ class ClusterShapes {
    * The method returns the chi2 and the parameters a,b,c,d of
    * the fit as well as xStart, which is an 3-dim array to the 
    * point closest to IP.
-   * The return value of the method itself is not used at the 
+   * The return value of the method itself is not used at the
    * moment (always returns 0).
    */
   int Fit3DProfile(float& chi2, float& a, float& b, float& c, float& d, float * xStart);
