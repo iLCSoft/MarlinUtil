@@ -378,7 +378,7 @@ int ClusterShapes::Fit3DProfile(float& chi2, float& a, float& b, float& c, float
     for (int j(0); j < 3; ++j) xx2 += xx[j]*xx[j];      
     
     xl[i] = 0.001 + vecProject(xx,MainAxis);    
-    xt[i] = sqrt(max(0.,xx2 + 0.1 - xl[i]*xl[i]));
+    xt[i] = sqrt(std::max(0.,xx2 + 0.1 - xl[i]*xl[i]));
     //std::cout << i << " " << xl[i] << " " << xt[i] << " " << _aHit[i] << " " 
     //          << Ampl << std::endl;
   }
@@ -461,7 +461,7 @@ int ClusterShapes::Fit3DProfile(float& chi2, float& a, float& b, float& c, float
       chi2 += ((Ampl - _aHit[i])*(Ampl - _aHit[i]))/(_aHit[i]*_aHit[i]);
 
   }
-  chi2 = chi2/max((float)1.0,(float)(_nHits - 4));
+  chi2 = chi2/std::max((float)1.0,(float)(_nHits - 4));
   
   delete[] xl;
   delete[] xt;
@@ -521,7 +521,7 @@ float ClusterShapes::getChi2Fit3DProfile(float a, float b, float c, float d) {
     for (int j(0); j < 3; ++j) xx2 += xx[j]*xx[j];      
     
     xl[i] = 0.001 + vecProject(xx,MainAxis);    
-    xt[i] = sqrt(max(0.,xx2 + 0.1 - xl[i]*xl[i]));
+    xt[i] = sqrt(std::max(0.,xx2 + 0.1 - xl[i]*xl[i]));
     //std::cout << i << " " << xl[i] << " " << xt[i] << " " << _aHit[i] << " " 
     //          << Ampl << std::endl;
   }
@@ -532,7 +532,7 @@ float ClusterShapes::getChi2Fit3DProfile(float a, float b, float c, float d) {
     
   }
 
-  chi2 = chi2/max((float)1.0,(float)(_nHits - 4));
+  chi2 = chi2/std::max((float)1.0,(float)(_nHits - 4));
   
   delete[] xl;
   delete[] xt;
@@ -600,8 +600,8 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
       }
   }
 
-  float z1 = min(_zHit[i1],_zHit[i3]);
-  float z3 = max(_zHit[i1],_zHit[i3]);
+  float z1 = std::min(_zHit[i1],_zHit[i3]);
+  float z3 = std::max(_zHit[i1],_zHit[i3]);
 
 
   int i2 = 0;
