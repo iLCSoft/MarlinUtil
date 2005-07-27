@@ -22,17 +22,16 @@ void HelixClass::Initialize_VP(float * pos, float * mom, float q, float B) {
     _momentum[2] = mom[2];
     _charge = q;
     _bField = B;
-//  Some calculations : define all parameters of the helix
     _pxy = sqrt(mom[0]*mom[0]+mom[1]*mom[1]);
     _radius = _pxy / (_FCT*B);
     _omega = q/_radius;
     _tanLambda = mom[2]/_pxy;
     _phiMomRefPoint = atan2(mom[1],mom[0]);
-    _xCentre = pos[0] + _radius*cos(_phiMomRefPoint+_const_pi2*q);
-    _yCentre = pos[1] + _radius*sin(_phiMomRefPoint+_const_pi2*q);
+    _xCentre = pos[0] + _radius*cos(_phiMomRefPoint-_const_pi2*q);
+    _yCentre = pos[1] + _radius*sin(_phiMomRefPoint-_const_pi2*q);
     _phiRefPoint = atan2(pos[1]-_yCentre,pos[0]-_xCentre);
     _phiAtPCA = atan2(-_yCentre,-_xCentre);
-    _phi0 = _const_pi2*q + _phiAtPCA;
+    _phi0 = -_const_pi2*q + _phiAtPCA;
     if (_phi0 < -_const_pi)
 	_phi0 += _const_2pi;
     if (_phi0 > _const_pi)
@@ -43,7 +42,7 @@ void HelixClass::Initialize_VP(float * pos, float * mom, float q, float B) {
     _pxAtPCA = _pxy*cos(_phi0);
     _pyAtPCA = _pxy*sin(_phi0);
     float deltaPhi = _phiRefPoint - _phiAtPCA;    
-    float xCircles = pos[2]*q/(_radius*_tanLambda) - deltaPhi;
+    float xCircles = -pos[2]*q/(_radius*_tanLambda) - deltaPhi;
     xCircles = xCircles/_const_2pi;
     int nCircles;
     int n1,n2;
@@ -63,18 +62,18 @@ void HelixClass::Initialize_VP(float * pos, float * mom, float q, float B) {
     else {
 	nCircles = n2;
     }
-    _z0 = pos[2] - _radius*_tanLambda*q*(deltaPhi + _const_2pi*nCircles);
+    _z0 = pos[2] + _radius*_tanLambda*q*(deltaPhi + _const_2pi*nCircles);
 
 }
 
 void HelixClass::Initialize_Canonical(float phi0, float d0, float z0, 
-				   float omega, float tanLambda, float B) {
+				      float omega, float tanLambda, float B) {
     _omega = omega;
     _d0 = d0;
     _phi0 = phi0;
     _z0 = z0;
     _tanLambda = tanLambda;
-    _charge = -omega/fabs(omega);
+    _charge = omega/fabs(omega);
     _radius = 1./fabs(omega);
     _xAtPCA = -_d0*sin(_phi0);
     _yAtPCA = _d0*cos(_phi0);    
@@ -85,14 +84,73 @@ void HelixClass::Initialize_Canonical(float phi0, float d0, float z0,
     _momentum[0] = _pxy*cos(_phi0);
     _momentum[1] = _pxy*sin(_phi0);
     _momentum[2] = _tanLambda * _pxy;    
+    _pxAtPCA = _momentum[0];
+    _pyAtPCA = _momentum[1];
     _phiMomRefPoint = atan2(_momentum[1],_momentum[0]);
     _xCentre = _referencePoint[0] + 
-      _radius*cos(_phiMomRefPoint+_const_pi2*_charge);
+      _radius*cos(_phi0-_const_pi2*_charge);
     _yCentre = _referencePoint[1] + 
-      _radius*sin(_phiMomRefPoint+_const_pi2*_charge);
+      _radius*sin(_phi0-_const_pi2*_charge);
     _phiAtPCA = atan2(-_yCentre,-_xCentre);
     _phiRefPoint =  _phiAtPCA ;
+    _bField = B;
+}
 
+
+void HelixClass::Initialize_BZ(float xCentre, float yCentre, float radius, 
+			       float bZ, float phi0, float B, float signPz,
+			       float zBegin) {
+
+  _radius = radius;
+  _pxy = _FCT*B*_radius;
+  _charge = -(bZ*signPz)/fabs(bZ*signPz);
+  _momentum[2] = -_charge*_pxy/(bZ*_radius);
+  _xCentre = xCentre;
+  _yCentre = yCentre;
+  _omega = _charge/radius;
+  _phiAtPCA = atan2(-_yCentre,-_xCentre);
+  _phi0 = -_const_pi2*_charge + _phiAtPCA; 
+  if (_phi0 < -_const_pi)
+    _phi0 += _const_2pi;
+  if (_phi0 > _const_pi)
+    _phi0 -= _const_2pi;
+  _xAtPCA = _xCentre + _radius*cos(_phiAtPCA);
+  _yAtPCA = _yCentre + _radius*sin(_phiAtPCA);
+  _d0 = -_xAtPCA*sin(_phi0) + _yAtPCA*cos(_phi0);
+  _pxAtPCA = _pxy*cos(_phi0);
+  _pyAtPCA = _pxy*sin(_phi0);
+  _referencePoint[2] = zBegin;
+  _referencePoint[0] = xCentre + radius*cos(bZ*zBegin+phi0);
+  _referencePoint[1] = yCentre + radius*sin(bZ*zBegin+phi0);
+  _phiRefPoint = atan2(_referencePoint[1]-_yCentre,_referencePoint[0]-_xCentre);
+  _phiMomRefPoint =  -_const_pi2*_charge + _phiRefPoint;
+  _tanLambda = _momentum[2]/_pxy;
+  _momentum[0] = _pxy*cos(_phiMomRefPoint);
+  _momentum[1] = _pxy*sin(_phiMomRefPoint);
+  
+  float deltaPhi = _phiRefPoint - _phiAtPCA;    
+  float xCircles = bZ*_referencePoint[2] - deltaPhi;
+  xCircles = xCircles/_const_2pi;
+  int nCircles;
+  int n1,n2;
+
+  if (xCircles >= 0.) {
+    n1 = int(xCircles);
+    n2 = n1 + 1;
+  }
+  else {
+    n1 = int(xCircles) - 1;
+    n2 = n1 + 1;
+  }
+  
+  if (fabs(n1-xCircles) < fabs(n2-xCircles)) {
+    nCircles = n1;
+  }
+  else {
+    nCircles = n2;
+  }  
+  _z0 = _referencePoint[2] - (deltaPhi + _const_2pi*nCircles)/bZ;  
+  _bField = B;
 
 }
 
@@ -173,23 +231,23 @@ float HelixClass::getPointInXY(float x0, float y0, float ax, float ay,
   float dphi1 = phi1 - phi0;
   float dphi2 = phi2 - phi0;
 
-  if (dphi1 < 0 && _charge > 0) {
+  if (dphi1 < 0 && _charge < 0) {
     dphi1 = dphi1 + _const_2pi;
   }
-  else if (dphi1 > 0 && _charge < 0) { 
+  else if (dphi1 > 0 && _charge > 0) { 
     dphi1 = dphi1 - _const_2pi;
   }
 
-  if (dphi2 < 0 && _charge > 0) {
+  if (dphi2 < 0 && _charge < 0) {
     dphi2 = dphi2 + _const_2pi;
   }
-  else if (dphi2 > 0 && _charge < 0) { 
+  else if (dphi2 > 0 && _charge > 0) { 
     dphi2 = dphi2 - _const_2pi;
   }
 
   // Times
-  tt1 = _charge*dphi1*_radius/_pxy;
-  tt2 = _charge*dphi2*_radius/_pxy;
+  tt1 = -_charge*dphi1*_radius/_pxy;
+  tt2 = -_charge*dphi2*_radius/_pxy;
 
   if (tt1 < 0. )
     std::cout << "WARNING " << tt1 << std::endl;
@@ -231,7 +289,7 @@ float HelixClass::getPointInZ(float zLine, float * ref, float * point) {
   time = time/_momentum[2];
 
   float phi0 = atan2(ref[1] - _yCentre , ref[0] - _xCentre);
-  float phi = phi0 + _charge*_pxy*time/_radius;
+  float phi = phi0 - _charge*_pxy*time/_radius;
   float xx = _xCentre + _radius*cos(phi);
   float yy = _yCentre + _radius*sin(phi);
 
@@ -243,3 +301,63 @@ float HelixClass::getPointInZ(float zLine, float * ref, float * point) {
 
 
 }
+
+float HelixClass::getDistanceToPoint(float * xPoint, float * Distance) {
+
+  float xOnHelix, yOnHelix, zOnHelix;
+  float phi = atan2(xPoint[1]-_yCentre,xPoint[0]-_xCentre);
+  xOnHelix = _xCentre + _radius*cos(phi);
+  yOnHelix = _yCentre + _radius*sin(phi);
+  float phi0 = atan2(_referencePoint[1]-_yCentre,_referencePoint[0]-_xCentre);
+  float DistXY = (_xCentre-xPoint[0])*(_xCentre-xPoint[0]) + (_yCentre-xPoint[1])*(_yCentre-xPoint[1]);
+  DistXY = sqrt(DistXY);
+  DistXY = fabs(DistXY - _radius);
+  
+  int nCircles = 0;
+
+  if (fabs(_tanLambda*_radius)>1.0e-20) {
+    float xCircles = phi0 - phi -_charge*(xPoint[2]-_referencePoint[2])/(_tanLambda*_radius);
+    xCircles = xCircles/_const_2pi;
+    int n1,n2;
+
+    if (xCircles >= 0.) {
+	n1 = int(xCircles);
+	n2 = n1 + 1;
+    }
+    else {
+	n1 = int(xCircles) - 1;
+	n2 = n1 + 1;
+    }
+    
+    if (fabs(n1-xCircles) < fabs(n2-xCircles)) {
+	nCircles = n1;
+    }
+    else {
+	nCircles = n2;
+    }
+
+  }
+  
+  float DPhi = _const_2pi*((float)nCircles) + phi - phi0;
+
+  zOnHelix = _referencePoint[2] - _charge*_radius*_tanLambda*DPhi;
+
+  float DistZ = fabs(zOnHelix - xPoint[2]);
+  float Time;
+
+  if (fabs(_momentum[2]) > 1.0e-20) {
+    Time = (zOnHelix - _referencePoint[2])/_momentum[2];
+  }
+  else {
+    Time = _charge*_radius*DPhi/_pxy;
+  }
+
+  Distance[0] = DistXY;
+  Distance[1] = DistZ;
+  Distance[2] = sqrt(DistXY*DistXY+DistZ*DistZ);
+
+  return Time;
+
+
+}
+
