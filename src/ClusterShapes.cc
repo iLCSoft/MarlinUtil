@@ -957,8 +957,8 @@ void ClusterShapes::findElipsoid() {
   }
   //        if (r_hit_max > 0.0)
   //	  _r1 = 1.05*r_hit_max; // + 5% of length
-  _r1_forw = abs(d_last);
-  _r1_back = abs(d_begn);
+  _r1_forw = fabs(d_last);
+  _r1_back = fabs(d_begn);
 }
 
 //=============================================================================

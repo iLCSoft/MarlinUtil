@@ -132,7 +132,7 @@ class ClusterShapes {
    *              z[i] and the fitted function
    *
    * INPUTS:
-   * parametrisation : 
+   * parametrisation : 1 for first and 2 for second parametrisation
    * max_iter   : maximal number of iterations, which should be 
    *              performed in the fit
    * status_out : if set to 1, only the initial parameters of
