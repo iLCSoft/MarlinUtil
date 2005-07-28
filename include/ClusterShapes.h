@@ -113,18 +113,31 @@ class ClusterShapes {
   /**
    * performs a least square fit on a helix path in space, which
    * which is defined as (Cartesian coordiantes):
+   *
+   * 1. parametrisation:
    * x[i] = x0 + R*cos(b*z[i] + phi0)
    * y[i] = y0 + R*sin(b*z[i] + phi0)
    * z[i] = z[i],
    * where x0,y0,R,b and phi0 are the parameters to be fitted and
    * x[i],y[i],z[i] are the (Cartesian) coordiantes of the space
    * points.
+   * 
+   * 2. parametrisation:   
+   * x[i] = x0 + R*cos(phi)
+   * y[i] = y0 + R*sin(phi)
+   * z[i] = z0 + b*phi
+   * and phi = atan2( y[i]-y0 , x[i]-x0 ),
+   * where x0,y0,z0,R and b are the parameters to be fitted and
+   * x[i],y[i],z[i] are the (Cartesian) coordiantes of the space
+   * points.
+   *
    * The following output/input parameters are returned/needed:
    *
    * OUTPUTS:
    * method itself : returns 1 if an error occured and 0 if not
-   * parameter  : array of parameters to be fitted (defined
-   *              as : parameter[5] = {x0,y0,R,b,phi0}
+   * parameter  : array of parameters to be fitted.
+   *              For parametrisation 1: parameter[5] = {x0,y0,R,b,phi0}
+   *              For parametrisation 2: parameter[5] = {x0,y0,z0,R,b}
    * dparameter : error on the parameters, that means: 
    *              dparameter[i] = sqrt( CovarMatrix[i][i] )
    * chi2       : chi2 of the fit
@@ -132,7 +145,7 @@ class ClusterShapes {
    *              z[i] and the fitted function
    *
    * INPUTS:
-   * parametrisation : 1 for first and 2 for second parametrisation
+   * parametrisation : 1 for first and 2 for second parametrisation (see above)
    * max_iter   : maximal number of iterations, which should be 
    *              performed in the fit
    * status_out : if set to 1, only the initial parameters of
@@ -140,8 +153,6 @@ class ClusterShapes {
    *              parameter. The entries of dparameter are
    *              set to 0.0
    */
-
-  // CHANGE DOCUMENTATION!!!!
  
   int FitHelix(int max_iter, int status_out, int parametrisation,
 	       float* parameter, float* dparameter, float& chi2, float& distmax);
