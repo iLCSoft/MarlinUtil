@@ -8,53 +8,49 @@
 #include <sstream>
 #include <cstdlib>
 
-#include <math.h> 
-#include <cmath>
+#include <math.h>
 
 #include <gsl/gsl_vector.h>
-#include <gsl/gsl_matrix.h> 
+#include <gsl/gsl_matrix.h>
 #include <gsl/gsl_blas.h>
-#include <gsl/gsl_linalg.h> 
+#include <gsl/gsl_linalg.h>
 #include <gsl/gsl_eigen.h>
 #include <gsl/gsl_multifit_nlin.h>
-#include <gsl/gsl_rng.h> 
+#include <gsl/gsl_rng.h>
 
-
-
-using namespace std;
 
 
 
 /**
- *    Utility class to derive properties of clusters (that means sets of points), 
+ *    Utility class to derive properties of clusters (that means sets of points),
  *    such as centre of gravity, axes of inertia and so on.
  *
  *    @authors V. Morgunov (ITEP/DESY), A. Raspereza (DESY), O. Wendt (DESY)
  *    @version $ld: $
  *
  */
-class ClusterShapes { 
-  
+class ClusterShapes {
+
  public:
 
   /**
-   *    Constructor: 
+   *    Constructor:
    *    nhits : number of hits in the cluster
    *    a     : amplitudes of elements ('cells') of the cluster. Stored in an array,
    *            with one entry for each element ('cell'). Each entry is depending on
    *            coordinates x,y,z (Cartesian), which are stored in the arrays x,y,z.
    *    x,y,z : array of coordinates corresponding to the array of amplitudes a.
    *
-   *    
+   *
    */
   ClusterShapes(int nhits, float* a, float* x, float* y, float* z);
-  
+
   ~ClusterShapes();
 
 
-  /** 
+  /**
    * returns the number of elements of the cluster
-   */     
+   */
   int getNumberOfHits();
 
   /**
@@ -62,7 +58,7 @@ class ClusterShapes {
    */
   float getTotalAmplitude();
 
-  /** 
+  /**
    * returns an 'vector' from the origin to the centre of gravity
    * (weighted with the amplitudes per element) of the cluster
    */
@@ -103,7 +99,7 @@ class ClusterShapes {
    * The method returns the chi2 and the parameters a,b,c,d of
    * the fit as well as xStart, which is an 3-dim array to the 
    * point closest to IP.
-   * The return value of the method itself is not used at the 
+   * The return value of the method itself is not used at the
    * moment (always returns 0).
    */
   int Fit3DProfile(float& chi2, float& a, float& b, float& c, float& d, float * xStart);
@@ -117,18 +113,31 @@ class ClusterShapes {
   /**
    * performs a least square fit on a helix path in space, which
    * which is defined as (Cartesian coordiantes):
+   *
+   * 1. parametrisation:
    * x[i] = x0 + R*cos(b*z[i] + phi0)
    * y[i] = y0 + R*sin(b*z[i] + phi0)
    * z[i] = z[i],
    * where x0,y0,R,b and phi0 are the parameters to be fitted and
    * x[i],y[i],z[i] are the (Cartesian) coordiantes of the space
    * points.
+   * 
+   * 2. parametrisation:   
+   * x[i] = x0 + R*cos(phi)
+   * y[i] = y0 + R*sin(phi)
+   * z[i] = z0 + b*phi
+   * and phi = atan2( y[i]-y0 , x[i]-x0 ),
+   * where x0,y0,z0,R and b are the parameters to be fitted and
+   * x[i],y[i],z[i] are the (Cartesian) coordiantes of the space
+   * points.
+   *
    * The following output/input parameters are returned/needed:
    *
    * OUTPUTS:
    * method itself : returns 1 if an error occured and 0 if not
-   * parameter  : array of parameters to be fitted (defined
-   *              as : parameter[5] = {x0,y0,R,b,phi0}
+   * parameter  : array of parameters to be fitted.
+   *              For parametrisation 1: parameter[5] = {x0,y0,R,b,phi0}
+   *              For parametrisation 2: parameter[5] = {x0,y0,z0,R,b}
    * dparameter : error on the parameters, that means: 
    *              dparameter[i] = sqrt( CovarMatrix[i][i] )
    * chi2       : chi2 of the fit
@@ -136,6 +145,7 @@ class ClusterShapes {
    *              z[i] and the fitted function
    *
    * INPUTS:
+   * parametrisation : 1 for first and 2 for second parametrisation (see above)
    * max_iter   : maximal number of iterations, which should be 
    *              performed in the fit
    * status_out : if set to 1, only the initial parameters of
@@ -143,8 +153,9 @@ class ClusterShapes {
    *              parameter. The entries of dparameter are
    *              set to 0.0
    */
-  int FitHelix(int max_iter, int status_out, float* parameter, float* dparameter,
-	       float& chi2, float& distmax);
+ 
+  int FitHelix(int max_iter, int status_out, int parametrisation,
+	       float* parameter, float* dparameter, float& chi2, float& distmax);
 
   /**
    * distance to the centre of gravity measured from IP
@@ -256,9 +267,9 @@ class ClusterShapes {
 
 
   // private methods for non-linear, multidim. fitting (helix)
-  // static int funct(const gsl_vector* par, void* data, gsl_vector* f);
-  // static int dfunct(const gsl_vector* par, void* d, gsl_matrix* J);
-  // static int fdf(const gsl_vector* par, void* d, gsl_vector* f, gsl_matrix* J);
+  // static int functParametrisation1(const gsl_vector* par, void* data, gsl_vector* f);
+  // static int dfunctParametrisation1(const gsl_vector* par, void* d, gsl_matrix* J);
+  // static int fdfParametrisation1(const gsl_vector* par, void* d, gsl_vector* f, gsl_matrix* J);
 
 
 };

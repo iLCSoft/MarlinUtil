@@ -3,7 +3,7 @@
 # Example GNUmakefile to build an Application with Marlin
 #
 # @author Frank Gaede
-# @version $Id: GNUmakefile,v 1.1.1.1 2005-07-08 15:08:12 aplin Exp $
+# @version $Id: GNUmakefile,v 1.2 2005-07-12 16:00:37 aplin Exp $
 #
 ###########################################################
 
@@ -17,7 +17,7 @@
 
 
 # name of the program/library
-PROGNAME = MarlinCommon
+PROGNAME = MarlinUtil
 
 
 #----  additional user include/libraries

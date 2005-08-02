@@ -6,7 +6,11 @@ class HelixClass {
     HelixClass();
     ~HelixClass();
     void Initialize_VP(float * pos, float * mom, float q, float B);
-    void Initialize_Canonical(float phi0, float d0, float z0, float omega, float tanlambda, float B);
+    void Initialize_BZ(float xCentre, float yCentre, float radius, 
+				   float bZ, float phi0, float B, float signPz,
+				   float zBegin);
+    void Initialize_Canonical(float phi0, float d0, float z0, float omega, 
+			      float tanlambda, float B);
     const float * getMomentum();
     const float * getReferencePoint();
     float getPhi0();
@@ -18,8 +22,8 @@ class HelixClass {
     float getPointInXY(float x0, float y0, float ax, float ay, 
 			      float * ref , float * point);
     float getPointInZ(float zLine, float * ref, float * point);
-
-
+    float getDistanceToPoint(float * xPoint, float * Distance);
+    
 
  private:    
     float _momentum[3]; // momentum @ ref point 
@@ -31,12 +35,12 @@ class HelixClass {
     float _tanLambda; // TanLambda 
     float _pxy; // Transverse momentum
     float _charge; // Particle Charge
-    float _bField; // Magnetic field
+    float _bField; // Magnetic field (assumed to point to Z>0)
     float _radius; // radius of circle in XY plane
     float _xCentre; // X of circle centre
     float _yCentre; // Y of circle centre
-    float _phiRefPoint; // Phi w.r.t. (X,Y) of circle centre @ ref point
-    float _phiAtPCA; // Phi @ PCA (Point of closest approach in XY plane)
+    float _phiRefPoint; // Phi w.r.t. (X0,Y0) of circle @ ref point
+    float _phiAtPCA; // Phi w.r.t. (X0,Y0) of circle @ PCA 
     float _xAtPCA; // X @ PCA
     float _yAtPCA; // Y @ PCA
     float _pxAtPCA; // PX @ PCA

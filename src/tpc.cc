@@ -14,7 +14,7 @@ Tpc * the_tpc;
 Tpc::Tpc(){
 }
 
-Tpc::Tpc(float o_radius, float i_radius, float h_length, unsigned int n_rows, float p_r_pitch, float p_phi_width, float t_width){
+Tpc::Tpc(float o_radius, float i_radius, float h_length, unsigned int n_rows, float p_r_pitch, float p_phi_width, float t_width, float rphires, float zres){
 
   outer_radius = o_radius;
   inner_radius = i_radius;
@@ -24,8 +24,8 @@ Tpc::Tpc(float o_radius, float i_radius, float h_length, unsigned int n_rows, fl
   pixel_phi_width = p_phi_width;
   time_width = t_width;
   number_time_slices = (int)(2.* half_length / time_width); 
-  tpc_rphi_res_max = 0.19;
-  tpc_z_res = 1.0;
+  tpc_rphi_res_max = rphires;
+  tpc_z_res = zres;
 
   // set size of row_hits to hold (n_rows) vectors
   row_hits.resize(n_rows);
@@ -35,8 +35,8 @@ Tpc::Tpc(float o_radius, float i_radius, float h_length, unsigned int n_rows, fl
   // set row radius and number of phi section per row
   
   for (int i=0; i<number_rows; i++){
-    row_radius.push_back((pad_r_pitch/2.)+(float)i*pad_r_pitch);
-    number_of_phi_segments.push_back(int(twopi*row_radius[i] / pixel_phi_width));
+    row_radius.push_back( (pad_r_pitch/2.) + ( (float)i*pad_r_pitch) + inner_radius);
+    number_of_phi_segments.push_back(int((twopi*row_radius[i]) / pixel_phi_width));
   }
 
   cout << "trying: A tpc has been instaniated" << endl;  

@@ -53,7 +53,7 @@ class MarlinCED {
    */
   static void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
 				   float px, float py, float pz, int marker, int size, int col,
-				   float rmin=10., float rmax=3000., float zmax=4500.)  ; 
+				   float rmin=10., float rmax=1626.0, float zmax=2500.)  ; 
     
 
 //   static void MarlinCED::drawHelixVM(float b, float charge, float x, float y, float z,
