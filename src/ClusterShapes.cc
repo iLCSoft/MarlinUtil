@@ -78,10 +78,10 @@ int dfunctParametrisation1(const gsl_vector* par, void* d, gsl_matrix* J) {
     gsl_matrix_set(J,i,4,-R*sin(b*z[i]+phi0));
 
   }
-  
+
   // part of Jacobi's matrix corresponding to second dimension
   for (int i(0); i < n; i++) {
-    
+
     gsl_matrix_set(J,i+n,0,0);
     gsl_matrix_set(J,i+n,1,1);
     gsl_matrix_set(J,i+n,2,sin(b*z[i]+phi0));
@@ -301,7 +301,7 @@ float ClusterShapes::getTotalAmplitude() {
 
 float* ClusterShapes::getCentreOfGravity() {
   if (_ifNotGravity == 1) findGravity() ;
-  return &_analogGravity[0] ;    
+  return &_analogGravity[0] ;
 }
 
 //=============================================================================
@@ -328,24 +328,25 @@ float ClusterShapes::getWidth() {
 //=============================================================================
 
 int ClusterShapes::Fit3DProfile(float& chi2, float& a, float& b, float& c, float& d,
-				float* xStart) {
+				float* xStart, int& index_xStart) {
 
   if (_ifNotInertia == 1) findInertia();
-  
+
   float MainAxis[3];
   float MainCentre[3];
 
   MainAxis[0] = _VecAnalogInertia[0];
   MainAxis[1] = _VecAnalogInertia[1];
-  MainAxis[2] = _VecAnalogInertia[2];      
+  MainAxis[2] = _VecAnalogInertia[2];
   MainCentre[0] = _analogGravity[0];
   MainCentre[1] = _analogGravity[1];
-  MainCentre[2] = _analogGravity[2];      
-  
+  MainCentre[2] = _analogGravity[2];
+
   int ifirst = 0;
   float xx[3];
   float prodmin = 0.0;
-  
+  int index = 0;
+
   for (int i(0); i < _nHits; ++i) {
     xx[0] = _xHit[i] - MainCentre[0];
     xx[1] = _yHit[i] - MainCentre[1];
@@ -354,35 +355,37 @@ int ClusterShapes::Fit3DProfile(float& chi2, float& a, float& b, float& c, float
     if (ifirst == 0 || prod < prodmin) {
       ifirst = 1;
       prodmin = prod;
+      index = i;
     }
   }
   xStart[0] = MainCentre[0] + prodmin*MainAxis[0];
   xStart[1] = MainCentre[1] + prodmin*MainAxis[1];
-  xStart[2] = MainCentre[2] + prodmin*MainAxis[2];	  
+  xStart[2] = MainCentre[2] + prodmin*MainAxis[2];
+  index_xStart = index;
   float * xl = new float[_nHits];
   float * xt = new float[_nHits];
   const gsl_rng_type * T;
   gsl_rng * r;
-  
+
   gsl_rng_env_setup();
   T = gsl_rng_default;
   r = gsl_rng_alloc(T);
-  
+
   //std::cout << a << " " << b << " " << c << " " << d << std::endl;
-  
+
   for (int i(0); i < _nHits; ++i) {
     xx[0] = _xHit[i] - xStart[0];
     xx[1] = _yHit[i] - xStart[1];
     xx[2] = _zHit[i] - xStart[2];
     float xx2(0.);
-    for (int j(0); j < 3; ++j) xx2 += xx[j]*xx[j];      
-    
-    xl[i] = 0.001 + vecProject(xx,MainAxis);    
+    for (int j(0); j < 3; ++j) xx2 += xx[j]*xx[j];
+
+    xl[i] = 0.001 + vecProject(xx,MainAxis);
     xt[i] = sqrt(std::max(0.,xx2 + 0.1 - xl[i]*xl[i]));
-    //std::cout << i << " " << xl[i] << " " << xt[i] << " " << _aHit[i] << " " 
+    //std::cout << i << " " << xl[i] << " " << xt[i] << " " << _aHit[i] << " "
     //          << Ampl << std::endl;
   }
-  
+
   gsl_rng_free( r );
 
   float Slnxl(0.);
@@ -447,7 +450,7 @@ int ClusterShapes::Fit3DProfile(float& chi2, float& a, float& b, float& c, float
   gsl_vector_set(z,1,SlnAlnxl);
   gsl_vector_set(z,2,-SlnAxl);
   gsl_vector_set(z,3,-SlnAxt);
-  
+
   gsl_linalg_HH_solve(A,z,e);
 
   a = exp(gsl_vector_get(e,0));
@@ -487,7 +490,7 @@ float ClusterShapes::getChi2Fit3DProfile(float a, float b, float c, float d) {
   int ifirst = 0;
   float xx[3];
   float prodmin = 0.0;
-  
+
   if (_ifNotInertia == 1) findInertia();
   
   MainAxis[0] = _VecAnalogInertia[0];
@@ -527,7 +530,7 @@ float ClusterShapes::getChi2Fit3DProfile(float a, float b, float c, float d) {
   }
 
   for (int i(0); i < _nHits; ++i) {
-    float Ampl = a*(float)pow(xl[i],b)*exp(-c*xl[i]-d*xt[i]); 
+    float Ampl = a*(float)pow(xl[i],b)*exp(-c*xl[i]-d*xt[i]);
     chi2 += ((Ampl - _aHit[i])*(Ampl - _aHit[i]))/(_aHit[i]*_aHit[i]);
     
   }
@@ -681,7 +684,7 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
 
   float R0 = sqrt(dX*dX + dY*dY);
 
-  if (R0 == 0.) 
+  if (R0 == 0.)
     std::cout << "Something is wrong; nHits = " << _nHits << std::endl;
 
   float _pi = acos(-1.);
@@ -761,7 +764,7 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
   int npar = 5; // five parameters to fit
   int ndim = 0;
   if (parametrisation == 1) ndim = 2; // two dependent dimensions 
-  else if (parametrisation == 2) ndim = 3; // three dependent dimensions 
+  else if (parametrisation == 2) ndim = 3; // three dependent dimensions
   else return 1;
 
 

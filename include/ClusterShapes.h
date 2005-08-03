@@ -97,12 +97,14 @@ class ClusterShapes {
    * axis and xt[i] the coordinate perpendicular to it. a,b,c,d  
    * are the parameters to be fitted.    
    * The method returns the chi2 and the parameters a,b,c,d of
-   * the fit as well as xStart, which is an 3-dim array to the 
-   * point closest to IP.
+   * the fit as well as xStart, which is an 3-dim array to the
+   * point with the largest distance to the CoG in the direction
+   * of IP. index_xStart is the index of the point in the cluster
+   * corresponding to xStart.
    * The return value of the method itself is not used at the
    * moment (always returns 0).
    */
-  int Fit3DProfile(float& chi2, float& a, float& b, float& c, float& d, float * xStart);
+  int Fit3DProfile(float& chi2, float& a, float& b, float& c, float& d, float * xStart, int& index_xStart);
 
   /**
    * returns the chi2 of the fit in the method Fit3DProfile
