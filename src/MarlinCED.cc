@@ -109,7 +109,7 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
   double x1 =  x ; 
   double y1 =  y ;
   double z1 =  z ;
-  double step = 0.05 ; 
+  double step = 0.005 ; 
 
   int nSteps  = 50 + int( 50. / pt ) ;
 
@@ -122,6 +122,8 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
     double z2 = cz + r * alpha * pz / pt ;
     
     double r_current  = hypot( x2, y2 ) ;
+
+
 
     if( std::abs(z2) > zmax || r_current > rmax  ) 
       break ;
