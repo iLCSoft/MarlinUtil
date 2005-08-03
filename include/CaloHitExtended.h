@@ -10,6 +10,13 @@ using namespace lcio ;
 
 class ClusterExtended;
 
+/**
+ * Class extending native LCIO class CalorimeterHit. <br>
+ * Class CaloHitExtended is used in TrackwiseClustering <br>
+ * and Wolf processors. <br>
+ * @author A. Raspereza (DESY)<br>
+ * @version $ld: $<br>
+ */
 class CaloHitExtended {
 
     public:

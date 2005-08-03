@@ -17,6 +17,13 @@ typedef std::vector<CaloHitExtended*> CaloHitExtendedVec;
 class ClusterExtended;
 typedef std::vector<ClusterExtended*> ClusterExtendedVec;
 
+/**
+ * Class extending native LCIO class Cluster. <br>
+ * Class ClusterExtended is used in TrackwiseClustering <br>
+ * and Wolf processors. <br>
+ * @author A. Raspereza (DESY)<br>
+ * @version $ld: $<br>
+ */
 
 class ClusterExtended {
 

@@ -10,6 +10,13 @@ using namespace lcio;
 
 class TrackExtended;
 
+/**
+ * Class extending native LCIO class TrackerHit. <br>
+ * Class TrackerHitExtended is used in TrackwiseClustering <br>
+ * and Wolf processors. <br>
+ * @author A. Raspereza (DESY)<br>
+ * @version $ld: $<br>
+ */
 class TrackerHitExtended {
 
  public:

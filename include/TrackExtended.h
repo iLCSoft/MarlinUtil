@@ -15,6 +15,15 @@ class ClusterExtended;
 class GroupTracks;
 class TrackerHitExtended;
 typedef std::vector<TrackerHitExtended*> TrackerHitExtendedVec;
+typedef std::vector<ClusterExtended*> ClusterExtendedVec;
+
+/**
+ * Class extending native LCIO class Track. <br>
+ * Class TrackExtended is used in TrackwiseClustering <br>
+ * and Wolf processors. <br>
+ * @author A. Raspereza (DESY)<br>
+ * @version $ld: $<br>
+ */
 
 class TrackExtended {
 
@@ -29,10 +38,10 @@ class TrackExtended {
     Track * getTrack();
     const float * getSeedDirection();
     const float * getSeedPosition();
-    ClusterExtended * getCluster();
+    ClusterExtendedVec & getClusterVec();
     ClusterExtended * getSuperCluster();
     TrackerHitExtendedVec & getTrackerHitExtendedVec();
-    void setCluster(ClusterExtended * cluster);
+    void addCluster(ClusterExtended * cluster);
     void setSuperCluster(ClusterExtended * superCluster);
     void setSeedDirection( float * seedDirection );
     void setSeedPosition( float * seedPosition);
@@ -42,8 +51,14 @@ class TrackExtended {
     void setX0(float x0);
     void setY0(float y0);
     void setR0(float r0);
+    void setD0(float d0);
+    void setZ0(float z0);
     void setBz(float bz);
     void setPhi0(float phi0);
+    void setPhi(float phi);
+    void setOmega(float omega);
+    void setTanLambda(float tanLambda);
+    
 
     void setStart(float * xStart);
     void setEnd(float * xEnd);
@@ -51,6 +66,11 @@ class TrackExtended {
 
     float getX0();
     float getY0();
+    float getD0();
+    float getZ0();
+    float getOmega();
+    float getTanLambda();
+    float getPhi();
     float getR0();
     float getBz();
     float getPhi0();
@@ -65,7 +85,7 @@ class TrackExtended {
  private:
 
     ClusterExtended *_superCluster;
-    ClusterExtended *_cluster;
+    ClusterExtendedVec _clusterVec;
     GroupTracks * _group;
     Track * _track;
     float _seedDirection[3];
@@ -80,6 +100,12 @@ class TrackExtended {
 
     float _xStart[3];
     float _xEnd[3];
+
+    float _d0; // d0 in canonical parameterisation
+    float _z0; // z0 in canonical parameterisation
+    float _omega; // omega in canonical parameterisation
+    float _tanLambda; // tanlambda in canonical parameterisation
+    float _phi; // phi in canonical parameterisation 
 
 };
 
