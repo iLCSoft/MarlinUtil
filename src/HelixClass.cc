@@ -1,7 +1,7 @@
 #include "HelixClass.h"
 #include <math.h>
 #include <stdlib.h>
-#include <iostream.h>
+#include <iostream>
 #include "ced_cli.h"
 
 HelixClass::HelixClass() {
