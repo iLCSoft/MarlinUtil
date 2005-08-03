@@ -3,21 +3,24 @@
 
 TrackExtended::TrackExtended( ) {
     _track = NULL;
-    _cluster = NULL;
+    _superCluster = NULL;
     _trackerHitVector.clear();
+    _clusterVec.clear();
 }
 
 TrackExtended::TrackExtended( Track * track) {
     _track = track;
-    _cluster = NULL;
+    _superCluster = NULL;
     _trackerHitVector.clear();
+    _clusterVec.clear();
 }
 
 TrackExtended::TrackExtended( TrackerHitExtended * trackerhit) {
     _trackerHitVector.clear();
     _trackerHitVector.push_back(trackerhit);
     _track = NULL;
-    _cluster = NULL;
+    _superCluster = NULL;
+    _clusterVec.clear();
 }
 
 
@@ -35,8 +38,8 @@ const float * TrackExtended::getSeedDirection() {
     return _seedDirection;
 }
 
-ClusterExtended * TrackExtended::getCluster() {
-    return _cluster;
+ClusterExtendedVec & TrackExtended::getClusterVec() {
+    return _clusterVec;
 }
 
 ClusterExtended * TrackExtended::getSuperCluster() {
@@ -48,8 +51,8 @@ TrackerHitExtendedVec & TrackExtended::getTrackerHitExtendedVec() {
     return _trackerHitVector;
 }
 
-void TrackExtended::setCluster(ClusterExtended * cluster) {
-    _cluster = cluster;
+void TrackExtended::addCluster(ClusterExtended * cluster) {
+    _clusterVec.push_back(cluster);
 }
 
 void TrackExtended::setSuperCluster(ClusterExtended * superCluster) {
@@ -81,6 +84,14 @@ void TrackExtended::setX0( float x0 ) {
   _x0 = x0;
 }
 
+void TrackExtended::setD0( float d0 ) {
+  _d0 = d0;
+}
+
+void TrackExtended::setZ0( float z0 ) {
+  _z0 = z0;
+}
+
 void TrackExtended::setY0( float y0 ) {
   _y0 = y0;
 }
@@ -96,6 +107,19 @@ void TrackExtended::setBz( float bz ) {
 void TrackExtended::setPhi0( float phi0 ) {
   _phi0 = phi0;
 }
+
+void TrackExtended::setPhi( float phi ) {
+  _phi = phi;
+}
+
+void TrackExtended::setOmega( float omega ) {
+  _omega = omega;
+}
+
+void TrackExtended::setTanLambda( float tanLambda ) {
+  _tanLambda = tanLambda;
+}
+
 
 float TrackExtended::getX0() {
   return _x0;
@@ -113,8 +137,28 @@ float TrackExtended::getBz() {
   return _bz;
 }
 
+float TrackExtended::getD0() {
+  return _d0;
+}
+
+float TrackExtended::getZ0() {
+  return _z0;
+}
+
 float TrackExtended::getPhi0() {
   return _phi0;
+}
+
+float TrackExtended::getPhi() {
+  return _phi;
+}
+
+float TrackExtended::getOmega() {
+  return _omega;
+}
+
+float TrackExtended::getTanLambda() {
+  return _tanLambda;
 }
 
 void TrackExtended::setStart(float * xStart) {
