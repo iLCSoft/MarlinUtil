@@ -165,9 +165,6 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
     
     double r_current  = hypot( x2, y2 ) ;
 
-    //    std::cout << "step = " << j << std::endl;
-    //    std::cout << "r_current = " << r_current << std::endl;
-
     if( std::abs(z2) > zmax || r_current > rmax  ) 
       break ;
 
