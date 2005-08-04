@@ -155,8 +155,6 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
 
   int nSteps  = 50 + int( 150. / pt ) ;
 
-  //  std::cout << "nstep = " << nSteps << std::endl;
-  
   for (int j = 0; j < nSteps ; j++) {
 
     double alpha = step*j ;  
