@@ -151,10 +151,12 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
   double x1 =  x ; 
   double y1 =  y ;
   double z1 =  z ;
-  double step = 0.005 ; 
+  double step = 0.05 ; 
 
-  int nSteps  = 50 + int( 50. / pt ) ;
+  int nSteps  = 50 + int( 150. / pt ) ;
 
+  //  std::cout << "nstep = " << nSteps << std::endl;
+  
   for (int j = 0; j < nSteps ; j++) {
 
     double alpha = step*j ;  
@@ -165,7 +167,8 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
     
     double r_current  = hypot( x2, y2 ) ;
 
-
+    //    std::cout << "step = " << j << std::endl;
+    //    std::cout << "r_current = " << r_current << std::endl;
 
     if( std::abs(z2) > zmax || r_current > rmax  ) 
       break ;
