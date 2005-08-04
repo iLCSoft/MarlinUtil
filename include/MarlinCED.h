@@ -23,10 +23,10 @@ class MarlinCED {
   static void init( Processor* proc ) ;
 
   /** To be called by every processor that uses CED in processEvent() before actually drawing 
-   *  something. Draws the detector (currently only the LDC).
+   *  something. Draws the detector with modelID: LDC(0) - default , SID(1), GLD(2).
    *  
    */
-  static void newEvent( Processor* proc ) ;
+  static void newEvent( Processor* proc , int modelID=0  ) ;
 
   /** To be called by every processor that uses CED in processEvent() after drawing everything. 
    *  Actually draws the event.
