@@ -26,7 +26,7 @@
  *    such as centre of gravity, axes of inertia and so on.
  *
  *    @authors V. Morgunov (ITEP/DESY), A. Raspereza (DESY), O. Wendt (DESY)
- *    @version $ld: $
+ *    @version $Id: ClusterShapes.h,v 1.7 2005-08-07 16:16:08 gaede Exp $
  *
  */
 class ClusterShapes {

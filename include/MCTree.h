@@ -24,7 +24,7 @@ using namespace lcio;
  *    Utility class for MC particles.
  *
  *    @authors P. Krstonosic (DESY), O. Wendt (DESY)
- *    @version $ld: $
+ *    @version $Id: MCTree.h,v 1.2 2005-08-07 16:16:08 gaede Exp $
  *
  */
 

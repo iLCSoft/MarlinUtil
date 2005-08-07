@@ -14,7 +14,7 @@ typedef std::vector<TrackExtended*> TrackExtendedVec;
  * Class GroupTracks is needed to group track segments <br>
  * with close helix parameters. Needed for Tracking. <br>
  *  * @author A. Raspereza (DESY)<br>
- * @version $ld: $<br>
+ * @version $Id: GroupTracks.h,v 1.3 2005-08-07 16:16:08 gaede Exp $<br>
  */
 class GroupTracks;
 

@@ -15,7 +15,7 @@ class TrackExtended;
  * Class TrackerHitExtended is used in TrackwiseClustering <br>
  * and Wolf processors. <br>
  * @author A. Raspereza (DESY)<br>
- * @version $ld: $<br>
+ * @version $Id: TrackerHitExtended.h,v 1.3 2005-08-07 16:16:08 gaede Exp $<br>
  */
 class TrackerHitExtended {
 
