@@ -1,5 +1,5 @@
 #include "MarlinCED.h"
-
+#include <cmath>
 
 
 MarlinCED* MarlinCED::_me = 0 ;
