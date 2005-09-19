@@ -123,11 +123,11 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
   
   double cFactor = 2.9979251e-4;
   
-  double pt = hypot(px,py);  //sqrt(px*px + py*py);
+  double pt = sqrt(px*px + py*py); // hypot(px,py)
 
   if( pt < 0.0000001 ) return ;
 
-//   double p  = hypot(pt,pz);  //sqrt(px*px + py*py + pz*pz);
+//   double p  = sqrt(px*px + py*py + pz*pz); // hypot(pt,pz);
   
   double r =  pt / ( cFactor * b * std::abs( charge )  ) ;
 //   double phi = std::atan2( x , y ) ; 
@@ -163,7 +163,7 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
     double y2 = cy + r * sin( phi + sign * alpha ) ;
     double z2 = cz + r * alpha * pz / pt ;
     
-    double r_current  = hypot( x2, y2 ) ;
+    double r_current  = sqrt( x2*x2 + y2*y2); // hypot( x2, y2 ) 
 
     if( std::abs(z2) > zmax || r_current > rmax  ) 
       break ;

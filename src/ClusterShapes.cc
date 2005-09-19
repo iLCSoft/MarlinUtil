@@ -932,7 +932,7 @@ void ClusterShapes::findElipsoid() {
   _r2 = sqrt(wr1*wr3);                // spatial axis length -- less
   _r3 = sqrt(wr1*wr2);                // spatial axis length -- even more less
   _vol = 4.*M_PI*_r1*_r2*_r3/3.;      // ellipsoid volume
-  _r_ave = cbrtf(_vol);               // average radius  (qubic root)
+  _r_ave = pow(_vol,1/3);             // average radius  (quibc root)
   _density = _totAmpl/_vol;           // density
   //    _eccentricity = _r_ave/_r1;   // Cluster Eccentricity
   _eccentricity =_analogWidth/_r1;   // Cluster Eccentricity
