@@ -17,7 +17,9 @@
 #include <gsl/gsl_eigen.h>
 #include <gsl/gsl_multifit_nlin.h>
 #include <gsl/gsl_rng.h>
-
+#include <gsl/gsl_sf_gamma.h>
+#include <gsl/gsl_integration.h>
+#include <gsl/gsl_sf_pow_int.h>
 
 
 
@@ -26,7 +28,7 @@
  *    such as centre of gravity, axes of inertia and so on.
  *
  *    @authors V. Morgunov (ITEP/DESY), A. Raspereza (DESY), O. Wendt (DESY)
- *    @version $Id: ClusterShapes.h,v 1.7 2005-08-07 16:16:08 gaede Exp $
+ *    @version $Id: ClusterShapes.h,v 1.8 2005-10-19 14:26:03 owendt Exp $
  *
  */
 class ClusterShapes {
@@ -89,12 +91,24 @@ class ClusterShapes {
   float getWidth();
 
   /**
+   * returns the coordinates of the cluster transformed into 
+   * the CoG-System.
+   */
+  int getEigenSytemCoordinates(float* xlong, float* xtrans);
+
+  /**
+   * returns the coordinates and the amplitudes of the cluster
+   * transformed into the CoG-System.
+   */
+  int getEigenSytemCoordinates(float* xlong, float* xtrans, float* a);
+
+  /**
    * performs a least square fit on the shape of an electro-
    * magnetic-shower, which is defined as:
-   * A[i] = a * xl[i]^b * exp(-c*xl[i]) * exp(-d*xt[i]),
+   * A[i] = a * (xl[i]-xl0)^b * exp(-c*(xl[i]-xl0)) * exp(-d*xt[i]),
    * where A[i] is the array of amplitudes, xl[i] is the 
    * coordinate of the actual point along the main principal 
-   * axis and xt[i] the coordinate perpendicular to it. a,b,c,d  
+   * axis and xt[i] the coordinate perpendicular to it. a,b,c,d,xl0  
    * are the parameters to be fitted.    
    * The method returns the chi2 and the parameters a,b,c,d of
    * the fit as well as xStart, which is an 3-dim array to the
@@ -104,13 +118,21 @@ class ClusterShapes {
    * The return value of the method itself is not used at the
    * moment (always returns 0).
    */
-  int Fit3DProfile(float& chi2, float& a, float& b, float& c, float& d, float * xStart, int& index_xStart);
+  int fit3DProfile(float& chi2, float& a, float& b, float& c, float& d, float& xl0, 
+		   float * xStart, int& index_xStart, float X0, float Rm);
 
   /**
-   * returns the chi2 of the fit in the method Fit3DProfile
-   * for a given set of parameters a,b,c,d
+   * returns the chi2 of the fit in the method Fit3DProfile (if simple
+   * parametrisation is used)for a given set of parameters a,b,c,d
    */
-  float getChi2Fit3DProfile(float a, float b, float c, float d);
+  float getChi2Fit3DProfileSimple(float a, float b, float c, float d);
+
+  /**
+   * returns the chi2 of the fit in the method Fit3DProfile (if advanced
+   * parametrisation is used) for a given set of parameters E0,a,b,d,t0
+   */
+  float getChi2Fit3DProfileAdvanced(float E0, float a, float b, float d, float t0, 
+				    float X0, float Rm);
 
   /**
    * performs a least square fit on a helix path in space, which
@@ -231,6 +253,10 @@ class ClusterShapes {
   float* _xHit;
   float* _yHit;
   float* _zHit;
+  float* _xl;
+  float* _xt;
+  float* _t;
+  float* _s;
 
   int   _ifNotGravity;
   float _totAmpl;
@@ -246,6 +272,8 @@ class ClusterShapes {
   int   _ifNotInertia;
   float _ValAnalogInertia[3];
   float _VecAnalogInertia[9];
+
+  int _ifNotEigensystem;
 
   int   _ifNotElipsoid;
   float _r1           ;  // Cluster spatial axis length -- the largest
@@ -265,8 +293,14 @@ class ClusterShapes {
   float findDistance(int i);
   float vecProduct(float * x1, float * x2);
   float vecProject(float * x, float * axis);
-  float DistanceHelix(float x, float y, float z, float X0, float Y0, float R0, float bz, float phi0);
-
+  float DistanceHelix(float x, float y, float z, float X0, float Y0, float R0, float bz,
+		      float phi0);
+  int transformToEigensystem(float* xStart, int& index_xStart, float X0, float Xm);
+  float calculateChi2Fit3DProfileSimple(float a, float b, float c, float d);
+  float calculateChi2Fit3DProfileAdvanced(float E0, float a, float b, float d, float t0);
+  int fit3DProfileSimple(float& chi2, float& a, float& b, float& c, float& d);
+  int fit3DProfileAdvanced(float& chi2, double* par_init, double* par, int npar,
+			   float* t, float* s, float* E, float E0);
 
   // private methods for non-linear, multidim. fitting (helix)
   // static int functParametrisation1(const gsl_vector* par, void* data, gsl_vector* f);
