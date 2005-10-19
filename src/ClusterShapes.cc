@@ -2,8 +2,6 @@
 
 
 
-
-
 // #################################################
 // #####                                       #####
 // #####  Additional Structures and Functions  #####
@@ -17,6 +15,172 @@ struct data {
   float* y;
   float* z;
 };
+
+//=============================================================================
+
+// Gammafunction
+double G(double x) {
+
+  return gsl_sf_gamma(x);
+  
+}
+
+//=============================================================================
+
+// inverse Gammafunction
+double invG(double x) {
+  
+ return gsl_sf_gammainv(x);
+    
+}
+
+//=============================================================================
+
+// Integral needed for deriving the derivative of the Gammafunction
+double Integral_G(double x, void* params) {
+  double a = *(double*)params;
+  double f = exp(-x) * pow(x,a-1) * log(x);
+  return f;
+}
+    
+//=============================================================================
+
+double DinvG(double x) {
+
+  int workspace_size = 1000;
+  double abs_error = 0;
+  double rel_error = 1e-6;
+  double result = 0.0;
+  double error = 0.0;
+  int status = 0;
+  
+  gsl_integration_workspace* w  = gsl_integration_workspace_alloc(workspace_size);
+  gsl_function F;
+  F.function = &Integral_G;
+  F.params = &x;
+    
+  status = gsl_integration_qagiu(&F,0,abs_error,rel_error,workspace_size,w,
+      			   &result,&error); 
+
+  // debug  
+  /*  
+  printf ("Numeric Integration : \n");
+  printf ("parameter of integration = % .18f\n", x);
+  printf ("status of integration    = %d \n"   , status);
+  printf ("result                   = % .18f\n", result);
+  printf ("estimated error          = % .18f\n", error);
+  printf ("intervals                =  %d\n\n", w->size);
+  */
+  
+  double G2 = pow(gsl_sf_gamma(x),2); 
+  double DG = result;
+  
+  gsl_integration_workspace_free(w);
+  
+  return -DG/G2;
+
+}
+
+//=============================================================================
+
+int ShapeFitFunct(const gsl_vector* par, void* d, gsl_vector* f) {
+
+  // Used for shape fitting. Function to fit: 
+  //
+  // a[i](t[i],s[i]) =
+  // 
+  // E0 * b * 1/Gamma(a) * ( b * (t[i] - t0) )^(a-1) * exp(-b*(t[i] - t0)) * exp(-d*s[i])
+  //
+  // Function to minimise:
+  //
+  // f0[i] =  E0 * b * 1/Gamma(a) * 
+  //        ( b * (t[i] - t0) )^(a-1) * exp(-b*(t[i] - t0)) * exp(-d*s[i]) - a[i]
+  //
+
+
+  //  float E0   = gsl_vector_get(par,0);
+  float A    = gsl_vector_get(par,0);
+  float B    = gsl_vector_get(par,1);
+  float D    = gsl_vector_get(par,2);
+  float t0   = gsl_vector_get(par,3);
+  int n      = ((struct data*)d)->n;
+  float* t   = ((struct data*)d)->x;
+  float* s   = ((struct data*)d)->y;
+  float* a   = ((struct data*)d)->z; // amplitude stored in z[i]
+  float fi   = 0.0;
+
+
+  for (int i(0); i < n; i++) {
+    fi = /*E0 * */ B * invG(A) * pow(B*(t[i]-t0),A-1) * exp(-B*(t[i]-t0)) * exp(-D*s[i]) 
+         - a[i];
+    gsl_vector_set(f,i,fi);
+  }
+
+  return GSL_SUCCESS;
+}
+
+//=============================================================================
+
+int dShapeFitFunct(const gsl_vector* par, void* d, gsl_matrix* J) {
+
+  // Used for shape fitting
+  //float E0  = gsl_vector_get(par,0);
+  float A   = gsl_vector_get(par,0);
+  float B   = gsl_vector_get(par,1);
+  float D   = gsl_vector_get(par,2);
+  float t0  = gsl_vector_get(par,3);
+  int n     = ((struct data*)d)->n;
+  float* t  = ((struct data*)d)->x;
+  float* s  = ((struct data*)d)->y;
+
+
+  // calculate Jacobi's matrix J[i][j] = dfi/dparj, but here only one dimension
+
+  for (int i(0); i < n; i++) {
+
+    /*    
+    gsl_matrix_set(J,i,0,B * invG(A) * pow(B*(t[i]-t0),A-1) * exp(-B*(t[i]-t0)) 
+		                                            * exp(-D*s[i]) );
+    */
+
+    gsl_matrix_set(J,i,0,( /* E0 * */ B * invG(A) * log(B*(t[i]-t0))*pow(B*(t[i]-t0),A-1) * 
+			   exp(-B*(t[i]-t0)) + DinvG(A) * /* E0 * */ B * pow(B*(t[i]-t0),A-1) *
+			                       exp(-B*(t[i]-t0))
+			 ) * exp(-D*s[i]));
+		         
+    gsl_matrix_set(J,i,1,( /* E0 * */ invG(A) * pow(B*(t[i]-t0),A-1) * exp(-B*(t[i]-t0)) +
+			   /* E0 * */ invG(A) * (A-1) * B * (t[i]-t0) * pow(B*(t[i]-t0),A-2) * 
+			                                exp(-B*(t[i]-t0)) -
+			   /* E0 * */ B * invG(A) * (t[i]-t0) * pow(B*(t[i]-t0),A-1) * 
+			                                exp(-B*(t[i]-t0)) 
+			 ) * exp(-D*s[i]));
+                         
+    gsl_matrix_set(J,i,2,-/* E0 * */ B * invG(A) * s[i] * pow(B*(t[i]-t0),A-1) *
+		         exp(-B*(t[i]-t0)) * exp(-D*s[i]));
+       		         
+    gsl_matrix_set(J,i,3,(-/* E0 * */ pow(B,2) * invG(A) * (A-1) * pow(B*(t[i]-t0),A-2) * 
+			                                     exp(-B*(t[i]-t0)) +
+			   /* E0 * */ pow(B,2) * invG(A) * pow(B*(t[i]-t0),A-1) * 
+			                             exp(-B*(t[i]-t0))
+			 ) * exp(-D*s[i]));
+ 		         
+
+  }
+  
+  return GSL_SUCCESS;
+}
+
+//=============================================================================
+
+int fdfShapeFitFunct(const gsl_vector* par, void* d, gsl_vector* f, gsl_matrix* J) {
+
+  //     For helix fitting
+  ShapeFitFunct(par, d, f);
+  dShapeFitFunct(par, d, J);
+
+  return GSL_SUCCESS;
+
+}
 
 //=============================================================================
 
@@ -245,19 +409,29 @@ int fdfParametrisation2(const gsl_vector* par, void* d, gsl_vector* f, gsl_matri
 ClusterShapes::ClusterShapes(int nhits, float* a, float* x, float* y, float* z){
 
   _nHits = nhits;
-  _aHit = new float[_nHits] ;
-  _xHit = new float[_nHits] ;
-  _yHit = new float[_nHits] ;
-  _zHit = new float[_nHits] ;    
+  _aHit = new float[_nHits];
+  _xHit = new float[_nHits];
+  _yHit = new float[_nHits];
+  _zHit = new float[_nHits];
+
+  _xl = new float[_nHits];
+  _xt = new float[_nHits];
+
+  _t = new float[_nHits];
+  _s = new float[_nHits]; 
+
   for (int i(0); i < nhits; ++i) {
-    _aHit[i] = a[i] ;
-    _xHit[i] = x[i] ;
-    _yHit[i] = y[i] ;
-    _zHit[i] = z[i] ;
+    _aHit[i] = a[i];
+    _xHit[i] = x[i];
+    _yHit[i] = y[i];
+    _zHit[i] = z[i];
   }
-  _ifNotGravity = 1 ;
-  _ifNotWidth   = 1 ;
-  _ifNotInertia = 1 ;
+
+  _ifNotGravity     = 1;
+  _ifNotWidth       = 1;
+  _ifNotInertia     = 1;
+  _ifNotEigensystem = 1;
+
 }
 
 
@@ -265,10 +439,14 @@ ClusterShapes::ClusterShapes(int nhits, float* a, float* x, float* y, float* z){
 
 ClusterShapes::~ClusterShapes() {
 
-  delete[] _aHit ;
-  delete[] _xHit ;
-  delete[] _yHit ;
-  delete[] _zHit ;
+  delete[] _aHit;
+  delete[] _xHit;
+  delete[] _yHit;
+  delete[] _zHit;
+  delete[] _xl;
+  delete[] _xt;
+  delete[] _t;
+  delete[] _s;
 }
 
 //=============================================================================
@@ -327,221 +505,171 @@ float ClusterShapes::getWidth() {
 
 //=============================================================================
 
-int ClusterShapes::Fit3DProfile(float& chi2, float& a, float& b, float& c, float& d,
-				float* xStart, int& index_xStart) {
+int ClusterShapes::getEigenSytemCoordinates(float* xlong, float* xtrans) {
 
-  if (_ifNotInertia == 1) findInertia();
+  float xStart[3];
+  int index_xStart;
 
-  float MainAxis[3];
-  float MainCentre[3];
 
-  MainAxis[0] = _VecAnalogInertia[0];
-  MainAxis[1] = _VecAnalogInertia[1];
-  MainAxis[2] = _VecAnalogInertia[2];
-  MainCentre[0] = _analogGravity[0];
-  MainCentre[1] = _analogGravity[1];
-  MainCentre[2] = _analogGravity[2];
+  // NOT SAVE, change to class variables !!!!!
+  float X0 = 7.0;
+  float Rm = 13.5;
 
-  int ifirst = 0;
-  float xx[3];
-  float prodmin = 0.0;
-  int index = 0;
+  if (_ifNotEigensystem == 1) transformToEigensystem(xStart,index_xStart,X0,Rm);
 
-  for (int i(0); i < _nHits; ++i) {
-    xx[0] = _xHit[i] - MainCentre[0];
-    xx[1] = _yHit[i] - MainCentre[1];
-    xx[2] = _zHit[i] - MainCentre[2];
-    float prod = vecProject(xx,MainAxis);
-    if (ifirst == 0 || prod < prodmin) {
-      ifirst = 1;
-      prodmin = prod;
-      index = i;
+  for (int i = 0; i < _nHits; ++i) {
+    xlong[i]  = _xl[i];
+    xtrans[i] = _xt[i];
+  }
+
+  return 0; // no error messages at the moment
+
+}
+
+//=============================================================================
+
+int ClusterShapes::getEigenSytemCoordinates(float* xlong, float* xtrans, float* a) {
+
+  float xStart[3];
+  int index_xStart;
+
+  // NOT SAVE, change to class variables !!!!!
+  float X0 = 7.0;
+  float Rm = 13.5;
+
+  if (_ifNotEigensystem == 1) transformToEigensystem(xStart,index_xStart,X0,Rm);
+
+  for (int i = 0; i < _nHits; ++i) {
+    xlong[i]  = _xl[i];
+    xtrans[i] = _xt[i];
+    a[i] = _aHit[i];
+  }
+
+  return 0; // no error messages at the moment
+
+}
+
+//=============================================================================
+
+int ClusterShapes::fit3DProfile(float& chi2, float& E0, float& A, float& B, float& D,
+				float& xl0, float* xStart, int& index_xStart,
+				float X0, float Rm) {
+
+  const int npar = 4;
+
+
+  if (_ifNotEigensystem == 1) transformToEigensystem(xStart,index_xStart,X0,Rm);
+
+  float* E = new float[_nHits];
+
+
+  double par_init[npar];
+  for (int i = 0; i < npar; ++i) par_init[i] = 0.0; // initialise
+
+  float E0_init = 0.0;
+  float A_init  = 0.0;
+  float B_init  = 0.5; // empirically
+  float D_init  = 0.5; // empirically
+  float t0_init = -10.0/X0; // shift xl0_ini is assumed to be -10.0 without a reason ????
+  
+  float E0_tmp = 0.0;
+  int i_max = 0;
+  float t_max = 0.0;
+  for (int i = 0; i < _nHits; ++i) {
+    if (E0_tmp < _aHit[i]) {
+      E0_tmp = _aHit[i]; 
+      i_max = i;
     }
-  }
-  xStart[0] = MainCentre[0] + prodmin*MainAxis[0];
-  xStart[1] = MainCentre[1] + prodmin*MainAxis[1];
-  xStart[2] = MainCentre[2] + prodmin*MainAxis[2];
-  index_xStart = index;
-  float * xl = new float[_nHits];
-  float * xt = new float[_nHits];
-  const gsl_rng_type * T;
-  gsl_rng * r;
-
-  gsl_rng_env_setup();
-  T = gsl_rng_default;
-  r = gsl_rng_alloc(T);
-
-  //std::cout << a << " " << b << " " << c << " " << d << std::endl;
-
-  for (int i(0); i < _nHits; ++i) {
-    xx[0] = _xHit[i] - xStart[0];
-    xx[1] = _yHit[i] - xStart[1];
-    xx[2] = _zHit[i] - xStart[2];
-    float xx2(0.);
-    for (int j(0); j < 3; ++j) xx2 += xx[j]*xx[j];
-
-    xl[i] = 0.001 + vecProject(xx,MainAxis);
-    xt[i] = sqrt(std::max(0.,xx2 + 0.1 - xl[i]*xl[i]));
-    //std::cout << i << " " << xl[i] << " " << xt[i] << " " << _aHit[i] << " "
-    //          << Ampl << std::endl;
+    E0_init += _aHit[i];
   }
 
-  gsl_rng_free( r );
+  // first definition
+  //t_max = _xl[i_max]/X0;
+  //A_init = t_max*B_init + 1.0;
 
-  float Slnxl(0.);
-  float Sxl(0.);
-  float Sxt(0.);
-  float Sln2xl(0.);
-  float Sxllnxl(0.);
-  float Sxtlnxl(0.);
-  float Sxlxl(0.);
-  float Sxlxt(0.);
-  float Sxtxt(0.);
-  float SlnA(0.);
-  float SlnAlnxl(0.);
-  float SlnAxl(0.);
-  float SlnAxt(0.);
+  // second definition
+  //t_max = (1.0/3.0) * (t[_nHits-1] - t[0]);
+  //A_init = t_max*B_init + 1.0;
 
-  // for a quadratic matrix
-  for (int i = 0; i < _nHits; i++) {
-    Slnxl += log(xl[i]);
-    Sxl += xl[i];
-    Sxt += xt[i];
-    Sln2xl += log(xl[i])*log(xl[i]);
-    Sxllnxl += xl[i]*log(xl[i]);
-    Sxtlnxl += xt[i]*log(xl[i]);
-    Sxlxl += xl[i]*xl[i];
-    Sxlxt += xl[i]*xt[i];
-    Sxtxt += xt[i]*xt[i];
-    SlnA += log(_aHit[i]);
-    SlnAlnxl += log(_aHit[i])*log(xl[i]);
-    SlnAxl += log(_aHit[i])*xl[i];
-    SlnAxt += log(_aHit[i])*xt[i]; 
-  }
-  // create system of linear equations, written as Ae = z
+  // third definition
+  float Ec = X0 * 0.021/Rm;
+  A_init =  B_init * log(E0_init/Ec) + 0.5 * B_init + 1.0; // (+0.5 for Photons initiated showers)
 
-  gsl_matrix* A = gsl_matrix_alloc(4,4);
-  gsl_vector* z = gsl_vector_alloc(4);
-  gsl_vector* e = gsl_vector_alloc(4);
-  
-  // initialise matrix and vectors
-  
-  gsl_matrix_set(A,0,0,_nHits);
-  gsl_matrix_set(A,0,1,Slnxl);
-  gsl_matrix_set(A,0,2,-Sxl);
-  gsl_matrix_set(A,0,3,-Sxt);
-  
-  gsl_matrix_set(A,1,0,Slnxl);
-  gsl_matrix_set(A,1,1,Sln2xl);
-  gsl_matrix_set(A,1,2,-Sxllnxl);
-  gsl_matrix_set(A,1,3,-Sxtlnxl);
-  
-  gsl_matrix_set(A,2,0,-Sxl);
-  gsl_matrix_set(A,2,1,-Sxllnxl);
-  gsl_matrix_set(A,2,2,Sxlxl);
-  gsl_matrix_set(A,2,3,Sxlxt);
 
-  gsl_matrix_set(A,3,0,-Sxt);
-  gsl_matrix_set(A,3,1,-Sxtlnxl);
-  gsl_matrix_set(A,3,2,Sxlxt);
-  gsl_matrix_set(A,3,3,Sxtxt);
 
-  gsl_vector_set(z,0,SlnA);
-  gsl_vector_set(z,1,SlnAlnxl);
-  gsl_vector_set(z,2,-SlnAxl);
-  gsl_vector_set(z,3,-SlnAxt);
+  // par_init[0] = E0_init;
+  E0 = E0_init;
+  for (int i = 0; i < _nHits; ++i) E[i] = _aHit[i]/E0_init;
+  par_init[0] = A_init; // 2.0
+  par_init[1] = B_init;
+  par_init[2] = D_init;
+  par_init[3] = t0_init;
 
-  gsl_linalg_HH_solve(A,z,e);
+  // debug
 
-  a = exp(gsl_vector_get(e,0));
-  b = gsl_vector_get(e,1);
-  c = gsl_vector_get(e,2);
-  d = gsl_vector_get(e,3);
+  std::cout << "E0_init : " <<  E0_init << "\t" << "A_init : " << A_init << "\t" 
+	    << "B_init : " <<  B_init << "\t" << "D_init : " << D_init << "\t" 
+	    << "xl0_init : "  << t0_init*X0 << "\t" << "X0 : " << X0 
+	    << "\t" << "t_max : " << t_max << std::endl << std::endl;
 
-  chi2 = 0.0;
-  for (int i(0); i < _nHits; ++i) {
-    float Ampl = a*(float)pow(xl[i],b)*exp(-c*xl[i]-d*xt[i]); 
-      chi2 += ((Ampl - _aHit[i])*(Ampl - _aHit[i]))/(_aHit[i]*_aHit[i]);
 
-  }
-  chi2 = chi2/std::max((float)1.0,(float)(_nHits - 4));
-  
-  delete[] xl;
-  delete[] xt;
+  double t0 = xl0/X0;
+  double par[npar];
+  par[0] = A;
+  par[1] = B;
+  par[2] = D;
+  par[3] = t0;
 
-  gsl_matrix_free(A);
-  gsl_vector_free(z);
-  gsl_vector_free(e);
+  fit3DProfileAdvanced(chi2,par_init,par,npar,_t,_s,E,E0);
 
-  int result = 0;
+  A   = par[0];
+  B   = par[1];
+  D   = par[2];
+  xl0 = par[3] * X0;
+
+  delete[] E;
+
+  int result = 0;  // no error handling at the moment
   return result;
 }
 
 //=============================================================================
 
-float ClusterShapes::getChi2Fit3DProfile(float a, float b, float c, float d) {
+float ClusterShapes::getChi2Fit3DProfileSimple(float a, float b, float c, float d) {
 
   float chi2 = 0.0;
 
-  float MainAxis[3];
-  float MainCentre[3];
   float xStart[3];
+  int index_xStart;
 
-  int ifirst = 0;
-  float xx[3];
-  float prodmin = 0.0;
+  // NOT SAVE, change to class variables !!!!!
+  float X0 = 7.0;
+  float Rm = 13.5;
 
-  if (_ifNotInertia == 1) findInertia();
-  
-  MainAxis[0] = _VecAnalogInertia[0];
-  MainAxis[1] = _VecAnalogInertia[1];
-  MainAxis[2] = _VecAnalogInertia[2];      
-  MainCentre[0] = _analogGravity[0];
-  MainCentre[1] = _analogGravity[1];
-  MainCentre[2] = _analogGravity[2];      
-  
-  for (int i(0); i < _nHits; ++i) {
-    xx[0] = _xHit[i] - MainCentre[0];
-    xx[1] = _yHit[i] - MainCentre[1];
-    xx[2] = _zHit[i] - MainCentre[2];
-    float prod = vecProject(xx,MainAxis);
-    if (ifirst == 0 || prod < prodmin) {
-      ifirst = 1;
-      prodmin = prod;
-    }
-  }
-  xStart[0] = MainCentre[0] + prodmin*MainAxis[0];
-  xStart[1] = MainCentre[1] + prodmin*MainAxis[1];
-  xStart[2] = MainCentre[2] + prodmin*MainAxis[2];	  
-  float * xl = new float[_nHits];
-  float * xt = new float[_nHits];
-  
-  for (int i(0); i < _nHits; ++i) {
-    xx[0] = _xHit[i] - xStart[0];
-    xx[1] = _yHit[i] - xStart[1];
-    xx[2] = _zHit[i] - xStart[2];
-    float xx2(0.);
-    for (int j(0); j < 3; ++j) xx2 += xx[j]*xx[j];      
-    
-    xl[i] = 0.001 + vecProject(xx,MainAxis);    
-    xt[i] = sqrt(std::max(0.,xx2 + 0.1 - xl[i]*xl[i]));
-    //std::cout << i << " " << xl[i] << " " << xt[i] << " " << _aHit[i] << " " 
-    //          << Ampl << std::endl;
-  }
+  if (_ifNotEigensystem == 1) transformToEigensystem(xStart,index_xStart,X0,Rm);
 
-  for (int i(0); i < _nHits; ++i) {
-    float Ampl = a*(float)pow(xl[i],b)*exp(-c*xl[i]-d*xt[i]);
-    chi2 += ((Ampl - _aHit[i])*(Ampl - _aHit[i]))/(_aHit[i]*_aHit[i]);
-    
-  }
-
-  chi2 = chi2/std::max((float)1.0,(float)(_nHits - 4));
-  
-  delete[] xl;
-  delete[] xt;
+  chi2 = calculateChi2Fit3DProfileSimple(a,b,c,d);
   
   return chi2;
   
+}
+
+//=============================================================================
+
+float ClusterShapes::getChi2Fit3DProfileAdvanced(float E0, float a, float b, float d,
+						 float t0, float X0, float Rm) {
+
+  float chi2 = 0.0;
+
+  float xStart[3];
+  int index_xStart;
+
+  if (_ifNotEigensystem == 1) transformToEigensystem(xStart,index_xStart,X0,Rm);
+
+  chi2 = calculateChi2Fit3DProfileAdvanced(E0,a,b,d,t0);
+
+  return chi2;
+
 }
 
 //=============================================================================
@@ -1209,6 +1337,314 @@ float ClusterShapes::DistanceHelix(float x, float y, float z, float X0, float Y0
   float dZ2 = dZ*dZ;
 
   return sqrt(dXY2 + dZ2);
+
+}
+
+//=============================================================================
+
+int ClusterShapes::transformToEigensystem(float* xStart, int& index_xStart, float X0,
+					  float Rm) {
+
+  if (_ifNotInertia == 1) findInertia();
+
+  float MainAxis[3];
+  float MainCentre[3];
+
+
+  MainAxis[0] = _VecAnalogInertia[0];
+  MainAxis[1] = _VecAnalogInertia[1];
+  MainAxis[2] = _VecAnalogInertia[2];
+  MainCentre[0] = _analogGravity[0];
+  MainCentre[1] = _analogGravity[1];
+  MainCentre[2] = _analogGravity[2];
+
+  int ifirst = 0;
+  float xx[3];
+  float prodmin = 0.0;
+  int index = 0;
+
+  for (int i(0); i < _nHits; ++i) {
+    xx[0] = _xHit[i] - MainCentre[0];
+    xx[1] = _yHit[i] - MainCentre[1];
+    xx[2] = _zHit[i] - MainCentre[2];
+    float prod = vecProject(xx,MainAxis);
+    if (ifirst == 0 || prod < prodmin) {
+      ifirst = 1;
+      prodmin = prod;
+      index = i;
+    }
+  }
+  xStart[0] = MainCentre[0] + prodmin*MainAxis[0];
+  xStart[1] = MainCentre[1] + prodmin*MainAxis[1];
+  xStart[2] = MainCentre[2] + prodmin*MainAxis[2];
+  index_xStart = index;
+
+  for (int i(0); i < _nHits; ++i) {
+    xx[0] = _xHit[i] - xStart[0];
+    xx[1] = _yHit[i] - xStart[1];
+    xx[2] = _zHit[i] - xStart[2];
+    float xx2(0.);
+    for (int j(0); j < 3; ++j) xx2 += xx[j]*xx[j];
+
+    _xl[i] = 0.001 + vecProject(xx,MainAxis);
+    _xt[i] = sqrt(std::max(0.0,xx2 + 0.1 - _xl[i]*_xl[i]));
+    //    std::cout << i << " " << _xl[i] << " " << _xt[i] << " " << _aHit[i] << " "
+    //              << std::endl;
+  }
+
+  for (int i = 0; i < _nHits; ++i) {
+    _t[i] = _xl[i]/X0;
+    _s[i] = _xt[i]/Rm;
+  }
+
+  _ifNotEigensystem = 0;
+
+  return 0; // no error messages at the moment
+
+}
+
+//=============================================================================
+
+float ClusterShapes::calculateChi2Fit3DProfileSimple(float a, float b, float c,
+						     float d) {
+
+  // ClusterShapes::transformToEigensystem needs to be executed before
+
+  float chi2 = 0.0;
+  float Ampl = 0.0;
+
+  for (int i(0); i < _nHits; ++i) {
+    // old definition of Ampl and chi2
+    //Ampl = a*(float)pow(_xl[i],b)*exp(-c*_xl[i]-d*_xt[i]); 
+    //chi2 += ((Ampl - _aHit[i])*(Ampl - _aHit[i]))/(_aHit[i]*_aHit[i]);
+
+    Ampl = a*(float)pow(_xl[i],b)*exp(-c*_xl[i]-d*_xt[i]);
+    chi2 += (log(_aHit[i]) - log(Ampl))*(log(_aHit[i]) - log(Ampl));
+  }
+
+  chi2 = chi2/std::max((float)1.0,(float)(_nHits - 4));
+
+  return chi2;
+
+}
+
+//=============================================================================
+
+float ClusterShapes::calculateChi2Fit3DProfileAdvanced(float E0, float a, float b,
+						       float d, float t0) {
+
+  // ClusterShapes::transformToEigensystem needs to be executed before
+
+  float chi2  = 0.0;
+  float Ampl  = 0.0;
+  float shift = 0.0;
+
+  for (int i(0); i < _nHits; ++i) {
+
+    shift = _t[i]-t0;
+
+    if (shift <= 0) Ampl = 0.0;
+    else {
+      Ampl = E0 * b * invG(a) * pow(b*(shift),a-1) 
+	* exp(-b*(shift)) * exp(-d*_s[i]);
+    }
+
+    // debug 
+    /*
+    std::cout << "OUT : " << Ampl << "  " << E0  << "  " << a  << "  " << b  << "  " 
+	      << d  << "  " << t0  << "  " << _t[i] << "  " << invG(a)  << "  "
+	      << pow(b*(_t[i]-t0),a-1)  << "  " << exp(-b*(_t[i]-t0))  << "  " 
+	      << exp(-d*_s[i]) 
+	      << std::endl;
+    */
+
+    chi2 += ((Ampl - _aHit[i])*(Ampl - _aHit[i]))/(_aHit[i]*_aHit[i]);
+    //chi2 += (log(_aHit[i]) - log(Ampl))*(log(_aHit[i]) - log(Ampl));
+    //chi2 += log((Ampl - _aHit[i])*(Ampl - _aHit[i]))/log(_aHit[i]*_aHit[i]);
+
+  }
+  chi2 = chi2/std::max((float)1.0,(float)(_nHits - 4));
+
+  return chi2;
+
+}
+
+//=============================================================================
+
+int ClusterShapes::fit3DProfileSimple(float& chi2, float& a, float& b, float& c,
+				      float& d) {
+
+  // Fit function: _aHit[i] = a * pow(_xl[i],b) * exp(-c*_xl[i]) * exp(-d*_xt[i])
+
+  float Slnxl(0.);
+  float Sxl(0.);
+  float Sxt(0.);
+  float Sln2xl(0.);
+  float Sxllnxl(0.);
+  float Sxtlnxl(0.);
+  float Sxlxl(0.);
+  float Sxlxt(0.);
+  float Sxtxt(0.);
+  float SlnA(0.);
+  float SlnAlnxl(0.);
+  float SlnAxl(0.);
+  float SlnAxt(0.);
+
+  // for a quadratic matrix
+  for (int i = 0; i < _nHits; i++) {
+    Slnxl += log(_xl[i]);
+    Sxl += _xl[i];
+    Sxt += _xt[i];
+    Sln2xl += log(_xl[i])*log(_xl[i]);
+    Sxllnxl += _xl[i]*log(_xl[i]);
+    Sxtlnxl += _xt[i]*log(_xl[i]);
+    Sxlxl += _xl[i]*_xl[i];
+    Sxlxt += _xl[i]*_xt[i];
+    Sxtxt += _xt[i]*_xt[i];
+    SlnA += log(_aHit[i]);
+    SlnAlnxl += log(_aHit[i])*log(_xl[i]);
+    SlnAxl += log(_aHit[i])*_xl[i];
+    SlnAxt += log(_aHit[i])*_xt[i]; 
+  }
+  // create system of linear equations, written as Ae = z
+
+  gsl_matrix* A = gsl_matrix_alloc(4,4);
+  gsl_vector* z = gsl_vector_alloc(4);
+  gsl_vector* e = gsl_vector_alloc(4);
+  
+  // initialise matrix and vectors
+  
+  gsl_matrix_set(A,0,0,_nHits);
+  gsl_matrix_set(A,0,1,Slnxl);
+  gsl_matrix_set(A,0,2,-Sxl);
+  gsl_matrix_set(A,0,3,-Sxt);
+  
+  gsl_matrix_set(A,1,0,Slnxl);
+  gsl_matrix_set(A,1,1,Sln2xl);
+  gsl_matrix_set(A,1,2,-Sxllnxl);
+  gsl_matrix_set(A,1,3,-Sxtlnxl);
+  
+  gsl_matrix_set(A,2,0,-Sxl);
+  gsl_matrix_set(A,2,1,-Sxllnxl);
+  gsl_matrix_set(A,2,2,Sxlxl);
+  gsl_matrix_set(A,2,3,Sxlxt);
+
+  gsl_matrix_set(A,3,0,-Sxt);
+  gsl_matrix_set(A,3,1,-Sxtlnxl);
+  gsl_matrix_set(A,3,2,Sxlxt);
+  gsl_matrix_set(A,3,3,Sxtxt);
+
+  gsl_vector_set(z,0,SlnA);
+  gsl_vector_set(z,1,SlnAlnxl);
+  gsl_vector_set(z,2,-SlnAxl);
+  gsl_vector_set(z,3,-SlnAxt);
+
+  gsl_linalg_HH_solve(A,z,e);
+
+  a = exp(gsl_vector_get(e,0));
+  b = gsl_vector_get(e,1);
+  c = gsl_vector_get(e,2);
+  d = gsl_vector_get(e,3);
+
+  chi2 = calculateChi2Fit3DProfileSimple(a,b,c,d);
+  
+  gsl_matrix_free(A);
+  gsl_vector_free(z);
+  gsl_vector_free(e);
+
+  int result = 0;  // no error handling at the moment
+  return result;
+
+}
+
+//=============================================================================
+
+int ClusterShapes::fit3DProfileAdvanced(float& chi2, double* par_init, double* par,
+					int npar, float* t, float* s, float* E, 
+					float E0) {
+
+  // local variables
+  int status = 0;
+  int iter = 0;
+  int max_iter = 1000;
+
+
+  // converging criteria
+  const double abs_error = 0.0;
+  const double rel_error = 1e-1;
+
+
+
+  gsl_multifit_function_fdf fitfunct;
+
+  const gsl_multifit_fdfsolver_type* T = gsl_multifit_fdfsolver_lmsder;
+
+  gsl_multifit_fdfsolver* Solver = gsl_multifit_fdfsolver_alloc(T,_nHits,npar);
+
+  gsl_matrix* covar = gsl_matrix_alloc(npar,npar);   // covariance matrix
+
+  data DataSet;
+  DataSet.n = _nHits;
+  DataSet.x = &t[0];
+  DataSet.y = &s[0];
+  DataSet.z = &E[0];  // _aHit[0]; // ???? normalise per volume ????
+
+
+  fitfunct.f = &ShapeFitFunct;
+  fitfunct.df = &dShapeFitFunct;
+  fitfunct.fdf = &fdfShapeFitFunct;
+  fitfunct.n = _nHits;
+  fitfunct.p = npar;
+  fitfunct.params = &DataSet;
+
+  gsl_vector_view pinit = gsl_vector_view_array(par_init,npar);
+  gsl_multifit_fdfsolver_set(Solver,&fitfunct,&pinit.vector);
+
+  gsl_set_error_handler_off();
+
+  // perform fit
+  do {
+    iter++;
+    std::cout << "Multidimensional Fit Iteration started ... ... ";
+    status = gsl_multifit_fdfsolver_iterate(Solver);
+    std::cout << "--- DONE ---" << std::endl;
+
+    if (status) break;
+    status = gsl_multifit_test_delta (Solver->dx,Solver->x,abs_error,rel_error);
+
+    // debug
+    /*
+    //    E0  = (float)gsl_vector_get(Solver->x,0);
+    par[0] = (float)gsl_vector_get(Solver->x,0);
+    par[1] = (float)gsl_vector_get(Solver->x,1);
+    par[2] = (float)gsl_vector_get(Solver->x,2);
+    par[3] = (float)gsl_vector_get(Solver->x,3);
+
+    std::cout << "Status of multidimensional fit : " << status << "  "
+	      << "Iterations : " << iter << std::endl;
+    std::cout << "E0 : " <<  "FIXED" << "\t" << "A : " << par[0] << "\t" << "B : " 
+	      <<  par[1] << "\t" << "D : " << par[2] << "\t" << "t0 : "  << par[3] 
+	      << std::endl << std::endl;
+    */
+
+  } while ( status==GSL_CONTINUE && iter < max_iter);
+
+  gsl_multifit_covar (Solver->J,rel_error,covar);
+
+  //  E0  = (float)gsl_vector_get(Solver->x,0);
+  par[0] = (float)gsl_vector_get(Solver->x,0); // A
+  par[1] = (float)gsl_vector_get(Solver->x,1); // B
+  par[2] = (float)gsl_vector_get(Solver->x,2); // D
+  par[3] = (float)gsl_vector_get(Solver->x,3); // t0
+
+  gsl_multifit_fdfsolver_free(Solver);
+  gsl_matrix_free(covar);
+  
+  chi2 = calculateChi2Fit3DProfileAdvanced(E0,par[0],par[1],par[2],par[3]);
+  if (status) chi2 = -1.0;
+
+  int result = 0;  // no error handling at the moment
+  return result;
 
 }
 
