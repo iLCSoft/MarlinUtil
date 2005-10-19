@@ -1,3 +1,4 @@
+
 #include "HelixClass.h"
 #include <math.h>
 #include <stdlib.h>
@@ -273,6 +274,99 @@ float HelixClass::getPointInXY(float x0, float y0, float ax, float ay,
   return time;
 
 }
+
+
+float HelixClass::getPointOnCircle(float Radius, float * ref, float * point) {
+
+  float distCenterToIP = sqrt(_xCentre*_xCentre + _yCentre*_yCentre);
+
+  point[0] = 0.0;
+  point[1] = 0.0;
+  point[2] = 0.0;
+
+  if ((distCenterToIP+_radius)<Radius) {
+    float xx = 1.0e+15;
+    return xx;
+  }
+
+  if ((_radius+Radius)<distCenterToIP) {
+    float xx = 1.0e+15;
+    return xx;
+  }
+
+  float phiCentre = atan2(_yCentre,_xCentre);
+  float phiStar   = Radius*Radius + distCenterToIP*distCenterToIP 
+                                    - _radius*_radius;
+
+  phiStar = 0.5*phiStar/fmax(1.0e-20,Radius*distCenterToIP);
+  
+  if (phiStar > 1.0) 
+    phiStar = 0.9999999;
+  
+  if (phiStar < -1.0)
+    phiStar = -0.9999999;
+  
+  phiStar = acos(phiStar);
+
+  float tt1,tt2,time;
+
+  float xx1 = Radius*cos(phiCentre+phiStar);
+  float yy1 = Radius*sin(phiCentre+phiStar);
+
+  float xx2 = Radius*cos(phiCentre-phiStar);
+  float yy2 = Radius*sin(phiCentre-phiStar);
+
+
+  float phi1 = atan2(yy1-_yCentre,xx1-_xCentre);
+  float phi2 = atan2(yy2-_yCentre,xx2-_xCentre);
+  float phi0 = atan2(ref[1]-_yCentre,ref[0]-_xCentre);
+
+  float dphi1 = phi1 - phi0;
+  float dphi2 = phi2 - phi0;
+
+  if (dphi1 < 0 && _charge < 0) {
+    dphi1 = dphi1 + _const_2pi;
+  }
+  else if (dphi1 > 0 && _charge > 0) { 
+    dphi1 = dphi1 - _const_2pi;
+  }
+
+  if (dphi2 < 0 && _charge < 0) {
+    dphi2 = dphi2 + _const_2pi;
+  }
+  else if (dphi2 > 0 && _charge > 0) { 
+    dphi2 = dphi2 - _const_2pi;
+  }
+
+  // Times
+  tt1 = -_charge*dphi1*_radius/_pxy;
+  tt2 = -_charge*dphi2*_radius/_pxy;
+
+  if (tt1 < 0. )
+    std::cout << "WARNING " << tt1 << std::endl;
+  if (tt2 < 0. )
+    std::cout << "WARNING " << tt2 << std::endl;
+  
+
+  if (tt1 < tt2) {
+    point[0] = xx1;
+    point[1] = yy1;
+    time = tt1;
+  }
+  else {
+    point[0] = xx2;
+    point[1] = yy2;
+    time = tt2;
+  }
+
+  point[2] = ref[2]+time*_momentum[2];
+
+  
+
+  return time;
+
+}
+
 
 float HelixClass::getPointInZ(float zLine, float * ref, float * point) {
 
