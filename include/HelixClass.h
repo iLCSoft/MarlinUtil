@@ -43,7 +43,7 @@
  *    z (beam) axis and determination of the distance of closest approach<br>
  *    from arbitrary 3D point to the helix. <br>
  *    @author A. Raspereza (DESY)<br>
- *    @version $Id: HelixClass.h,v 1.4 2005-08-07 16:16:08 gaede Exp $<br>
+ *    @version $Id: HelixClass.h,v 1.5 2005-10-19 09:32:50 rasp Exp $<br>
  *
  */
 
@@ -173,7 +173,26 @@ class HelixClass {
      * Distance[2] - 3D distance <br> 
      */
     float getDistanceToPoint(float * xPoint, float * Distance);
-    
+
+
+
+
+    /**
+     * This method calculates coordinates of helix intersection <br>
+     * with cyllinder. <br>
+     * Rotational symmetry with respect to z axis is assumed,  <br>
+     * meaning that cyllinder axis corresponds to the z axis <br>
+     * of reference frame. <br>
+     * Inputs : <br> 
+     * Radius - radius of cyllinder. <br>
+     * ref[3] - reference point on the helix. <br>
+     * Output : <br>
+     * point[3] - coordinates of intersection point. <br>
+     * Method returs also generic time, defined as the <br>
+     * ratio of helix length from reference point to the intersection <br>
+     * point to the particle momentum <br>
+     */
+    float getPointOnCircle(float Radius, float * ref, float * point);
 
  private:    
     float _momentum[3]; // momentum @ ref point 
