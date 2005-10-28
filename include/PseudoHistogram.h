@@ -5,7 +5,7 @@
  *    Simple class with a histogram-like array without any display features
  *
  *    @authors O. Wendt (DESY)
- *    @version $Id: PseudoHistogram.h,v 1.1 2005-10-19 14:36:34 owendt Exp $
+ *    @version $Id: PseudoHistogram.h,v 1.2 2005-10-28 11:55:49 owendt Exp $
  *
  */
 class PseudoHistogram {
@@ -13,40 +13,62 @@ class PseudoHistogram {
  public:
 
   /**
-   *    Constructor with number of bins and lower and upper boundaries
+   * Constructor with number of bins and lower and upper boundaries
+   *
+   * @param NOfBins : number of bins in the histogram. Over- and underflow bin are
+   *                  created additionally.
+   * @param min     : smallest value in the histogram
+   * @param max     : largest value in the histogram
    */
   PseudoHistogram(int NOfBins, double min, double max);
+
+  /**
+   * Destructor
+   */
   ~PseudoHistogram();
   
   /**
-   *    Clear the content but leave the structure of the object, i.e. bins and boundaries
+   * Clears the content but leaves the structure of the object, i.\ e.\ bins and 
+   * boundaries
    */
   void clearContent();
 
   /**
-   *    Fill a value x with the weight w to the pseudo-histogram
+   * Fill a value x with the weight w to the pseudo-histogram
+   *
+   * @param x : value to fill in the histogram
+   * @param w : weight of the value x
    */
   void fill(double x, double w);
 
   /**
-   *    Returns content of bin
+   * Returns content of bin
+   *
+   * @param bin : number of the bin
    */
   double getBinContent(int bin);
   
   /**
-   *    Returns number of entries in bin
+   * Returns number of entries in bin
+   *
+   * @param bin : number of the bin
    */
   int getNumberOfEntries(int bin);
 
   /**
-   *    Checks if bin is in range of the pseudo-histogram (over- and underflow bins are
-   *    taken into account)
+   * Checks if bin is in range of the pseudo-histogram (over- and underflow bins are
+   * taken into account)
+   *
+   * @param bin : number of the bin
    */
   bool isInRange(int bin);
 
   /**
-   *    Returns the weighted sum of the pseudo-histogram within startbin and
-   *    endbin
+   * Returns the weighted sum of the pseudo-histogram within startbin and
+   * endbin
+   *
+   * @param startbin : number of the start bin for the integral
+   * @param endbin   : number of the end bin for the integral
    */
   double integral(int startbin, int endbin);
 

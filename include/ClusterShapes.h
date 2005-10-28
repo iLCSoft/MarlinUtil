@@ -24,11 +24,13 @@
 
 
 /**
- *    Utility class to derive properties of clusters (that means sets of points),
- *    such as centre of gravity, axes of inertia and so on.
+ *    Utility class to derive properties of clusters, such as centre of gravity,
+ *    axes of inertia, fits of the cluster shape and so on. All the details are
+ *    explained in the documentation of the methods. Several classes of the GSL 
+ *    (GNU Scientific Library) are needed in this class.
  *
  *    @authors V. Morgunov (ITEP/DESY), A. Raspereza (DESY), O. Wendt (DESY)
- *    @version $Id: ClusterShapes.h,v 1.8 2005-10-19 14:26:03 owendt Exp $
+ *    @version $Id: ClusterShapes.h,v 1.9 2005-10-28 11:54:42 owendt Exp $
  *
  */
 class ClusterShapes {
@@ -36,17 +38,22 @@ class ClusterShapes {
  public:
 
   /**
-   *    Constructor:
-   *    nhits : number of hits in the cluster
-   *    a     : amplitudes of elements ('cells') of the cluster. Stored in an array,
-   *            with one entry for each element ('cell'). Each entry is depending on
-   *            coordinates x,y,z (Cartesian), which are stored in the arrays x,y,z.
-   *    x,y,z : array of coordinates corresponding to the array of amplitudes a.
+   *    Constructor
+   *    @param nhits : number of hits in the cluster
+   *    @param a     : amplitudes of elements ('cells') of the cluster. Stored in 
+   *                   an array, with one entry for each element ('cell'). Each entry 
+   *                   is depending on coordinates x,y,z (Cartesian), which are stored 
+   *                   in the arrays x,y,z.
+   *    @param x,y,z : array of coordinates corresponding to the array of amplitudes a.
    *
    *
    */
   ClusterShapes(int nhits, float* a, float* x, float* y, float* z);
 
+
+  /**
+   *    Destructor
+   */
   ~ClusterShapes();
 
 
@@ -56,20 +63,21 @@ class ClusterShapes {
   int getNumberOfHits();
 
   /**
-   * returns the accumulated amplitude for the whole cluster
+   * returns the accumulated amplitude for the whole cluster (just the sum of the 
+   * energy in all the entries of the cluster)
    */
   float getTotalAmplitude();
 
   /**
-   * returns an 'vector' from the origin to the centre of gravity
-   * (weighted with the amplitudes per element) of the cluster
+   * returns an array, which represents a vector from the origin of the
+   * coordiante system, i.\ e.\ IP, to the centre of gravity of the cluster. The centre 
+   * of gravity is calculated with the energy of the entries of the cluster.
    */
   float* getCentreOfGravity();
 
   /**
-   * array of the inertias of mass ('amplitudes') corresponding
-   * to the three main axes of inertia. The array is sorted in
-   * ascending order.
+   * array of the inertias of mass (i.\ e.\ energy) corresponding to the three main axes 
+   * of inertia. The array is sorted in ascending order.
    */
   float* getEigenValInertia();
 
@@ -93,12 +101,22 @@ class ClusterShapes {
   /**
    * returns the coordinates of the cluster transformed into 
    * the CoG-System.
+   * @param xlong  : pointer to an array, where the calculated longitudinal coordiantes
+   *                 are stored in.
+   * @param xtrans : pointer to an array, where the calculated transversal coordiantes
+   *                 are stored in.
    */
   int getEigenSytemCoordinates(float* xlong, float* xtrans);
 
   /**
    * returns the coordinates and the amplitudes of the cluster
    * transformed into the CoG-System.
+   * @param xlong  : pointer to an array, where the calculated longitudinal coordiantes
+   *                 are stored in.
+   * @param xtrans : pointer to an array, where the calculated transversal coordiantes
+   *                 are stored in.
+   * @param a      : pointer to an array, where the amplitudes corresponding to the 
+   *                 longitudinal and transversal coordiantes are stored in.
    */
   int getEigenSytemCoordinates(float* xlong, float* xtrans, float* a);
 
@@ -108,15 +126,18 @@ class ClusterShapes {
    * A[i] = a * (xl[i]-xl0)^b * exp(-c*(xl[i]-xl0)) * exp(-d*xt[i]),
    * where A[i] is the array of amplitudes, xl[i] is the 
    * coordinate of the actual point along the main principal 
-   * axis and xt[i] the coordinate perpendicular to it. a,b,c,d,xl0  
-   * are the parameters to be fitted.    
-   * The method returns the chi2 and the parameters a,b,c,d of
-   * the fit as well as xStart, which is an 3-dim array to the
-   * point with the largest distance to the CoG in the direction
-   * of IP. index_xStart is the index of the point in the cluster
-   * corresponding to xStart.
-   * The return value of the method itself is not used at the
-   * moment (always returns 0).
+   * axis and xt[i] the coordinate perpendicular to it. The return value 
+   * of the method itself is not used at the moment (always returns 0).
+   * @param a,b,c,d,xl0  : references to the parameters, which are fitted.
+   * @param chi2         : reference to the chi2 of the fit
+   * @param xStart       : pointer to the 'initial hit' of the cluster. It is defined 
+   *                       as the point with the largest distance to the CoG measured 
+   *                       in the direction towards the IP.
+   * @param index_xStart : index of the point in the cluster corresponding to xStart
+   * @param X0           : radiation length of the detector material. For a composite 
+   *                       detector this is meant to be the 'mean' radiation length.
+   * @param Rm           : Moliere radius of the the detector material. For a composite 
+   *                       detector this is meant to be the 'mean' Moliere radius.
    */
   int fit3DProfile(float& chi2, float& a, float& b, float& c, float& d, float& xl0, 
 		   float * xStart, int& index_xStart, float X0, float Rm);
@@ -124,12 +145,23 @@ class ClusterShapes {
   /**
    * returns the chi2 of the fit in the method Fit3DProfile (if simple
    * parametrisation is used)for a given set of parameters a,b,c,d
+   * @param a,b,c,d,xl0  : fitted parameters, which have been calculated before
+   * @param X0           : radiation length of the detector material. For a composite 
+   *                       detector this is meant to be the 'mean' radiation length.
+   * @param Rm           : Moliere radius of the the detector material. For a composite 
+   *                       detector this is meant to be the 'mean' Moliere radius.
    */
-  float getChi2Fit3DProfileSimple(float a, float b, float c, float d);
+  float getChi2Fit3DProfileSimple(float a, float b, float c, float d, float X0, 
+				  float Rm);
 
   /**
    * returns the chi2 of the fit in the method Fit3DProfile (if advanced
    * parametrisation is used) for a given set of parameters E0,a,b,d,t0
+   * @param E0,a,b,d,t0 : fitted parameters, which have been calculated before
+   * @param X0          : radiation length of the detector material. For a composite 
+   *                      detector this is meant to be the 'mean' radiation length.
+   * @param Rm          : Moliere radius of the the detector material. For a composite 
+   *                      detector this is meant to be the 'mean' Moliere radius.
    */
   float getChi2Fit3DProfileAdvanced(float E0, float a, float b, float d, float t0, 
 				    float X0, float Rm);
@@ -154,30 +186,29 @@ class ClusterShapes {
    * where x0,y0,z0,R and b are the parameters to be fitted and
    * x[i],y[i],z[i] are the (Cartesian) coordiantes of the space
    * points.
+   * 
+   * The method returns 1 if an error occured and 0 if not.
    *
    * The following output/input parameters are returned/needed:
    *
    * OUTPUTS:
-   * method itself : returns 1 if an error occured and 0 if not
-   * parameter  : array of parameters to be fitted.
-   *              For parametrisation 1: parameter[5] = {x0,y0,R,b,phi0}
-   *              For parametrisation 2: parameter[5] = {x0,y0,z0,R,b}
-   * dparameter : error on the parameters, that means: 
-   *              dparameter[i] = sqrt( CovarMatrix[i][i] )
-   * chi2       : chi2 of the fit
-   * distmax    : maximal distance between the points x[i],y[i]
-   *              z[i] and the fitted function
+   * @param parameter     : array of parameters to be fitted.
+   *                        For parametrisation 1: parameter[5] = {x0,y0,R,b,phi0}
+   *                        For parametrisation 2: parameter[5] = {x0,y0,z0,R,b}
+   * @param dparameter    : error on the parameters, that means: 
+   *                        dparameter[i] = sqrt( CovarMatrix[i][i] )
+   * @param chi2          : chi2 of the fit
+   * @param distmax       : maximal distance between the points x[i],y[i]
+   *                        z[i] and the fitted function
    *
    * INPUTS:
-   * parametrisation : 1 for first and 2 for second parametrisation (see above)
-   * max_iter   : maximal number of iterations, which should be 
-   *              performed in the fit
-   * status_out : if set to 1, only the initial parameters of
-   *              the fit are calculated and are stored in
-   *              parameter. The entries of dparameter are
-   *              set to 0.0
+   * @param parametrisation : 1 for first and 2 for second parametrisation (see above)
+   * @param max_iter        : maximal number of iterations, before fit cancels
+   * @param status_out      : if set to 1, only the initial parameters of
+   *                          the fit are calculated and are stored in
+   *                          parameter. The entries of dparameter are
+   *                          set to 0.0
    */
- 
   int FitHelix(int max_iter, int status_out, int parametrisation,
 	       float* parameter, float* dparameter, float& chi2, float& distmax);
 
@@ -239,7 +270,7 @@ class ClusterShapes {
    * distance from centre of gravity to the point nearest 
    * to IP projected on the main principal axis    
    */
-  inline float getElipsoid_r_back()       { return _r1_back; }
+  inline float getElipsoid_r_back() { return _r1_back; }
 
 
 
