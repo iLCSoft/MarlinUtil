@@ -29,9 +29,9 @@ class MarlinCED {
   static void newEvent( Processor* proc , int modelID=0  ) ;
 
   /** To be called by every processor that uses CED in processEvent() after drawing everything. 
-   *  Actually draws the event.
+   *  Actually draws the event. The flag waitForKeyboard indicates if after an event is drawn an input from the keyboard is expected (waitForKeyboard=1) or not (waitForKeyboard=0). 
    */
-  static void draw( Processor* proc ) ;
+  static void draw( Processor* proc , int waitForKeyboard=1 ) ;
   
 
   /** Draw all objects in iterator that have a method getPosition() with the given color marker and 
