@@ -99,15 +99,21 @@ void MarlinCED::newEvent( Processor* proc , int modelID ) {
   }
 }
 
-void MarlinCED::draw( Processor* proc ) {
+void MarlinCED::draw( Processor* proc , int waitForKeyboard ) {
   
   if( proc == instance()->_last ) {
 
     ced_draw_event();
 
-    std::cout << "        [ Press return for next event ] " << std::endl ; 
+    
+    if ( waitForKeyboard == 1 ) {
+      
+      std::cout << "        [ Press return for next event ] " << std::endl ; 
+      
+      getchar();
 
-    getchar();
+    }
+    
   }
 //   else
 //     ced_send_event();
