@@ -1,3 +1,5 @@
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+
 #include "ClusterShapes.h"
 
 
@@ -635,16 +637,13 @@ int ClusterShapes::fit3DProfile(float& chi2, float& E0, float& A, float& B, floa
 
 //=============================================================================
 
-float ClusterShapes::getChi2Fit3DProfileSimple(float a, float b, float c, float d) {
+float ClusterShapes::getChi2Fit3DProfileSimple(float a, float b, float c, float d,
+					       float X0, float Rm) {
 
   float chi2 = 0.0;
 
   float xStart[3];
   int index_xStart;
-
-  // NOT SAVE, change to class variables !!!!!
-  float X0 = 7.0;
-  float Rm = 13.5;
 
   if (_ifNotEigensystem == 1) transformToEigensystem(xStart,index_xStart,X0,Rm);
 
