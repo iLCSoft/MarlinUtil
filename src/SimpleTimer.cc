@@ -47,15 +47,17 @@ void SimpleTimer::processRunHeader(LCRunHeader* run) {
 void SimpleTimer::processEvent(LCEvent* evt) {
 
   if (_mode == 0) wait(_secondsToWait);
+
   else if (_mode == 1) {
 
     if ( (_timer->unixTime() - _time) < _secondsToWait ) { 
       wait(_secondsToWait - (_timer->unixTime() - _time));
     }
-    else wait(_secondsToWait);
 
   }
-  else std::cout << "Wrong mode in processor 'SimpleTimer'" << std::endl;
+  else std::cout << "Wrong mode specified in processor 'SimpleTimer'" << std::endl;
+
+  _time = _timer->unixTime();
 
 }
 
