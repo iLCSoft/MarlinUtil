@@ -4,8 +4,8 @@
 /**
  *    Simple class with a histogram-like array without any display features
  *
- *    @authors O. Wendt (DESY)
- *    @version $Id: PseudoHistogram.h,v 1.2 2005-10-28 11:55:49 owendt Exp $
+ *    @author O. Wendt (DESY)
+ *    @version $Id: PseudoHistogram.h,v 1.3 2005-11-04 16:54:59 owendt Exp $
  *
  */
 class PseudoHistogram {
