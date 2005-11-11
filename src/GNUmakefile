@@ -3,7 +3,7 @@
 # Example GNUmakefile to build an Application with Marlin
 #
 # @author Frank Gaede
-# @version $Id: GNUmakefile,v 1.2 2005-07-12 16:00:37 aplin Exp $
+# @version $Id: GNUmakefile,v 1.3 2005-11-11 18:01:40 gaede Exp $
 #
 ###########################################################
 
@@ -24,11 +24,11 @@ PROGNAME = MarlinUtil
 #-- optionally can be specified in the to level GNUmakefile of $MARLIN
 
 ifndef USERINCLUDES
- USERINCLUDES = 
+ USERINCLUDES =  -I /afs/desy.de/group/it/ilcsoft/gsl/1.6/include
 endif
 
 ifndef USERLIBS
- USERLIBS =
+ USERLIBS =  -L /afs/desy.de/group/it/ilcsoft/gsl/1.6/lib -lgsl -lgslcblas
 endif
 
 
