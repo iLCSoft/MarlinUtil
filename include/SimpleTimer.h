@@ -20,7 +20,7 @@ using namespace marlin ;
 
 
 /**
- *    Simple timimg processor, which offers an delay after an event has been processed.
+ *    Simple timimg processor, which offers a delay after an event has been processed.
  *
  *    @param SecondsToWait : time to wait (in seconds)
 
@@ -32,7 +32,7 @@ using namespace marlin ;
  *                      (SecondsToWait minus elapsed time). If already more time elapsed 
  *                      than SecondsToWait, carry on without any delay.
  *    @author O. Wendt (DESY)
- *    @version $Id: SimpleTimer.h,v 1.2 2005-11-04 16:55:29 owendt Exp $
+ *    @version $Id: SimpleTimer.h,v 1.3 2006-02-03 15:10:12 owendt Exp $
  *
  */
 class SimpleTimer : public Processor {
