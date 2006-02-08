@@ -1,11 +1,16 @@
 #ifndef MarlinCED_h
 #define MarlinCED_h 1
 
+#include <cmath>
+
 #include <vector>
 
 #include "marlin/Processor.h"
 #include "ced.h"
 #include "ced_cli.h"
+
+#include <EVENT/Track.h>
+
 
 using namespace marlin ;
 
@@ -58,7 +63,12 @@ class MarlinCED {
 
 //   static void MarlinCED::drawHelixVM(float b, float charge, float x, float y, float z,
 // 				   float px, float py, float pz, int marker, int size, int col)  ; 
-    
+
+  /** Draws the hits of a track with a marker of size and color on layer
+   */
+  static void MarlinCED::drawTrack(Track* track, int marker, int size, int color, int layer=0);
+  
+  
 protected:
 
   MarlinCED() : _first(0) , _last(0) {}
