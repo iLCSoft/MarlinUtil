@@ -1,5 +1,4 @@
 #include "MarlinCED.h"
-#include <cmath>
 
 
 MarlinCED* MarlinCED::_me = 0 ;
@@ -183,3 +182,11 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
   }
 }
 
+
+void MarlinCED::drawTrack(Track* track, int marker, int size, int color, int layer) {
+
+  const TrackerHitVec trackerHits = track->getTrackerHits();
+  
+  drawObjectsWithPosition(trackerHits.begin(),trackerHits.end(),marker,size,color,layer);
+
+}
