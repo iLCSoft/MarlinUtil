@@ -25,14 +25,15 @@ using namespace marlin ;
  *    @param SecondsToWait : time to wait (in seconds)
 
  *    @param Mode : toggle for two different timing modes <br>
- *                  0 - just wait the time which is specified in the parameter
+ *                  0 - no wait, just display time (in sec.) needed per event and summarise time of processing all events
+ *                  1 - just wait the time which is specified in the parameter
  *                      SecondsToWait <br>
- *                  1 - calculate the elapsed time since the last call of this processor
+ *                  2 - calculate the elapsed time since the last call of this processor
  *                      (e.g. in the last event) and wait for the remaining time 
  *                      (SecondsToWait minus elapsed time). If already more time elapsed 
  *                      than SecondsToWait, carry on without any delay.
  *    @author O. Wendt (DESY)
- *    @version $Id: SimpleTimer.h,v 1.3 2006-02-03 15:10:12 owendt Exp $
+ *    @version $Id: SimpleTimer.h,v 1.4 2006-02-09 18:01:55 owendt Exp $
  *
  */
 class SimpleTimer : public Processor {
@@ -55,10 +56,15 @@ class SimpleTimer : public Processor {
   int _nRun;
   int _nEvt;
 
+  int _startTime;
   int _time;
-  LCTime* _timer;
+  LCTime* _startTimer;
+  LCTime* _currentTimer;
   int _mode;
   int _secondsToWait;
+  int _secondsPerEvent;
+  int _secondsOfJob;
+  int _minutesOfJob;
 
   void wait(int sleepTime);
 
