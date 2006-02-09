@@ -67,7 +67,10 @@ class MarlinCED {
   /** Draws the hits of a track with a marker of size and color on layer
    */
   static void MarlinCED::drawTrack(Track* track, int marker, int size, int color, int layer=0);
-  
+
+  /** Draws a 'spike', i.e. a bold arrow, from (x0,y0,z0) to (x1,y1,z1) with color on layer e.g. to display jet thrust axes
+   */
+  static void MarlinCED::drawSpike(float x0, float y0, float z0, float x1, float y1, float z1, unsigned int color, unsigned int layer);
   
 protected:
 
