@@ -10,6 +10,7 @@ MarlinCED* MarlinCED::instance() {
   return _me ;
 }
 
+
 void MarlinCED::init( Processor* proc ) {
   
   if( instance()->_first == 0 ){
@@ -22,6 +23,7 @@ void MarlinCED::init( Processor* proc ) {
 
   instance()->_last = proc ;
 }
+
 
 void MarlinCED::newEvent( Processor* proc , int modelID ) {
   if( proc == instance()->_first ) {
@@ -98,6 +100,7 @@ void MarlinCED::newEvent( Processor* proc , int modelID ) {
   }
 }
 
+
 void MarlinCED::draw( Processor* proc , int waitForKeyboard ) {
   
   if( proc == instance()->_last ) {
@@ -114,14 +117,12 @@ void MarlinCED::draw( Processor* proc , int waitForKeyboard ) {
     }
     
   }
-//   else
-//     ced_send_event();
-
-
-
-
+  //   else
+  //   ced_send_event();
 
 }
+
+
 void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
 			  float px, float py, float pz, int marker, int size, int col,
 			  float rmin, float rmax, float zmax ) {
@@ -189,4 +190,34 @@ void MarlinCED::drawTrack(Track* track, int marker, int size, int color, int lay
   
   drawObjectsWithPosition(trackerHits.begin(),trackerHits.end(),marker,size,color,layer);
 
+}
+
+
+void MarlinCED::drawSpike( float x0, float y0, float z0,float x1, float y1, float z1,unsigned int color, unsigned int layer ) {
+
+  //    const float s0 = 0.;
+  const float s1 = .92;
+  const float s2 = .94;
+  const float s3 = .96;
+  const float s4 = .98;
+  //    const float s5 = 1. ;
+  
+  float p0[3]= { x0, y0, z0 };
+  float p1[3]= { (1-s1)*x0 + s1*x1 , (1-s1)*y0 + s1*y1 , (1-s1)*z0 + s1*z1 };
+  float p2[3]= { (1-s2)*x0 + s2*x1 , (1-s2)*y0 + s2*y1 , (1-s2)*z0 + s2*z1 };
+  float p3[3]= { (1-s3)*x0 + s3*x1 , (1-s3)*y0 + s3*y1 , (1-s3)*z0 + s3*z1 };
+  float p4[3]= { (1-s4)*x0 + s4*x1 , (1-s4)*y0 + s4*y1 , (1-s4)*z0 + s4*z1 };
+  float p5[3]= { x1, y1, z1 };
+  
+  unsigned int layty = layer << CED_LAYER_SHIFT ;
+  
+  ced_line( p0[0],p0[1],p0[2], p1[0],p1[1],p1[2], layty ,6 , color );
+  ced_line( p1[0],p1[1],p1[2], p2[0],p2[1],p2[2], layty ,5 , color );
+  ced_line( p2[0],p2[1],p2[2], p3[0],p3[1],p3[2], layty ,4 , color );
+  ced_line( p3[0],p3[1],p3[2], p4[0],p4[1],p4[2], layty ,3 , color );
+  ced_line( p4[0],p4[1],p4[2], p5[0],p5[1],p5[2], layty ,2 , color );
+  
+  ced_hit ( p0[0],p0[1],p0[2], CED_HIT_POINT | layer << CED_LAYER_SHIFT, 0, color );
+  ced_hit ( p5[0],p5[1],p5[2], CED_HIT_POINT | layer << CED_LAYER_SHIFT, 0, color );
+  
 }
