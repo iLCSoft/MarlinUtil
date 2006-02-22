@@ -15,7 +15,7 @@ class ClusterExtended;
  * Class CaloHitExtended is used in TrackwiseClustering <br>
  * and Wolf processors. <br>
  * @author A. Raspereza (DESY)<br>
- * @version $Id: CaloHitExtended.h,v 1.3 2005-08-07 16:16:08 gaede Exp $<br>
+ * @version $Id: CaloHitExtended.h,v 1.4 2006-02-22 14:53:27 owendt Exp $<br>
  */
 class CaloHitExtended {
 
@@ -46,8 +46,11 @@ class CaloHitExtended {
     void setYresTo(float yresto);
     void setYresFrom(float yresfrom);
     void setGenericDistance(float genericDistance);
-
-
+    void setDistanceToCalo(float distanceToCalo);
+    float getDistanceToCalo();
+    void setDistanceToNearestHit(float distanceToNearest);
+    float getDistanceToNearestHit();
+      
 
     private:
     
@@ -61,6 +64,8 @@ class CaloHitExtended {
     float _yresTo;
     float _yresFrom;
     float _genericDistance;
+    float _caloDistance;
+    float _distanceToNearestHit;
 
 };
 
