@@ -54,7 +54,7 @@ void SimpleTimer::processEvent(LCEvent* evt) {
     
     _secondsPerEvent = _currentTimer->unixTime() - _time;
     
-    std::cout << "Procesing time for this event : " << _secondsPerEvent << " sec" << std::endl;
+    std::cout << "Processing time for event " << _nEvt << ":  " << _secondsPerEvent << " sec" << std::endl << std::endl;
   
     _time = _currentTimer->unixTime();
   
@@ -81,7 +81,7 @@ void SimpleTimer::processEvent(LCEvent* evt) {
   delete _currentTimer;
   _currentTimer = 0;
 
-  _nEvt++;
+  ++_nEvt;
 
 }
 
@@ -97,8 +97,8 @@ void SimpleTimer::end() {
   int remainder = _secondsOfJob%60;
   _minutesOfJob = _secondsOfJob/60;
 
-  std::cout << "Procesing time for " << _nEvt+1 << " events in " << _nRun+1 << " run(s) : " << _minutesOfJob << ":" << remainder << " min (" << _secondsOfJob << " sec)" 
-	    << std::endl;
+  std::cout << "Processing time for " << _nEvt << " events in " << _nRun+1 << " run(s):  " << _minutesOfJob << ":" << remainder << " min (" << _secondsOfJob << " sec)" 
+	    << std::endl << std::endl;
 
   _startTime = 0;;
   _time = 0;

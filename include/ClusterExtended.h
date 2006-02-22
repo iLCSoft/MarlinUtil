@@ -4,7 +4,7 @@
 #include "CaloHitExtended.h"
 #include "TrackExtended.h"
 #include "EVENT/Cluster.h"
-
+#include "HelixClass.h"
 
 using namespace lcio;
 
@@ -22,7 +22,7 @@ typedef std::vector<ClusterExtended*> ClusterExtendedVec;
  * Class ClusterExtended is used in TrackwiseClustering <br>
  * and Wolf processors. <br>
  * @author A. Raspereza (DESY)<br>
- * @version $Id: ClusterExtended.h,v 1.3 2005-08-07 16:16:08 gaede Exp $<br>
+ * @version $Id: ClusterExtended.h,v 1.4 2006-02-22 14:41:41 owendt Exp $<br>
  */
 
 class ClusterExtended {
@@ -52,6 +52,30 @@ class ClusterExtended {
     void setCluster(Cluster * cluster);
     Cluster * getCluster();
 
+    void setAxis(float * axis);
+    float * getAxis();
+
+    void setEccentricity( float eccentricity);
+    float getEccentricity();
+
+    void setHelix(HelixClass helix);
+    HelixClass & getHelix();
+
+    void setHelixChi2R(float helixChi2);
+    float getHelixChi2R();
+
+    void setHelixChi2Z(float helixChi2);
+    float getHelixChi2Z();
+
+    void setPosition(float * position);
+    float * getPosition();
+
+    void setLowEdge(float * lowEdge);
+    float * getLowEdge();
+    void setUpEdge(float * upEdge);
+    float * getUpEdge();
+
+
  private:
 
     TrackExtendedVec _trackVector;
@@ -61,6 +85,17 @@ class ClusterExtended {
 
     int _type;
     Cluster * _cluster;
+
+    float _axis[3];
+    float _position[3];
+    float _eccentricity;
+
+    HelixClass _helix;
+    float _helixChi2R;
+    float _helixChi2Z;
+    
+    float _lowEdge[3];
+    float _upEdge[3];
 
 
 };

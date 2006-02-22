@@ -111,3 +111,18 @@ void CaloHitExtended::setGenericDistance(float genericDistance) {
     _genericDistance = genericDistance;
 }
 
+void CaloHitExtended::setDistanceToCalo(float caloDistance) {
+  _caloDistance = caloDistance;
+}
+
+float CaloHitExtended::getDistanceToCalo() {
+  return _caloDistance;
+}
+
+void CaloHitExtended::setDistanceToNearestHit(float distanceToNearest) {
+  _distanceToNearestHit = distanceToNearest;
+}
+
+float CaloHitExtended::getDistanceToNearestHit() {
+  return _distanceToNearestHit;
+}

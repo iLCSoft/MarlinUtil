@@ -179,6 +179,29 @@ float HelixClass::getTanLambda() {
 float HelixClass::getPXY() {
     return _pxy;
 }
+float HelixClass::getXC() {
+  return _xCentre;
+}
+
+float HelixClass::getYC() {
+  return _yCentre;
+}
+
+float HelixClass::getRadius() {
+  return _radius;
+}
+
+float HelixClass::getBz() {
+  return _bZ;
+}
+
+float HelixClass::getPhiZ() {
+  return _phiZ;
+}
+
+float HelixClass::getCharge() {
+    return _charge;
+}
 
 float HelixClass::getPointInXY(float x0, float y0, float ax, float ay, 
 			      float * ref , float * point) {
@@ -348,19 +371,26 @@ float HelixClass::getPointOnCircle(float Radius, float * ref, float * point) {
     std::cout << "WARNING " << tt2 << std::endl;
   
 
+  float time2;
   if (tt1 < tt2) {
     point[0] = xx1;
     point[1] = yy1;
+    point[3] = xx2;
+    point[4] = yy2;
     time = tt1;
+    time2 = tt2;
   }
   else {
     point[0] = xx2;
     point[1] = yy2;
+    point[3] = xx1;
+    point[4] = yy1;
     time = tt2;
+    time2 = tt1;
   }
 
   point[2] = ref[2]+time*_momentum[2];
-
+  point[5] = ref[2]+time2*_momentum[2];
   
 
   return time;
@@ -455,3 +485,44 @@ float HelixClass::getDistanceToPoint(float * xPoint, float * Distance) {
 
 }
 
+void HelixClass::setHelixEdges(float * xStart, float * xEnd) {
+  for (int i=0; i<3; ++i) {
+    _xStart[i] = xStart[i];
+    _xEnd[i] = xEnd[i];
+  }
+
+}
+
+float * HelixClass::getDistanceToHelix(HelixClass * helix, float * pos, float * mom) {
+
+  float x01 = _xCentre;
+  float y01 = _yCentre;
+  
+  float x02 = helix->getXC();
+  float y02 = helix->getYC();
+  
+  float rad1 = _radius;
+  float rad2 = helix->getRadius();
+
+  
+
+  float distance = sqrt((x01-x02)*(x01-x02)+(y01-y02)*(y01-y02));
+
+}
+
+float HelixClass::getDistanceToLine(LineClass * line) {
+
+  return 1;
+}
+
+void HelixClass::getExtrapolatedMomentum(float * pos, float * momentum) {
+
+  float phi = atan2(pos[1]-_yCentre,pos[0]-_xCentre);
+  if (phi <0.) phi += _const_2pi;
+  phi = phi - _phiAtPCA + _phi0;
+  momentum[0] = _pxy*cos(phi);
+  momentum[1] = _pxy*sin(phi);
+  momentum[2] = _momentum[2];
+
+
+}

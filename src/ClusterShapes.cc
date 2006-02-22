@@ -16,6 +16,9 @@ struct data {
   float* x;
   float* y;
   float* z;
+  float* ex;
+  float* ey;
+  float* ez;
 };
 
 //=============================================================================
@@ -204,16 +207,23 @@ int functParametrisation1(const gsl_vector* par, void* d, gsl_vector* f) {
   float* x = ((struct data*)d)->x;
   float* y = ((struct data*)d)->y;
   float* z = ((struct data*)d)->z;
+  float* ex = ((struct data*)d)->ex;
+  float* ey = ((struct data*)d)->ey;
+  float* ez = ((struct data*)d)->ez;
   float fi = 0.0;
 
   // first dimension
   for (int i(0); i < n; i++) {
     fi = (x0 + R*cos(b*z[i] + phi0)) - x[i];
+    float err = sqrt(ex[i]*ex[i]+R*b*R*b*sin(b*z[i] + phi0)*R*b*R*b*sin(b*z[i] + phi0)*ez[i]*ez[i]);
+    fi = fi/err;
     gsl_vector_set(f,i,fi);
   }
   // second dimension
   for (int i(0); i < n; i++) {
-    fi = (y0 + R*sin(b*z[i] + phi0)) - y[i];  
+    fi = (y0 + R*sin(b*z[i] + phi0)) - y[i];
+    float err = sqrt(ey[i]*ey[i]+R*b*R*b*cos(b*z[i] + phi0)*R*b*R*b*cos(b*z[i] + phi0)*ez[i]*ez[i]);
+    fi = fi/err;  
     gsl_vector_set(f,i+n,fi);
   }
 
@@ -231,28 +241,32 @@ int dfunctParametrisation1(const gsl_vector* par, void* d, gsl_matrix* J) {
 
   int n    = ((struct data*)d)->n;
   float* z = ((struct data*)d)->z;
+  float* ex = ((struct data*)d)->ex;
+  float* ey = ((struct data*)d)->ey;
+  float* ez = ((struct data*)d)->ez;
+  
 
   // calculate Jacobi's matrix J[i][j] = dfi/dparj
 
   // part of Jacobi's matrix corresponding to first dimension
   for (int i(0); i < n; i++) {
-    
-    gsl_matrix_set(J,i,0,1);
+    float err = sqrt(ex[i]*ex[i]+R*b*R*b*sin(b*z[i] + phi0)*R*b*R*b*sin(b*z[i] + phi0)*ez[i]*ez[i]);
+    gsl_matrix_set(J,i,0,1/err);
     gsl_matrix_set(J,i,1,0);
-    gsl_matrix_set(J,i,2,cos(b*z[i]+phi0));
-    gsl_matrix_set(J,i,3,-z[i]*R*sin(b*z[i]+phi0));
-    gsl_matrix_set(J,i,4,-R*sin(b*z[i]+phi0));
+    gsl_matrix_set(J,i,2,cos(b*z[i]+phi0)/err);
+    gsl_matrix_set(J,i,3,-z[i]*R*sin(b*z[i]+phi0)/err);
+    gsl_matrix_set(J,i,4,-R*sin(b*z[i]+phi0)/err);
 
   }
 
   // part of Jacobi's matrix corresponding to second dimension
   for (int i(0); i < n; i++) {
-
+    float err = sqrt(ey[i]*ey[i]+R*b*R*b*cos(b*z[i] + phi0)*R*b*R*b*cos(b*z[i] + phi0)*ez[i]*ez[i]);
     gsl_matrix_set(J,i+n,0,0);
-    gsl_matrix_set(J,i+n,1,1);
-    gsl_matrix_set(J,i+n,2,sin(b*z[i]+phi0));
-    gsl_matrix_set(J,i+n,3,z[i]*R*cos(b*z[i]+phi0));
-    gsl_matrix_set(J,i+n,4,R*cos(b*z[i]+phi0));
+    gsl_matrix_set(J,i+n,1,1/err);
+    gsl_matrix_set(J,i+n,2,sin(b*z[i]+phi0)/err);
+    gsl_matrix_set(J,i+n,3,z[i]*R*cos(b*z[i]+phi0)/err);
+    gsl_matrix_set(J,i+n,4,R*cos(b*z[i]+phi0)/err);
     
   }
   
@@ -415,6 +429,9 @@ ClusterShapes::ClusterShapes(int nhits, float* a, float* x, float* y, float* z){
   _xHit = new float[_nHits];
   _yHit = new float[_nHits];
   _zHit = new float[_nHits];
+  _exHit = new float[_nHits];   
+  _eyHit = new float[_nHits];
+  _ezHit = new float[_nHits];         
 
   _xl = new float[_nHits];
   _xt = new float[_nHits];
@@ -427,6 +444,10 @@ ClusterShapes::ClusterShapes(int nhits, float* a, float* x, float* y, float* z){
     _xHit[i] = x[i];
     _yHit[i] = y[i];
     _zHit[i] = z[i];
+    _exHit[i] = 1.0;
+    _eyHit[i] = 1.0;
+    _ezHit[i] = 1.0;
+
   }
 
   _ifNotGravity     = 1;
@@ -445,6 +466,9 @@ ClusterShapes::~ClusterShapes() {
   delete[] _xHit;
   delete[] _yHit;
   delete[] _zHit;
+  delete[] _exHit;
+  delete[] _eyHit;
+  delete[] _ezHit;
   delete[] _xl;
   delete[] _xt;
   delete[] _t;
@@ -453,7 +477,15 @@ ClusterShapes::~ClusterShapes() {
 
 //=============================================================================
 
+void ClusterShapes::setErrors(float *ex, float *ey, float *ez) {
 
+  for (int i=0; i<_nHits; ++i) {
+    _exHit[i] = ex[i];
+    _eyHit[i] = ey[i];
+    _ezHit[i] = ez[i];
+  }	
+
+}
 
 
 
@@ -697,17 +729,17 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
 
   float Rmin = 1.0e+10;
   float Rmax = -1.0;
-  int i1 = 0;
+  int i1 = -1;
 
   // 1st loop  
   for (int i(0); i < _nHits; ++i) {
       float Rz = sqrt(_xHit[i]*_xHit[i] + _yHit[i]*_yHit[i]);
       if (Rz < Rmin) {
-	  Rmin = Rz;
-	  i1 = i;
+        Rmin = Rz;
+        i1 = i;
       }
       if (Rz > Rmax) {
-	  Rmax = Rz;
+        Rmax = Rz;
       }
 
   }
@@ -717,7 +749,7 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
   float Lower = Rmin + 0.9*(Rmax-Rmin);
   float dZmin  = 1.0e+20;
 
-  int i3 = 0 ;
+  int i3 = -1 ;
 
   for (int i(0); i < _nHits; ++i) {
       float Rz = sqrt(_xHit[i]*_xHit[i] + _yHit[i]*_yHit[i]);
@@ -734,7 +766,7 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
   float z3 = std::max(_zHit[i1],_zHit[i3]);
 
 
-  int i2 = 0;
+  int i2 = -1;
   float dRmin = 1.0e+20;
   float Rref = 0.5 * ( Rmax + Rmin );
 
@@ -742,33 +774,37 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
 
   for (int i(0); i < _nHits; ++i) {
       if (_zHit[i] >= z1 && _zHit[i] <= z3) {
-	  float Rz = sqrt(_xHit[i]*_xHit[i] + _yHit[i]*_yHit[i]);
-	  float dRz = fabs(Rz - Rref);
-	  if (dRz < dRmin) {
-	      i2 = i;
-	      dRmin = dRz;
-	  }
+        float Rz = sqrt(_xHit[i]*_xHit[i] + _yHit[i]*_yHit[i]);
+        float dRz = fabs(Rz - Rref);
+        if (dRz < dRmin) {
+          i2 = i;
+          dRmin = dRz;
+        }
       }
   }
 
+  int problematic = 0;
 
-  if (i2 == 0 ) {
-      for (int i(0); i < _nHits; ++i) {
-	  if (i2 != i1 && i2 != i3) {
-	      i2 = i;
-	      if (_zHit[i2] < z1) {
-		  int itemp = i1;
-		  i1 = i2;
-		  i2 = itemp;
-	      }
-	      else if (_zHit[i2] > z3) {
-		  int itemp = i3;
-		  i3 = i2;
-		  i2 = itemp;
-	      }
-	      break;
-	  }
-      }      
+  if (i2 < 0 || i2 == i1 || i2 == i3) {
+    problematic = 1;
+    //    std::cout << "here we are " << std::endl;
+    for (int i(0); i < _nHits; ++i) {
+      if (i != i1 && i != i3) {
+        i2 = i;
+        if (_zHit[i2] < z1) {
+          int itemp = i1;
+          i1 = i2;
+          i2 = itemp;
+        }
+        else if (_zHit[i2] > z3) {
+          int itemp = i3;
+          i3 = i2;
+          i2 = itemp;
+        }        
+        break;
+      }
+    }      
+    //    std::cout << i1 << " " << i2 << " " << i3 << std::endl;
   }
 
 
@@ -811,8 +847,13 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
 
   float R0 = sqrt(dX*dX + dY*dY);
 
-  if (R0 == 0.)
-    std::cout << "Something is wrong; nHits = " << _nHits << std::endl;
+//   if (problematic == 1) {
+//     std::cout << i1 << " " << i2 << " " << i3 << std::endl;
+//     std::cout << _xHit[i1] << " " << _yHit[i1] << " " << _zHit[i1] << std::endl;
+//     std::cout << _xHit[i2] << " " << _yHit[i2] << " " << _zHit[i2] << std::endl;
+//     std::cout << _xHit[i3] << " " << _yHit[i3] << " " << _zHit[i3] << std::endl;
+//     std::cout << "R0 = " << R0 << std::endl;
+//   }
 
   float _pi = acos(-1.);
 
@@ -899,15 +940,20 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
   float chi2_nofit = 0.0;
   int iFirst = 1;
   for (int ipoint(0); ipoint < _nHits; ipoint++) {
+    float distRPZ[2];
     float Dist = DistanceHelix(_xHit[ipoint],_yHit[ipoint],_zHit[ipoint],
-			       X0,Y0,R0,bz,phi0);
-    chi2_nofit = chi2_nofit + Dist;
+			       X0,Y0,R0,bz,phi0,distRPZ);
+    float chi2rphi = distRPZ[0]/_exHit[ipoint];
+    chi2rphi = chi2rphi*chi2rphi;
+    float chi2z = distRPZ[1]/_ezHit[ipoint];
+    chi2z = chi2z*chi2z;
+    chi2_nofit = chi2_nofit + chi2rphi + chi2z;
     if (Dist > distmax || iFirst == 1) {
       distmax = Dist;
       iFirst = 0;
     }
   }      
-  chi2_nofit = chi2_nofit/(float)_nHits;
+  chi2_nofit = chi2_nofit/float(_nHits);
 
   if ( status_out == 1 ) {
     for (int i(0); i < 5; ++i) {
@@ -940,6 +986,10 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
   d.x = &_xHit[0];
   d.y = &_yHit[0];
   d.z = &_zHit[0];
+  d.ex = &_exHit[0];
+  d.ey = &_eyHit[0];
+  d.ez = &_ezHit[0];
+
 
   if (parametrisation == 1) {
     fitfunct.f = &functParametrisation1;
@@ -997,9 +1047,14 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
   iFirst = 1;
   float ddmax = 0.0;
   for (int ipoint(0); ipoint < _nHits; ipoint++) {
+    float distRPZ[2];
     float Dist = DistanceHelix(_xHit[ipoint],_yHit[ipoint],_zHit[ipoint],
-			       X0,Y0,R0,bz,phi0);
-    chi2 = chi2 + Dist;
+			       X0,Y0,R0,bz,phi0,distRPZ);
+    float chi2rphi = distRPZ[0]/_exHit[ipoint];
+    chi2rphi = chi2rphi*chi2rphi;
+    float chi2z = distRPZ[1]/_ezHit[ipoint];
+    chi2z = chi2z*chi2z;
+    chi2 = chi2 + chi2rphi + chi2z;
     if (Dist > ddmax || iFirst == 1) {
       iFirst = 0;
       ddmax = Dist;
@@ -1007,9 +1062,7 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
   }
       
 
-
-
-  chi2 = chi2/(float)_nHits;
+  chi2 = chi2/float(_nHits);
   if (chi2 < chi2_nofit) {
     for (int i = 0; i < npar; i++) {
       parameter[i]  = gsl_vector_get(s->x,i);
@@ -1024,6 +1077,9 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
       dparameter[i] = 0.0;
     }
   }
+
+  //  if (problematic == 1)
+  //    std::cout << "chi2 = " << chi2 << std::endl;
 
   gsl_multifit_fdfsolver_free(s);
   gsl_matrix_free(covar);
@@ -1304,7 +1360,7 @@ float ClusterShapes::vecProject(float * x, float * axis) {
 //=============================================================================
 
 float ClusterShapes::DistanceHelix(float x, float y, float z, float X0, float Y0,
-				   float R0, float bz, float phi0) {
+				   float R0, float bz, float phi0, float * distRPZ) {
 
   float phi  = atan2(y-Y0,x-X0);
   float R    = sqrt( (y-Y0)*(y-Y0) + (x-X0)*(x-X0) );
@@ -1334,6 +1390,9 @@ float ClusterShapes::DistanceHelix(float x, float y, float z, float X0, float Y0
 
   float dZ = (phi + _const_2pi*nSpirals - phi0)/bz - z;
   float dZ2 = dZ*dZ;
+
+  distRPZ[0] = sqrt(dXY2);
+  distRPZ[1] = sqrt(dZ2);
 
   return sqrt(dXY2 + dZ2);
 
@@ -1648,3 +1707,4 @@ int ClusterShapes::fit3DProfileAdvanced(float& chi2, double* par_init, double* p
 }
 
 //=============================================================================
+

@@ -30,7 +30,7 @@
  *    (GNU Scientific Library) are needed in this class.
  *
  *    @authors V. Morgunov (ITEP/DESY), A. Raspereza (DESY), O. Wendt (DESY)
- *    @version $Id: ClusterShapes.h,v 1.9 2005-10-28 11:54:42 owendt Exp $
+ *    @version $Id: ClusterShapes.h,v 1.10 2006-02-22 14:41:41 owendt Exp $
  *
  */
 class ClusterShapes {
@@ -55,6 +55,11 @@ class ClusterShapes {
    *    Destructor
    */
   ~ClusterShapes();
+
+  /**
+   *    Defining errors for Helix Fit
+   */
+   void setErrors(float *ex, float* ey, float *ez);
 
 
   /**
@@ -284,6 +289,9 @@ class ClusterShapes {
   float* _xHit;
   float* _yHit;
   float* _zHit;
+  float* _exHit;
+  float* _eyHit;
+  float* _ezHit;
   float* _xl;
   float* _xt;
   float* _t;
@@ -325,7 +333,7 @@ class ClusterShapes {
   float vecProduct(float * x1, float * x2);
   float vecProject(float * x, float * axis);
   float DistanceHelix(float x, float y, float z, float X0, float Y0, float R0, float bz,
-		      float phi0);
+		      float phi0, float * distRPhiZ);
   int transformToEigensystem(float* xStart, int& index_xStart, float X0, float Xm);
   float calculateChi2Fit3DProfileSimple(float a, float b, float c, float d);
   float calculateChi2Fit3DProfileAdvanced(float E0, float a, float b, float d, float t0);

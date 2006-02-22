@@ -2,6 +2,7 @@
 
 TrackerHitExtended::TrackerHitExtended(TrackerHit * trackerhit) {
     _trackerHit = trackerhit;
+    _trackVecAR.clear();
 }
 
 TrackerHitExtended::~TrackerHitExtended() {
@@ -10,7 +11,19 @@ TrackerHitExtended::~TrackerHitExtended() {
 
 void TrackerHitExtended::setTrackExtended(TrackExtended * trackAR) {
     _trackAR = trackAR;
+    _trackVecAR.clear();
+    _trackVecAR.push_back(trackAR);
+      
 } 
+
+void TrackerHitExtended::addTrackExtended(TrackExtended * trackAR) {
+  _trackVecAR.push_back(trackAR);
+}
+
+TrackExtendedVec & TrackerHitExtended::getTrackExtendedVec() {
+  return _trackVecAR;
+}
+
 
 void TrackerHitExtended::setTrackerHitTo(TrackerHitExtended * hitTo) {
     _hitTo = hitTo;
@@ -69,4 +82,8 @@ float TrackerHitExtended::getYresFrom() {
 
 float * TrackerHitExtended::getDirVec() {
     return _dirVec;
+}
+
+void TrackerHitExtended::clearTrackVec() {
+  _trackVecAR.clear();
 }

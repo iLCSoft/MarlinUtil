@@ -5,17 +5,21 @@
 #include "EVENT/LCIO.h"
 #include "EVENT/TrackerHit.h"
 #include "TrackExtended.h"
+#include <vector>
+
 
 using namespace lcio;
 
 class TrackExtended;
+
+typedef std::vector<TrackExtended*> TrackExtendedVec;
 
 /**
  * Class extending native LCIO class TrackerHit. <br>
  * Class TrackerHitExtended is used in TrackwiseClustering <br>
  * and Wolf processors. <br>
  * @author A. Raspereza (DESY)<br>
- * @version $Id: TrackerHitExtended.h,v 1.3 2005-08-07 16:16:08 gaede Exp $<br>
+ * @version $Id: TrackerHitExtended.h,v 1.4 2006-02-22 14:41:41 owendt Exp $<br>
  */
 class TrackerHitExtended {
 
@@ -24,6 +28,7 @@ class TrackerHitExtended {
     TrackerHitExtended(TrackerHit * trackerhit);
     ~TrackerHitExtended();
     void setTrackExtended(TrackExtended * trackAR);
+    void addTrackExtended(TrackExtended * trackAR);
     void setTrackerHitTo(TrackerHitExtended * hitTo);
     void setTrackerHitFrom(TrackerHitExtended * hitFrom);
     void setGenericDistance(float genericDistance);
@@ -31,9 +36,11 @@ class TrackerHitExtended {
     void setYresTo(float yresTo);
     void setYresFrom(float yresFrom);
     void setDirVec(float * dirVec);
+    void clearTrackVec();
 
     TrackerHit * getTrackerHit();
     TrackExtended * getTrackExtended();
+    TrackExtendedVec & getTrackExtendedVec();
     TrackerHitExtended * getTrackerHitFrom();
     TrackerHitExtended * getTrackerHitTo();
     float getGenericDistance();
@@ -47,6 +54,9 @@ class TrackerHitExtended {
     TrackExtended * _trackAR;
     TrackerHitExtended * _hitTo;
     TrackerHitExtended * _hitFrom;
+    TrackExtendedVec _trackVecAR;
+
+
     float _yresTo;
     float _yresFrom;
     float _genericDistance;

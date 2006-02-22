@@ -43,10 +43,12 @@
  *    z (beam) axis and determination of the distance of closest approach<br>
  *    from arbitrary 3D point to the helix. <br>
  *    @author A. Raspereza (DESY)<br>
- *    @version $Id: HelixClass.h,v 1.5 2005-10-19 09:32:50 rasp Exp $<br>
+ *    @version $Id: HelixClass.h,v 1.6 2006-02-22 14:41:41 owendt Exp $<br>
  *
  */
 
+#include "LineClass.h"
+class HelixClass;
 
 class HelixClass {
  public:
@@ -143,6 +145,24 @@ class HelixClass {
      */
     float getPXY();
 
+
+    /**
+     *  Returns x coordinate of circumference
+     */
+    float getXC();
+
+    /**
+     *  Returns y coordinate of circumference
+     */
+    float getYC();
+
+
+     /**
+     *  Returns radius of circumference
+     */
+    float getRadius();   
+
+
     /**
      *  Returns helix intersection point with the plane <br>
      *  parallel to z axis. Plane is defined by two coordinates <br>
@@ -174,9 +194,6 @@ class HelixClass {
      */
     float getDistanceToPoint(float * xPoint, float * Distance);
 
-
-
-
     /**
      * This method calculates coordinates of helix intersection <br>
      * with cyllinder. <br>
@@ -193,6 +210,54 @@ class HelixClass {
      * point to the particle momentum <br>
      */
     float getPointOnCircle(float Radius, float * ref, float * point);
+
+    /** Returns distance between two helixes <br>
+     * Output : <br> 
+     * pos[3] - position of the point of closest approach <br>
+     * mom[3] - momentum of V0 <br>
+     */
+    float * getDistanceToHelix(HelixClass * helix, float * pos, float * mom);
+
+    /**
+     * Returns distance to Line.
+     */
+    float getDistanceToLine(LineClass * line);
+
+    /**
+     * Set Edges of helix 
+     */
+    void setHelixEdges(float * xStart, float * xEnd);
+
+    /**
+     * Returns starting point of helix
+     */
+    float * getStartingPoint() {return _xStart;}
+
+    /**
+     * Returns endpoint of helix
+     */
+    float * getEndPoint() {return _xEnd;}
+    
+    /**
+     * Returns BZ for the second parameterization
+     */
+    float getBz();
+
+    /**
+     * Returns Phi for the second parameterization
+     */
+    float getPhiZ();
+
+    /**
+     * Returns extrapolated momentum
+     */
+    void getExtrapolatedMomentum(float * pos, float * momentum);
+
+    /**
+     * Returns charge 
+     */
+    float getCharge();
+
 
  private:    
     float _momentum[3]; // momentum @ ref point 
@@ -219,6 +284,11 @@ class HelixClass {
     float _const_2pi; // 2*PI
     float _const_pi2; // PI/2    
     float _FCT; // 2.99792458E-4
+    float _xStart[3]; // Starting point of track segment
+    float _xEnd[3]; // Ending point of track segment
+
+    float _bZ;
+    float _phiZ;
 
 };
 

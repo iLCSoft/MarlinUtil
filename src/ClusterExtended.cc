@@ -132,3 +132,100 @@ void ClusterExtended::setCluster(Cluster * cluster) {
 Cluster * ClusterExtended::getCluster() {
   return _cluster;
 }
+
+void ClusterExtended::setAxis(float * axis) {
+  _axis[0] = axis[0];
+  _axis[1] = axis[1];
+  _axis[2] = axis[2];
+}
+float * ClusterExtended::getAxis() {
+  return _axis;
+}
+
+void ClusterExtended::setEccentricity( float eccentricity) {
+  _eccentricity = eccentricity;
+}
+float ClusterExtended::getEccentricity() {
+  return _eccentricity;
+}
+
+void ClusterExtended::setHelix(HelixClass helix) {
+  _helix = helix;
+  int nHits = int(_hitVector.size());
+  int first = 1;
+  float timeMax = -1.0e+20;
+  float timeMin = 1.0e+20;
+  for (int ihit=0;ihit<nHits;++ihit) {
+    float pos[3];
+    for (int i=0;i<3;++i)
+      pos[i]=_hitVector[ihit]->getCalorimeterHit()->getPosition()[i];
+      
+    float distance[3];
+    float time = _helix.getDistanceToPoint(pos,distance);
+    if (time > timeMax) {
+      timeMax = time;
+      _upEdge[0] = pos[0];
+      _upEdge[1] = pos[1];
+      _upEdge[2] = pos[2];
+    }
+    if (time < timeMin) {
+      timeMin = time;
+      _lowEdge[0] = pos[0];
+      _lowEdge[1] = pos[1];
+      _lowEdge[2] = pos[2];
+    }
+      
+  }
+
+}
+HelixClass & ClusterExtended::getHelix() {
+  return _helix;
+}
+
+void ClusterExtended::setHelixChi2R(float helixChi2) {
+  _helixChi2R = helixChi2;
+}
+float ClusterExtended::getHelixChi2R() {
+  return _helixChi2R;
+}
+
+void ClusterExtended::setHelixChi2Z(float helixChi2) {
+  _helixChi2Z = helixChi2;
+}
+float ClusterExtended::getHelixChi2Z() {
+  return _helixChi2Z;
+}
+
+
+
+void ClusterExtended::setPosition(float * position) {
+  _position[0] = position[0];
+  _position[1] = position[1];
+  _position[2] = position[2];
+
+}
+
+float * ClusterExtended::getPosition() {
+  return _position;
+}
+
+void ClusterExtended::setUpEdge(float * upEdge) {
+  _upEdge[0] = upEdge[0];
+  _upEdge[1] = upEdge[1];
+  _upEdge[2] = upEdge[2];
+}
+
+void ClusterExtended::setLowEdge(float * lowEdge) {
+  _lowEdge[0] = lowEdge[0]; 
+  _lowEdge[1] = lowEdge[1]; 
+  _lowEdge[2] = lowEdge[2]; 
+}
+
+float * ClusterExtended::getUpEdge() {
+  return _upEdge;
+}
+
+float * ClusterExtended::getLowEdge() {
+  return _lowEdge;
+}
+

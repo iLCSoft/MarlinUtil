@@ -47,7 +47,6 @@ ClusterExtended * TrackExtended::getSuperCluster() {
 }
 
 TrackerHitExtendedVec & TrackExtended::getTrackerHitExtendedVec() {
-
     return _trackerHitVector;
 }
 
@@ -187,5 +186,22 @@ void TrackExtended::setGroupTracks( GroupTracks * group ) {
 
 GroupTracks * TrackExtended::getGroupTracks() {
   return _group;
+}
+
+float TrackExtended::getChi2() {
+  return _chi2;
+}
+
+void TrackExtended::setChi2(float chi2) {
+  _chi2 = chi2;
+}
+
+void TrackExtended::setCovMatrix(float * cov) {
+  for (int i=0; i<15; ++i)
+    _cov[i] = cov[i];
+}
+
+float * TrackExtended::getCovMatrix() {
+  return _cov;
 }
 
