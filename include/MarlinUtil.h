@@ -31,8 +31,8 @@ class MarlinUtil {
    *  accumulatedEnergies[4]  : energy of muons
    *  accumulatedEnergies[5]  : energy of photons 
    *  accumulatedEnergies[6]  : energy of pi0s
-   *  accumulatedEnergies[7]  : energy of long lived hadrons
-   *  accumulatedEnergies[8]  : energy of short lived hadrons
+   *  accumulatedEnergies[7]  : energy of long lived neutral hadrons
+   *  accumulatedEnergies[8]  : energy of short lived neutral hadrons
    *  accumulatedEnergies[9]  : energy of charged hadrons
    *  accumulatedEnergies[10] : number of MC particles which are possible to measure
    *  accumulatedEnergies[11] : number of MC particles lost in tube
