@@ -43,7 +43,7 @@
  *    z (beam) axis and determination of the distance of closest approach<br>
  *    from arbitrary 3D point to the helix. <br>
  *    @author A. Raspereza (DESY)<br>
- *    @version $Id: HelixClass.h,v 1.6 2006-02-22 14:41:41 owendt Exp $<br>
+ *    @version $Id: HelixClass.h,v 1.7 2006-04-26 10:02:50 rasp Exp $<br>
  *
  */
 
