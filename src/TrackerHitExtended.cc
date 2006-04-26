@@ -87,3 +87,19 @@ float * TrackerHitExtended::getDirVec() {
 void TrackerHitExtended::clearTrackVec() {
   _trackVecAR.clear();
 }
+
+float TrackerHitExtended::getResolutionRPhi() {
+  return _rphiReso;
+}
+
+float TrackerHitExtended::getResolutionZ() {
+  return _zReso;
+}
+
+void TrackerHitExtended::setResolutionRPhi(float rphiReso) {
+  _rphiReso = rphiReso;
+}
+
+void TrackerHitExtended::setResolutionZ(float zReso) {
+  _zReso = zReso;
+}
