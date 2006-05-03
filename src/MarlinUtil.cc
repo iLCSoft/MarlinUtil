@@ -3,6 +3,174 @@
  
 
 
+// ____________________________________________________________________________________________________
+
+void MarlinUtil::printRecoParticle(ReconstructedParticle* recoParticle, double BField=4.0) {
+
+
+  double xRef = recoParticle->getReferencePoint()[0];
+  double yRef = recoParticle->getReferencePoint()[1];
+  double zRef = recoParticle->getReferencePoint()[2];
+  
+  double pxReco = recoParticle->getMomentum()[0];
+  double pyReco = recoParticle->getMomentum()[1];
+  double pzReco = recoParticle->getMomentum()[2];
+  double absPReco = sqrt(pxReco*pxReco + pyReco*pyReco + pzReco*pzReco); 
+  double Energy = recoParticle->getEnergy();
+  double mass = recoParticle->getMass();
+  
+  double checkEnergy = sqrt(absPReco*absPReco + mass*mass);      
+
+  int type = recoParticle->getType();
+  std::string typeName("not assigned");
+  
+  switch (type) {
+  case 0 : typeName = "no type";                break;
+  case 1 : typeName = "electron/positron";      break;
+  case 2 : typeName = "charged hadron or muon"; break;
+  case 3 : typeName = "photon";                 break;
+  case 4 : typeName = "neutral hadron";         break;
+  }
+  
+  int nParticleIDs = recoParticle->getParticleIDs().size();
+  
+  const TrackVec Tracks = recoParticle->getTracks();
+  const ClusterVec Clusters = recoParticle->getClusters();
+  int nOfTracks = Tracks.size();
+  int nOfClusters = Clusters.size();
+  
+      
+  std::cout << "--------------------------------------------------------------------------------------------------------------------------------------" << std::endl 
+	    << typeName << "  " << "|p| = " << absPReco << "  " << "(" << pxReco << "," << pyReco << "," << pzReco << ")" 
+	    << "  " << "E = " << Energy << " (" << checkEnergy << ")" << "  " << " m = " << recoParticle->getMass() << "  " 
+	    << "q = " << recoParticle->getCharge() 	<< std::endl 
+	    << "RefPoint = (" << xRef << "," << yRef << "," << zRef << ")" << "  " << "( LCObjectID = " << recoParticle->id() << " )" << "  " 
+	    << "# of Particle IDs = " << nParticleIDs << "  ";
+  
+  for(int j=0; j<nParticleIDs; ++j) {
+    std::cout << "(" << recoParticle->getParticleIDs()[j];
+    if (j<nParticleIDs-1) std::cout << ",";
+    else std::cout << ")" << "  ";
+  }
+  
+  std::cout << "ID used = " << recoParticle->getParticleIDUsed() << std::endl
+	    << "nTracks = " << nOfTracks << std::endl;
+      
+  for (int iOfTracks = 0; iOfTracks<nOfTracks; ++iOfTracks) {
+    
+    Track* track = recoParticle->getTracks()[iOfTracks];
+    
+    double d0 = track->getD0();
+    double z0 = track->getZ0();
+    double phi0 = track->getPhi();
+    double omega = track->getOmega();
+    double tanlambda = track->getTanLambda();
+    HelixClass * helix = new HelixClass();
+    helix->Initialize_Canonical(phi0, d0, z0, omega, tanlambda,BField);
+
+    const float* p = helix->getMomentum();
+    float pabs = 0.0;
+    for (int i = 0; i < 3 ; ++i) pabs += p[i]*p[i];
+    pabs = sqrt(pabs);
+
+    std::cout << iOfTracks << "  " << "|p| = " << pabs << "  " << "(" << p[0] << "," << p[1] << "," << p[2] << ")" << "  " 
+	      << "Ri = " << track->getRadiusOfInnermostHit()
+	      << "  " << "# of SubTracks = " << track->getTracks().size() << std::endl;
+    
+    
+    delete helix;
+    helix = 0;
+
+  }
+
+  
+  std::cout << "nClusters = " << nOfClusters << std::endl;
+  
+  for (int iOfClusters = 0; iOfClusters<nOfClusters; ++iOfClusters) {
+    
+    Cluster* cluster = recoParticle->getClusters()[iOfClusters];
+    
+    double energy = cluster->getEnergy();
+    double x = cluster->getPosition()[0];
+    double y = cluster->getPosition()[1];	 
+    double z = cluster->getPosition()[2];
+    double r = sqrt(x*x + y*y + z*z);
+    
+    std::cout << iOfClusters << "  " << "|r| = " << r << "  " << "(" << x << "," << y << "," << z << ")" << "  " << "E = " << energy << "  "
+	      << "# of Particle IDs = " << cluster->getParticleIDs().size()
+	      << "  " << "# of SubClusters = " << cluster->getClusters().size() << std::endl;
+    
+  }
+
+  std::cout << "--------------------------------------------------------------------------------------------------------------------------------------" << std::endl 
+	    << std::endl;
+      
+
+}
+
+
+
+// ____________________________________________________________________________________________________
+
+
+
+void MarlinUtil::printMCParticle(MCParticle* MCP) {
+
+
+  double pxMC = MCP->getMomentum()[0];
+  double pyMC = MCP->getMomentum()[1];
+  double pzMC = MCP->getMomentum()[2];
+	  
+  double absPMC = sqrt( pow((pxMC),2) + pow((pyMC),2) +  pow((pzMC),2) );
+  int nOfDaughters = MCP->getDaughters().size();
+  
+  std::cout << "MC Particle:" << std::endl
+	    << "----------------------------------------------------------------------------------------------------------" << std::endl 
+	    << "MCP  : " << MCP->getPDG() << "  " << " m = " << MCP->getMass() << "  " << "|p| = " << absPMC << " " 
+	    << "(" << pxMC << "," << pyMC << "," << pzMC << ")" << "  " << "E = " << MCP->getEnergy() << "  " << " q = " << MCP->getCharge() << std::endl
+	    << "nDaughters : " << nOfDaughters << std::endl;
+
+  for(int j=0; j<nOfDaughters; ++j) {
+    MCParticle* MCPDaughter = MCP->getDaughters()[j];
+    
+    double pxMCDaughter = MCPDaughter->getMomentum()[0];
+    double pyMCDaughter = MCPDaughter->getMomentum()[1];
+    double pzMCDaughter = MCPDaughter->getMomentum()[2];
+    
+    double absPMCDaughter = sqrt( pow((pxMCDaughter),2) + pow((pyMCDaughter),2) +  pow((pzMCDaughter),2) );
+
+    int nOfDaughtersD = MCPDaughter->getDaughters().size();
+
+    std::cout << j << "  " << "MCP : " << MCPDaughter->getPDG() << "  " << " m = " << MCPDaughter->getMass() << "  " << "|p| = " << absPMCDaughter << " " 
+	      << "(" << pxMCDaughter << "," << pyMCDaughter << "," << pzMCDaughter << ")" << "  " << "E = " << MCPDaughter->getEnergy() << "  " << " q = " 
+	      << MCPDaughter->getCharge() << std::endl
+	      << "nDaughtersD : " << nOfDaughtersD << std::endl;
+
+    for(int k=0; k<nOfDaughtersD; ++k) {
+       MCParticle* MCPDaughterD = MCPDaughter->getDaughters()[k];
+
+ 
+       double pxMCDaughterD = MCPDaughterD->getMomentum()[0];
+       double pyMCDaughterD = MCPDaughterD->getMomentum()[1];
+       double pzMCDaughterD = MCPDaughterD->getMomentum()[2];
+       
+       double absPMCDaughterD = sqrt( pow((pxMCDaughterD),2) + pow((pyMCDaughterD),2) +  pow((pzMCDaughterD),2) );
+       
+       std::cout << "---> " << k << "  " << "MCP : " << MCPDaughterD->getPDG() << "  " << " m = " << MCPDaughterD->getMass() << "  " << "|p| = " << absPMCDaughterD << " " 
+		 << "(" << pxMCDaughterD << "," << pyMCDaughterD << "," << pzMCDaughterD << ")" << "  " << "E = " << MCPDaughterD->getEnergy() << "  " << " q = " 
+		 << MCPDaughterD->getCharge() << std::endl;
+
+    }
+
+  }
+  
+  std::cout  << "----------------------------------------------------------------------------------------------------------" << std::endl << std::endl;
+  
+}
+
+
+// ____________________________________________________________________________________________________
+
 
 //============================================================================
 void MarlinUtil::getMC_Balance(LCEvent * evt, double* accumulatedEnergies){
@@ -92,6 +260,7 @@ void MarlinUtil::getMC_Balance(LCEvent * evt, double* accumulatedEnergies){
 	pz = mom[2];
 	pt = hypot(px,py);
 	ttet = atan2(pt,pz);
+	//FIXME : Hard coded cut. Use GEAR instead
 	if ((fabs(ttet) < 0.1) || (fabs(M_PI-ttet) < 0.1)) {
 	  e_to_tube  += enr;
 	  e_to_tubex += px;
@@ -245,6 +414,13 @@ void MarlinUtil::getMC_Balance(LCEvent * evt, double* accumulatedEnergies){
     accumulatedEnergies[17] = n_llhadr;
     accumulatedEnergies[18] = n_slhadr;
     accumulatedEnergies[19] = n_chadr;
+    accumulatedEnergies[20] = e_sum - e_neutr;
+
+
+
+
+
+
     
   }
   catch(DataNotAvailableException &e){
@@ -255,3 +431,201 @@ void MarlinUtil::getMC_Balance(LCEvent * evt, double* accumulatedEnergies){
 
 
  } // End  MC_Balance
+
+
+// ____________________________________________________________________________________________________
+
+
+std::string MarlinUtil::getMCName(int PDGCode) {
+
+  const char pdgfile[] = "mass_width_2004.mc";
+  std::ifstream pdfile;
+  pdfile.open( pdgfile );
+  if( !pdfile ) { 
+    std::cerr << "cannot open " << pdgfile << std::endl;
+    return "ERROR opening file";
+  }
+  // construct empty PDT
+  DefaultConfig::ParticleDataTable datacol( "PDG Table" );
+  {
+    // Construct table builder
+    HepPDT::TableBuilder  tb(datacol);
+    // read the input - put as many here as you want
+    if( !addPDGParticles( pdfile, tb ) ) { std::cout << "error reading PDG file " << std::endl; }
+  }   // the tb destructor fills datacol
+
+  std::string name = datacol.particle( HepPDT::ParticleID(PDGCode) )->name();
+
+  pdfile.close();
+  
+  return name;
+
+}
+
+
+// ____________________________________________________________________________________________________
+
+
+int MarlinUtil::getPDGCode(std::string name) {
+  /*
+  const char pdgfile[] = "mass_width_2004.mc";
+  std::ifstream pdfile;
+  pdfile.open( pdgfile );
+  if( !pdfile ) { 
+    std::cerr << "cannot open " << pdgfile << std::endl;
+    return -1;
+  }
+  // construct empty PDT
+  DefaultConfig::ParticleDataTable datacol( "PDG Table" );
+  {
+    // Construct table builder
+    HepPDT::TableBuilder  tb(datacol);
+    // read the input - put as many here as you want
+    if( !addPDGParticles( pdfile, tb ) ) { std::cout << "error reading PDG file " << std::endl; }
+  }   // the tb destructor fills datacol
+
+
+  int PDGCode = 0;
+
+  DefaultConfig::ParticleData* pp = datacol.particle(name); // FIXME: Not yet implemented in CLHEP
+
+  //  int PDGCode = datacol.particle(name)->pid();
+
+  pdfile.close();
+  
+  return PDGCode;
+  */
+
+  return 0;
+
+}
+
+
+// ____________________________________________________________________________________________________
+
+
+bool MarlinUtil::DecayChainInTree(std::vector<int> DecayChannel, LCEvent* evt)
+{
+
+  // FIXME rewrite the whole method!
+
+  // fixed to Z0 to hadrons
+
+  bool flag = false;
+
+  LCCollection* MCcol = evt->getCollection("MCParticle") ;
+
+  int m = MCcol->getNumberOfElements();
+  for(int j=0; j<m; ++j){
+    
+    MCParticle* MCP = dynamic_cast<MCParticle*>(MCcol->getElementAt(j));
+    
+    int idpdg = MCP->getPDG();
+    
+    if (idpdg == 23) {
+    
+      MCParticleVec daughters = MCP->getDaughters();
+
+      int nOfDaughters = daughters.size();
+      
+      for(int i=0; i<nOfDaughters; ++i){
+	  
+	int PDGDaughter = daughters.at(i)->getPDG();
+
+	if ( (PDGDaughter == 1) || (PDGDaughter == 2) || (PDGDaughter == 3) ) {
+
+	  int nu = 0;
+	  int nd = 0;
+	  int ns = 0;
+	  
+	  for(int k=0; k<nOfDaughters; ++k){
+
+	    int PDGDaughterCheck = abs(daughters.at(k)->getPDG());
+
+	    if ( (PDGDaughterCheck == 1) || (PDGDaughterCheck == 2) || (PDGDaughterCheck == 3) || (PDGDaughterCheck == 21) ) {
+
+	      if (PDGDaughterCheck == 1) ++nu;
+	      if (PDGDaughterCheck == 2) ++nd;
+	      if (PDGDaughterCheck == 3) ++ns;
+	      
+	    }
+	    else {
+	      flag = false;
+	      break;
+	    }
+
+	  }
+	  
+	  if ( ( (nu==2) && (nd==0) && (ns==0) ) || ( (nu==0) && (nd==2) && (ns==0) ) || ( (nu==0) && (nd==0) && (ns==2) ) ) {
+	    flag = true;
+	    break;
+	  }
+	  
+	}
+	else flag = false;
+	
+      }
+    }
+    
+    if (flag) break;
+
+  }
+
+  return flag;
+
+
+
+
+
+  /*
+
+  // Simple search on the tree. Return value equals to 1, if DecayChannel was found, and 0, if not.
+  // Does't check if decay chain apperars more than one time in the tree. That means, this  method returns 1, if
+  // at least one time the specific decay chain apperars.
+
+  //  ChainOfParticlesPdg[0]=0;      // set first particle in chain as initial particle
+
+  // for (int k=0; k<DecayChannel.size(); k++)   cout <<  ChainOfParticlesPdg[k] << endl;  // debug
+
+ bool InChain = false;
+ bool flag = true;
+ int ParentN  = 0;
+ 
+ for (int k=0; k<MCcol.size(); k++)
+   {
+     ParentN = k;
+     flag = true;
+     //cout << endl << "ParentN before " << ParentN << endl; //debug
+     
+     for (int l=DecayChannel.size()-1; l>1; l--) // search for ALL parents
+       {
+
+
+	 // GO ON HERE !!!
+
+
+
+	 flag &= TreeParentID(ParentN)==ChainOfParticlesPdg[l-1]; 
+	 //cout << l << "  " << TreeParentID(ParentN) << "  " << ChainOfParticlesPdg[l-1] << "  " << flag 
+	 //     << "  " << ParentN;
+	 ParentN = TreeParentN(ParentN);
+	 //cout << "  " << ParentN << endl;
+       }
+      flag &= tree_stables_id[k]==ChainOfParticlesPdg[DecayChannel.size()-1];  // compare with last
+      flag &= tree_stables_id[k]!=TreeParentID(k);   // parent and particle should not be the same
+
+      ParentN = k;
+      for (int l=DecayChannel.size()-1; l>0; l--)  // search for initial 'particle' in chain
+	{
+	  ParentN = TreeParentN(ParentN);
+	  if (l==1) flag &= ParentN==0; 
+        }
+      InChain |= flag;
+    }
+  return InChain;
+
+  */
+
+}
+
+// ____________________________________________________________________________________________________

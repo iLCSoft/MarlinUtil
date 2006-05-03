@@ -29,73 +29,7 @@ void MarlinCED::newEvent( Processor* proc , int modelID ) {
   if( proc == instance()->_first ) {
 
     ced_new_event(); 
-
-
-    // FIXME: for now have hard coded geometry ....
-    // here we would read some geometry description ....
-    
-    // from V.Morgunov / A.Raspereza: simple outlines of LDC, SID, GLD:
-
-    static CED_GeoCylinder geoCylindersLDC[] = {       // for TESLA Detector Geometry
-      //      {    50.0,  6,  0.0, 5658.5, -5658.5, 0xff      }, // beam tube
-      {   380.0, 24,  0.0, 2658.5, -2658.5, 0xff      }, // inner TPC
-      {  1840.0,  8, 22.5, 2700.0, -2700.0, 0x7f7f1f  }, // inner ECAL
-      {  2045.7,  8, 22.5, 2700.0, -2700.0, 0x7f7f1f  }, // outer ECAL
-      {  2045.7,  8, 22.5, 101.00,  2820.0, 0x7f7f1f  }, // endcap ECAL
-      {  2045.7,  8, 22.5, 101.00, -3022.0, 0x7f7f1f  }, // endcap ECAL
-      {  3000.0, 16,  0.0, 2658.5, -2658.5, 0xcf00    }, // outer HCAL
-      {  3000.0,  8, 22.5, 702.25,  2826.0, 0xcf00    }, // endcap HCAL
-      {  3000.0,  8, 22.5, 702.25, -4230.5, 0xcf00    }, // endcap HCAL
-	// radius, poligon order, angle degree, 1/2 length, shift in z, color
-    }; 
-    
-    static CED_GeoCylinder geoCylindersSiD[] = {       // for SiD Detector Geometry
-      //	{    12.0,  100,  0.0, 5658.5, -5658.5, 0xff      }, // beam tube
-	{  186.35,   20,  0.0,  271.0,  -271.0, 0xff      }, // 1st SiD layer
-	{  448.85,   20,  0.0,  621.0,  -621.0, 0xff      }, // 2nd SiD layer
-	{  711.35,   20,  0.0,  971.0,  -971.0, 0xff      }, // 3d  SiD layer
-	{  973.85,   20,  0.0, 1321.0, -1321.0, 0xff      }, // 4th SiD layer
-	{ 1236.35,   20,  0.0, 1649.4, -1649.4, 0xff      }, // 5th SiD layer
-	{ 1270.00,   30,  0.0, 1682.5, -1682.5, 0x7f7f1f  }, // inner ECAL
-	{ 1385.00,   30,  0.0, 1682.5, -1682.5, 0x7f7f1f  }, // outer ECAL
-	{ 1385.00,   30,  0.0,  562.5,  1682.5, 0x7f7f1f  }, // endcap ECAL
-	{ 1385.00,   30,  0.0,  562.5, -2807.5, 0x7f7f1f  }, // endcap ECAL
-	{ 2500.00,   30,  0.0, 1795.0, -1795.0, 0xcf00    }, // outer  HCAL  
-	{ 2500.00,   30,  0.0, 487.25 , 1795.0, 0xcf00    }, // endcap HCAL
-	{ 2500.00,   30,  0.0, 487.25 ,-2770.0, 0xcf00    }, // endcap HCAL      
-    };
-
-
-    static CED_GeoCylinder geoCylindersGLD[] = {       // for Huge Detector Geometry
-      //      {    50.0,  6,  0.0, 5658.5, -5658.5, 0xff      }, // beam tube
-      {   400.0, 24,  0.0, 2600.0, -2600.0, 0xff      }, // inner TPC
-      {  2100.0, 30, 22.5, 2700.0, -2700.0, 0x7f7f1f  }, // inner CALO
-      {  3405.0, 30, 22.5, 2700.0, -2700.0, 0x7f7f1f  }, // outer CAL0
-      {  3405.0, 30, 22.5,  737.5,  2700.0, 0x7f7f1f  }, // endcap CAL0
-      {  3405.0, 30, 22.5,  737.5, -4175.0, 0x7f7f1f  }, // endcap ECAL
-      //      {  3000.0, 16,  0.0, 2658.5, -2658.5, 0xcf00    }, // outer HCAL
-      //      {  3000.0,  8, 22.5, 702.25,  2826.0, 0xcf00    }, // endcap HCAL
-      //      {  3000.0,  8, 22.5, 702.25, -4230.5, 0xcf00    }, // endcap HCAL
-	// radius, poligon order, angle degree, 1/2 length, shift in z, color
-    }; 
-
-    /*
-      static CED_GeoCylinder geoCylinders[] = {    // for Prototype
-      {    180.0,  4,  45.0, 110.0, 0.0, 0xff },   // beam tube
-      {    500.0,  4,  45.0, 250.0, 220., 0xff }   // inner TPC
-      };
-    */
-
-    if (modelID == 0) {
-      ced_geocylinders(sizeof(geoCylindersLDC)/sizeof(CED_GeoCylinder),geoCylindersLDC);
-    }
-    else if (modelID == 1) {
-      ced_geocylinders(sizeof(geoCylindersSiD)/sizeof(CED_GeoCylinder),geoCylindersSiD);
-    }
-    else if (modelID == 2) {
-      ced_geocylinders(sizeof(geoCylindersGLD)/sizeof(CED_GeoCylinder),geoCylindersGLD);
-    }
-
+    drawDetector(modelID);
 
   }
 }
@@ -106,8 +40,7 @@ void MarlinCED::draw( Processor* proc , int waitForKeyboard ) {
   if( proc == instance()->_last ) {
 
     ced_draw_event();
-
-    
+   
     if ( waitForKeyboard == 1 ) {
       
       std::cout << "        [ Press return for next event ] " << std::endl ; 
@@ -184,14 +117,6 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
 }
 
 
-void MarlinCED::drawTrack(Track* track, int marker, int size, int color, int layer) {
-
-  const TrackerHitVec trackerHits = track->getTrackerHits();
-  
-  drawObjectsWithPosition(trackerHits.begin(),trackerHits.end(),marker,size,color,layer);
-
-}
-
 
 void MarlinCED::drawSpike( float x0, float y0, float z0,float x1, float y1, float z1,unsigned int color, unsigned int layer ) {
 
@@ -220,4 +145,135 @@ void MarlinCED::drawSpike( float x0, float y0, float z0,float x1, float y1, floa
   ced_hit ( p0[0],p0[1],p0[2], CED_HIT_POINT | layer << CED_LAYER_SHIFT, 0, color );
   ced_hit ( p5[0],p5[1],p5[2], CED_HIT_POINT | layer << CED_LAYER_SHIFT, 0, color );
   
+}
+
+
+void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event, int marker, int size, int color, int layer, double BField) {
+
+
+  if ( MCP == 0 ) return;
+
+  // FIXME scales the lenght of the symbolised momentum line
+  double scale = 500.0;
+ 
+  float x1 = (float)MCP->getVertex()[0];
+  float y1 = (float)MCP->getVertex()[1];
+  float z1 = (float)MCP->getVertex()[2];
+  
+  float x2 = (float)MCP->getEndpoint()[0];
+  float y2 = (float)MCP->getEndpoint()[1];
+  float z2 = (float)MCP->getEndpoint()[2];
+	
+  float p1 = (float)MCP->getMomentum()[0];
+  float p2 = (float)MCP->getMomentum()[1];
+  float p3 = (float)MCP->getMomentum()[2];
+  float p  = sqrt(p1*p1 + p2*p2 + p3*p3);
+  
+	
+  ced_hit(x1,y1,z1,0|layer<<CED_LAYER_SHIFT,4,0x00ff00);
+  ced_hit(x2,y2,z2,1|layer<<CED_LAYER_SHIFT,10,0xff0000);
+  ced_line(x1,y1,z1,x2,y2,z2,layer<<CED_LAYER_SHIFT,1,0xee9a49);
+  ced_line(x1,y1,z1,scale*(p1/p),scale*(p2/p),scale*(p3/p),layer<<CED_LAYER_SHIFT,1,0xeed8ae);
+
+  float charge = MCP->getCharge();
+
+  if ( charge != 0 ) drawHelix(BField,charge,x1,y1,z1,p1,p2,p3,0,0,0xee9a49);
+
+  if (drawSimHits) drawHitCollectionsByMCContribution(event,MCP,marker,size,color,layer);
+
+}
+
+
+
+void MarlinCED::drawSimTrackerHits(LCEvent* event, int marker, int size, int color, int layer) {
+
+  drawHitCollectionsByType(event,LCIO::SIMTRACKERHIT,marker,size,color,layer);
+
+}
+
+
+
+void MarlinCED::drawSimCalorimeterHits(LCEvent* event, int marker, int size, int color, int layer) {
+
+  drawHitCollectionsByType(event,LCIO::SIMCALORIMETERHIT,marker,size,color,layer);
+
+}
+
+
+
+void MarlinCED::drawSimHits(LCEvent* event, int marker, int size, int color, int layer) {
+
+  drawHitCollectionsByType(event,LCIO::SIMTRACKERHIT,marker,size,color,layer);
+  drawHitCollectionsByType(event,LCIO::SIMCALORIMETERHIT,marker,size,color,layer);
+
+}
+
+
+
+void MarlinCED::drawTrackerHits(LCEvent* event, int marker, int size, int color, int layer) {
+
+  drawHitCollectionsByType(event,LCIO::TRACKERHIT,marker,size,color,layer);
+
+}
+
+
+
+void MarlinCED::drawCalorimeterHits(LCEvent* event, int marker, int size, int color, int layer) {
+
+  drawHitCollectionsByType(event,LCIO::CALORIMETERHIT,marker,size,color,layer);
+
+}
+
+
+void MarlinCED::drawHits(LCEvent* event, int marker, int size, int color, int layer) {
+
+  drawHitCollectionsByType(event,LCIO::TRACKERHIT,marker,size,color,layer);
+  drawHitCollectionsByType(event,LCIO::CALORIMETERHIT,marker,size,color,layer);
+
+}
+
+
+void MarlinCED::drawTrack(Track* track, int marker, int size, int color, int layer) {
+
+  const TrackerHitVec trackerHits = track->getTrackerHits();
+  
+  drawObjectsWithPosition(trackerHits.begin(),trackerHits.end(),marker,size,color,layer);
+
+}
+
+
+void MarlinCED::drawCluster(Cluster* cluster, int marker, int size, int color, int layer) {
+
+  const CalorimeterHitVec clusterHits = cluster->getCalorimeterHits();
+  
+  drawObjectsWithPosition(clusterHits.begin(),clusterHits.end(),marker,size,color,layer);
+
+}
+
+
+void MarlinCED::drawRecoParticle(ReconstructedParticle* reco, int marker, int size, int color, int layer) {
+
+
+  if ( reco == 0 ) return;
+
+  unsigned int NofTracks   = reco->getTracks().size();
+  unsigned int NofClusters = reco->getClusters().size();
+
+
+  // FIXME: A track might be composed of several other tracks => insert a second loop
+  for (unsigned int i = 0; i < NofTracks; ++i) {
+    
+    Track* track = reco->getTracks()[i];
+
+    drawTrack(track,marker,size,color,layer);
+    
+  }
+
+  for (unsigned int i = 0; i < NofClusters; ++i) {
+    
+    Cluster* cluster = reco->getClusters()[i];
+    drawCluster(cluster,marker,size,color,layer);
+
+  }
+
 }
