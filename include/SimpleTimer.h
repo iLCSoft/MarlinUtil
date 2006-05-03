@@ -7,7 +7,6 @@
 #include <UTIL/LCTime.h>
 
 #include <iostream>
-#include <string>
 
 #include <unistd.h>
 
@@ -33,7 +32,7 @@ using namespace marlin ;
  *                      (SecondsToWait minus elapsed time). If already more time elapsed 
  *                      than SecondsToWait, carry on without any delay.
  *    @author O. Wendt (DESY)
- *    @version $Id: SimpleTimer.h,v 1.4 2006-02-09 18:01:55 owendt Exp $
+ *    @version $Id: SimpleTimer.h,v 1.5 2006-05-03 14:17:17 owendt Exp $
  *
  */
 class SimpleTimer : public Processor {
