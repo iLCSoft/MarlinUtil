@@ -21,6 +21,7 @@
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_sf_pow_int.h>
 
+#include "EVENT/Cluster.h"
 
 
 /**
@@ -30,7 +31,7 @@
  *    (GNU Scientific Library) are needed in this class.
  *
  *    @authors V. Morgunov (ITEP/DESY), A. Raspereza (DESY), O. Wendt (DESY)
- *    @version $Id: ClusterShapes.h,v 1.10 2006-02-22 14:41:41 owendt Exp $
+ *    @version $Id: ClusterShapes.h,v 1.11 2006-05-18 16:17:41 gaede Exp $
  *
  */
 class ClusterShapes {
@@ -79,6 +80,9 @@ class ClusterShapes {
    * of gravity is calculated with the energy of the entries of the cluster.
    */
   float* getCentreOfGravity();
+
+  /** US spelling */
+  float* getCenterOfGravity() { return getCentreOfGravity() ; }
 
   /**
    * array of the inertias of mass (i.\ e.\ energy) corresponding to the three main axes 
