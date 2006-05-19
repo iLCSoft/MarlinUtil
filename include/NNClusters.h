@@ -1,10 +1,11 @@
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 #ifndef NNClusters_h
 #define NNClusters_h 1
 
 /** File with various classes for a generic nearest neighbour type clustering.
  *
  *  @author F.Gaede (DESY)
- *  @version $Id: NNClusters.h,v 1.1 2006-05-18 16:19:01 gaede Exp $
+ *  @version $Id: NNClusters.h,v 1.2 2006-05-19 16:11:02 gaede Exp $
  */
 
 #include <list>
@@ -14,6 +15,9 @@
 #include "EVENT/LCObject.h"
 #include "EVENT/LCCollection.h"
 #include "IMPL/ClusterImpl.h"
+
+#include "ClusterShapes.h"
+#include "CLHEP/Vector/ThreeVector.h"
 
 // forward declarations:
 
@@ -33,7 +37,7 @@ class GenericCluster ;
  *  @see NNDistance
  * 
  *  @author F.Gaede (DESY)
- *  @version $Id: NNClusters.h,v 1.1 2006-05-18 16:19:01 gaede Exp $
+ *  @version $Id: NNClusters.h,v 1.2 2006-05-19 16:11:02 gaede Exp $
  */
 
 template <class In, class Out, class Pred > 
@@ -114,7 +118,7 @@ void cluster( In first, In last, Out result, Pred* pred ) {
  *
  *  @see GenericCluster
  *  @author F.Gaede (DESY)
- *  @version $Id: NNClusters.h,v 1.1 2006-05-18 16:19:01 gaede Exp $
+ *  @version $Id: NNClusters.h,v 1.2 2006-05-19 16:11:02 gaede Exp $
  */
 template <class T>
 class GenericHit : public  std::pair< T*, GenericCluster<T>* >{
@@ -154,7 +158,7 @@ protected:
  * 
  *  @see GenericHit
  *  @author F.Gaede (DESY)
- *  @version $Id: NNClusters.h,v 1.1 2006-05-18 16:19:01 gaede Exp $
+ *  @version $Id: NNClusters.h,v 1.2 2006-05-19 16:11:02 gaede Exp $
  */
 template <class T >
 class GenericCluster : public std::list< GenericHit<T> * > {
@@ -302,6 +306,7 @@ protected:
 /** Simple predicate class for computing an index from N bins of the z-coordinate of LCObjects
  *  that have a float/double* getPostion() method.
  */
+
 template <class T, int N>
 class ZIndex{
 public:
@@ -321,28 +326,65 @@ protected:
 } ;
 
 
-/** Helper class that creates an lcio::Cluster from a generic cluster.
+/** Helper class that creates an lcio::Cluster from a generic cluster with hit types that have a 
+ *  getPosition() and a getEnergy() method.
  */
 template <class T>
 struct LCIOCluster{
 
-  lcio::Cluster* operator() (GenericCluster<T>* c) {  
+  inline lcio::Cluster* operator() (GenericCluster<T>* c) {  
     
     ClusterImpl* clu = new ClusterImpl ;
     
-    double e = 0.0 ;
-    
+    unsigned n = c->size() ;
+    unsigned i=0 ;
+
+    float a[n], x[n], y[n], z[n] ;
+
     for( typename GenericCluster<T>::iterator hi = c->begin(); hi != c->end() ; hi++) {
       
-      clu->addHit(  (*hi)->first , ( e += (*hi)->first->getEnergy()  ) ) ;
+      T* hit = (*hi)->first ;  
+
+      a[i] = hit->getEnergy() ;
+      x[i] = hit->getPosition()[0] ;
+      y[i] = hit->getPosition()[1] ;
+      z[i] = hit->getPosition()[2] ;
+
+      clu->addHit( hit , a[i] ) ;
+      
+      ++i ;
     }
     
-    clu->setEnergy( e ) ;
+    ClusterShapes cs( n,a,x,y,z) ;
+
+    clu->setEnergy( cs.getTotalAmplitude()  ) ;
+    clu->setPosition( cs.getCenterOfGravity() ) ;
+
+    // direction of cluster's PCA
+    float* d = cs.getEigenVecInertia() ;
+
+    Hep3Vector v( d[0], d[1], d[2] ) ;
     
-    // FIXME - need all cluster attributes/parameters ....
-    // cluster direction, parameters, position, etc.... 
-    
+    clu->setITheta( v.theta() )  ;
+    clu->setIPhi(   v.phi() ) ;
+  
+    std::vector<float> param(5) ;
+
+//     float* ev = cs.getEigenValInertia() ;
+//     param[0] = ev[0] ;
+//     param[1] = ev[1] ;
+//     param[2] = ev[2] ;
+
+    param[0] = cs.getElipsoid_r1() ;
+    param[1] = cs.getElipsoid_r2() ;
+    param[2] = cs.getElipsoid_r3() ;
+    param[3] = cs.getElipsoid_vol() ;
+    param[4] = cs.getWidth() ;
+
+    clu->setShape( param ) ;
+
     return clu ;
+
   }
 
 } ;
