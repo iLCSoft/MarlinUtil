@@ -28,9 +28,10 @@ class MarlinUtil {
 
 
  public:
-
+  static void printTrack(Track* track, double BField);
+  static void printCluster(Cluster* cluster);
   static void printRecoParticle(ReconstructedParticle* recoParticle, double BField);
-  static void printMCParticle(MCParticle* MCP);
+  static void printMCParticle(MCParticle* MCP, bool printDaughters = false);
 
   /** Function to get the accumulated sum of the energy per event and the number of particles within different categories at IP. The return values are given in the array accumulatedEnergies of size 21 with the following content. Only MC particles with generator status 1 are considered:
    *

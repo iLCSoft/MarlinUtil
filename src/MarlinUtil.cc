@@ -1,7 +1,48 @@
-
 #include "MarlinUtil.h"
  
 
+
+// ____________________________________________________________________________________________________
+
+void MarlinUtil::printTrack(Track* track, double BField=4.0) {
+  
+  double d0 = track->getD0();
+  double z0 = track->getZ0();
+  double phi0 = track->getPhi();
+  double omega = track->getOmega();
+  double tanlambda = track->getTanLambda();
+  HelixClass * helix = new HelixClass();
+  helix->Initialize_Canonical(phi0, d0, z0, omega, tanlambda,BField);
+
+  const float* p = helix->getMomentum();
+  float pabs = 0.0;
+  for (int i = 0; i < 3 ; ++i) pabs += p[i]*p[i];
+  pabs = sqrt(pabs);
+  
+  std::cout << "Track id() : " << track->id() << "  " << "|p| = " << pabs << "  " << "(" << p[0] << "," << p[1] << "," << p[2] << ")" << "  "
+	    << "(d0,z0,phi0,omega,tanL) = " << "(" << d0 << "," << z0 << "," << phi0 << "," << omega << "," << tanlambda << ")" << std::endl 
+	    << "   " << "Ri = " << track->getRadiusOfInnermostHit() << "  " << "# of SubTracks = " << track->getTracks().size() << std::endl;
+
+  delete helix;
+  helix = 0;
+  
+}
+
+// ____________________________________________________________________________________________________
+
+void MarlinUtil::printCluster(Cluster* cluster) {
+    
+  double energy = cluster->getEnergy();
+  double x = cluster->getPosition()[0];
+  double y = cluster->getPosition()[1];	 
+  double z = cluster->getPosition()[2];
+  double r = sqrt(x*x + y*y + z*z);
+  
+  std::cout << "Cluster id() : " << cluster->id() << "  " << "|r| = " << r << "  " << "(" << x << "," << y << "," << z << ")" << "  " << "E = " << energy << "  "
+	    << "# of Particle IDs = " << cluster->getParticleIDs().size()
+	    << "  " << "# of SubClusters = " << cluster->getClusters().size() << std::endl << std::endl;
+  
+}
 
 // ____________________________________________________________________________________________________
 
@@ -30,6 +71,7 @@ void MarlinUtil::printRecoParticle(ReconstructedParticle* recoParticle, double B
   case 2 : typeName = "charged hadron or muon"; break;
   case 3 : typeName = "photon";                 break;
   case 4 : typeName = "neutral hadron";         break;
+  case 5 : typeName = "compound object";        break;
   }
   
   int nParticleIDs = recoParticle->getParticleIDs().size();
@@ -74,8 +116,8 @@ void MarlinUtil::printRecoParticle(ReconstructedParticle* recoParticle, double B
     pabs = sqrt(pabs);
 
     std::cout << iOfTracks << "  " << "|p| = " << pabs << "  " << "(" << p[0] << "," << p[1] << "," << p[2] << ")" << "  " 
-	      << "Ri = " << track->getRadiusOfInnermostHit()
-	      << "  " << "# of SubTracks = " << track->getTracks().size() << std::endl;
+	      << "(d0,z0,phi0,omega,tanL) = " << "(" << d0 << "," << z0 << "," << phi0 << "," << omega << "," << tanlambda << ")" << std::endl 
+	      << "   " << "Ri = " << track->getRadiusOfInnermostHit() << "  " << "# of SubTracks = " << track->getTracks().size() << std::endl;
     
     
     delete helix;
@@ -96,7 +138,7 @@ void MarlinUtil::printRecoParticle(ReconstructedParticle* recoParticle, double B
     double z = cluster->getPosition()[2];
     double r = sqrt(x*x + y*y + z*z);
     
-    std::cout << iOfClusters << "  " << "|r| = " << r << "  " << "(" << x << "," << y << "," << z << ")" << "  " << "E = " << energy << "  "
+    std::cout << iOfClusters << "  " << "E = " << energy << "  " << "|r| = " << r << "  " << "(" << x << "," << y << "," << z << ")" << "  "
 	      << "# of Particle IDs = " << cluster->getParticleIDs().size()
 	      << "  " << "# of SubClusters = " << cluster->getClusters().size() << std::endl;
     
@@ -114,7 +156,7 @@ void MarlinUtil::printRecoParticle(ReconstructedParticle* recoParticle, double B
 
 
 
-void MarlinUtil::printMCParticle(MCParticle* MCP) {
+void MarlinUtil::printMCParticle(MCParticle* MCP, bool printDaughters) {
 
 
   double pxMC = MCP->getMomentum()[0];
@@ -130,36 +172,41 @@ void MarlinUtil::printMCParticle(MCParticle* MCP) {
 	    << "(" << pxMC << "," << pyMC << "," << pzMC << ")" << "  " << "E = " << MCP->getEnergy() << "  " << " q = " << MCP->getCharge() << std::endl
 	    << "nDaughters : " << nOfDaughters << std::endl;
 
-  for(int j=0; j<nOfDaughters; ++j) {
-    MCParticle* MCPDaughter = MCP->getDaughters()[j];
+
+  if (printDaughters) { 
     
-    double pxMCDaughter = MCPDaughter->getMomentum()[0];
-    double pyMCDaughter = MCPDaughter->getMomentum()[1];
-    double pzMCDaughter = MCPDaughter->getMomentum()[2];
-    
-    double absPMCDaughter = sqrt( pow((pxMCDaughter),2) + pow((pyMCDaughter),2) +  pow((pzMCDaughter),2) );
-
-    int nOfDaughtersD = MCPDaughter->getDaughters().size();
-
-    std::cout << j << "  " << "MCP : " << MCPDaughter->getPDG() << "  " << " m = " << MCPDaughter->getMass() << "  " << "|p| = " << absPMCDaughter << " " 
-	      << "(" << pxMCDaughter << "," << pyMCDaughter << "," << pzMCDaughter << ")" << "  " << "E = " << MCPDaughter->getEnergy() << "  " << " q = " 
-	      << MCPDaughter->getCharge() << std::endl
-	      << "nDaughtersD : " << nOfDaughtersD << std::endl;
-
-    for(int k=0; k<nOfDaughtersD; ++k) {
-       MCParticle* MCPDaughterD = MCPDaughter->getDaughters()[k];
-
- 
-       double pxMCDaughterD = MCPDaughterD->getMomentum()[0];
-       double pyMCDaughterD = MCPDaughterD->getMomentum()[1];
-       double pzMCDaughterD = MCPDaughterD->getMomentum()[2];
-       
-       double absPMCDaughterD = sqrt( pow((pxMCDaughterD),2) + pow((pyMCDaughterD),2) +  pow((pzMCDaughterD),2) );
-       
-       std::cout << "---> " << k << "  " << "MCP : " << MCPDaughterD->getPDG() << "  " << " m = " << MCPDaughterD->getMass() << "  " << "|p| = " << absPMCDaughterD << " " 
-		 << "(" << pxMCDaughterD << "," << pyMCDaughterD << "," << pzMCDaughterD << ")" << "  " << "E = " << MCPDaughterD->getEnergy() << "  " << " q = " 
-		 << MCPDaughterD->getCharge() << std::endl;
-
+    for(int j=0; j<nOfDaughters; ++j) {
+      MCParticle* MCPDaughter = MCP->getDaughters()[j];
+      
+      double pxMCDaughter = MCPDaughter->getMomentum()[0];
+      double pyMCDaughter = MCPDaughter->getMomentum()[1];
+      double pzMCDaughter = MCPDaughter->getMomentum()[2];
+      
+      double absPMCDaughter = sqrt( pow((pxMCDaughter),2) + pow((pyMCDaughter),2) +  pow((pzMCDaughter),2) );
+      
+      int nOfDaughtersD = MCPDaughter->getDaughters().size();
+      
+      std::cout << j << "  " << "MCP : " << MCPDaughter->getPDG() << "  " << " m = " << MCPDaughter->getMass() << "  " << "|p| = " << absPMCDaughter << " " 
+		<< "(" << pxMCDaughter << "," << pyMCDaughter << "," << pzMCDaughter << ")" << "  " << "E = " << MCPDaughter->getEnergy() << "  " << " q = " 
+		<< MCPDaughter->getCharge() << std::endl
+		<< "nDaughtersD : " << nOfDaughtersD << std::endl;
+      
+      for(int k=0; k<nOfDaughtersD; ++k) {
+	MCParticle* MCPDaughterD = MCPDaughter->getDaughters()[k];
+	
+	
+	double pxMCDaughterD = MCPDaughterD->getMomentum()[0];
+	double pyMCDaughterD = MCPDaughterD->getMomentum()[1];
+	double pzMCDaughterD = MCPDaughterD->getMomentum()[2];
+	
+	double absPMCDaughterD = sqrt( pow((pxMCDaughterD),2) + pow((pyMCDaughterD),2) +  pow((pzMCDaughterD),2) );
+	
+	std::cout << "---> " << k << "  " << "MCP : " << MCPDaughterD->getPDG() << "  " << " m = " << MCPDaughterD->getMass() << "  " << "|p| = " << absPMCDaughterD << " " 
+		  << "(" << pxMCDaughterD << "," << pyMCDaughterD << "," << pzMCDaughterD << ")" << "  " << "E = " << MCPDaughterD->getEnergy() << "  " << " q = " 
+		  << MCPDaughterD->getCharge() << std::endl;
+	
+      }
+      
     }
 
   }
@@ -351,12 +398,15 @@ void MarlinUtil::getMC_Balance(LCEvent * evt, double* accumulatedEnergies){
 	std::cout <<" Unknow for this program  ID is " <<idpdg<< std::endl;
       }    // Stable particles only
     }      // End for for MCParticles 
+
+
     double e_sum = e_elect+e_muon+e_chadr+e_pi0+e_photon+e_llhadr+e_slhadr+e_neutr;
     int n_sum =  n_elect+n_muon+n_chadr+n_pi0+n_photon+n_llhadr+n_slhadr+n_neutr;
+
     double evt_energy = e_sum;
     int n_evt = n_sum;
 
-    //   Minus muon loosed energy = 1.6 GeV in average
+    //   Minus muon loosed energy = 1.6 GeV in average, i.e. Muons deposit 1.6 GeV an average in Calorimeter
     double e_mu_lost = e_muon  - n_muon*1.6;
     double e_lost = e_neutr + e_mu_lost + e_to_tube;
     int n_lost = n_neutr + n_to_tube;
@@ -414,7 +464,7 @@ void MarlinUtil::getMC_Balance(LCEvent * evt, double* accumulatedEnergies){
     accumulatedEnergies[17] = n_llhadr;
     accumulatedEnergies[18] = n_slhadr;
     accumulatedEnergies[19] = n_chadr;
-    accumulatedEnergies[20] = e_sum - e_neutr;
+    accumulatedEnergies[20] = evt_energy - e_neutr - e_to_tube;
 
 
 
