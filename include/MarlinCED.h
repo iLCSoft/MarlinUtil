@@ -53,7 +53,7 @@ class MarlinCED {
    *  size in the given layer (default 0). The template takes classes providing a class method 'getPosition()' as template argument.
    */
   template <class In>
-  static void drawObjectsWithPosition(In first, In last, int marker, int size ,int color, int layer=0) {
+  static void drawObjectsWithPosition(In first, In last, int marker, int size ,unsigned int color, unsigned int layer=0) {
     while( first != last ) {
       ced_hit( (*first)->getPosition()[0],
 	       (*first)->getPosition()[1],
@@ -67,14 +67,9 @@ class MarlinCED {
   /** Draws a helix from the given point(x,y,z) for momentum(px,py,pz) in a B-field b (in Tesla) 
    */
   static void drawHelix(float b, float charge, float x, float y, float z,
-			float px, float py, float pz, int marker, int size, int col,
-			float rmin=10., float rmax=3000.0, float zmax=4500.)  ; 
-    
-
-  //  static void drawHelixVM(float b, float charge, float x, float y, float z,
-  //	                      float px, float py, float pz, int marker, int size, int col)  ; 
-
-
+			float px, float py, float pz, int marker, int size, unsigned int col,
+			float rmin=10.0, float rmax=3000.0, float zmax=4500.0);
+  
   /** Draws a 'spike', i.e. a bold arrow, from (x0,y0,z0) to (x1,y1,z1) with color on layer e.g. to display jet thrust axes
    */
   static void drawSpike(float x0, float y0, float z0, float x1, float y1, float z1, unsigned int color, unsigned int layer);
@@ -133,6 +128,11 @@ class MarlinCED {
     }; 
 
     /*
+
+
+ ADD PROTOTYPE 
+
+
       static CED_GeoCylinder geoCylinders[] = {    // for Prototype
       {    180.0,  4,  45.0, 110.0, 0.0, 0xff },   // beam tube
       {    500.0,  4,  45.0, 250.0, 220., 0xff }   // inner TPC
@@ -153,43 +153,44 @@ class MarlinCED {
   
   /** Draws a thin line between vertex-point and end-point of a MC particle, another thin line at the vertex-point symbolising the initial momentum vector and all the hits in the SimTrackerHit- and SimCalorimeterHitCollections which are produced by this MC particle, if toggle drawSimHits is true. These SimHits are drawn with a marker of size and color. All objects are drawn on the same layer.
    */
-  static void drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event, int marker, int size, int color, int layer=0, double BField = 4.0);
+  static void drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event, int marker, int size, unsigned int color, unsigned int layer=0, double BField = 4.0, 
+			     double rmin = 0.0, double zmin = 0.0, double rmax = 3000.0, double zmax = 4500.0);
 
   /** Draws the hits of all SimTrackerHit Collections of event with a marker of size and color on layer
    */
-  static void drawSimTrackerHits(LCEvent* event, int marker, int size, int color, int layer=0);
+  static void drawSimTrackerHits(LCEvent* event, int marker, int size, unsigned int color, unsigned int layer=0);
 
   /** Draws the hits of all SimCalorimeterHit Collections of event with a marker of size and color on layer
    */
-  static void drawSimCalorimeterHits(LCEvent* event, int marker, int size, int color, int layer=0);
+  static void drawSimCalorimeterHits(LCEvent* event, int marker, int size, unsigned int color, unsigned int layer=0);
 
   /** Draws the hits of all SimHit Collections of event with a marker of size and color on layer
    */
-  static void drawSimHits(LCEvent* event, int marker, int size, int color, int layer=0);
+  static void drawSimHits(LCEvent* event, int marker, int size, unsigned int color, unsigned int layer=0);
 
   /** Draws the hits of all TrackerHit Collections of event with a marker of size and color on layer
    */
-  static void drawTrackerHits(LCEvent* event, int marker, int size, int color, int layer=0);
+  static void drawTrackerHits(LCEvent* event, int marker, int size, unsigned int color, unsigned int layer=0);
 
   /** Draws the hits of all CalorimeterHit Collections of event with a marker of size and color on layer
    */
-  static void drawCalorimeterHits(LCEvent* event, int marker, int size, int color, int layer=0);
+  static void drawCalorimeterHits(LCEvent* event, int marker, int size, unsigned int color, unsigned int layer=0);
 
   /** Draws the hits of all Hit Collections of event with a marker of size and color on layer
    */
-  static void drawHits(LCEvent* event, int marker, int size, int color, int layer=0);
+  static void drawHits(LCEvent* event, int marker, int size, unsigned int color, unsigned int layer=0);
 
   /** Draws the hits of a track with a marker of size and color on layer
    */
-  static void drawTrack(Track* track, int marker, int size, int color, int layer=0);
+  static void drawTrack(Track* track, int marker, int size, unsigned int color, unsigned int layer=0);
 
   /** Draws the hits of a cluster with a marker of size and color on layer
    */
-  static void drawCluster(Cluster* cluster, int marker, int size, int color, int layer=0);
+  static void drawCluster(Cluster* cluster, int marker, int size, unsigned int color, unsigned int layer=0);
 
   /** Draws the hits of a recontructed particle reco with a marker of size and color on layer
    */
-  static void drawRecoParticle(ReconstructedParticle* reco, int marker, int size, int color, int layer=0);
+  static void drawRecoParticle(ReconstructedParticle* reco, int marker, int size, unsigned int color, unsigned int layer=0);
 
 protected:
 
@@ -201,7 +202,7 @@ protected:
   Processor* _last ;
 
   // helper method to draw hit collections by type
-  static void drawHitCollectionsByType(LCEvent* event, const char* type, int marker, int size, int color, int layer=0) {
+  static void drawHitCollectionsByType(LCEvent* event, const char* type, int marker, int size, unsigned int color, unsigned int layer=0) {
 
     std::vector< std::string >::const_iterator iter;
     const std::vector< std::string >* ColNames = event->getCollectionNames();
@@ -246,7 +247,7 @@ protected:
 
   // FIXME: Not so elegant, refine! Use iterators, templates etc. See drawHitCollectionsByType(...).
   // helper method to draw hit collections by MC Contribution
-  static void drawHitCollectionsByMCContribution(LCEvent* event, MCParticle* MCP, int marker, int size, int color, int layer=0) {
+  static void drawHitCollectionsByMCContribution(LCEvent* event, MCParticle* MCP, int marker, int size, unsigned int color, unsigned int layer=0) {
     
     std::vector< std::string >::const_iterator iter;
     const std::vector< std::string >* ColNames = event->getCollectionNames();
