@@ -1,3 +1,8 @@
+
+#ifdef USE_CLHEP  // only if CLHEP is available !
+#include "CLHEP/HepPDT/ParticleID.hh"
+#endif
+
 #include "MarlinCED.h"
 
 
@@ -55,33 +60,35 @@ void MarlinCED::draw( Processor* proc , int waitForKeyboard ) {
 
 }
 
-
 void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
-			  float px, float py, float pz, int marker, int size, int col,
-			  float rmin, float rmax, float zmax ) {
+			  float px, float py, float pz, int marker, int size, unsigned int col,
+			  float rmin, float rmax, float zmax) {
+
+  // FIXME : check for zmin as well, i.e. cylindrical coordinates
+
   
   double cFactor = 2.9979251e-4;
-  
+    
   double pt = sqrt(px*px + py*py); // hypot(px,py)
-
+    
   if( pt < 0.0000001 ) return ;
-
-//   double p  = sqrt(px*px + py*py + pz*pz); // hypot(pt,pz);
+  
+  //   double p  = sqrt(px*px + py*py + pz*pz); // hypot(pt,pz);
   
   double r =  pt / ( cFactor * b * std::abs( charge )  ) ;
-//   double phi = std::atan2( x , y ) ; 
-
+  //   double phi = std::atan2( x , y ) ; 
+  
   double sign =  charge > 0 ? 1 : -1 ;
   sign = - sign  ; // FIXME: need to check the convention - but this works !?
- 
+  
   double phi = std::atan2( py , px ) + ( 2. + sign ) * M_PI / 2. ;
-
-//   std::cout << "  atan2( py , px ) : " 
-// 	    << std::atan2( py , px ) 
-// 	    << " px,py,pz: " << px << ", " << py << ", " << pz 
-// 	    << " charge:  " << charge 
-// 	    << std::endl ;
-
+  
+  //   std::cout << "  atan2( py , px ) : " 
+  // 	    << std::atan2( py , px ) 
+  // 	    << " px,py,pz: " << px << ", " << py << ", " << pz 
+  // 	    << " charge:  " << charge 
+  // 	    << std::endl ;
+  
   //center of helix
   double cx = x - ( sign * py * r / pt ) ;
   double cy = y + ( sign * px * r / pt ) ;
@@ -90,23 +97,23 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
   double x1 =  x ; 
   double y1 =  y ;
   double z1 =  z ;
-  double step = 0.05 ; 
-
-  int nSteps  = 50 + int( 150. / pt ) ;
-
-  for (int j = 0; j < nSteps ; j++) {
-
-    double alpha = step*j ;  
+  double step = 0.05;
   
+  int nSteps  = 50 + int( 150. / pt ) ;
+  
+  for (int j = 0; j < nSteps ; j++) {
+    
+    double alpha = step*j ;  
+    
     double x2 = cx + r * cos( phi + sign * alpha ) ;
     double y2 = cy + r * sin( phi + sign * alpha ) ;
     double z2 = cz + r * alpha * pz / pt ;
     
     double r_current  = sqrt( x2*x2 + y2*y2); // hypot( x2, y2 ) 
-
+    
     if( std::abs(z2) > zmax || r_current > rmax  ) 
       break ;
-
+    
     if( r_current > rmin ) 
       ced_line( x1, y1, z1, x2, y2, z2 , marker , size, col);	 
     
@@ -114,11 +121,11 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
     y1 = y2;
     z1 = z2;
   }
-}
+} 
 
 
 
-void MarlinCED::drawSpike( float x0, float y0, float z0,float x1, float y1, float z1,unsigned int color, unsigned int layer ) {
+void MarlinCED::drawSpike( float x0, float y0, float z0,float x1, float y1, float z1, unsigned int color, unsigned int layer ) {
 
   //    const float s0 = 0.;
   const float s1 = .92;
@@ -148,44 +155,77 @@ void MarlinCED::drawSpike( float x0, float y0, float z0,float x1, float y1, floa
 }
 
 
-void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event, int marker, int size, int color, int layer, double BField) {
+void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event, int marker, int size, unsigned int color, unsigned int layer, double BField,
+			       double rmin, double zmin, double rmax, double zmax) {
 
 
   if ( MCP == 0 ) return;
-
-  // FIXME scales the lenght of the symbolised momentum line
-  double scale = 500.0;
  
-  float x1 = (float)MCP->getVertex()[0];
-  float y1 = (float)MCP->getVertex()[1];
-  float z1 = (float)MCP->getVertex()[2];
+  double x1 = MCP->getVertex()[0];
+  double y1 = MCP->getVertex()[1];
+  double z1 = MCP->getVertex()[2];
   
-  float x2 = (float)MCP->getEndpoint()[0];
-  float y2 = (float)MCP->getEndpoint()[1];
-  float z2 = (float)MCP->getEndpoint()[2];
+  double x2 = MCP->getEndpoint()[0];
+  double y2 = MCP->getEndpoint()[1];
+  double z2 = MCP->getEndpoint()[2];
 	
-  float p1 = (float)MCP->getMomentum()[0];
-  float p2 = (float)MCP->getMomentum()[1];
-  float p3 = (float)MCP->getMomentum()[2];
-  float p  = sqrt(p1*p1 + p2*p2 + p3*p3);
+  double p1 = MCP->getMomentum()[0];
+  double p2 = MCP->getMomentum()[1];
+  double p3 = MCP->getMomentum()[2];
+
+  float charge = 0.0;
+
+  #ifdef USE_CLHEP  // only if CLHEP is available !
+  charge =   HepPDT::ParticleID( MCP->getPDG() ).threeCharge() / 3.00;
+  #else
+  charge = MCP->getCharge();
+  #endif
+
+  // debug
+  // std::cout << BField << "  " << charge << "  " << x1 << "  " << y1 << "  " << z1 << "  " << p1 << "  " << p2 << "  " << p3 << "  " << color << std::endl;
+
   
-	
-  ced_hit(x1,y1,z1,0|layer<<CED_LAYER_SHIFT,4,0x00ff00);
-  ced_hit(x2,y2,z2,1|layer<<CED_LAYER_SHIFT,10,0xff0000);
-  ced_line(x1,y1,z1,x2,y2,z2,layer<<CED_LAYER_SHIFT,1,0xee9a49);
-  ced_line(x1,y1,z1,scale*(p1/p),scale*(p2/p),scale*(p3/p),layer<<CED_LAYER_SHIFT,1,0xeed8ae);
+  bool isCharged       = charge != 0.0;    
+  bool isNeutrino      = (MCP->getPDG()==12) || (MCP->getPDG()==14) || (MCP->getPDG()==16);
+  bool isBackscattered = MCP->isBackscatter();
+    
 
-  float charge = MCP->getCharge();
+  // charged MC Particles are displayed on layer and their SimHits optionally on (layer + 10)
+  if (isCharged && !isNeutrino && !isBackscattered) {
 
-  if ( charge != 0 ) drawHelix(BField,charge,x1,y1,z1,p1,p2,p3,0,0,0xee9a49);
+    drawHelix(BField,charge,x1,y1,z1,p1,p2,p3, marker | ( layer << CED_LAYER_SHIFT ), size, color, (float)rmin, (float)rmax, (float)zmax);
+    if (drawSimHits) drawHitCollectionsByMCContribution(event,MCP,marker,size,color,layer+10);
 
-  if (drawSimHits) drawHitCollectionsByMCContribution(event,MCP,marker,size,color,layer);
+  }
 
+  // neutral MC Particles are displayed on (layer+1) and their SimHits optionally on (layer + 11)
+  else if (!isCharged && !isNeutrino && !isBackscattered) {
+
+    ced_line(x1,y1,z1,x2,y2,z2, marker | ( (layer+1) << CED_LAYER_SHIFT ), size, color);
+    if (drawSimHits) drawHitCollectionsByMCContribution(event,MCP,marker,size,color,layer+11);
+
+  }
+  // backscatterd charged particles and neutrinos are displayed on (layer+2) and their SimHits optionally on (layer + 12)
+  else if (isCharged && !isNeutrino && isBackscattered) {
+
+    drawHelix(BField,charge,x1,y1,z1,p1,p2,p3, marker | ( (layer+2) << CED_LAYER_SHIFT ), size, color, (float)rmin, (float)rmax, (float)zmax);
+    if (drawSimHits) drawHitCollectionsByMCContribution(event,MCP,marker,size,color,layer+12);
+
+  }
+  // backscatterd charged particles and neutrinos are displayed on (layer+2) and their SimHits optionally on (layer + 12)
+  else if (!isCharged && isNeutrino || isBackscattered) {
+  
+    ced_line(x1,y1,z1,x2,y2,z2, marker | ( (layer+2) << CED_LAYER_SHIFT ), size, color);
+    if (drawSimHits) drawHitCollectionsByMCContribution(event,MCP,marker,size,color,layer+12);
+
+  }
+  else std::cout << "This MC Particle has not been displayed : " << MCP->getPDG() << std::endl;
+  
 }
 
 
 
-void MarlinCED::drawSimTrackerHits(LCEvent* event, int marker, int size, int color, int layer) {
+void MarlinCED::drawSimTrackerHits(LCEvent* event, int marker, int size, unsigned int color, unsigned int layer) {
 
   drawHitCollectionsByType(event,LCIO::SIMTRACKERHIT,marker,size,color,layer);
 
@@ -193,7 +233,7 @@ void MarlinCED::drawSimTrackerHits(LCEvent* event, int marker, int size, int col
 
 
 
-void MarlinCED::drawSimCalorimeterHits(LCEvent* event, int marker, int size, int color, int layer) {
+void MarlinCED::drawSimCalorimeterHits(LCEvent* event, int marker, int size, unsigned int color, unsigned int layer) {
 
   drawHitCollectionsByType(event,LCIO::SIMCALORIMETERHIT,marker,size,color,layer);
 
@@ -201,7 +241,7 @@ void MarlinCED::drawSimCalorimeterHits(LCEvent* event, int marker, int size, int
 
 
 
-void MarlinCED::drawSimHits(LCEvent* event, int marker, int size, int color, int layer) {
+void MarlinCED::drawSimHits(LCEvent* event, int marker, int size, unsigned int color, unsigned int layer) {
 
   drawHitCollectionsByType(event,LCIO::SIMTRACKERHIT,marker,size,color,layer);
   drawHitCollectionsByType(event,LCIO::SIMCALORIMETERHIT,marker,size,color,layer);
@@ -210,7 +250,7 @@ void MarlinCED::drawSimHits(LCEvent* event, int marker, int size, int color, int
 
 
 
-void MarlinCED::drawTrackerHits(LCEvent* event, int marker, int size, int color, int layer) {
+void MarlinCED::drawTrackerHits(LCEvent* event, int marker, int size, unsigned int color, unsigned int layer) {
 
   drawHitCollectionsByType(event,LCIO::TRACKERHIT,marker,size,color,layer);
 
@@ -218,14 +258,14 @@ void MarlinCED::drawTrackerHits(LCEvent* event, int marker, int size, int color,
 
 
 
-void MarlinCED::drawCalorimeterHits(LCEvent* event, int marker, int size, int color, int layer) {
+void MarlinCED::drawCalorimeterHits(LCEvent* event, int marker, int size, unsigned int color, unsigned int layer) {
 
   drawHitCollectionsByType(event,LCIO::CALORIMETERHIT,marker,size,color,layer);
 
 }
 
 
-void MarlinCED::drawHits(LCEvent* event, int marker, int size, int color, int layer) {
+void MarlinCED::drawHits(LCEvent* event, int marker, int size, unsigned int color, unsigned int layer) {
 
   drawHitCollectionsByType(event,LCIO::TRACKERHIT,marker,size,color,layer);
   drawHitCollectionsByType(event,LCIO::CALORIMETERHIT,marker,size,color,layer);
@@ -233,7 +273,7 @@ void MarlinCED::drawHits(LCEvent* event, int marker, int size, int color, int la
 }
 
 
-void MarlinCED::drawTrack(Track* track, int marker, int size, int color, int layer) {
+void MarlinCED::drawTrack(Track* track, int marker, int size, unsigned int color, unsigned int layer) {
 
   const TrackerHitVec trackerHits = track->getTrackerHits();
   
@@ -242,7 +282,7 @@ void MarlinCED::drawTrack(Track* track, int marker, int size, int color, int lay
 }
 
 
-void MarlinCED::drawCluster(Cluster* cluster, int marker, int size, int color, int layer) {
+void MarlinCED::drawCluster(Cluster* cluster, int marker, int size, unsigned int color, unsigned int layer) {
 
   const CalorimeterHitVec clusterHits = cluster->getCalorimeterHits();
   
@@ -251,7 +291,7 @@ void MarlinCED::drawCluster(Cluster* cluster, int marker, int size, int color, i
 }
 
 
-void MarlinCED::drawRecoParticle(ReconstructedParticle* reco, int marker, int size, int color, int layer) {
+void MarlinCED::drawRecoParticle(ReconstructedParticle* reco, int marker, int size, unsigned int color, unsigned int layer) {
 
 
   if ( reco == 0 ) return;
@@ -260,17 +300,16 @@ void MarlinCED::drawRecoParticle(ReconstructedParticle* reco, int marker, int si
   unsigned int NofClusters = reco->getClusters().size();
 
 
-  // FIXME: A track might be composed of several other tracks => insert a second loop
+  // FIXME: A track might be composed of several other tracks => insert a second, third, ... loop
   for (unsigned int i = 0; i < NofTracks; ++i) {
     
     Track* track = reco->getTracks()[i];
-
     drawTrack(track,marker,size,color,layer);
     
   }
 
   for (unsigned int i = 0; i < NofClusters; ++i) {
-    
+
     Cluster* cluster = reco->getClusters()[i];
     drawCluster(cluster,marker,size,color,layer);
 
