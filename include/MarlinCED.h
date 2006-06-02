@@ -154,7 +154,7 @@ class MarlinCED {
   /** Draws a thin line between vertex-point and end-point of a MC particle, another thin line at the vertex-point symbolising the initial momentum vector and all the hits in the SimTrackerHit- and SimCalorimeterHitCollections which are produced by this MC particle, if toggle drawSimHits is true. These SimHits are drawn with a marker of size and color. All objects are drawn on the same layer.
    */
   static void drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event, int marker, int size, unsigned int color, unsigned int layer=0, double BField = 4.0, 
-			     double rmin = 0.0, double zmin = 0.0, double rmax = 3000.0, double zmax = 4500.0);
+			     double rmin = 0.0, double zmin = 0.0, double rmax = 3000.0, double zmax = 4500.0, bool drawOnDifferentLayers = true);
 
   /** Draws the hits of all SimTrackerHit Collections of event with a marker of size and color on layer
    */

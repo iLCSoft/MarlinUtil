@@ -156,7 +156,7 @@ void MarlinCED::drawSpike( float x0, float y0, float z0,float x1, float y1, floa
 
 
 void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event, int marker, int size, unsigned int color, unsigned int layer, double BField,
-			       double rmin, double zmin, double rmax, double zmax) {
+			       double rmin, double zmin, double rmax, double zmax, bool drawOnDifferentLayers) {
 
 
   if ( MCP == 0 ) return;
@@ -175,6 +175,9 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
 
   float charge = 0.0;
 
+  unsigned int l = 0;
+  
+
   #ifdef USE_CLHEP  // only if CLHEP is available !
   charge =   HepPDT::ParticleID( MCP->getPDG() ).threeCharge() / 3.00;
   #else
@@ -186,7 +189,7 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
 
   
   bool isCharged       = charge != 0.0;    
-  bool isNeutrino      = (MCP->getPDG()==12) || (MCP->getPDG()==14) || (MCP->getPDG()==16);
+  bool isNeutrino      = (abs(MCP->getPDG())==12) || (abs(MCP->getPDG())==14) || (abs(MCP->getPDG())==16);
   bool isBackscattered = MCP->isBackscatter();
     
 
@@ -194,29 +197,53 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
   if (isCharged && !isNeutrino && !isBackscattered) {
 
     drawHelix(BField,charge,x1,y1,z1,p1,p2,p3, marker | ( layer << CED_LAYER_SHIFT ), size, color, (float)rmin, (float)rmax, (float)zmax);
-    if (drawSimHits) drawHitCollectionsByMCContribution(event,MCP,marker,size,color,layer+10);
+    if (drawSimHits) drawHitCollectionsByMCContribution(event,MCP,marker,size+2,color,layer+10);
 
   }
 
   // neutral MC Particles are displayed on (layer+1) and their SimHits optionally on (layer + 11)
   else if (!isCharged && !isNeutrino && !isBackscattered) {
 
-    ced_line(x1,y1,z1,x2,y2,z2, marker | ( (layer+1) << CED_LAYER_SHIFT ), size, color);
-    if (drawSimHits) drawHitCollectionsByMCContribution(event,MCP,marker,size,color,layer+11);
+    if (drawOnDifferentLayers) l = layer+1;
+    else l = layer;
+
+    ced_line(x1,y1,z1,x2,y2,z2, marker | ( l << CED_LAYER_SHIFT ), size, color);
+
+    if (drawSimHits) {
+      if (drawOnDifferentLayers) l = layer+11;
+      else l = layer+10;
+      drawHitCollectionsByMCContribution(event,MCP,marker,size+2,color,l);
+    }
 
   }
   // backscatterd charged particles and neutrinos are displayed on (layer+2) and their SimHits optionally on (layer + 12)
   else if (isCharged && !isNeutrino && isBackscattered) {
 
-    drawHelix(BField,charge,x1,y1,z1,p1,p2,p3, marker | ( (layer+2) << CED_LAYER_SHIFT ), size, color, (float)rmin, (float)rmax, (float)zmax);
-    if (drawSimHits) drawHitCollectionsByMCContribution(event,MCP,marker,size,color,layer+12);
+    if (drawOnDifferentLayers) l = layer+2;
+    else l = layer;
+
+    drawHelix(BField,charge,x1,y1,z1,p1,p2,p3, marker | ( l << CED_LAYER_SHIFT ), size, color, (float)rmin, (float)rmax, (float)zmax);
+
+    if (drawSimHits) {
+      if (drawOnDifferentLayers) l = layer+12;
+      else l = layer+10;
+      drawHitCollectionsByMCContribution(event,MCP,marker,size+2,color,l);
+    }
 
   }
   // backscatterd charged particles and neutrinos are displayed on (layer+2) and their SimHits optionally on (layer + 12)
   else if (!isCharged && isNeutrino || isBackscattered) {
   
-    ced_line(x1,y1,z1,x2,y2,z2, marker | ( (layer+2) << CED_LAYER_SHIFT ), size, color);
-    if (drawSimHits) drawHitCollectionsByMCContribution(event,MCP,marker,size,color,layer+12);
+    if (drawOnDifferentLayers) l = layer+2;
+    else l = layer;
+
+    ced_line(x1,y1,z1,x2,y2,z2, marker | ( l << CED_LAYER_SHIFT ), size, color);
+
+    if (drawSimHits) {
+      if (drawOnDifferentLayers) l = layer+12;
+      else l = layer+10;
+      drawHitCollectionsByMCContribution(event,MCP,marker,size+2,color,l);
+    }
 
   }
   else std::cout << "This MC Particle has not been displayed : " << MCP->getPDG() << std::endl;
