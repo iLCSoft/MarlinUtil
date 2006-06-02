@@ -14,9 +14,11 @@
 
 
 #include <lcio.h>
-//#include <EVENT/LCEvent.h>
+#include <EVENT/LCEvent.h>
 #include <EVENT/LCCollection.h>
 #include <EVENT/MCParticle.h>
+#include <EVENT/SimTrackerHit.h>
+#include <EVENT/SimCalorimeterHit.h>
 #include <EVENT/ReconstructedParticle.h>
 
 #include "HelixClass.h"
@@ -32,6 +34,8 @@ class MarlinUtil {
   static void printCluster(Cluster* cluster);
   static void printRecoParticle(ReconstructedParticle* recoParticle, double BField);
   static void printMCParticle(MCParticle* MCP, bool printDaughters = false);
+  static int countAllSimTrackerHits(LCEvent* evt,MCParticle* MCP);
+  static int countAllSimCalorimeterHits(LCEvent* evt,MCParticle* MCP,double& accumulatedSimCaloEnergy);
 
   /** Function to get the accumulated sum of the energy per event and the number of particles within different categories at IP. The return values are given in the array accumulatedEnergies of size 21 with the following content. Only MC particles with generator status 1 are considered:
    *

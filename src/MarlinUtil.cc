@@ -4,6 +4,8 @@
 
 // ____________________________________________________________________________________________________
 
+
+
 void MarlinUtil::printTrack(Track* track, double BField=4.0) {
   
   double d0 = track->getD0();
@@ -28,7 +30,11 @@ void MarlinUtil::printTrack(Track* track, double BField=4.0) {
   
 }
 
+
+
 // ____________________________________________________________________________________________________
+
+
 
 void MarlinUtil::printCluster(Cluster* cluster) {
     
@@ -44,7 +50,11 @@ void MarlinUtil::printCluster(Cluster* cluster) {
   
 }
 
+
+
 // ____________________________________________________________________________________________________
+
+
 
 void MarlinUtil::printRecoParticle(ReconstructedParticle* recoParticle, double BField=4.0) {
 
@@ -211,12 +221,99 @@ void MarlinUtil::printMCParticle(MCParticle* MCP, bool printDaughters) {
 
   }
   
-  std::cout  << "----------------------------------------------------------------------------------------------------------" << std::endl << std::endl;
+  std::cout  << "----------------------------------------------------------------------------------------------------------" << std::endl;
   
 }
 
 
+
 // ____________________________________________________________________________________________________
+
+
+
+int MarlinUtil::countAllSimTrackerHits(LCEvent* evt,MCParticle* MCP) {
+
+  int counter = 0;
+
+  std::vector< std::string >::const_iterator iter;
+  const std::vector< std::string >* ColNames = evt->getCollectionNames();
+  
+  for( iter = ColNames->begin() ; iter != ColNames->end() ; iter++) {
+    
+    LCCollection* col = evt->getCollection( *iter ) ;
+    
+    if ( col->getTypeName() == LCIO::SIMTRACKERHIT ) {
+      
+      int n = col->getNumberOfElements();
+
+      for(int i=0; i<n; ++i){
+
+	SimTrackerHit* hit = dynamic_cast<SimTrackerHit*>(col->getElementAt(i));
+	
+	if ( hit->getMCParticle() == MCP )  ++counter;
+	
+      }
+
+    }
+    
+  }
+  
+  return counter;  
+  
+}
+
+
+
+// ____________________________________________________________________________________________________
+
+
+
+int MarlinUtil::countAllSimCalorimeterHits(LCEvent* evt,MCParticle* MCP,double& accumulatedSimCaloEnergy) {
+
+  // initialise
+  int counter = 0;
+  accumulatedSimCaloEnergy = 0.0;
+
+  std::vector< std::string >::const_iterator iter;
+  const std::vector< std::string >* ColNames = evt->getCollectionNames();
+  
+  for( iter = ColNames->begin() ; iter != ColNames->end() ; iter++) {
+    
+    LCCollection* col = evt->getCollection( *iter ) ;
+    
+    if ( col->getTypeName() == LCIO::SIMCALORIMETERHIT ) {
+      
+      int n = col->getNumberOfElements();
+
+      for(int i=0; i<n; ++i){
+
+	SimCalorimeterHit* hit = dynamic_cast<SimCalorimeterHit*>(col->getElementAt(i));
+	
+	for(int j=0; j<hit->getNMCContributions (); ++j){
+	 
+	  if ( hit->getParticleCont(j) == MCP ) {
+
+	    ++counter;
+	    accumulatedSimCaloEnergy += hit->getEnergyCont(j);
+
+	  }
+	  
+	}
+	
+      }
+      
+    }
+    
+  }
+  
+  return counter;  
+  
+}
+
+
+
+// ____________________________________________________________________________________________________
+
 
 
 //============================================================================
@@ -483,7 +580,9 @@ void MarlinUtil::getMC_Balance(LCEvent * evt, double* accumulatedEnergies){
  } // End  MC_Balance
 
 
+
 // ____________________________________________________________________________________________________
+
 
 
 std::string MarlinUtil::getMCName(int PDGCode) {
@@ -513,7 +612,9 @@ std::string MarlinUtil::getMCName(int PDGCode) {
 }
 
 
+
 // ____________________________________________________________________________________________________
+
 
 
 int MarlinUtil::getPDGCode(std::string name) {
