@@ -74,7 +74,7 @@ class MarlinCED {
    */
   static void drawSpike(float x0, float y0, float z0, float x1, float y1, float z1, unsigned int color, unsigned int layer);
 
-  /** Draws the detector only. modelID: LDC(0) - default , SID(1), GLD(2). Needed if you would like to draw the detector wire frame several times in one event
+  /** Draws the detector only. modelID: LDC(0) - default , SID(1), GLD(2), CaliceTestBeam(3). Needed if you would like to draw the detector wire frame several times in one event
    */
   static void drawDetector(int modelID) {
     
@@ -127,17 +127,13 @@ class MarlinCED {
 	// radius, poligon order, angle degree, 1/2 length, shift in z, color
     }; 
 
-    /*
-
-
- ADD PROTOTYPE 
-
-
-      static CED_GeoCylinder geoCylinders[] = {    // for Prototype
-      {    180.0,  4,  45.0, 110.0, 0.0, 0xff },   // beam tube
-      {    500.0,  4,  45.0, 250.0, 220., 0xff }   // inner TPC
-      };
-    */
+   
+    static CED_GeoCylinder geoCylindersCaliceTestBeam[] = {  // Calice TestBeam Prototype (simple wire frame)
+      {  192.25*sqrt(2.0),  4,  45.0,  101.35, -2.0*101.35      , 0x7f7f1f  },    // ECAL (Proto03)
+      {  450.00*sqrt(2.0),  4,  45.0,  572.87,        0.00      , 0xcf00    },    // HCAL (TBHcal04)
+      {  500.00*sqrt(2.0),  4,  45.0,  457.60,  2.0*572.87+250.0, 0xcf00    },    // TCatcher (TBCatcher04)
+	// radius (surrounding (out-circle!) the polygon), poligon order, angle degree, 1/2 length, shift in z, color
+    }; 
 
     if (modelID == 0) {
       ced_geocylinders(sizeof(geoCylindersLDC)/sizeof(CED_GeoCylinder),geoCylindersLDC);
@@ -148,6 +144,10 @@ class MarlinCED {
     else if (modelID == 2) {
       ced_geocylinders(sizeof(geoCylindersGLD)/sizeof(CED_GeoCylinder),geoCylindersGLD);
     }
+    else if (modelID == 3) {
+      ced_geocylinders(sizeof(geoCylindersCaliceTestBeam)/sizeof(CED_GeoCylinder),geoCylindersCaliceTestBeam);
+    }
+
 
   }
   
