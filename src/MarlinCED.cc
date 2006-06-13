@@ -71,7 +71,7 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
     
   double pt = sqrt(px*px + py*py); // hypot(px,py)
     
-  if( pt < 0.0000001 ) return ;
+  if( pt < 0.0000001 ) return;
   
   //   double p  = sqrt(px*px + py*py + pz*pz); // hypot(pt,pz);
   
@@ -172,7 +172,9 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
   double p1 = MCP->getMomentum()[0];
   double p2 = MCP->getMomentum()[1];
   double p3 = MCP->getMomentum()[2];
-
+  
+  double pt = sqrt(p1*p1 + p2*p2);
+  
   float charge = 0.0;
 
   unsigned int l = 0;
@@ -187,7 +189,10 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
   // debug
   // std::cout << BField << "  " << charge << "  " << x1 << "  " << y1 << "  " << z1 << "  " << p1 << "  " << p2 << "  " << p3 << "  " << color << std::endl;
 
-  
+  // if pt < 0.0000001 set charge to 0 and draw a line instead. See method drawHelix(...) as well
+  if( pt < 0.0000001 ) charge = 0.0;
+
+
   bool isCharged       = charge != 0.0;    
   bool isNeutrino      = (abs(MCP->getPDG())==12) || (abs(MCP->getPDG())==14) || (abs(MCP->getPDG())==16);
   bool isBackscattered = MCP->isBackscatter();
