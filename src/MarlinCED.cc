@@ -155,7 +155,7 @@ void MarlinCED::drawSpike( float x0, float y0, float z0,float x1, float y1, floa
 }
 
 
-void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event, int marker, int size, unsigned int color, unsigned int layer, double BField,
+void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event, int marker, int size, unsigned int color, unsigned int layer, double bField,
 			       double rmin, double zmin, double rmax, double zmax, bool drawOnDifferentLayers) {
 
 
@@ -187,7 +187,7 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
   #endif
 
   // debug
-  // std::cout << BField << "  " << charge << "  " << x1 << "  " << y1 << "  " << z1 << "  " << p1 << "  " << p2 << "  " << p3 << "  " << color << std::endl;
+  // std::cout << bField << "  " << charge << "  " << x1 << "  " << y1 << "  " << z1 << "  " << p1 << "  " << p2 << "  " << p3 << "  " << color << std::endl;
 
   // if pt < 0.0000001 set charge to 0 and draw a line instead. See method drawHelix(...) as well
   if( pt < 0.0000001 ) charge = 0.0;
@@ -201,7 +201,7 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
   // charged MC Particles are displayed on layer and their SimHits optionally on (layer + 10)
   if (isCharged && !isNeutrino && !isBackscattered) {
 
-    drawHelix(BField,charge,x1,y1,z1,p1,p2,p3, marker | ( layer << CED_LAYER_SHIFT ), size, color, (float)rmin, (float)rmax, (float)zmax);
+    drawHelix(bField,charge,x1,y1,z1,p1,p2,p3, marker | ( layer << CED_LAYER_SHIFT ), size, color, (float)rmin, (float)rmax, (float)zmax);
     if (drawSimHits) drawHitCollectionsByMCContribution(event,MCP,marker,size+2,color,layer+10);
 
   }
@@ -227,7 +227,7 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
     if (drawOnDifferentLayers) l = layer+2;
     else l = layer;
 
-    drawHelix(BField,charge,x1,y1,z1,p1,p2,p3, marker | ( l << CED_LAYER_SHIFT ), size, color, (float)rmin, (float)rmax, (float)zmax);
+    drawHelix(bField,charge,x1,y1,z1,p1,p2,p3, marker | ( l << CED_LAYER_SHIFT ), size, color, (float)rmin, (float)rmax, (float)zmax);
 
     if (drawSimHits) {
       if (drawOnDifferentLayers) l = layer+12;
@@ -251,8 +251,73 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
     }
 
   }
-  else std::cout << "This MC Particle has not been displayed : " << MCP->getPDG() << std::endl;
+  else std::cout << "This MC Particle has not been displayed : id = " << MCP->id() << "  " << "PDG Code : " << MCP->getPDG() << std::endl;
   
+}
+
+
+
+void MarlinCED::drawMCParticleTree(LCEvent* event, std::string colNameMC, double energyCut,  double bField, double rIn, double zIn, double rOut, double zOut) {
+
+  
+  try {
+    
+    std::vector< std::string >::const_iterator i;
+    const std::vector< std::string >* ColNames = event->getCollectionNames();
+    
+    for( i = ColNames->begin() ; i != ColNames->end() ; i++) {
+      
+      LCCollection* col = event->getCollection( *i ) ;
+      
+      if ( (col->getTypeName() == LCIO::MCPARTICLE) && (*i == colNameMC) ) {
+	
+	int nMCP = col->getNumberOfElements();
+
+	for(int j=0; j<nMCP; ++j){
+
+	  MCParticle* mcP = dynamic_cast<MCParticle*> ( col->getElementAt( j ) ) ;
+
+	  double energy = mcP->getEnergy();
+
+	  if ( energy >= energyCut ) {
+
+	    const double* rStart = mcP->getVertex();
+	    const double* rEnd   = mcP->getEndpoint();
+
+	    double r2Start_rp = rStart[0]*rStart[0] + rStart[1]*rStart[1];
+	    double zStart     = rStart[2];
+	    
+	    double r2End_rp   = rEnd[0]*rEnd[0] + rEnd[1]*rEnd[1];
+	    double zEnd       = rEnd[2];
+	    
+	    // completely inside innermost detector
+	    bool withinInnerDetector = (r2Start_rp < rIn*rIn) && (r2End_rp < rIn*rIn) && (zStart < zIn) && (zEnd < zIn);
+	    // completely beyond outermost detector not taking into account the calorimeters (because of showering)
+	    bool beyondOuterDetector = (r2Start_rp > rOut*rOut) && (r2End_rp > rOut*rOut) && (zStart > zOut) && (zEnd > zOut);
+	  
+	    if (!withinInnerDetector && !beyondOuterDetector) {
+
+	      unsigned int color = MarlinDrawUtil::getColor(mcP->getPDG());   
+	  
+	      MarlinCED::drawMCParticle(mcP,true,event,2,1,color,1,bField,rIn,zIn,rOut,zOut, true);
+	     
+	    }
+
+	  }
+
+	}
+
+      }
+
+    }
+
+  }
+  catch(DataNotAvailableException &e){
+
+    std::cout << "no valid MC collection in event." << std::endl ;
+
+  };
+
 }
 
 

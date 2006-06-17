@@ -19,6 +19,8 @@
 #include <EVENT/SimTrackerHit.h>
 #include <EVENT/SimCalorimeterHit.h>
 
+#include <MarlinDrawUtil.h>
+
 
 
 using namespace marlin ;
@@ -153,8 +155,13 @@ class MarlinCED {
   
   /** Draws a thin line between vertex-point and end-point of a MC particle, another thin line at the vertex-point symbolising the initial momentum vector and all the hits in the SimTrackerHit- and SimCalorimeterHitCollections which are produced by this MC particle, if toggle drawSimHits is true. These SimHits are drawn with a marker of size and color. All objects are drawn on the same layer.
    */
-  static void drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event, int marker, int size, unsigned int color, unsigned int layer=0, double BField = 4.0, 
+  static void drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event, int marker, int size, unsigned int color, unsigned int layer=0, double bField = 4.0, 
 			     double rmin = 0.0, double zmin = 0.0, double rmax = 3000.0, double zmax = 4500.0, bool drawOnDifferentLayers = true);
+
+  /** Draws the full MC Particle Tree on the layers 1, 2 and 3. On layer 1 the charged particles are displayed and on layer shift-1 their corresponding SimHits. On layer 2 all the neutral particles are shown, again with their SimHits on layer shift-2. The layers 3 and shift-3 are used for the backscattered MC Particles. The variables energyCut, rIn, zIn, rOut and zOut are cut values meant to reduce the number particles displayed; i.e. only particles with energy larger than 'energyCut' and within the cylinder described by rIn, zIn, rOut, zOut are shown.
+   */
+  static void drawMCParticleTree(LCEvent* event, std::string colNameMC, double energyCut,  double bField = 4.0, double rIn = 0.0, double zIn = 0.0, 
+				 double rOut = 3000.0 , double zOut = 4500.0);
 
   /** Draws the hits of all SimTrackerHit Collections of event with a marker of size and color on layer
    */
@@ -203,45 +210,50 @@ protected:
 
   // helper method to draw hit collections by type
   static void drawHitCollectionsByType(LCEvent* event, const char* type, int marker, int size, unsigned int color, unsigned int layer=0) {
-
-    std::vector< std::string >::const_iterator iter;
-    const std::vector< std::string >* ColNames = event->getCollectionNames();
     
-    for( iter = ColNames->begin() ; iter != ColNames->end() ; iter++) {
+    try {
       
-      LCCollection* col = event->getCollection( *iter ) ;
-
-      if ( col->getTypeName() == type ) {
-
-	if ( type == LCIO::SIMTRACKERHIT ) {
-
-	  LCTypedVector<SimTrackerHit> v(col);
-	  drawObjectsWithPosition(v.begin(),v.end(),marker,size,color,layer);
-
-	}
-
-	if ( type == LCIO::SIMCALORIMETERHIT ) {
+      std::vector< std::string >::const_iterator iter;
+      const std::vector< std::string >* ColNames = event->getCollectionNames();
+      
+      for( iter = ColNames->begin() ; iter != ColNames->end() ; iter++) {
+	
+	LCCollection* col = event->getCollection( *iter ) ;
+	
+	if ( col->getTypeName() == type ) {
 	  
-	  LCTypedVector<SimCalorimeterHit> v(col);
-	  drawObjectsWithPosition(v.begin(),v.end(),marker,size,color,layer);
-
-	}
-
-	if ( type == LCIO::TRACKERHIT ) {
-
-	  LCTypedVector<TrackerHit> v(col);
-	  drawObjectsWithPosition(v.begin(),v.end(),marker,size,color,layer);
-
-	}
-
-	if ( type == LCIO::CALORIMETERHIT ) {
+	  if ( type == LCIO::SIMTRACKERHIT ) {
+	    
+	    LCTypedVector<SimTrackerHit> v(col);
+	    drawObjectsWithPosition(v.begin(),v.end(),marker,size,color,layer);
+	    
+	  }
 	  
-	  LCTypedVector<CalorimeterHit> v(col);
-	  drawObjectsWithPosition(v.begin(),v.end(),marker,size,color,layer);
-
+	  if ( type == LCIO::SIMCALORIMETERHIT ) {
+	    
+	    LCTypedVector<SimCalorimeterHit> v(col);
+	    drawObjectsWithPosition(v.begin(),v.end(),marker,size,color,layer);
+	    
+	  }
+	  
+	  if ( type == LCIO::TRACKERHIT ) {
+	    
+	    LCTypedVector<TrackerHit> v(col);
+	    drawObjectsWithPosition(v.begin(),v.end(),marker,size,color,layer);
+	    
+	  }
+	  
+	  if ( type == LCIO::CALORIMETERHIT ) {
+	    
+	    LCTypedVector<CalorimeterHit> v(col);
+	    drawObjectsWithPosition(v.begin(),v.end(),marker,size,color,layer);
+	    
+	  }
 	}
       }
-    }
+    }    
+    catch(DataNotAvailableException &e){}
+
   }
 
 
