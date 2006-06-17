@@ -6,27 +6,19 @@
 
 
 
-void MarlinUtil::printTrack(Track* track, double BField=4.0) {
-  
+void MarlinUtil::printTrack(Track* track, double bField) {
+
+  const double* p = getMomentum(track,bField);
+  const double pAbs = getAbsMomentum(track,bField);
   double d0 = track->getD0();
   double z0 = track->getZ0();
-  double phi0 = track->getPhi();
   double omega = track->getOmega();
+  double phi0  = track->getPhi();
   double tanlambda = track->getTanLambda();
-  HelixClass * helix = new HelixClass();
-  helix->Initialize_Canonical(phi0, d0, z0, omega, tanlambda,BField);
-
-  const float* p = helix->getMomentum();
-  float pabs = 0.0;
-  for (int i = 0; i < 3 ; ++i) pabs += p[i]*p[i];
-  pabs = sqrt(pabs);
   
-  std::cout << "Track id() : " << track->id() << "  " << "|p| = " << pabs << "  " << "(" << p[0] << "," << p[1] << "," << p[2] << ")" << "  "
+  std::cout << "Track id() : " << track->id() << "  " << "|p| = " << pAbs << "  " << "(" << p[0] << "," << p[1] << "," << p[2] << ")" << "  "
 	    << "(d0,z0,phi0,omega,tanL) = " << "(" << d0 << "," << z0 << "," << phi0 << "," << omega << "," << tanlambda << ")" << std::endl 
 	    << "   " << "Ri = " << track->getRadiusOfInnermostHit() << "  " << "# of SubTracks = " << track->getTracks().size() << std::endl;
-
-  delete helix;
-  helix = 0;
   
 }
 
@@ -35,6 +27,55 @@ void MarlinUtil::printTrack(Track* track, double BField=4.0) {
 // ____________________________________________________________________________________________________
 
 
+
+const double* MarlinUtil::getMomentum(Track* track, double bField) {
+  
+  double d0 = track->getD0();
+  double z0 = track->getZ0();
+  double omega = track->getOmega();
+  double phi0  = track->getPhi();
+  double tanlambda = track->getTanLambda();
+  
+  HelixClass* helix = new HelixClass();
+  helix->Initialize_Canonical(phi0, d0, z0, omega, tanlambda, bField);
+
+  double p[3];
+
+  for (int k=0; k < 3; ++k) p[k] = helix->getMomentum()[k];
+  
+  delete helix;
+  helix = 0;
+
+  const double* pP = p;
+
+  return pP;
+
+}
+
+
+
+// ____________________________________________________________________________________________________
+
+
+
+const double MarlinUtil::getAbsMomentum(Track* track, double bField) {
+  
+  const double* p = getMomentum(track,bField);
+  
+  double pAbs = 0.0;
+
+  for (int i = 0; i < 3 ; ++i) pAbs += p[i]*p[i];
+  pAbs = sqrt(pAbs);
+
+  const double pAbsReturn = pAbs;
+
+  return pAbsReturn;
+  
+}
+
+
+
+// ____________________________________________________________________________________________________
 
 void MarlinUtil::printCluster(Cluster* cluster) {
     
@@ -56,7 +97,7 @@ void MarlinUtil::printCluster(Cluster* cluster) {
 
 
 
-void MarlinUtil::printRecoParticle(ReconstructedParticle* recoParticle, double BField=4.0) {
+void MarlinUtil::printRecoParticle(ReconstructedParticle* recoParticle, double bField) {
 
 
   double xRef = recoParticle->getReferencePoint()[0];
@@ -111,27 +152,8 @@ void MarlinUtil::printRecoParticle(ReconstructedParticle* recoParticle, double B
   for (int iOfTracks = 0; iOfTracks<nOfTracks; ++iOfTracks) {
     
     Track* track = recoParticle->getTracks()[iOfTracks];
-    
-    double d0 = track->getD0();
-    double z0 = track->getZ0();
-    double phi0 = track->getPhi();
-    double omega = track->getOmega();
-    double tanlambda = track->getTanLambda();
-    HelixClass * helix = new HelixClass();
-    helix->Initialize_Canonical(phi0, d0, z0, omega, tanlambda,BField);
 
-    const float* p = helix->getMomentum();
-    float pabs = 0.0;
-    for (int i = 0; i < 3 ; ++i) pabs += p[i]*p[i];
-    pabs = sqrt(pabs);
-
-    std::cout << iOfTracks << "  " << "|p| = " << pabs << "  " << "(" << p[0] << "," << p[1] << "," << p[2] << ")" << "  " 
-	      << "(d0,z0,phi0,omega,tanL) = " << "(" << d0 << "," << z0 << "," << phi0 << "," << omega << "," << tanlambda << ")" << std::endl 
-	      << "   " << "Ri = " << track->getRadiusOfInnermostHit() << "  " << "# of SubTracks = " << track->getTracks().size() << std::endl;
-    
-    
-    delete helix;
-    helix = 0;
+    printTrack(track,bField);
 
   }
 

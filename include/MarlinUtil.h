@@ -30,9 +30,11 @@ class MarlinUtil {
 
 
  public:
-  static void printTrack(Track* track, double BField);
+  static void printTrack(Track* track, double bField=4.0);
+  static const double* getMomentum(Track* track, double bField=4.0);
+  static const double getAbsMomentum(Track* track, double bField=4.0);
   static void printCluster(Cluster* cluster);
-  static void printRecoParticle(ReconstructedParticle* recoParticle, double BField);
+  static void printRecoParticle(ReconstructedParticle* recoParticle, double bField=4.0);
   static void printMCParticle(MCParticle* MCP, bool printDaughters = false);
   static int countAllSimTrackerHits(LCEvent* evt,MCParticle* MCP);
   static int countAllSimCalorimeterHits(LCEvent* evt,MCParticle* MCP,double& accumulatedSimCaloEnergy);
