@@ -431,7 +431,7 @@ float HelixClass::getPointInZ(float zLine, float * ref, float * point) {
 
 
 
-float HelixClass::getDistanceToPoint(const float* xPoint, float* Distance) {
+float HelixClass::getDistanceToPoint(float* xPoint, float* Distance) {
 
   float pointOnHelix[3] = {0.0,0.0,0.0};
   
@@ -440,7 +440,7 @@ float HelixClass::getDistanceToPoint(const float* xPoint, float* Distance) {
 }
 
 
-float HelixClass::getDistanceToPoint(const float* xPoint, float* Distance, float* pointOnHelix) {
+float HelixClass::getDistanceToPoint(float* xPoint, float* Distance, float* pointOnHelix) {
 
   float xOnHelix, yOnHelix, zOnHelix;
   float phi = atan2(xPoint[1]-_yCentre,xPoint[0]-_xCentre);
@@ -558,9 +558,11 @@ float HelixClass::getPathLength(float* point1, float* point2) {
 }
 
 
-bool HelixClass::isOnHelix(float* point) {
+bool HelixClass::isOnHelix(const float* point) {
 
   // still missing
+
+  return false;
 
 }
 
