@@ -1,9 +1,9 @@
-
 #include "HelixClass.h"
 #include <math.h>
 #include <stdlib.h>
 #include <iostream>
 #include "ced_cli.h"
+
 
 HelixClass::HelixClass() {
     _const_pi = acos(-1.0);
@@ -102,6 +102,9 @@ void HelixClass::Initialize_BZ(float xCentre, float yCentre, float radius,
 			       float bZ, float phi0, float B, float signPz,
 			       float zBegin) {
 
+  // FIXME: _phiZ, _bZ are NOT initialised correctely with the other two init methods
+  _phiZ = phi0;
+  _bZ = bZ;
   _radius = radius;
   _pxy = _FCT*B*_radius;
   _charge = -(bZ*signPz)/fabs(bZ*signPz);
@@ -426,7 +429,18 @@ float HelixClass::getPointInZ(float zLine, float * ref, float * point) {
 
 }
 
-float HelixClass::getDistanceToPoint(float * xPoint, float * Distance) {
+
+
+float HelixClass::getDistanceToPoint(const float* xPoint, float* Distance) {
+
+  float pointOnHelix[3] = {0.0,0.0,0.0};
+  
+  return getDistanceToPoint(xPoint,Distance,pointOnHelix);
+
+}
+
+
+float HelixClass::getDistanceToPoint(const float* xPoint, float* Distance, float* pointOnHelix) {
 
   float xOnHelix, yOnHelix, zOnHelix;
   float phi = atan2(xPoint[1]-_yCentre,xPoint[0]-_xCentre);
@@ -475,10 +489,14 @@ float HelixClass::getDistanceToPoint(float * xPoint, float * Distance) {
   else {
     Time = _charge*_radius*DPhi/_pxy;
   }
-
+  
   Distance[0] = DistXY;
   Distance[1] = DistZ;
   Distance[2] = sqrt(DistXY*DistXY+DistZ*DistZ);
+  
+  pointOnHelix[0] = xOnHelix;
+  pointOnHelix[1] = yOnHelix;
+  pointOnHelix[2] = zOnHelix;
 
   return Time;
 
@@ -504,9 +522,10 @@ float * HelixClass::getDistanceToHelix(HelixClass * helix, float * pos, float * 
   float rad1 = _radius;
   float rad2 = helix->getRadius();
 
-  
-
   float distance = sqrt((x01-x02)*(x01-x02)+(y01-y02)*(y01-y02));
+
+  // FIXME: change return value of this method
+  return pos;
 
 }
 
@@ -526,3 +545,22 @@ void HelixClass::getExtrapolatedMomentum(float * pos, float * momentum) {
 
 
 }
+
+
+float HelixClass::getPathLength(float* point1, float* point2) {
+
+  // FIXME: check mechanism wether the points are on the helix or not is needed
+  
+  float pathLength = sqrt( (_bZ*_radius)*(_bZ*_radius) +1 ) * (point2[2] - point1[2]);
+  
+  return pathLength;
+
+}
+
+
+bool HelixClass::isOnHelix(float* point) {
+
+  // still missing
+
+}
+
