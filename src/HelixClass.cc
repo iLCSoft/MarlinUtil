@@ -440,6 +440,28 @@ float HelixClass::getDistanceToPoint(float* xPoint, float* Distance) {
 }
 
 
+float HelixClass::getDistanceToPoint(const float* xPoint, float* Distance) {
+
+  float pointOnHelix[3] = {0.0,0.0,0.0};
+
+  float x[3] = {0.0,0.0,0.0};   
+  for (unsigned int i = 0; i < 3; ++i) x[i] = xPoint[i];
+
+  return getDistanceToPoint(x,Distance,pointOnHelix);
+
+}
+
+
+float HelixClass::getDistanceToPoint(const float* xPoint, float* Distance, float* pointOnHelix) {
+
+  float x[3] = {0.0,0.0,0.0};   
+  for (unsigned int i = 0; i < 3; ++i) x[i] = xPoint[i];
+
+  return getDistanceToPoint(x,Distance,pointOnHelix);
+
+}
+
+
 float HelixClass::getDistanceToPoint(float* xPoint, float* Distance, float* pointOnHelix) {
 
   float xOnHelix, yOnHelix, zOnHelix;

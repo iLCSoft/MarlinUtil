@@ -43,7 +43,7 @@
  *    z (beam) axis and determination of the distance of closest approach<br>
  *    from arbitrary 3D point to the helix. <br>
  *    @author A. Raspereza (DESY)<br>
- *    @version $Id: HelixClass.h,v 1.9 2006-06-17 19:12:15 owendt Exp $<br>
+ *    @version $Id: HelixClass.h,v 1.10 2006-06-17 19:25:33 owendt Exp $<br>
  *
  */
 
@@ -195,10 +195,27 @@ class HelixClass {
     float getDistanceToPoint(float* xPoint, float* Distance);
 
     /**
+     * Return distance of the closest approach of the helix to <br>
+     * arbitrary 3D point in space. xPoint[3] - coordinates of <br>
+     * space point. Distance[3] - vector of distances of helix to <br> 
+     * a given point in various projections : <br>
+     * Distance[0] - distance in R-Phi plane <br>
+     * Distance[1] - distance along Z axis <br>
+     * Distance[2] - 3D distance <br> 
+     */
+    float getDistanceToPoint(const float* xPoint, float* Distance);
+
+    /**
      * Similar to getDistanceToPoint(float* xPoint, float* Distance).<br>
      * Additionally this method returns the corresponding 3-dim point on helix.
      */
     float getDistanceToPoint(float* xPoint, float* Distance, float* pointOnHelix);
+
+    /**
+     * Similar to getDistanceToPoint(float* xPoint, float* Distance).<br>
+     * Additionally this method returns the corresponding 3-dim point on helix.
+     */
+    float getDistanceToPoint(const float* xPoint, float* Distance, float* pointOnHelix);
 
     /**
      * This method calculates coordinates of helix intersection <br>
