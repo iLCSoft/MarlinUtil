@@ -43,7 +43,7 @@
  *    z (beam) axis and determination of the distance of closest approach<br>
  *    from arbitrary 3D point to the helix. <br>
  *    @author A. Raspereza (DESY)<br>
- *    @version $Id: HelixClass.h,v 1.10 2006-06-17 19:25:33 owendt Exp $<br>
+ *    @version $Id: HelixClass.h,v 1.11 2006-07-04 08:37:14 owendt Exp $<br>
  *
  */
 
@@ -322,8 +322,12 @@ class HelixClass {
     float _xStart[3]; // Starting point of track segment
     float _xEnd[3]; // Ending point of track segment
 
-    float _bZ;
     float _phiZ;
+    float _bZ;
+
+    
+    void printParameters();
+
 
 };
 
