@@ -18,7 +18,8 @@ void MarlinUtil::printTrack(Track* track, double bField) {
   
   std::cout << "Track id() : " << track->id() << "  " << "|p| = " << pAbs << "  " << "(" << p[0] << "," << p[1] << "," << p[2] << ")" << "  "
 	    << "(d0,z0,phi0,omega,tanL) = " << "(" << d0 << "," << z0 << "," << phi0 << "," << omega << "," << tanlambda << ")" << std::endl 
-	    << "   " << "Ri = " << track->getRadiusOfInnermostHit() << "  " << "# of SubTracks = " << track->getTracks().size() << std::endl;
+	    << "   " << "Ri = " << track->getRadiusOfInnermostHit() << "  " << "# of SubTracks = " << track->getTracks().size() 
+	    << "   " << "# of tracke hits = " << track->getTrackerHits().size() << std::endl;
   
 }
 
@@ -74,7 +75,6 @@ const double MarlinUtil::getAbsMomentum(Track* track, double bField) {
 }
 
 
-
 // ____________________________________________________________________________________________________
 
 void MarlinUtil::printCluster(Cluster* cluster) {
@@ -117,12 +117,13 @@ void MarlinUtil::printRecoParticle(ReconstructedParticle* recoParticle, double b
   std::string typeName("not assigned");
   
   switch (type) {
-  case 0 : typeName = "no type";                break;
-  case 1 : typeName = "electron/positron";      break;
-  case 2 : typeName = "charged hadron or muon"; break;
-  case 3 : typeName = "photon";                 break;
-  case 4 : typeName = "neutral hadron";         break;
-  case 5 : typeName = "compound object";        break;
+  case 0  : typeName = "no type";                        break;
+  case 1  : typeName = "electron/positron";              break;
+  case 2  : typeName = "charged hadron (Wolf: or muon)"; break;
+  case 3  : typeName = "photon";                         break;
+  case 4  : typeName = "neutral hadron";                 break;
+  case 5  : typeName = "muon";                           break;
+  case 99 : typeName = "compound object";                break;
   }
   
   int nParticleIDs = recoParticle->getParticleIDs().size();
