@@ -70,57 +70,66 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
   double cFactor = 2.9979251e-4;
     
   double pt = sqrt(px*px + py*py); // hypot(px,py)
+
+
+  // FIXME: use a parameter for this cut 2006/06/20 OW    
+  if( pt >= 0.0000001 ) {
+  
+    //   double p  = sqrt(px*px + py*py + pz*pz); // hypot(pt,pz);
     
-  if( pt < 0.0000001 ) return;
-  
-  //   double p  = sqrt(px*px + py*py + pz*pz); // hypot(pt,pz);
-  
-  double r =  pt / ( cFactor * b * std::abs( charge )  ) ;
-  //   double phi = std::atan2( x , y ) ; 
-  
-  double sign =  charge > 0 ? 1 : -1 ;
-  sign = - sign  ; // FIXME: need to check the convention - but this works !?
-  
-  double phi = std::atan2( py , px ) + ( 2. + sign ) * M_PI / 2. ;
-  
-  //   std::cout << "  atan2( py , px ) : " 
-  // 	    << std::atan2( py , px ) 
-  // 	    << " px,py,pz: " << px << ", " << py << ", " << pz 
-  // 	    << " charge:  " << charge 
-  // 	    << std::endl ;
-  
-  //center of helix
-  double cx = x - ( sign * py * r / pt ) ;
-  double cy = y + ( sign * px * r / pt ) ;
-  double cz = z ; 
-  
-  double x1 =  x ; 
-  double y1 =  y ;
-  double z1 =  z ;
-  double step = 0.05;
-  
-  int nSteps  = 50 + int( 150. / pt ) ;
-  
-  for (int j = 0; j < nSteps ; j++) {
+    double r =  pt / ( cFactor * b * std::abs( charge )  ) ;
+    //   double phi = std::atan2( x , y ) ; 
     
-    double alpha = step*j ;  
+    double sign =  charge > 0 ? 1 : -1 ;
+    sign = - sign  ; // FIXME: need to check the convention - but this works !?
     
-    double x2 = cx + r * cos( phi + sign * alpha ) ;
-    double y2 = cy + r * sin( phi + sign * alpha ) ;
-    double z2 = cz + r * alpha * pz / pt ;
+    double phi = std::atan2( py , px ) + ( 2. + sign ) * M_PI / 2. ;
     
-    double r_current  = sqrt( x2*x2 + y2*y2); // hypot( x2, y2 ) 
+    //   std::cout << "  atan2( py , px ) : " 
+    // 	    << std::atan2( py , px ) 
+    // 	    << " px,py,pz: " << px << ", " << py << ", " << pz 
+    // 	    << " charge:  " << charge 
+    // 	    << std::endl ;
     
-    if( std::abs(z2) > zmax || r_current > rmax  ) 
-      break ;
+    //center of helix
+    double cx = x - ( sign * py * r / pt ) ;
+    double cy = y + ( sign * px * r / pt ) ;
+    double cz = z ; 
     
-    if( r_current > rmin ) 
-      ced_line( x1, y1, z1, x2, y2, z2 , marker , size, col);	 
+    double x1 =  x ; 
+    double y1 =  y ;
+    double z1 =  z ;
+    double step = 0.05;
     
-    x1 = x2;
-    y1 = y2;
-    z1 = z2;
+    int nSteps  = 50 + int( 150. / pt ) ;
+    
+    for (int j = 0; j < nSteps ; j++) {
+      
+      double alpha = step*j ;  
+      
+      double x2 = cx + r * cos( phi + sign * alpha ) ;
+      double y2 = cy + r * sin( phi + sign * alpha ) ;
+      double z2 = cz + r * alpha * pz / pt ;
+      
+      double r_current  = sqrt( x2*x2 + y2*y2); // hypot( x2, y2 ) 
+      
+      if( std::abs(z2) > zmax || r_current > rmax  ) 
+	break ;
+    
+      if( r_current > rmin ) 
+	ced_line( x1, y1, z1, x2, y2, z2 , marker , size, col);	 
+      
+      x1 = x2;
+      y1 = y2;
+      z1 = z2;
+    }
   }
+  else { //if pt < 0.0000001, draw a straight line from start point to zmax parallel to z axis
+      
+    ced_line( x, y, z, x, y, zmax , marker , size, col);	 
+    
+  }
+
 } 
 
 
@@ -173,8 +182,6 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
   double p2 = MCP->getMomentum()[1];
   double p3 = MCP->getMomentum()[2];
   
-  double pt = sqrt(p1*p1 + p2*p2);
-  
   float charge = 0.0;
 
   unsigned int l = 0;
@@ -188,10 +195,6 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
 
   // debug
   // std::cout << bField << "  " << charge << "  " << x1 << "  " << y1 << "  " << z1 << "  " << p1 << "  " << p2 << "  " << p3 << "  " << color << std::endl;
-
-  // if pt < 0.0000001 set charge to 0 and draw a line instead. See method drawHelix(...) as well
-  if( pt < 0.0000001 ) charge = 0.0;
-
 
   bool isCharged       = charge != 0.0;    
   bool isNeutrino      = (abs(MCP->getPDG())==12) || (abs(MCP->getPDG())==14) || (abs(MCP->getPDG())==16);
@@ -380,6 +383,15 @@ void MarlinCED::drawTrack(Track* track, int marker, int size, unsigned int color
 
 
 void MarlinCED::drawCluster(Cluster* cluster, int marker, int size, unsigned int color, unsigned int layer) {
+
+  const CalorimeterHitVec clusterHits = cluster->getCalorimeterHits();
+  
+  drawObjectsWithPosition(clusterHits.begin(),clusterHits.end(),marker,size,color,layer);
+
+}
+
+
+void MarlinCED::drawClusterImpl(const ClusterImpl* cluster, int marker, int size, unsigned int color, unsigned int layer) {
 
   const CalorimeterHitVec clusterHits = cluster->getCalorimeterHits();
   

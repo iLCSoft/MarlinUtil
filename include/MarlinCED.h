@@ -19,6 +19,8 @@
 #include <EVENT/SimTrackerHit.h>
 #include <EVENT/SimCalorimeterHit.h>
 
+#include "IMPL/ClusterImpl.h"
+
 #include <MarlinDrawUtil.h>
 
 
@@ -194,6 +196,10 @@ class MarlinCED {
   /** Draws the hits of a cluster with a marker of size and color on layer
    */
   static void drawCluster(Cluster* cluster, int marker, int size, unsigned int color, unsigned int layer=0);
+
+  /** Draws the hits of a cluster implementation with a marker of size and color on layer
+   */
+  static void drawClusterImpl(const ClusterImpl* cluster, int marker, int size, unsigned int color, unsigned int layer=0);
 
   /** Draws the hits of a recontructed particle reco with a marker of size and color on layer
    */
