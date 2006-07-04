@@ -708,6 +708,8 @@ float ClusterShapes::getChi2Fit3DProfileAdvanced(float E0, float a, float b, flo
 int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
 			    float* parameter, float* dparameter, float& chi2, 
 			    float& distmax) {
+
+  // FIXME: version with double typed parameters needed 2006/06/10 OW
   
 
   if (_nHits < 3) {
