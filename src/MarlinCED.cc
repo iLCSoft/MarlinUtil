@@ -72,8 +72,8 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
   double pt = sqrt(px*px + py*py); // hypot(px,py)
 
 
-  // FIXME: use a parameter for this cut 2006/06/20 OW    
-  if( pt >= 0.0000001 ) {
+  // FIXME: use a parameter for this cut or better this should be a function of the B field, charge and momentum 2006/07/04 OW    
+  if ( (pt >= 0.001) && (pt <= 40.0) ) {
   
     //   double p  = sqrt(px*px + py*py + pz*pz); // hypot(pt,pz);
     
@@ -112,7 +112,15 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
       double z2 = cz + r * alpha * pz / pt ;
       
       double r_current  = sqrt( x2*x2 + y2*y2); // hypot( x2, y2 ) 
+
       
+      // debug
+      /*    
+      std::cout << "step = " << step << "  " << "nSteps = " << nSteps << "  " << "alpha = " << alpha << "  " << "|z2| = " << std::abs(z2) << "  " << "zmax = " << zmax 
+		<< "  " << "r_current = " << r_current << "  " << "rmax = " << rmax << "  " << "rmin = " << rmin << std::endl;
+      */
+
+
       if( std::abs(z2) > zmax || r_current > rmax  ) 
 	break ;
     
@@ -123,10 +131,53 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
       y1 = y2;
       z1 = z2;
     }
+
   }
-  else { //if pt < 0.0000001, draw a straight line from start point to zmax parallel to z axis
+  else { //if pt < 0.001, draw a straight line from start point to the intersection point of the momentum extrapolation with the outer cylinder shell (rmax,zmax)
       
-    ced_line( x, y, z, x, y, zmax , marker , size, col);	 
+
+    float absP =sqrt(px*px + py*py + pz*pz);
+    float k = 0.0;
+    float kr = 0.0;
+    float kz = 0.0;
+    float summand = 0.0;
+    float radicant = 0.0;
+
+    // find intersection with rmax
+    summand = (-1)*( absP*(px*x + py*y)/(pow(px,2) + pow(py,2)) );
+    radicant = summand*summand - ( (pow(absP,2)*(pow(x,2)+pow(y,2)-pow(rmax,2)))/(pow(px,2) + pow(py,2)) );
+    
+    if (radicant < 0) {
+
+      std::cout << "Error in 'MarlinCED::drawHelix()': Startpoint beyond (rmax,zmax)" << std::endl;
+      return;
+
+    }
+    
+    kr = summand + sqrt(radicant);
+    kz = ((zmax-z)*absP)/pz;
+
+    if ( kr >= kz ) k = kr;
+    else k = kz;
+
+    if (k < 0.0) {
+      
+      std::cout << "Error in 'MarlinCED::drawHelix()': No intersection point with the outer cylinder shell (rmax,zmax) found" << std::endl;
+      return;
+
+    }
+
+    float xEnd = x + (k*px)/absP;
+    float yEnd = y + (k*py)/absP;
+    float zEnd = z + (k*pz)/absP;
+
+
+    // debug
+    std::cout << "start point = " << "( " << x << ", " << y << ", " << z << " )" << "  " 
+	      << "end point = " << "( " << xEnd << ", " << yEnd << ", " << zEnd << " )" << std::endl;
+    
+
+    ced_line( x, y, z, xEnd, yEnd, zEnd , marker , size, col);	 
     
   }
 
