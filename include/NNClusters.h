@@ -5,7 +5,7 @@
 /** File with various classes for a generic nearest neighbour type clustering.
  *
  *  @author F.Gaede (DESY)
- *  @version $Id: NNClusters.h,v 1.2 2006-05-19 16:11:02 gaede Exp $
+ *  @version $Id: NNClusters.h,v 1.3 2006-08-15 08:50:13 gaede Exp $
  */
 
 #include <list>
@@ -18,6 +18,10 @@
 
 #include "ClusterShapes.h"
 #include "CLHEP/Vector/ThreeVector.h"
+
+// fix for transition from CLHEP 1.8 to 1.9
+namespace CLHEP{}
+using namespace CLHEP ;
 
 // forward declarations:
 
@@ -37,7 +41,7 @@ class GenericCluster ;
  *  @see NNDistance
  * 
  *  @author F.Gaede (DESY)
- *  @version $Id: NNClusters.h,v 1.2 2006-05-19 16:11:02 gaede Exp $
+ *  @version $Id: NNClusters.h,v 1.3 2006-08-15 08:50:13 gaede Exp $
  */
 
 template <class In, class Out, class Pred > 
@@ -118,7 +122,7 @@ void cluster( In first, In last, Out result, Pred* pred ) {
  *
  *  @see GenericCluster
  *  @author F.Gaede (DESY)
- *  @version $Id: NNClusters.h,v 1.2 2006-05-19 16:11:02 gaede Exp $
+ *  @version $Id: NNClusters.h,v 1.3 2006-08-15 08:50:13 gaede Exp $
  */
 template <class T>
 class GenericHit : public  std::pair< T*, GenericCluster<T>* >{
@@ -158,7 +162,7 @@ protected:
  * 
  *  @see GenericHit
  *  @author F.Gaede (DESY)
- *  @version $Id: NNClusters.h,v 1.2 2006-05-19 16:11:02 gaede Exp $
+ *  @version $Id: NNClusters.h,v 1.3 2006-08-15 08:50:13 gaede Exp $
  */
 template <class T >
 class GenericCluster : public std::list< GenericHit<T> * > {
