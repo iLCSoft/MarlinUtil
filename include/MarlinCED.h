@@ -6,6 +6,8 @@
 #include <vector>
 
 #include "marlin/Processor.h"
+#include "marlin/Global.h"
+
 #include "ced.h"
 #include "ced_cli.h"
 
@@ -78,7 +80,13 @@ class MarlinCED {
    */
   static void drawSpike(float x0, float y0, float z0, float x1, float y1, float z1, unsigned int color, unsigned int layer);
 
-  /** Draws the detector only. modelID: LDC(0) - default , SID(1), GLD(2), CaliceTestBeam(3). Needed if you would like to draw the detector wire frame several times in one event
+  /** Draws the detector using the geometry parameters from GEAR */
+  static void drawGEARDetector() ;
+
+  /** Draws the detector only. modelID: LDC(0) - default , SID(1), GLD(2), 
+   * CaliceTestBeam(3). Needed if you would like to draw the detector 
+   * wire frame several times in one event
+   * @deprecated
    */
   static void drawDetector(int modelID) {
     
@@ -87,7 +95,7 @@ class MarlinCED {
     // here we would read some geometry description ....
     
     // from V.Morgunov / A.Raspereza: simple outlines of LDC, SID, GLD:
-
+    
     static CED_GeoCylinder geoCylindersLDC[] = {       // for TESLA Detector Geometry
       //      {    50.0,  6,  0.0, 5658.5, -5658.5, 0xff      }, // beam tube
       {   380.0, 24,  0.0, 2658.5, -2658.5, 0xff      }, // inner TPC
