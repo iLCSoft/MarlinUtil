@@ -94,6 +94,7 @@ double SimpleLine::getIntersectionWithPlane( LCPlane3D p, bool& pointExists) con
 
 //   if( pointExists )
 
+//   // ----  (_r - pp0 )  and ( ap - _a ) are parallel if solution exists
 //     x =  LCVector3D( _r - pp0 ).mag() / LCVector3D( ap - _a ).mag() ;
 
 //   return x ;
