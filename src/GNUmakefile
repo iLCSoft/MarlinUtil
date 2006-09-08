@@ -3,7 +3,7 @@
 # Example GNUmakefile to build an Application with Marlin
 #
 # @author Frank Gaede
-# @version $Id: GNUmakefile,v 1.3 2005-11-11 18:01:40 gaede Exp $
+# @version $Id: GNUmakefile,v 1.4 2006-09-08 09:26:12 gaede Exp $
 #
 ###########################################################
 
@@ -19,6 +19,7 @@
 # name of the program/library
 PROGNAME = MarlinUtil
 
+BIN = testmarlinutil.cc
 
 #----  additional user include/libraries
 #-- optionally can be specified in the to level GNUmakefile of $MARLIN
@@ -59,7 +60,7 @@ endif
 AR = ar
 
 #--------------------------------------------------------------------------------------
-LIBS +=   -Wl,-whole-archive  -L $(INSTALL)  -l$(PROGNAME) -Wl,-no-whole-archive
+#LIBS +=   -Wl,-whole-archive  -L $(INSTALL)  -l$(PROGNAME) -Wl,-no-whole-archive
 #--------------------------------------------------------------------------------------
 
 INCLUDE +=  -I $(BASEDIR)/include
@@ -72,11 +73,12 @@ LIBS += `. $(MARLIN)/bin/marlin_libs.sh`
 
 bin:  lib $(BINDIR)/$(PROGNAME)
 
-$(BINDIR)/$(PROGNAME): $(INSTALL)/lib$(PROGNAME).a
+$(BINDIR)/$(PROGNAME): $(INSTALL)/lib$(PROGNAME).a $(BIN)
 	mkdir -p $(BINDIR)
-	$(CXX) -o $(BINDIR)/$(PROGNAME) $(CPPFLAGS) $(MARLIN)/src/Marlin.cc $(LIBS) 
+	$(CXX) -o $(BINDIR)/$(PROGNAME) $(CPPFLAGS) $(BIN) $(LIBS) 
 
-objects = $(patsubst %.cc,%.o, $(wildcard *.cc)  )
+#objects = $(patsubst %.cc,%.o, $(wildcard *.cc)  )
+objects = $(patsubst %.cc,%.o,$(filter-out $(BIN), $(wildcard *.cc))  )
 
 $(INSTALL)/lib$(PROGNAME).a: $(objects)
 	mkdir -p $(INSTALL)
