@@ -5,7 +5,7 @@
 
 /** Simple helix trajectory.
  *  @author T.Kraemer, DESY
- *  @version $Id: SimpleHelix.h,v 1.1 2006-10-10 14:53:12 tkraemer Exp $
+ *  @version $Id: SimpleHelix.h,v 1.2 2006-10-10 16:34:14 tkraemer Exp $
  */
 
 class SimpleHelix : public Trajectory {
@@ -80,6 +80,8 @@ public:
   virtual bool setEnd(double s);
   virtual bool setStartEnd(double start, double end);
 
+  virtual void printProperties();
+
 protected:
 
   SimpleHelix() {} 
@@ -89,7 +91,7 @@ protected:
   virtual double getCentreX() const ;
   virtual double getCentreY() const ;
   virtual double getWindingLength() const ;
-
+  virtual double getPitch();
   double _d0;
   double _phi0;
   double _omega;
@@ -114,7 +116,7 @@ protected:
 // /** Physical trajectory describing a (charged) particle's  path in a B 
 //  *  field and material. 
 //  *  @author F.Gaede, DESY
-//  *  @version $Id: SimpleHelix.h,v 1.1 2006-10-10 14:53:12 tkraemer Exp $
+//  *  @version $Id: SimpleHelix.h,v 1.2 2006-10-10 16:34:14 tkraemer Exp $
 //  */
 
 // class PhysicalSimpleLine : public SimpleLine{
