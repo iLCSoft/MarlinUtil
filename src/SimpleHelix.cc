@@ -244,3 +244,40 @@ bool SimpleHelix::setStartEnd(double start, double end)
 
   return false;
 }
+
+void SimpleHelix::printProperties()
+{
+  using namespace std;
+  int colWidth = 10;
+  cout << "*******************************************************************************" << endl;
+  cout << "*" << endl; 
+  cout << "* Helix Parameters:" << endl; 
+  cout << "* -----------------" << endl; 
+  cout << "*" << endl; 
+  cout << "* d_0             " << setw(colWidth) << _d0 << endl; 
+  cout << "* phi_0           " << setw(colWidth) << _phi0 << endl; 
+  cout << "* Omega           " << setw(colWidth) << _omega
+       << " (Radius: " << (1/_omega) << ")" << endl; 
+  cout << "* z_0             " << setw(colWidth) << _z0 << endl; 
+  cout << "* tan lambda      " << setw(colWidth) << _tanLambda << endl; 
+  cout << "*" << endl; 
+  cout << "* Reference point " 
+       << setw(colWidth) << _reference.x() << " "
+       << setw(colWidth) << _reference.y() << " "
+       << setw(colWidth) << _reference.z() << endl;
+  cout << "* pitch           " << setw(colWidth) << getPitch() << endl; 
+  cout << "* Winding length  " << setw(colWidth) << getWindingLength() << endl; 
+  cout << "* Centre of arc   " 
+       << setw(colWidth) << getCentreX() << " "
+       << setw(colWidth) << getCentreY() << endl;
+  cout << "* Begin and end   " 
+       << setw(colWidth) << getStart() 
+       << setw(colWidth) << getEnd() << endl; 
+  cout << "*" << endl; 
+  cout << "*******************************************************************************" << endl;
+}
+
+double SimpleHelix::getPitch()
+{
+  return 2*_pi*_tanLambda/fabs(_omega);
+}
