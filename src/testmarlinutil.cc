@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include "SimpleLine.h"
+#include "SimpleHelix.h"
 #include "CLHEP/Geometry/Transform3D.h"
 #include <cstdlib>
 
@@ -117,5 +118,17 @@ int main(){
 
   std::cout << std::endl ;
 
+// ----- Testing the Helix implementation of the Trajectory:
+
+  LCPoint3D ref( 0. , 0. , 0. );
+
+  double d0 = 1;
+  double phi0 = 0;
+  double omega = 0.01;
+  double z0 = 0;
+  double tanLambda = 0;
+
+  SimpleHelix helix(d0,phi0,omega,z0,tanLambda,ref);
+  helix.printProperties();
 }
 double drand() { return  1000. * double( rand() ) / RAND_MAX  ; } 
