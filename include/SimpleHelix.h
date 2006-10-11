@@ -5,7 +5,7 @@
 
 /** Simple helix trajectory.
  *  @author T.Kraemer, DESY
- *  @version $Id: SimpleHelix.h,v 1.2 2006-10-10 16:34:14 tkraemer Exp $
+ *  @version $Id: SimpleHelix.h,v 1.3 2006-10-11 09:01:31 tkraemer Exp $
  */
 
 class SimpleHelix : public Trajectory {
@@ -18,13 +18,13 @@ public:
    */
   SimpleHelix( double d0, double phi0, double omega,
 	       double z0, double tanLambda, 
-	       LCPoint3D referencePoint ) ;
+	       LCVector3D referencePoint ) ;
   
   /** Position at path length s - s==0 corresponds to P.C.A to the origin.
    *  @param s      path length
    *  @param errors return argument - not computed if NULL
    */
-  virtual LCPoint3D getPosition(double s, LCErrorMatrix* errors=0) const ;
+  virtual LCVector3D getPosition(double s, LCErrorMatrix* errors=0) const ;
   
   /** Direction at path length s, i.e. (dx/ds,dy/ds,dz/ds) 
    *  @param s      path length
@@ -40,7 +40,7 @@ public:
   
   /** Pathlength at point on trajectory closest to given position.  
    *  In order to get the distance use for example:  <br>  
-   *     LCPoint3D pt = t.getPosition( t.getPathAtClosestPoint( p ) ) ; <br>
+   *     LCVector3D pt = t.getPosition( t.getPathAtClosestPoint( p ) ) ; <br>
    *     double d = LCVector3D( pt - p ).mag()  ; <br> 
    */
   
@@ -62,7 +62,7 @@ public:
    * @param radius 
    */
 
-  virtual  double getIntersectionWithCylinder(LCPoint3D center, 
+  virtual  double getIntersectionWithCylinder(LCVector3D center, 
 					      LCVector3D axis, 
 					      double radius,
 					      bool & pointExists) const ;
@@ -108,7 +108,7 @@ protected:
   static const double _a = 2.99792458E-4;
   static const double _pi = 3.14159265358979323846;
 
-  LCPoint3D  _reference; 
+  LCVector3D  _reference; 
 }; // class 
 
 
@@ -116,7 +116,7 @@ protected:
 // /** Physical trajectory describing a (charged) particle's  path in a B 
 //  *  field and material. 
 //  *  @author F.Gaede, DESY
-//  *  @version $Id: SimpleHelix.h,v 1.2 2006-10-10 16:34:14 tkraemer Exp $
+//  *  @version $Id: SimpleHelix.h,v 1.3 2006-10-11 09:01:31 tkraemer Exp $
 //  */
 
 // class PhysicalSimpleLine : public SimpleLine{

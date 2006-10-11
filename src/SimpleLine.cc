@@ -2,14 +2,14 @@
 #include "CLHEP/Matrix/Matrix.h"
 #include "CLHEP/Matrix/Vector.h"
 
-SimpleLine::SimpleLine( LCPoint3D ref , LCVector3D direction ) {
+SimpleLine::SimpleLine( LCVector3D ref , LCVector3D direction ) {
   
   // set reference point so that s==0 is closest to origin
   _a = direction.unit() ;
   _r = ref - (ref * _a ) * _a ;
 }
 
-LCPoint3D SimpleLine::getPosition(double s, LCErrorMatrix* errors) const {
+LCVector3D SimpleLine::getPosition(double s, LCErrorMatrix* errors) const {
   
   if( errors != 0 ) 
     *errors = LCErrorMatrix( 3 , 0 ) ;
@@ -79,8 +79,8 @@ double SimpleLine::getIntersectionWithPlane( LCPlane3D p, bool& pointExists) con
 
 //  // ---- Implemented using vector algebra ------------
 
-//   LCPoint3D pp0 = p.point( _r ) ;       // projection of s==0
-//   LCPoint3D pp1 = p.point( _r + _a ) ;  // projection of s==1
+//   LCVector3D pp0 = p.point( _r ) ;       // projection of s==0
+//   LCVector3D pp1 = p.point( _r + _a ) ;  // projection of s==1
 
 //   LCVector3D ap = pp1 - pp0  ;
 
@@ -103,7 +103,7 @@ double SimpleLine::getIntersectionWithPlane( LCPlane3D p, bool& pointExists) con
 
 
 
-double SimpleLine::getIntersectionWithCylinder(LCPoint3D center, 
+double SimpleLine::getIntersectionWithCylinder(LCVector3D center, 
 					       LCVector3D axis, 
 					       double radius,
 					       bool & pointExists) const  {

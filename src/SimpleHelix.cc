@@ -11,7 +11,7 @@
 
 SimpleHelix::SimpleHelix( double d0, double phi0, double omega,
 			  double z0, double tanLambda,
-			  LCPoint3D referencePoint ) 
+			  LCVector3D referencePoint ) 
 {
   init();
 
@@ -58,9 +58,9 @@ double SimpleHelix::getWindingLength() const
   return 2*_pi*sqrt(1+_tanLambda*_tanLambda)/fabs(_omega);
 }
 
-LCPoint3D SimpleHelix::getPosition(double s, LCErrorMatrix* errors) const 
+LCVector3D SimpleHelix::getPosition(double s, LCErrorMatrix* errors) const 
 {
-  LCPoint3D x;
+  LCVector3D x;
 
   double xc = getCentreX();
   double yc = getCentreY();
@@ -115,7 +115,7 @@ double SimpleHelix::getPathAt(const LCVector3D position ) const
   double sOfMin = 0;
   double distMinSQ = DBL_MAX;
   double s = startRange;
-  LCPoint3D x;
+  LCVector3D x;
   for (int i = 0; i <= nSteps; i++)
     {
       x = getPosition(s);
@@ -190,7 +190,7 @@ double SimpleHelix::getIntersectionWithPlane( LCPlane3D p,
   return 0 ;
 }
 
-double SimpleHelix::getIntersectionWithCylinder(LCPoint3D center, 
+double SimpleHelix::getIntersectionWithCylinder(LCVector3D center, 
 					       LCVector3D axis, 
 					       double radius,
 					       bool & pointExists) const  
