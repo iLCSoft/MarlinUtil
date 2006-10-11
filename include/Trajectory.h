@@ -2,10 +2,11 @@
 #define Trajectory_H 1
 
 #include "LCGeometryTypes.h"
+#include <LCPlane3D.h>
 
 /** Abstract trajectory interface describing a geometrical path in 3D space.
  *  @author F.Gaede, DESY
- *  @version $Id: Trajectory.h,v 1.2 2006-10-11 09:01:31 tkraemer Exp $
+ *  @version $Id: Trajectory.h,v 1.3 2006-10-11 16:03:24 tkraemer Exp $
  */
 
 class Trajectory {
@@ -67,7 +68,7 @@ public:
 /** Physical trajectory describing a (charged) particle's  path in a B 
  *  field and material. 
  *  @author F.Gaede, DESY
- *  @version $Id: Trajectory.h,v 1.2 2006-10-11 09:01:31 tkraemer Exp $
+ *  @version $Id: Trajectory.h,v 1.3 2006-10-11 16:03:24 tkraemer Exp $
  */
 
 class PhysicalTrajectory : public Trajectory{

@@ -83,7 +83,7 @@ int main(){
     LCVector3D rp0( drand() , drand() ,  drand() ) ;
 
     // a random point on that plane:
-    LCVector3D rp1 = plane.point( rp0 ) ;
+    LCVector3D rp1 = plane.projectPoint( rp0 ) ;
 
     double u = l.getPathAt( rp1 ) ;
   

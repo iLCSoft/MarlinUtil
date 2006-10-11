@@ -11,7 +11,7 @@
 
 /** @file Definition of geometry types used in ILC software - currently use CHEP.
  *  @author gaede
- *  @version $Id: LCGeometryTypes.h,v 1.2 2006-10-11 09:01:31 tkraemer Exp $
+ *  @version $Id: LCGeometryTypes.h,v 1.3 2006-10-11 16:03:24 tkraemer Exp $
  */
 
 //using namespace CLHEP ;
@@ -26,7 +26,7 @@ typedef CLHEP::Hep3Vector LCVector3D ;
 
 typedef CLHEP::HepSymMatrix LCErrorMatrix ;
 
-typedef HepGeom::Plane3D<double> LCPlane3D ;
+// typedef HepGeom::Plane3D<double> LCPlane3D ;
 
 typedef CLHEP::HepLorentzVector LCLorentzVector ;
 
