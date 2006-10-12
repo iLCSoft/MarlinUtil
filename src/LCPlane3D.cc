@@ -125,4 +125,3 @@ bool LCPlane3D::operator!=(const LCPlane3D & plane) const
 	   _c != plane._c || 
 	   _d != plane._d );
 }
-
