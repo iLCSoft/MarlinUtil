@@ -3,7 +3,7 @@
 # Example GNUmakefile to build an Application with Marlin
 #
 # @author Frank Gaede
-# @version $Id: GNUmakefile,v 1.4 2006-09-08 09:26:12 gaede Exp $
+# @version $Id: GNUmakefile,v 1.5 2006-10-13 14:03:55 gaede Exp $
 #
 ###########################################################
 
@@ -29,7 +29,7 @@ ifndef USERINCLUDES
 endif
 
 ifndef USERLIBS
- USERLIBS =  -L /afs/desy.de/group/it/ilcsoft/gsl/1.6/lib -lgsl -lgslcblas
+ USERLIBS =  -L /afs/desy.de/group/it/ilcsoft/gsl/1.6/lib -lgsl -lgslcblas -lMathCore
 endif
 
 
