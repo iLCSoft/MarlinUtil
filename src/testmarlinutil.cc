@@ -2,6 +2,7 @@
 #include <iostream>
 #include "SimpleLine.h"
 #include "SimpleHelix.h"
+#include <LCCylinder.h>
 #include "CLHEP/Geometry/Transform3D.h"
 #include <cstdlib>
 
@@ -130,5 +131,17 @@ int main(){
 
   SimpleHelix helix(d0,phi0,omega,z0,tanLambda,ref);
   helix.printProperties();
+
+// ----- Testing the LCCylinder class
+
+  LCVector3D cs(1,0,0), ce(3,0,0),cp(0.9,0.1,0);
+  double cr = 1;
+  LCCylinder cylinder(cs,ce,cr,false);
+
+    int code;
+    std::cout << "Projection: " << cylinder.projectPoint(cp,code) 
+  	    << " " << code << std::endl;
+
+
 }
 double drand() { return  1000. * double( rand() ) / RAND_MAX  ; } 

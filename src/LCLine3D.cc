@@ -12,7 +12,8 @@ LCLine3D::LCLine3D(LCVector3D point, LCVector3D direction)
   _direction = direction.unit();
 
   LCVector3D origin(0.,0.,0.);
-  _point = pointAt( projectPoint(origin) );
+  
+  _point = this->point( projectPoint(origin) );
 }
 
 LCLine3D::LCLine3D(const LCLine3D & line) 
@@ -29,7 +30,7 @@ LCLine3D & LCLine3D::operator=(const LCLine3D & rhs)
   return *this;
 }
 
-LCVector3D LCLine3D::pointAt(double s) const 
+LCVector3D LCLine3D::point(double s) const 
 {
   return (_point + s*_direction) ;
 }
@@ -41,14 +42,15 @@ LCVector3D LCLine3D::direction() const
 
 double LCLine3D::distance(const LCVector3D & point) const 
 {
-  return (point-_point)*_direction ;
+  return ( point - projectPoint( point ) ).mag() ;
 }
 
 double LCLine3D::projectPoint(const LCVector3D & point) const 
 {
   // the last therm : (...) / _direction.mag2() is not there becaus 
   // the _direction vector is normalised.
-  return ( 2*point*_direction - _point*_direction ) / _direction.mag2() ;
+  //  return ( 2*point*_direction - _point*_direction ) / _direction.mag2() ;
+  return ( point*_direction - _point*_direction ) / _direction.mag2() ;
 }
 
 bool LCLine3D::operator==(const LCLine3D & rhs) const 
