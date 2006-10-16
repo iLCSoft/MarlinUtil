@@ -86,7 +86,7 @@ double LCCylinder::distance(const LCVector3D & point) const
 LCVector3D LCCylinder::projectPoint(const LCVector3D & point, int & code) const 
 {
   LCLine3D a( _axisSstartPoint , axisDirection() );
-  std::cout << " a: " << a.point() << " d: " << a.direction() << std::endl;
+  std::cout << " a: " << a.position() << " d: " << a.direction() << std::endl;
   double s = a.projectPoint( _axisSstartPoint ) ;
   double e = a.projectPoint( _axisEndPoint ) ;
   double p = a.projectPoint( point ) ;
@@ -108,9 +108,9 @@ LCVector3D LCCylinder::projectPoint(const LCVector3D & point, int & code) const
 	{
 	  if ( (drp <= dsp) && (drp <= dep) )
 	    {
-	      projection = ( point - a.point(p) ).unit() ;
+	      projection = ( point - a.position(p) ).unit() ;
 	      projection *= radius() ;
-	      projection = a.point(p) + projection;
+	      projection = a.position(p) + projection;
 	      code = 3;
 	      return projection;
 	    }
@@ -131,9 +131,9 @@ LCVector3D LCCylinder::projectPoint(const LCVector3D & point, int & code) const
 	}
       else
 	{
-	  projection = ( point - a.point(p) ).unit() ;
+	  projection = ( point - a.position(p) ).unit() ;
 	  projection *= radius() ;
-	  projection = a.point(p) + projection;
+	  projection = a.position(p) + projection;
 	  code = 3;
 	  return projection;
 	}
@@ -161,17 +161,17 @@ LCVector3D LCCylinder::projectPoint(const LCVector3D & point, int & code) const
 	{
 	  if ( p < s)
 	    {
-	      projection = ( point - a.point(p) ).unit() ;
+	      projection = ( point - a.position(p) ).unit() ;
 	      projection *= radius() ;
-	      projection = a.point(s) + projection;
+	      projection = a.position(s) + projection;
 	      code = 0;
 	      return projection;
 	    }
 	  else // if ( p > e )
 	    {
-	      projection = ( point - a.point(p) ).unit() ;
+	      projection = ( point - a.position(p) ).unit() ;
 	      projection *= radius() ;
-	      projection = a.point(e) + projection;
+	      projection = a.position(e) + projection;
 	      code = 0;
 	      return projection;
 	    }

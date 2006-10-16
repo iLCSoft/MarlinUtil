@@ -13,7 +13,7 @@ LCLine3D::LCLine3D(LCVector3D point, LCVector3D direction)
 
   LCVector3D origin(0.,0.,0.);
   
-  _point = this->point( projectPoint(origin) );
+  _point = position( projectPoint(origin) );
 }
 
 LCLine3D::LCLine3D(const LCLine3D & line) 
@@ -30,7 +30,7 @@ LCLine3D & LCLine3D::operator=(const LCLine3D & rhs)
   return *this;
 }
 
-LCVector3D LCLine3D::point(double s) const 
+LCVector3D LCLine3D::position(double s) const 
 {
   return (_point + s*_direction) ;
 }

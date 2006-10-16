@@ -6,7 +6,7 @@
 
 /** Definition of a LCLine3D describing a geometrical line in 3D space.
  *  @author T.Kraemer, DESY
- *  @version $Id: LCLine3D.h,v 1.1 2006-10-12 09:19:36 tkraemer Exp $
+ *  @version $Id: LCLine3D.h,v 1.2 2006-10-16 15:38:05 tkraemer Exp $
  */
 
 class LCLine3D {
@@ -34,11 +34,11 @@ public:
   LCLine3D & operator=(const LCLine3D & rhs) ;
 
   /**
-   * Returns the point of the line after a distance s. 
+   * Position is the point of the line after a distance s. 
    * Is is given with respect to the point of closes approach to the origen of
    * the coordinate system. 
    * @param s s is the path length along the line */
-  LCVector3D point(double s = 0) const ;
+  LCVector3D position(double s = 0) const ;
 
   /** Direction of the line 
    */
