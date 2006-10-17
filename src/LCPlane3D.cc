@@ -13,6 +13,7 @@ LCPlane3D::LCPlane3D(double a, double b, double c, double d)
   _b = b;
   _c = c;
   _d = d;
+  normalize();
 }
 
 LCPlane3D::LCPlane3D(LCVector3D normal, LCVector3D point)

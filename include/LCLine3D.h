@@ -3,10 +3,11 @@
 
 // #include "CLHEP/Vector/ThreeVector.h"
 #include <LCGeometryTypes.h>
+#include <LCPlane3D.h>
 
 /** Definition of a LCLine3D describing a geometrical line in 3D space.
  *  @author T.Kraemer, DESY
- *  @version $Id: LCLine3D.h,v 1.2 2006-10-16 15:38:05 tkraemer Exp $
+ *  @version $Id: LCLine3D.h,v 1.3 2006-10-17 13:17:49 tkraemer Exp $
  */
 
 class LCLine3D {
@@ -63,6 +64,11 @@ public:
   /**
    * Test for inequality. */
   bool operator!=(const LCLine3D & rhs) const ; 
+
+  /** Pathlength at closest intersection point with plane - undefined
+   *  if pointExists==false.
+   */
+  double intersectionWithPlane(const LCPlane3D plane, bool& pointExists) const ;
 
 protected:
 

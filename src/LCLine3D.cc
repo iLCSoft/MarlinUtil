@@ -1,5 +1,5 @@
 #include <LCLine3D.h>
-
+#include <LCPlane3D.h>
 #include <iostream>
 
 #include <cmath>
@@ -65,3 +65,16 @@ bool LCLine3D::operator!=(const LCLine3D & rhs) const
 	  _direction != rhs._direction) ;
 }
 
+double LCLine3D::intersectionWithPlane(const LCPlane3D plane, bool& pointExists) const 
+{
+  double c = direction() * plane.normal() ;
+
+  if (c == 0)
+    { // no interaction 
+      pointExists = false;
+      return DBL_MAX;
+    }
+
+  pointExists = true;
+  return - ( position() * plane.normal() + plane.d() ) / c ;
+}

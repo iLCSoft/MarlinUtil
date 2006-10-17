@@ -3,6 +3,8 @@
 #include "SimpleLine.h"
 #include "SimpleHelix.h"
 #include <LCCylinder.h>
+#include <LCLine3D.h>
+#include <LCPlane3D.h>
 #include "CLHEP/Geometry/Transform3D.h"
 #include <cstdlib>
 
@@ -142,6 +144,13 @@ int main(){
     std::cout << "Projection: " << cylinder.projectPoint(cp,code) 
   	    << " " << code << std::endl;
 
+    LCPlane3D p1(1,1,1,-1);
+    LCVector3D po1(0,0,0), ax1(1,1,1);
+    LCLine3D l1(po1,ax1);
+    bool yesno;
 
+    std::cout << "s inter: " << l1.intersectionWithPlane(p1,yesno) << " " << yesno << std::endl;
+    std::cout << "point: " << l1.position(l1.intersectionWithPlane(p1,yesno)) << std::endl;
+    std::cout << "project: " << p1.projectPoint(po1) << std::endl;
 }
 double drand() { return  1000. * double( rand() ) / RAND_MAX  ; } 
