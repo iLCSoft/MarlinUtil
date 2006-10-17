@@ -6,7 +6,7 @@
 
 /** Definition of a LCPlane3D describing a geometrical plane in 3D space.
  *  @author T.Kraemer, DESY
- *  @version $Id: LCPlane3D.h,v 1.1 2006-10-11 16:03:24 tkraemer Exp $
+ *  @version $Id: LCPlane3D.h,v 1.2 2006-10-17 15:05:00 tkraemer Exp $
  */
 
 class LCPlane3D {
@@ -37,6 +37,14 @@ public:
    * @param point3 Point on the plane.
    */
   LCPlane3D(LCVector3D point1, LCVector3D point2, LCVector3D point3) ;
+
+  /** Constructor for a plane using a normal and the Distance between Origen 
+   * and the plane.
+   * @param normal vector pointing in the direction of the normal. 
+   *               This vector does not have to be normalised.
+   * @param distance distance is the distance from the origen to the plane. 
+   */
+  LCPlane3D(LCVector3D normal, double distance) ;
 
   /** Copy constructor.
    * @param plane plane is an other LCPlane3D.

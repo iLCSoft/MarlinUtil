@@ -36,6 +36,15 @@ LCPlane3D::LCPlane3D(LCVector3D point1, LCVector3D point2, LCVector3D point3)
   _d = - n*point1;
 }
 
+LCPlane3D::LCPlane3D(LCVector3D normal, double distance) 
+{
+  LCVector3D n = normal.unit() ;
+  _a = n.x();
+  _b = n.y();
+  _c = n.z();
+  _d = -distance;
+}
+
 LCPlane3D::LCPlane3D(const LCPlane3D & plane) 
   : _a(plane._a),
     _b(plane._b),
