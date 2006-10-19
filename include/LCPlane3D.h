@@ -6,7 +6,7 @@
 
 /** Definition of a LCPlane3D describing a geometrical plane in 3D space.
  *  @author T.Kraemer, DESY
- *  @version $Id: LCPlane3D.h,v 1.2 2006-10-17 15:05:00 tkraemer Exp $
+ *  @version $Id: LCPlane3D.h,v 1.3 2006-10-19 15:59:26 tkraemer Exp $
  */
 
 class LCPlane3D {
@@ -86,6 +86,10 @@ public:
 
   /**
    * Distance of a point to the plane. 
+   * The value of the distance is 
+   * - negative if the point and the origen are on the same side of the plane
+   * - positive if the Point and the origen are on opposite sides of the 
+   *   plane.
    * @param point point is a point in space
    */
   double distance(const LCVector3D & point) const ;  
@@ -112,4 +116,5 @@ protected:
   double _a, _b, _c, _d;
 };
 
+std::ostream & operator << (std::ostream &os, const LCPlane3D &p) ;
 #endif /* ifndef LCPlane3D_H */

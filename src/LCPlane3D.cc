@@ -1,7 +1,7 @@
 #include <LCPlane3D.h>
 
 #include <iostream>
-
+#include <string>
 #include <cmath>
 #include <float.h>
 #include <exception>
@@ -14,6 +14,16 @@ LCPlane3D::LCPlane3D(double a, double b, double c, double d)
   _c = c;
   _d = d;
   normalize();
+
+  // _d has to be negative to give the distance with the normal vector pointing
+  // away from the Origen !!!
+  if (_d > 0)
+    {
+      _a = -_a; 
+      _b = -_b; 
+      _c = -_c; 
+      _d = -_d; 
+    }
 }
 
 LCPlane3D::LCPlane3D(LCVector3D normal, LCVector3D point)
@@ -134,4 +144,18 @@ bool LCPlane3D::operator!=(const LCPlane3D & plane) const
 	   _b != plane._b || 
 	   _c != plane._c || 
 	   _d != plane._d );
+}
+
+std::ostream & operator << (std::ostream &os, const LCPlane3D &p) 
+{
+  std::string pmb = "", pmc = "", pmd = ""; 
+  if (p.b() >= 0) pmb = "+";
+  if (p.c() >= 0) pmc = "+";
+  if (p.d() >= 0) pmd = "+";
+
+  return os << "(" 
+	    << p.a() << "*x"  
+	    << pmb << p.b() << "*y" 
+	    << pmc << p.c() << "*z" 
+	    << pmd << p.d() << "=0)" ;
 }

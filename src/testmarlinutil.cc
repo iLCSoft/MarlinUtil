@@ -121,18 +121,6 @@ int main(){
 
   std::cout << std::endl ;
 
-// ----- Testing the Helix implementation of the Trajectory:
-
-  LCVector3D ref( 0. , 0. , 0. );
-
-  double d0 = 1;
-  double phi0 = 0;
-  double omega = 0.01;
-  double z0 = 0;
-  double tanLambda = 0;
-
-  SimpleHelix helix(d0,phi0,omega,z0,tanLambda,ref);
-  helix.printProperties();
 
 // ----- Testing the LCCylinder class
 
@@ -152,5 +140,31 @@ int main(){
     std::cout << "s inter: " << l1.intersectionWithPlane(p1,yesno) << " " << yesno << std::endl;
     std::cout << "point: " << l1.position(l1.intersectionWithPlane(p1,yesno)) << std::endl;
     std::cout << "project: " << p1.projectPoint(po1) << std::endl;
+
+// ----- Testing the Helix implementation of the Trajectory:
+
+  LCVector3D ref( 0. , 0. , 0. );
+
+  double d0 = 10;
+  double phi0 = 0;
+  double omega = 0.1;
+  double z0 = 0;
+  double tanLambda = 1;
+
+  SimpleHelix helix(d0,phi0,omega,z0,tanLambda,ref);
+  helix.printProperties();
+  LCVector3D nWall(1.,0.,0.);
+  LCPlane3D myWall( nWall, 0. );
+  bool pWallExists;
+  double sWall = helix.getIntersectionWithPlane(myWall,pWallExists);
+  std::cout << " s: " << sWall << " p: " << helix.getPosition(sWall) 
+	    << " exists: " << pWallExists << std::endl;
+  LCVector3D nWall2(1.,-1.,0.);
+  LCVector3D mypoint(0.,0.,0.);
+  LCPlane3D myWall2( nWall2, 1. );
+  std::cout << "Ebene2: " << myWall2 << " Abstand " << myWall2.distance(mypoint) 
+	    << " punkt: " << myWall2.projectPoint(mypoint) << std::endl;
+
 }
+
 double drand() { return  1000. * double( rand() ) / RAND_MAX  ; } 

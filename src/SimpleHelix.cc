@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include <iomanip>
-
+#include <LCLine3D.h>
 #include <cmath>
 #include <float.h>
 #include <exception>
@@ -185,9 +185,97 @@ double SimpleHelix::getIntersectionWithPlane( LCPlane3D p,
 					      bool& pointExists) const
 {
 
+  // Calculation of the region of s (parameter of Helix), where the helix
+  // interacts with the plane. This is done by two lines parallel to the 
+  // axis of the helix (in this parametrisation the z-axis) in the distance 
+  // of the helix radius. Both lines on opposite sides of the helix. 
+  // One on the side nearest to the plane, the other exactly on the 
+  // other side, away from the plane with respect to the Origen.
+
+  LCVector3D helixCentre( getCentreX(), getCentreY(), 0.);
+  LCVector3D normalXY = p.normal();
+  normalXY.setZ(0.);
+  // If plane is perpendicular to helix axis, set normalXY to a value
+  // perpendicular to the helix axis to enable intersection calculation.
+  if (normalXY.x() == 0. && normalXY.y() == 0. ) normalXY.set(1.,0.,0.);
+  normalXY = ( normalXY.unit() )/_omega;
+  LCVector3D lineDirection(0.,0.,1.);
+
+  LCLine3D frontLine( (helixCentre + normalXY) , lineDirection);
+  LCLine3D backLine( (helixCentre - normalXY) , lineDirection);
+  std::cout << " centre: " << helixCentre << " normxy: " << normalXY << " direction"
+	    << lineDirection << std::endl;
+  std::cout << " line1: " << frontLine 
+	    << " line2: " << backLine << std::endl;
+  bool parallelBack, parallelFront;
+  double zStart = ( frontLine.position( frontLine.intersectionWithPlane(p,parallelFront) ) ).z();
+  double zEnd = ( backLine.position( backLine.intersectionWithPlane(p,parallelBack) ) ).z();
+  std::cout << "zStart: " << zStart << " zEnd: " << zEnd 
+	    << parallelFront << " " << parallelBack << std::endl;
+  std::cout << "plane: " << p << std::endl;
+  if ( !(parallelBack && parallelFront) )
+    { // plane is parallel to helix axis
+      if ( fabs( p.distance(helixCentre) ) > (1/_omega) )
+	{ // Helix never hits plane!
+	  pointExists = false ;
+	  return 0;
+	}
+      else
+	{
+	  pointExists = true ;
+	  zStart = -DBL_MAX ;
+	  zEnd   =  DBL_MAX ;
+	}
+    }
+
+  double sStart = ( zStart - _reference.z() - _z0)
+    * sqrt(1 + _tanLambda*_tanLambda) / _tanLambda;
+  double sEnd = ( zEnd - _reference.z() - _z0)
+    * sqrt(1 + _tanLambda*_tanLambda) / _tanLambda;
+  std::cout << "sStart: " << sStart << " sEnd: " << sEnd << std::endl;
+
+  if (sStart > sEnd)
+    { // rong order for Start and Endpoint
+      double temp = sEnd;
+      sEnd = sStart;
+      sStart = temp;
+    }
+
+  // produce an artificial gap between sStart and sEnd
+  if (sStart > -DBL_MAX && sStart < DBL_MAX ) sStart -= 0.00001;
+  if (sEnd > -DBL_MAX && sEnd < DBL_MAX ) sEnd += 0.00001;
+  std::cout << "sStart: " << sStart << " sEnd: " << sEnd << std::endl;
+
+  if ( (sStart < 0.) && (sEnd < 0.) )
+    { // Intersection is in backwards direction
+      pointExists = false ;
+      return 0;
+    }
+  else if ( (sStart < 0.) && (sEnd > 0.) )
+    { // intersection region starts in backwards direction
+      sStart = 0;
+    }
+
+  double s = sStart, sOld = -DBL_MAX; 
+  double epsilon = 0.0000001;
+
+  while ( (s-sOld) > epsilon )
+    {
+      double d = fabs( p.distance( getPosition(s) ) ) ;
+      std::cout << "d: " << d << std::endl;
+      sOld = s;
+      s += d;
+      if (s > sEnd)
+	{ // Problem! no intersection !
+	  std::cout << "ERROR: No intersection found!!!" << std::endl;
+	  pointExists = false ;
+	  return 0;
+	}
+    }
+
   //FIXME: needs to be implemented
-  pointExists = false ;
-  return 0 ;
+  pointExists = true ;
+  return s ;
 }
 
 double SimpleHelix::getIntersectionWithCylinder(LCVector3D center, 

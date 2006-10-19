@@ -78,3 +78,8 @@ double LCLine3D::intersectionWithPlane(const LCPlane3D plane, bool& pointExists)
   pointExists = true;
   return - ( position() * plane.normal() + plane.d() ) / c ;
 }
+
+std::ostream & operator << (std::ostream &os, const LCLine3D &l)
+{
+  return os << l.position() << "+s*" << l.direction() ;
+}

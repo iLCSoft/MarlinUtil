@@ -7,7 +7,7 @@
 
 /** Definition of a LCLine3D describing a geometrical line in 3D space.
  *  @author T.Kraemer, DESY
- *  @version $Id: LCLine3D.h,v 1.3 2006-10-17 13:17:49 tkraemer Exp $
+ *  @version $Id: LCLine3D.h,v 1.4 2006-10-19 15:59:26 tkraemer Exp $
  */
 
 class LCLine3D {
@@ -76,5 +76,7 @@ protected:
   LCVector3D _direction;
 
 };
+
+std::ostream & operator << (std::ostream &os, const LCLine3D &l) ;
 
 #endif /* ifndef LCLine3D_H */
