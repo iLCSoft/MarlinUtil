@@ -5,7 +5,7 @@
 
 /** Simple helix trajectory.
  *  @author T.Kraemer, DESY
- *  @version $Id: SimpleHelix.h,v 1.3 2006-10-11 09:01:31 tkraemer Exp $
+ *  @version $Id: SimpleHelix.h,v 1.4 2006-10-20 15:06:19 tkraemer Exp $
  */
 
 class SimpleHelix : public Trajectory {
@@ -18,7 +18,7 @@ public:
    */
   SimpleHelix( double d0, double phi0, double omega,
 	       double z0, double tanLambda, 
-	       LCVector3D referencePoint ) ;
+	       LCVector3D referencePoint, LCErrorMatrix* errors=0) ;
   
   /** Position at path length s - s==0 corresponds to P.C.A to the origin.
    *  @param s      path length
@@ -109,6 +109,7 @@ protected:
   static const double _pi = 3.14159265358979323846;
 
   LCVector3D  _reference; 
+  LCErrorMatrix* _errors;
 }; // class 
 
 
@@ -116,7 +117,7 @@ protected:
 // /** Physical trajectory describing a (charged) particle's  path in a B 
 //  *  field and material. 
 //  *  @author F.Gaede, DESY
-//  *  @version $Id: SimpleHelix.h,v 1.3 2006-10-11 09:01:31 tkraemer Exp $
+//  *  @version $Id: SimpleHelix.h,v 1.4 2006-10-20 15:06:19 tkraemer Exp $
 //  */
 
 // class PhysicalSimpleLine : public SimpleLine{

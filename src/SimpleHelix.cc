@@ -11,7 +11,7 @@
 
 SimpleHelix::SimpleHelix( double d0, double phi0, double omega,
 			  double z0, double tanLambda,
-			  LCVector3D referencePoint ) 
+			  LCVector3D referencePoint, LCErrorMatrix* errors) 
 {
   init();
 
@@ -25,6 +25,16 @@ SimpleHelix::SimpleHelix( double d0, double phi0, double omega,
 
   //  _Bz = Bz;
 
+  if ( errors == 0 )
+    {
+      _errors = new LCErrorMatrix(5,0);
+    }
+  else
+    {
+      if ( errors->num_row() != 5 )
+	throw("The error matrix has to be a 5x5 symmetric matrix in SimpleHelix Constructor");
+      *_errors = *errors;
+    }
 }
 
 void SimpleHelix::init()
