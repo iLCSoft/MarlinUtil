@@ -283,7 +283,6 @@ double SimpleHelix::getIntersectionWithPlane( LCPlane3D p,
 	}
     }
 
-  //FIXME: needs to be implemented
   pointExists = true ;
   return s ;
 }

@@ -7,7 +7,7 @@
 
 /** Definition of a LCLine3D describing a geometrical line in 3D space.
  *  @author T.Kraemer, DESY
- *  @version $Id: LCLine3D.h,v 1.4 2006-10-19 15:59:26 tkraemer Exp $
+ *  @version $Id: LCLine3D.h,v 1.5 2006-10-24 15:06:07 tkraemer Exp $
  */
 
 class LCLine3D {
@@ -19,7 +19,7 @@ public:
    * @param point Point is a point of the line
    * @param direction Direction is the directional vector of the line.
    */
-  LCLine3D(LCVector3D point, LCVector3D direction) ;
+  LCLine3D(const LCVector3D point, const LCVector3D direction) ;
 
   /** Copy constructor.
    * @param line line is an other LCLine3D.
@@ -39,7 +39,7 @@ public:
    * Is is given with respect to the point of closes approach to the origen of
    * the coordinate system. 
    * @param s s is the path length along the line */
-  LCVector3D position(double s = 0) const ;
+  LCVector3D position(const double s = 0) const ;
 
   /** Direction of the line 
    */

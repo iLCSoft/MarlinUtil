@@ -1,7 +1,8 @@
 #include <LCPlane3D.h>
 
-#include <iostream>
 #include <string>
+#include <sstream>
+#include <iostream>
 #include <cmath>
 #include <float.h>
 #include <exception>
@@ -146,16 +147,54 @@ bool LCPlane3D::operator!=(const LCPlane3D & plane) const
 	   _d != plane._d );
 }
 
+//std::ostream & operator << (std::ostream &os, const LCPlane3D &p) 
+//{
+//  std::string pmb = "", pmc = "", pmd = ""; 
+//  stringstream out = "";
+//  if (p.b() >= 0.) 
+//    pmb = "+";
+//  if (p.c() >= 0.) 
+//    pmc = "+";
+//  if (p.d() < 0.) 
+//    pmd = "+";
+//
+//  std::cout << "das d: " << p.d() << std::endl;
+//  return os << "(" 
+//	    << p.a() << "*x"  
+//	    << pmb << p.b() << "*y" 
+//	    << pmc << p.c() << "*z" 
+//	    << pmd << p.d() << "=0)" ;
+//}
+
 std::ostream & operator << (std::ostream &os, const LCPlane3D &p) 
 {
-  std::string pmb = "", pmc = "", pmd = ""; 
-  if (p.b() >= 0) pmb = "+";
-  if (p.c() >= 0) pmc = "+";
-  if (p.d() >= 0) pmd = "+";
+  std::stringstream returnString ;
+  bool isFirst = true;
 
-  return os << "(" 
-	    << p.a() << "*x"  
-	    << pmb << p.b() << "*y" 
-	    << pmc << p.c() << "*z" 
-	    << pmd << p.d() << "=0)" ;
+  returnString << "(" ;
+  if (p.a() != 0) 
+    {
+      returnString << p.a() << "*x" ;
+      isFirst = false;
+    }
+  if (p.b() != 0)
+    {
+      if (!isFirst && (p.b() > 0.) ) returnString << "+";
+      returnString << p.b() << "*y" ;
+      isFirst = false;
+    }
+  if (p.c() != 0)
+    {
+      if (!isFirst && (p.c() > 0) ) returnString << "+";
+      returnString << p.c() << "*z" ;
+      isFirst = false;
+    }
+  if (p.d() != 0)
+    {
+      if (!isFirst && (p.d() > 0) ) returnString << "+";
+      returnString << p.d() ;
+    }
+  returnString << "=0)" ;
+
+  return os << returnString.str() ;
 }
