@@ -5,7 +5,7 @@
 
 /** Simple helix trajectory.
  *  @author T.Kraemer, DESY
- *  @version $Id: SimpleHelix.h,v 1.4 2006-10-20 15:06:19 tkraemer Exp $
+ *  @version $Id: SimpleHelix.h,v 1.5 2006-10-24 08:54:22 tkraemer Exp $
  */
 
 class SimpleHelix : public Trajectory {
@@ -36,16 +36,13 @@ public:
    *  @param s      path length
    */
   virtual LCErrorMatrix getCovarianceMatrix( double s) const ;
-  
-  
+
   /** Pathlength at point on trajectory closest to given position.  
    *  In order to get the distance use for example:  <br>  
    *     LCVector3D pt = t.getPosition( t.getPathAtClosestPoint( p ) ) ; <br>
    *     double d = LCVector3D( pt - p ).mag()  ; <br> 
    */
-  
   virtual double getPathAt(const LCVector3D position ) const ;
-  
   
   /*----------------------------------------------------------------------*/
   
@@ -54,19 +51,13 @@ public:
    */
   virtual double getIntersectionWithPlane( LCPlane3D p, bool& pointExists) const  ;
   
-  
   /** Pathlength at closest intersection point with cylinder - undefined 
    *  if pointExists==false. 
-   * @param center center point of cylinder
-   * @param axis   axis, mag( axis) is cylinder half length
-   * @param radius 
+   * @param cylinder cylinder object to intersect with
    */
+  virtual  double getIntersectionWithCylinder(const LCCylinder & cylinder,
+                                              bool & pointExists) const ;
 
-  virtual  double getIntersectionWithCylinder(LCVector3D center, 
-					      LCVector3D axis, 
-					      double radius,
-					      bool & pointExists) const ;
-  
   /** Pathlength at the start and end point of the trajectory. 
    */
   virtual double getStart() const ;
@@ -117,7 +108,7 @@ protected:
 // /** Physical trajectory describing a (charged) particle's  path in a B 
 //  *  field and material. 
 //  *  @author F.Gaede, DESY
-//  *  @version $Id: SimpleHelix.h,v 1.4 2006-10-20 15:06:19 tkraemer Exp $
+//  *  @version $Id: SimpleHelix.h,v 1.5 2006-10-24 08:54:22 tkraemer Exp $
 //  */
 
 // class PhysicalSimpleLine : public SimpleLine{

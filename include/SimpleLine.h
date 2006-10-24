@@ -5,7 +5,7 @@
 
 /** Simple line trajectory.
  *  @author F.Gaede, DESY
- *  @version $Id: SimpleLine.h,v 1.2 2006-10-11 09:01:31 tkraemer Exp $
+ *  @version $Id: SimpleLine.h,v 1.3 2006-10-24 08:54:22 tkraemer Exp $
  */
 
 class SimpleLine : public Trajectory {
@@ -61,17 +61,11 @@ public:
   
   /** Pathlength at closest intersection point with cylinder - undefined 
    *  if pointExists==false. 
-   * @param center center point of cylinder
-   * @param axis   axis, mag( axis) is cylinder half length
-   * @param radius 
+   * @param cylinder cylinder object to intersect with
    */
+  virtual  double getIntersectionWithCylinder(const LCCylinder & cylinder,
+                                              bool & pointExists) const ;
 
-  virtual  double getIntersectionWithCylinder(LCVector3D center, 
-					      LCVector3D axis, 
-					      double radius,
-					      bool & pointExists) const ;
-  
-  
 }; // class 
 
 
@@ -79,7 +73,7 @@ public:
 // /** Physical trajectory describing a (charged) particle's  path in a B 
 //  *  field and material. 
 //  *  @author F.Gaede, DESY
-//  *  @version $Id: SimpleLine.h,v 1.2 2006-10-11 09:01:31 tkraemer Exp $
+//  *  @version $Id: SimpleLine.h,v 1.3 2006-10-24 08:54:22 tkraemer Exp $
 //  */
 
 // class PhysicalSimpleLine : public SimpleLine{

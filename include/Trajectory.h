@@ -1,12 +1,13 @@
 #ifndef Trajectory_H
 #define Trajectory_H 1
 
-#include "LCGeometryTypes.h"
+#include <LCGeometryTypes.h>
 #include <LCPlane3D.h>
+#include <LCCylinder.h>
 
 /** Abstract trajectory interface describing a geometrical path in 3D space.
  *  @author F.Gaede, DESY
- *  @version $Id: Trajectory.h,v 1.3 2006-10-11 16:03:24 tkraemer Exp $
+ *  @version $Id: Trajectory.h,v 1.4 2006-10-24 08:54:22 tkraemer Exp $
  */
 
 class Trajectory {
@@ -50,17 +51,11 @@ public:
   
   /** Pathlength at closest intersection point with cylinder - undefined 
    *  if pointExists==false. 
-   * @param center center point of cylinder
-   * @param axis   axis, mag( axis) is cylinder half length
-   * @param radius 
+   * @param cylinder cylinder object to intersect with 
    */
-
-  virtual  double getIntersectionWithCylinder(LCVector3D center, 
-					      LCVector3D axis, 
-					      double radius, 
+  virtual  double getIntersectionWithCylinder(const LCCylinder & cylinder, 
 					      bool & pointExists) const = 0;
-  
-  
+
 }; // class 
 
 
@@ -68,7 +63,7 @@ public:
 /** Physical trajectory describing a (charged) particle's  path in a B 
  *  field and material. 
  *  @author F.Gaede, DESY
- *  @version $Id: Trajectory.h,v 1.3 2006-10-11 16:03:24 tkraemer Exp $
+ *  @version $Id: Trajectory.h,v 1.4 2006-10-24 08:54:22 tkraemer Exp $
  */
 
 class PhysicalTrajectory : public Trajectory{

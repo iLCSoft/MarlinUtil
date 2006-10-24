@@ -100,18 +100,10 @@ double SimpleLine::getIntersectionWithPlane( LCPlane3D p, bool& pointExists) con
 //   return x ;
 // }
 
-
-
-
-double SimpleLine::getIntersectionWithCylinder(LCVector3D center, 
-					       LCVector3D axis, 
-					       double radius,
-					       bool & pointExists) const  {
-
+double SimpleLine::getIntersectionWithCylinder(const LCCylinder & cylinder,
+					       bool & pointExists) const
+{
   //FIXME: needs to be implemented
   pointExists = false ;
   return 0 ;
 }
-
-
-  

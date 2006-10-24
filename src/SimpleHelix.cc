@@ -288,12 +288,9 @@ double SimpleHelix::getIntersectionWithPlane( LCPlane3D p,
   return s ;
 }
 
-double SimpleHelix::getIntersectionWithCylinder(LCVector3D center, 
-					       LCVector3D axis, 
-					       double radius,
-					       bool & pointExists) const  
+double SimpleHelix::getIntersectionWithCylinder(const LCCylinder & cylinder,
+						bool & pointExists) const  
 {
-
   //FIXME: needs to be implemented
   pointExists = false ;
   return 0 ;
