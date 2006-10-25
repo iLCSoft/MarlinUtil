@@ -6,6 +6,12 @@
 #include <float.h>
 #include <exception>
 
+LCLine3D::LCLine3D()
+{
+  _point.set(0.,0.,0.);
+  _direction.set(1.,0.,0.);
+}
+
 LCLine3D::LCLine3D(const LCVector3D point, const LCVector3D direction) 
 {
   _direction = direction.unit();

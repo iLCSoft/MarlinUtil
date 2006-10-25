@@ -2,19 +2,19 @@
 #define SimpleLine_H 1
 
 #include "Trajectory.h"
+#include <LCLine3D.h>
 
 /** Simple line trajectory.
- *  @author F.Gaede, DESY
- *  @version $Id: SimpleLine.h,v 1.3 2006-10-24 08:54:22 tkraemer Exp $
+ *  @author F.Gaede, T.Kraemer, DESY
+ *  @version $Id: SimpleLine.h,v 1.4 2006-10-25 09:21:37 tkraemer Exp $
  */
 
 class SimpleLine : public Trajectory {
 
 protected:
-  SimpleLine() {} ;
+  SimpleLine() {} 
 
-  LCVector3D  _r ;
-  LCVector3D _a ;
+  LCLine3D _line;
 
 public:
 
@@ -47,7 +47,6 @@ public:
    *     LCVector3D pt = t.getPosition( t.getPathAtClosestPoint( p ) ) ; <br>
    *     double d = LCVector3D( pt - p ).mag()  ; <br> 
    */
-  
   virtual double getPathAt(const LCVector3D position ) const ;
   
   
@@ -73,7 +72,7 @@ public:
 // /** Physical trajectory describing a (charged) particle's  path in a B 
 //  *  field and material. 
 //  *  @author F.Gaede, DESY
-//  *  @version $Id: SimpleLine.h,v 1.3 2006-10-24 08:54:22 tkraemer Exp $
+//  *  @version $Id: SimpleLine.h,v 1.4 2006-10-25 09:21:37 tkraemer Exp $
 //  */
 
 // class PhysicalSimpleLine : public SimpleLine{

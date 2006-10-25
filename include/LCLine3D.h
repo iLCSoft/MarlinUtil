@@ -7,13 +7,17 @@
 
 /** Definition of a LCLine3D describing a geometrical line in 3D space.
  *  @author T.Kraemer, DESY
- *  @version $Id: LCLine3D.h,v 1.5 2006-10-24 15:06:07 tkraemer Exp $
+ *  @version $Id: LCLine3D.h,v 1.6 2006-10-25 09:21:37 tkraemer Exp $
  */
 
 class LCLine3D {
 
 public:
 
+  /** Standard constructor:
+   * Initializes a line along the x-axis.
+   */
+  LCLine3D();
   /**
    * Constructor from a point and a direction.
    * @param point Point is a point of the line
