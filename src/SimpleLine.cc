@@ -74,7 +74,6 @@ double SimpleLine::getIntersectionWithCylinder(const LCCylinder & cylinder,
   while ( (s-sOld) > epsilon )
     {
       double d = fabs( cylinder.distance( _line.position(s) ) ) ;
-  std::cout << "von " << sStart << " bis " << sEnd << std::endl;
       std::cout << "ld: " << d << " ls: " << s << " lsold: " << sOld 
 		<< " punkt: " << _line.position(s) << std::endl;
       sOld = s;

@@ -80,38 +80,33 @@ double LCCylinder::radius() const
 double LCCylinder::distance(const LCVector3D & point) const 
 {
   int dummy ;
-  std::cout << "punkt1 " <<  point << " punkt2 " << projectPoint( point, dummy ) << " code " << dummy << std::endl ;
   return (point - projectPoint( point, dummy ) ).mag() ;
 }
 
 LCVector3D LCCylinder::projectPoint(const LCVector3D & point, int & code) const 
 {
   LCLine3D a( _axisSstartPoint , axisDirection() );
-  std::cout << " a: " << a.position() << " d: " << a.direction() << std::endl;
   double s = a.projectPoint( _axisSstartPoint ) ;
   double e = a.projectPoint( _axisEndPoint ) ;
   double p = a.projectPoint( point ) ;
   double d = a.distance( point ) ;
 
-  std::cout << "s " << s << " e " << e << " p " << p << " d " << d << "point: " << point <<  std::endl;
 
   double drp = fabs( d - radius() ) ;
   double dsp = fabs( s - p ) ;
   double dep = fabs( e - p ) ;
 
-  std::cout << "drp: " << drp << " dsp: " << dsp << " dep: " <<  dep << std::endl;
 
   LCVector3D projection;
 
   // classify in which region the point is located: 
   // point between the two planes at both ends 
   if ( p >= s && p <= e ) 
-    { std::cout << "punkt innherhalb des zylinders." << std::endl;
-    std::cout << "endplane " << _endPlane << " d " << d << " radius " << radius() << std::endl;
+    { 
       if (_endPlane && (d <= radius()) )
 	{
 	  if ( (drp <= dsp) && (drp <= dep) )
-	    { std::cout << "mantel " << drp << " " << dsp << " " << dep << std::endl;
+	    { 
 	      projection = ( point - a.position(p) ).unit() ;
 	      if (projection.mag() < 0.00001) projection = axisDirection().orthogonal().unit() ;
 	      projection *= radius() ;
@@ -120,14 +115,14 @@ LCVector3D LCCylinder::projectPoint(const LCVector3D & point, int & code) const
 	      return projection;
 	    }
 	  else if (dsp <= dep)
-	    { std::cout << "vorn " << drp << " " << dsp << " " << dep << std::endl;
+	    { 
 	      LCPlane3D sPlane(-axisDirection(),_axisSstartPoint);
 	      projection = sPlane.projectPoint( point );
 	      code = 1;
 	      return projection;
 	    }
 	  else // if ( dep < dsp )
-	    { std::cout << "hinten " << drp << " " << dsp << " " << dep << std::endl;
+	    { 
 	      LCPlane3D ePlane(axisDirection(),_axisEndPoint);
 	      projection = ePlane.projectPoint( point );
 	      code = 2;
@@ -138,18 +133,14 @@ LCVector3D LCCylinder::projectPoint(const LCVector3D & point, int & code) const
 	{
 	  projection = ( point - a.position(p) ).unit() ;
 	  if (projection.mag() < 0.00001) projection = axisDirection().orthogonal().unit() ;
-	  std::cout << "projection1: " << projection << std::endl;
 	  projection *= radius() ;
-	  std::cout << "projection2: " << projection << std::endl;
 	  projection = a.position(p) + projection;
-	  std::cout << "projection3: " << projection << std::endl;
 	  code = 3;
-	  std::cout << "hier return!" << std::endl;
 	  return projection;
 	}
     }
   else // outside the two planes at the end
-    { std::cout << "punkt auserhalb des zylinders." << std::endl;
+    { 
       if (_endPlane && (d <= radius()) )
 	{
 	  if ( p < s)
