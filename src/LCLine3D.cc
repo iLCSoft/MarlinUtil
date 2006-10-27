@@ -44,7 +44,7 @@ LCVector3D LCLine3D::direction() const
 
 double LCLine3D::distance(const LCVector3D & point) const 
 {
-  return ( point - projectPoint( point ) ).mag() ;
+  return ( point - position( projectPoint( point ) ) ).mag() ;
 }
 
 double LCLine3D::projectPoint(const LCVector3D & point) const 

@@ -165,6 +165,18 @@ int main(){
   std::cout << "Ebene2: " << myWall2 << " Abstand " << myWall2.distance(mypoint) 
 	    << " punkt: " << myWall2.projectPoint(mypoint) << std::endl;
 
+  LCVector3D myp1(0.,0.,0.);
+  LCVector3D myn1(1.,1.,1.);
+  SimpleLine myl1(myp1,myn1);
+
+  LCVector3D mypz1(3.,3.,3.);
+  LCVector3D mypz2(9.,9.,9.);
+  LCCylinder myz1(mypz1,mypz2,2.,true);
+
+  bool bmyl1;
+  double sl1 = myl1.getIntersectionWithCylinder(myz1,bmyl1);
+  std::cout << "sl1: " << sl1 << " point: " << myl1.getPosition(sl1) << " exists: " << bmyl1 << std::endl;
+
 }
 
 double drand() { return  1000. * double( rand() ) / RAND_MAX  ; } 

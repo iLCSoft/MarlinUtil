@@ -58,21 +58,35 @@ double SimpleLine::getIntersectionWithCylinder(const LCCylinder & cylinder,
   double sStart = sProject - minDistance ; 
   double sEnd   = sProject + minDistance ;
 
+  if ( (sStart < 0.) && (sEnd < 0.) )
+    { // Intersection is in backwards direction
+      pointExists = false ;
+      return 0;
+    }
+  else if ( (sStart < 0.) && (sEnd > 0.) )
+    { // intersection region starts in backwards direction
+      sStart = 0;
+    }
+
   double s = sStart, sOld = -DBL_MAX;
   double epsilon = 0.0000001;
 
   while ( (s-sOld) > epsilon )
     {
       double d = fabs( cylinder.distance( _line.position(s) ) ) ;
+  std::cout << "von " << sStart << " bis " << sEnd << std::endl;
+      std::cout << "ld: " << d << " ls: " << s << " lsold: " << sOld 
+		<< " punkt: " << _line.position(s) << std::endl;
       sOld = s;
-      s += d;
       if (s > sEnd)
         { // Problem! no intersection !
           pointExists = false ;
           return 0;
         }
+      s += d;
     }
 
   pointExists = true ;
   return s ;
 }
+
