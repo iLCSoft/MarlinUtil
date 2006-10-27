@@ -213,16 +213,9 @@ double SimpleHelix::getIntersectionWithPlane( LCPlane3D p,
 
   LCLine3D frontLine( (helixCentre + normalXY) , lineDirection);
   LCLine3D backLine( (helixCentre - normalXY) , lineDirection);
-  std::cout << " centre: " << helixCentre << " normxy: " << normalXY << " direction"
-	    << lineDirection << std::endl;
-  std::cout << " line1: " << frontLine 
-	    << " line2: " << backLine << std::endl;
   bool parallelBack, parallelFront;
   double zStart = ( frontLine.position( frontLine.intersectionWithPlane(p,parallelFront) ) ).z();
   double zEnd = ( backLine.position( backLine.intersectionWithPlane(p,parallelBack) ) ).z();
-  std::cout << "zStart: " << zStart << " zEnd: " << zEnd 
-	    << parallelFront << " " << parallelBack << std::endl;
-  std::cout << "plane: " << p << std::endl;
   if ( !(parallelBack && parallelFront) )
     { // plane is parallel to helix axis
       if ( fabs( p.distance(helixCentre) ) > (1/_omega) )
@@ -242,7 +235,6 @@ double SimpleHelix::getIntersectionWithPlane( LCPlane3D p,
     * sqrt(1 + _tanLambda*_tanLambda) / _tanLambda;
   double sEnd = ( zEnd - _reference.z() - _z0)
     * sqrt(1 + _tanLambda*_tanLambda) / _tanLambda;
-  std::cout << "sStart: " << sStart << " sEnd: " << sEnd << std::endl;
 
   if (sStart > sEnd)
     { // rong order for Start and Endpoint
@@ -254,7 +246,6 @@ double SimpleHelix::getIntersectionWithPlane( LCPlane3D p,
   // produce an artificial gap between sStart and sEnd
   if (sStart > -DBL_MAX && sStart < DBL_MAX ) sStart -= 0.00001;
   if (sEnd > -DBL_MAX && sEnd < DBL_MAX ) sEnd += 0.00001;
-  std::cout << "sStart: " << sStart << " sEnd: " << sEnd << std::endl;
 
   if ( (sStart < 0.) && (sEnd < 0.) )
     { // Intersection is in backwards direction
@@ -272,7 +263,6 @@ double SimpleHelix::getIntersectionWithPlane( LCPlane3D p,
   while ( (s-sOld) > epsilon )
     {
       double d = fabs( p.distance( getPosition(s) ) ) ;
-      std::cout << "d: " << d << std::endl;
       sOld = s;
       s += d;
       if (s > sEnd)

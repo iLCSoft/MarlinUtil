@@ -147,25 +147,6 @@ bool LCPlane3D::operator!=(const LCPlane3D & plane) const
 	   _d != plane._d );
 }
 
-//std::ostream & operator << (std::ostream &os, const LCPlane3D &p) 
-//{
-//  std::string pmb = "", pmc = "", pmd = ""; 
-//  stringstream out = "";
-//  if (p.b() >= 0.) 
-//    pmb = "+";
-//  if (p.c() >= 0.) 
-//    pmc = "+";
-//  if (p.d() < 0.) 
-//    pmd = "+";
-//
-//  std::cout << "das d: " << p.d() << std::endl;
-//  return os << "(" 
-//	    << p.a() << "*x"  
-//	    << pmb << p.b() << "*y" 
-//	    << pmc << p.c() << "*z" 
-//	    << pmd << p.d() << "=0)" ;
-//}
-
 std::ostream & operator << (std::ostream &os, const LCPlane3D &p) 
 {
   std::stringstream returnString ;
