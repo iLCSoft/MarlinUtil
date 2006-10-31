@@ -280,9 +280,65 @@ double SimpleHelix::getIntersectionWithPlane( LCPlane3D p,
 double SimpleHelix::getIntersectionWithCylinder(const LCCylinder & cylinder,
 						bool & pointExists) const  
 {
-  //FIXME: needs to be implemented
-  pointExists = false ;
-  return 0 ;
+  LCVector3D helixCentre( getCentreX(), getCentreY(), 0.);
+  LCVector3D axisDirection(0.,0.,1.);
+  LCLine3D axisLine(helixCentre , axisDirection);
+
+  LCVector3D middlePoint =
+    (cylinder.startPoint() + cylinder.endPoint())/2.;
+  double minDistance = sqrt( 0.25*cylinder.length()*cylinder.length()
+                             + cylinder.radius()*cylinder.radius() ); 
+                              
+
+  if ( axisLine.distance(middlePoint) > (minDistance+getRadius()) )
+    {
+      pointExists = false ;
+      return 0 ;
+    }
+
+  double sProject = axisLine.projectPoint(middlePoint);
+  double sStart = sProject - minDistance ;
+  double sEnd   = sProject + minDistance ;
+
+  double sHelixStart = ( (axisLine.position(sStart)).z() - _reference.z() - _z0)
+    * sqrt(1 + _tanLambda*_tanLambda) / _tanLambda;
+  double sHelixEnd = ( (axisLine.position(sEnd)).z() - _reference.z() - _z0)
+    * sqrt(1 + _tanLambda*_tanLambda) / _tanLambda;
+
+  if (sHelixStart > sHelixEnd)
+    {
+      double temp = sHelixStart;
+      sHelixStart = sHelixEnd;
+      sHelixEnd = temp;
+    }
+
+  if ( (sHelixStart < 0.) && (sHelixEnd < 0.) )
+    { // Intersection is in backwards direction
+      pointExists = false ;
+      return 0;
+    }
+  else if ( (sHelixStart < 0.) && (sHelixEnd > 0.) )
+    { // intersection region starts in backwards direction
+      sHelixStart = 0;
+    }
+
+  double s = sHelixStart, sOld = -DBL_MAX;
+  double epsilon = 0.0000001;
+
+  while ( (s-sOld) > epsilon )
+    {
+      double d = fabs( cylinder.distance( getPosition(s) ) ) ;
+      sOld = s;
+      if (s > sHelixEnd)
+        { // Problem! no intersection !
+          pointExists = false ;
+          return 0;
+        }
+      s += d;
+    }
+
+  pointExists = true ;
+  return s ;
 }
 
 double SimpleHelix::getStart() const
@@ -365,3 +421,9 @@ double SimpleHelix::getPitch()
 {
   return 2*_pi*_tanLambda/fabs(_omega);
 }
+
+double SimpleHelix::getRadius() const 
+{
+  return 1/_omega;
+}
+

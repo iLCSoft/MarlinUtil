@@ -58,6 +58,13 @@ double SimpleLine::getIntersectionWithCylinder(const LCCylinder & cylinder,
   double sStart = sProject - minDistance ; 
   double sEnd   = sProject + minDistance ;
 
+  if (sStart > sEnd)
+    {
+      double temp = sStart;
+      sStart = sEnd;
+      sEnd = temp;
+    }
+
   if ( (sStart < 0.) && (sEnd < 0.) )
     { // Intersection is in backwards direction
       pointExists = false ;
@@ -86,4 +93,3 @@ double SimpleLine::getIntersectionWithCylinder(const LCCylinder & cylinder,
   pointExists = true ;
   return s ;
 }
-

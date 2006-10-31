@@ -177,6 +177,24 @@ int main(){
   double sl1 = myl1.getIntersectionWithCylinder(myz1,bmyl1);
   std::cout << "sl1: " << sl1 << " point: " << myl1.getPosition(sl1) << " exists: " << bmyl1 << std::endl;
 
+// ----------- Helix intersection with cylinder
+
+  double xd0 = 0;
+  double xphi0 = 0;
+  double xomega = 0.009;
+  double xz0 = 0;
+  double xtanLambda = 1;
+
+  SimpleHelix helix2(xd0,xphi0,xomega,xz0,xtanLambda,ref);
+
+  LCVector3D myxpz1(0.,0.,-400.);
+  LCVector3D myxpz2(0.,0.,400.);
+  LCCylinder myxz1(myxpz1,myxpz2,200.);
+
+  bool bmyh1;
+  double sh1 = helix2.getIntersectionWithCylinder(myxz1,bmyh1);
+  std::cout << "sh1: " << sh1 << " point: " << helix2.getPosition(sh1) << " exists: " << bmyh1 << std::endl;
+
 }
 
 double drand() { return  1000. * double( rand() ) / RAND_MAX  ; } 

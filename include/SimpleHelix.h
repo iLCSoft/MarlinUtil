@@ -5,7 +5,7 @@
 
 /** Simple helix trajectory.
  *  @author T.Kraemer, DESY
- *  @version $Id: SimpleHelix.h,v 1.5 2006-10-24 08:54:22 tkraemer Exp $
+ *  @version $Id: SimpleHelix.h,v 1.6 2006-10-31 13:46:00 tkraemer Exp $
  */
 
 class SimpleHelix : public Trajectory {
@@ -44,6 +44,10 @@ public:
    */
   virtual double getPathAt(const LCVector3D position ) const ;
   
+  /** get the radius of the helix. 
+   */
+  virtual double getRadius() const ;
+
   /*----------------------------------------------------------------------*/
   
   /** Pathlength at closest intersection point with plane - undefined 
@@ -108,7 +112,7 @@ protected:
 // /** Physical trajectory describing a (charged) particle's  path in a B 
 //  *  field and material. 
 //  *  @author F.Gaede, DESY
-//  *  @version $Id: SimpleHelix.h,v 1.5 2006-10-24 08:54:22 tkraemer Exp $
+//  *  @version $Id: SimpleHelix.h,v 1.6 2006-10-31 13:46:00 tkraemer Exp $
 //  */
 
 // class PhysicalSimpleLine : public SimpleLine{
