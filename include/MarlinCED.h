@@ -24,7 +24,7 @@
 #include "IMPL/ClusterImpl.h"
 
 #include <MarlinDrawUtil.h>
-
+#include <Trajectory.h>
 
 
 using namespace marlin ;
@@ -73,9 +73,17 @@ class MarlinCED {
   /** Draws a helix from the given point(x,y,z) for momentum(px,py,pz) in a B-field b (in Tesla) 
    */
   static void drawHelix(float b, float charge, float x, float y, float z,
-			float px, float py, float pz, int marker, int size, unsigned int col,
+			float px, float py, float pz, int marker, int size, 
+			unsigned int col,
 			float rmin=10.0, float rmax=3000.0, float zmax=4500.0);
   
+  /** Draws a trajectory in the volume described by rmin, rmax, zmax
+   */
+  static void drawTrajectory(const Trajectory* t, const int marker, 
+			     const int size, const unsigned int col,
+			     const float rmin=10.0, const float rmax=3000.0, 
+			     const float zmax=4500.0) ;
+
   /** Draws a 'spike', i.e. a bold arrow, from (x0,y0,z0) to (x1,y1,z1) with color on layer e.g. to display jet thrust axes
    */
   static void drawSpike(float x0, float y0, float z0, float x1, float y1, float z1, unsigned int color, unsigned int layer);

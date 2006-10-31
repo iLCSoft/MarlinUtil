@@ -9,7 +9,7 @@
 #include <gear/CalorimeterParameters.h>
 #include <gear/LayerLayout.h>
 #include <gear/PadRowLayout2D.h>
-
+#include <LCGeometryTypes.h>
 
 
 MarlinCED* MarlinCED::_me = 0 ;
@@ -190,7 +190,38 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
 
 } 
 
+void MarlinCED::drawTrajectory(const Trajectory* t, const int marker,
+			       const int size, const unsigned int col,
+			       const float rmin, const float rmax,
+			       const float zmax) 
+{
+  if (rmax <= rmin || zmax == 0 ) return;
+  double stepSize = 0.05;
+  double nStepKill = int(2*3.14*rmax/stepSize);
 
+  double rmax2 = rmax*rmax, rmin2 = rmin*rmin,xmagxy2;
+  double s = - stepSize;
+  int nz = 0;
+  LCVector3D x,xold;
+  x = t->getPosition(s);
+  for (;;)
+    {
+      s += stepSize;
+      xold = x ;
+      x = t->getPosition(s);
+      if (x.z() == xold.z()) 
+	{
+	  ++nz;
+	  if (nz > nStepKill) break;
+	}
+      xmagxy2 = x.x()*x.x() + x.y()*x.y() ;
+      if (fabs(x.z()) > zmax) break;
+      if (xmagxy2 < rmin2) continue;
+      if (xmagxy2 > rmax2) break;
+      ced_line( xold.x(), xold.y(), xold.z(), x.x(), x.y(), x.z(), 
+		marker, size, col);
+    }
+}
 
 void MarlinCED::drawSpike( float x0, float y0, float z0,float x1, float y1, float z1, unsigned int color, unsigned int layer ) {
 
