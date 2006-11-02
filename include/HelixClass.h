@@ -43,7 +43,7 @@
  *    z (beam) axis and determination of the distance of closest approach<br>
  *    from arbitrary 3D point to the helix. <br>
  *    @author A. Raspereza (DESY)<br>
- *    @version $Id: HelixClass.h,v 1.11 2006-07-04 08:37:14 owendt Exp $<br>
+ *    @version $Id: HelixClass.h,v 1.12 2006-11-02 12:21:07 rasp Exp $<br>
  *
  */
 
@@ -192,30 +192,7 @@ class HelixClass {
      * Distance[1] - distance along Z axis <br>
      * Distance[2] - 3D distance <br> 
      */
-    float getDistanceToPoint(float* xPoint, float* Distance);
-
-    /**
-     * Return distance of the closest approach of the helix to <br>
-     * arbitrary 3D point in space. xPoint[3] - coordinates of <br>
-     * space point. Distance[3] - vector of distances of helix to <br> 
-     * a given point in various projections : <br>
-     * Distance[0] - distance in R-Phi plane <br>
-     * Distance[1] - distance along Z axis <br>
-     * Distance[2] - 3D distance <br> 
-     */
-    float getDistanceToPoint(const float* xPoint, float* Distance);
-
-    /**
-     * Similar to getDistanceToPoint(float* xPoint, float* Distance).<br>
-     * Additionally this method returns the corresponding 3-dim point on helix.
-     */
-    float getDistanceToPoint(float* xPoint, float* Distance, float* pointOnHelix);
-
-    /**
-     * Similar to getDistanceToPoint(float* xPoint, float* Distance).<br>
-     * Additionally this method returns the corresponding 3-dim point on helix.
-     */
-    float getDistanceToPoint(const float* xPoint, float* Distance, float* pointOnHelix);
+    float getDistanceToPoint(float * xPoint, float * Distance);
 
     /**
      * This method calculates coordinates of helix intersection <br>
@@ -281,18 +258,6 @@ class HelixClass {
      */
     float getCharge();
 
-    /**
-     * Return the pathlenght on the helix, between point1 and point2
-     * Up to now it is not checked wether the points are on the helix or not.
-     */
-    float getPathLength(float* point1, float* point2);    
-
-
-    /**
-     * Checks if point is on the helix or not
-     */
-    bool isOnHelix(const float* point);
-
 
  private:    
     float _momentum[3]; // momentum @ ref point 
@@ -322,12 +287,8 @@ class HelixClass {
     float _xStart[3]; // Starting point of track segment
     float _xEnd[3]; // Ending point of track segment
 
-    float _phiZ;
     float _bZ;
-
-    
-    void printParameters();
-
+    float _phiZ;
 
 };
 
