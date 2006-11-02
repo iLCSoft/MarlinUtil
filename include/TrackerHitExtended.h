@@ -19,7 +19,7 @@ typedef std::vector<TrackExtended*> TrackExtendedVec;
  * Class TrackerHitExtended is used in TrackwiseClustering <br>
  * and Wolf processors. <br>
  * @author A. Raspereza (DESY)<br>
- * @version $Id: TrackerHitExtended.h,v 1.5 2006-04-26 10:04:04 rasp Exp $<br>
+ * @version $Id: TrackerHitExtended.h,v 1.6 2006-11-02 12:22:30 rasp Exp $<br>
  */
 class TrackerHitExtended {
 
@@ -39,6 +39,8 @@ class TrackerHitExtended {
     void clearTrackVec();
     void setResolutionRPhi(float rphiReso);
     void setResolutionZ(float zReso);
+    void setType(int type);
+    void setDet(int idet);
 
     TrackerHit * getTrackerHit();
     TrackExtended * getTrackExtended();
@@ -51,6 +53,8 @@ class TrackerHitExtended {
     float * getDirVec();
     float getResolutionRPhi();
     float getResolutionZ();
+    int getType();
+    int getDet();
 
  private:
 
@@ -66,6 +70,9 @@ class TrackerHitExtended {
     float _yresFrom;
     float _genericDistance;
     float _dirVec[3];
+
+    int _type;
+    int _idet;
 	
 };
 

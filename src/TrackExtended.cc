@@ -6,6 +6,7 @@ TrackExtended::TrackExtended( ) {
     _superCluster = NULL;
     _trackerHitVector.clear();
     _clusterVec.clear();
+    _group = NULL;
 }
 
 TrackExtended::TrackExtended( Track * track) {
@@ -13,6 +14,7 @@ TrackExtended::TrackExtended( Track * track) {
     _superCluster = NULL;
     _trackerHitVector.clear();
     _clusterVec.clear();
+    _group = NULL;
 }
 
 TrackExtended::TrackExtended( TrackerHitExtended * trackerhit) {
@@ -21,6 +23,7 @@ TrackExtended::TrackExtended( TrackerHitExtended * trackerhit) {
     _track = NULL;
     _superCluster = NULL;
     _clusterVec.clear();
+    _group = NULL;
 }
 
 

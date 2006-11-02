@@ -56,6 +56,14 @@ void TrackerHitExtended::setDirVec(float * dirVec) {
     _dirVec[2] = dirVec[2];
 }
 
+void TrackerHitExtended::setType(int ityp) {
+    _type = ityp;
+}
+
+void TrackerHitExtended::setDet(int idet) {
+    _idet = idet;
+}
+
 TrackerHit * TrackerHitExtended::getTrackerHit() {
     return _trackerHit;
 }
@@ -102,4 +110,12 @@ void TrackerHitExtended::setResolutionRPhi(float rphiReso) {
 
 void TrackerHitExtended::setResolutionZ(float zReso) {
   _zReso = zReso;
+}
+
+int TrackerHitExtended::getType() {
+    return _type;
+}
+
+int TrackerHitExtended::getDet() {
+    return _idet;
 }
