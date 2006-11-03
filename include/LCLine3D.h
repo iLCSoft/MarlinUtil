@@ -7,7 +7,7 @@
 
 /** Definition of a LCLine3D describing a geometrical line in 3D space.
  *  @author T.Kraemer, DESY
- *  @version $Id: LCLine3D.h,v 1.7 2006-10-25 15:47:45 tkraemer Exp $
+ *  @version $Id: LCLine3D.h,v 1.8 2006-11-03 16:43:13 tkraemer Exp $
  */
 
 class LCLine3D {
@@ -24,7 +24,37 @@ public:
    * @param point Point is a point of the line
    * @param direction Direction is the directional vector of the line.
    */
-  LCLine3D(const LCVector3D point, const LCVector3D direction) ;
+  LCLine3D(const LCVector3D & point, const LCVector3D & direction) ;
+
+  /**
+   * Constructor from a point and a direction.
+   * @param point Point is a point of the line
+   * @param direction Direction is the directional vector of the line.
+   * @param reference reference point of the line. 
+   */
+  LCLine3D(const LCVector3D & point, 
+	   const LCVector3D & direction, 
+	   const LCVector3D & reference) ;
+
+  /**
+   * Constructor using the canonical parameterization. 
+   * @param d0 d0 is the point of closest approach in the xy plane.
+   * @param phi0 phi0 is the angle in  the xy plane.
+   * @param z0 z0 is the z coordinate of the point of closest approach.
+   * @param tanLambda tanLambda is the angle of with respect to the xy plane.
+   */
+  LCLine3D(double d0, double phi0, double z0, double tanLambda) ;
+
+  /**
+   * Constructor using the canonical parameterization. 
+   * @param d0 d0 is the point of closest approach in the xy plane.
+   * @param phi0 phi0 is the angle in  the xy plane.
+   * @param z0 z0 is the z coordinate of the point of closest approach.
+   * @param tanLambda tanLambda is the angle of with respect to the xy plane.
+   * @param reference reference point of the line. 
+   */
+  LCLine3D(double d0, double phi0, double z0, double tanLambda,
+	   const LCVector3D & reference) ;
 
   /** Copy constructor.
    * @param line line is an other LCLine3D.
@@ -34,6 +64,27 @@ public:
   /**
    * Destructor. */
   ~LCLine3D() {}
+
+  /**
+   * set the Parameters for a line using a point and a direction.
+   * @param point Point is a point of the line
+   * @param direction Direction is the directional vector of the line.
+   * @param reference reference point of the line. 
+   */
+  bool set(const LCVector3D & point, 
+	   const LCVector3D & direction, 
+	   const LCVector3D & reference) ;
+
+  /**
+   * Set the Parameters of a line using the canonical parameterization. 
+   * @param d0 d0 is the point of closest approach in the xy plane.
+   * @param phi0 phi0 is the angle in  the xy plane.
+   * @param z0 z0 is the z coordinate of the point of closest approach.
+   * @param tanLambda tanLambda is the angle of with respect to the xy plane.
+   * @param reference reference point of the line. 
+   */
+  bool set(double d0, double phi0, double z0, double tanLambda,
+	   const LCVector3D & reference) ;
 
   /**
    * Assignment. */
@@ -79,7 +130,7 @@ protected:
 
   LCVector3D _point;
   LCVector3D _direction;
-
+  LCVector3D _reference;
 };
 
 std::ostream & operator << (std::ostream &os, const LCLine3D &l) ;
