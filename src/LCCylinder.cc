@@ -85,12 +85,15 @@ double LCCylinder::distance(const LCVector3D & point) const
 
 LCVector3D LCCylinder::projectPoint(const LCVector3D & point, int & code) const 
 {
+  //  std::cout << "problem!" << std::endl;
+  //  std::cout << "asp: " << _axisSstartPoint << " aep: " << _axisEndPoint << " point: " << point << std::endl;
   LCLine3D a( _axisSstartPoint , axisDirection() );
+  //  std::cout << a << std::endl;
   double s = a.projectPoint( _axisSstartPoint ) ;
   double e = a.projectPoint( _axisEndPoint ) ;
   double p = a.projectPoint( point ) ;
   double d = a.distance( point ) ;
-
+  //  std::cout << "s: " << s << " e: " << e << " p: " << p << " d: " << d <<  std::endl;
 
   double drp = fabs( d - radius() ) ;
   double dsp = fabs( s - p ) ;
