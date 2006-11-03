@@ -121,7 +121,6 @@ int main(){
 
   std::cout << std::endl ;
 
-
 // ----- Testing the LCCylinder class
 
   LCVector3D cs(1,0,0), ce(3,0,0),cp(0.9,0.1,0);
@@ -129,6 +128,7 @@ int main(){
   LCCylinder cylinder(cs,ce,cr,false);
 
     int code;
+  std::cout << "Hauptprogramm noch da!" <<  std::endl;
     std::cout << "Projection: " << cylinder.projectPoint(cp,code) 
   	    << " " << code << std::endl;
 
