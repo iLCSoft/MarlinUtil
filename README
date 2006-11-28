@@ -1,9 +1,26 @@
 
+-----------------------
+*
+*
+*  MarlinUtil
+*
+*  Utility library for Marlin based (reconstruction) programs
+*
+*
+-----------------------
+
 Library that containes classes and functions that are used by more than
 one processor. In particular it contains the geometry classes that are used
 until we have the geometry for reconstruction package (GEAR).
 
- NB: this is work in progress and only done for the simulation workshop tutorial
-     there needs to be more generic solution and definition of the software structure....
+This package is needed in praticular for MarlinReco but can also be included in other 
+Marlin based programs.
+
+The easisiest way to install and build MarlinUtil is to copy it into the 
+$MARLIN/packages  directory and use the global toplevel Makefile of Marlin.
+
+Further documentation can be found in the MarlinReco manual 
+(http://ilcsoft.desy.de -> Software Packages -> MarlinReco -> Documentation )
 
 
+F.Gaede, DESY.
