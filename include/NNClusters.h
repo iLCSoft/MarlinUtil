@@ -5,7 +5,7 @@
 /** File with various classes for a generic nearest neighbour type clustering.
  *
  *  @author F.Gaede (DESY)
- *  @version $Id: NNClusters.h,v 1.3 2006-08-15 08:50:13 gaede Exp $
+ *  @version $Id: NNClusters.h,v 1.4 2006-12-18 14:35:22 gaede Exp $
  */
 
 #include <list>
@@ -41,7 +41,7 @@ class GenericCluster ;
  *  @see NNDistance
  * 
  *  @author F.Gaede (DESY)
- *  @version $Id: NNClusters.h,v 1.3 2006-08-15 08:50:13 gaede Exp $
+ *  @version $Id: NNClusters.h,v 1.4 2006-12-18 14:35:22 gaede Exp $
  */
 
 template <class In, class Out, class Pred > 
@@ -122,12 +122,13 @@ void cluster( In first, In last, Out result, Pred* pred ) {
  *
  *  @see GenericCluster
  *  @author F.Gaede (DESY)
- *  @version $Id: NNClusters.h,v 1.3 2006-08-15 08:50:13 gaede Exp $
+ *  @version $Id: NNClusters.h,v 1.4 2006-12-18 14:35:22 gaede Exp $
  */
 template <class T>
 class GenericHit : public  std::pair< T*, GenericCluster<T>* >{
 
   typedef T value_type ;
+  typedef std::pair< T*, GenericCluster<T>* > Pair ;
 
 public:
 
@@ -135,15 +136,15 @@ public:
    *  code nearest neighbour bins, e.g. in z-coordinate to speed up the clustering process.
    */
   GenericHit(T* hit, int index0 = 0 ) : Index0( index0 )   {  
-    first = hit ; 
-    second = 0 ;
+    Pair::first = hit ; 
+    Pair::second = 0 ;
   }
 
   /** C'tor that also takes a pointer to the cluster this hit belongs to - in case seed hits/clusters are used.
    */
   GenericHit(T* hit ,  GenericCluster<T>* cl , int index0 = 0) : Index0( index0 ) {
-    first =  hit ;
-    second = cl ;
+    Pair::first =  hit ;
+    Pair::second = cl ;
   }
   
   /** Index that can be used to code nearest neighbour bins, e.g. in z-coordinate
@@ -162,7 +163,7 @@ protected:
  * 
  *  @see GenericHit
  *  @author F.Gaede (DESY)
- *  @version $Id: NNClusters.h,v 1.3 2006-08-15 08:50:13 gaede Exp $
+ *  @version $Id: NNClusters.h,v 1.4 2006-12-18 14:35:22 gaede Exp $
  */
 template <class T >
 class GenericCluster : public std::list< GenericHit<T> * > {
@@ -198,9 +199,10 @@ public :
  */
 template <class T> 
 class GenericHitVec : public std::vector< GenericHit<T>* > {
+  typedef std::vector< GenericHit<T>* > Vector ;
 public:
   ~GenericHitVec() {
-    for( typename GenericHitVec::iterator i = begin() ; i != end() ; i++) delete *i ;
+    for( typename GenericHitVec::iterator i = Vector::begin() ; i != Vector::end() ; i++) delete *i ;
   }
 };
 
@@ -245,9 +247,10 @@ void addToGenericHitVec(GenericHitVec<T>& v, LCCollection* col, Pred pred , Orde
  */
 template <class T> 
 class GenericClusterVec : public std::list< GenericCluster<T>* > {
+  typedef std::list< GenericCluster<T>* > List ;
 public:
   ~GenericClusterVec() {
-    for( typename GenericClusterVec::iterator i = begin() ; i != end() ; i++) delete *i ;
+    for( typename GenericClusterVec::iterator i = List::begin() ; i != List::end() ; i++) delete *i ;
   }
 };
 
