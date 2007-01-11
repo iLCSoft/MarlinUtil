@@ -17,7 +17,7 @@ This package is needed in praticular for MarlinReco but can also be included in 
 Marlin based programs.
 
 The easisiest way to install and build MarlinUtil is to copy it into the 
-$MARLIN/packages  directory and use the global toplevel Makefile of Marlin.
+$MARLINWORKDIR/packages directory and use the global toplevel Makefile of Marlin.
 
 Further documentation can be found in the MarlinReco manual 
 (http://ilcsoft.desy.de -> Software Packages -> MarlinReco -> Documentation )
