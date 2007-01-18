@@ -4,7 +4,7 @@
 #
 # @author Frank Gaede
 # @author Jan Engels
-# @version $Id: GNUmakefile,v 1.7 2007-01-11 17:02:41 engels Exp $
+# @version $Id: GNUmakefile,v 1.8 2007-01-18 16:05:53 engels Exp $
 #
 ###########################################################
 
@@ -28,11 +28,12 @@ endif
 
 # additional user include/libraries
 ifndef USERINCLUDES
- USERINCLUDES = -I $(GSL_HOME)/include
+ USERINCLUDES += -I $(GSL_HOME)/include
+ USERINCLUDES += -I $(CLHEP)/include
 endif
 
 ifndef USERLIBS
- USERLIBS = -L $(GSL_HOME)/lib -lgsl -lgslcblas
+ USERLIBS += -L $(GSL_HOME)/lib -lgsl -lgslcblas
 endif
 
 #----------------------------------------------------------------------------
