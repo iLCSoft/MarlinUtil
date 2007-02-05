@@ -14,7 +14,7 @@ class MarlinDrawUtil {
  public:
 
   static int getColor(int pdgCode);
-  static int getColorAmplitude(float amplitude, float max_amplitude, std::string mode, float limit);
+  static unsigned int getColorAmplitude(float amplitude, float max_amplitude, std::string mode, float limit);
 
 };
 

@@ -1,7 +1,8 @@
 
 #include "MarlinDrawUtil.h"
 #include <cmath>
- 
+
+
 
 
 // ____________________________________________________________________________________________________
@@ -81,62 +82,163 @@ int MarlinDrawUtil::getColor(int pdgCode) {
 // ____________________________________________________________________________________________________
 
 
-int MarlinDrawUtil::getColorAmplitude(float amplitude, float max_amplitude,std::string mode, float limit) {
+unsigned int MarlinDrawUtil::getColorAmplitude(float amplitude, float max_amplitude,std::string mode, float limit) {
+
+
+  const unsigned int color_categories = 4; // in rgb there are 4 steps to scan a rainbow spectrum from red to blue
+  const unsigned int color_category_width = 256;
 
   float ratio = amplitude/max_amplitude;
-  int r = 0;
-  int g = 0;
-  int b = 0;
-  int color = 0;
 
-  const int color_categories = 5;
-  const float color_categories_limit = limit/(float)color_categories;
+  
+  if (limit < 0.0) limit = 0.0;
+  if (limit > 1.0) limit = 1.0;
+
+  
+  unsigned int ratioInt = (unsigned int)(color_categories*color_category_width*(ratio/limit));
+
+
+  // debug  
+  // std::cout << "ratio = " << ratio << "  " << ratioInt << std::endl;
+
+
+  unsigned int r = 0;
+  unsigned int g = 0;
+  unsigned int b = 0;
+  unsigned int color = 0;
+
+
 
 
   if (mode == "rainbow") {
-    if ( (0.0<=ratio)&&(ratio<=color_categories_limit) ) {
+    if ( (0 <= ratioInt) && (ratioInt < 1*color_category_width) ) {
       r = 255;
-      g = (int)floor(255*( ratio/0.02 )); //change floor
+      g = 0 + ratioInt;
       b = 0;
       color = (r<<16) + (g<<8) + b;
+      
+      // debug
+      // std::cout << r << "  " << g << "  " <<  b << std::endl;
+      
       return color;
     }
-    else if ( (color_categories_limit<ratio)&&(ratio<=2*color_categories_limit) ) {
-      r = (int)(255 - floor(255*( (ratio - 0.02)/(0.04 - 0.02) ))); //change floor
+    else if ( (1*color_category_width <= ratioInt) && (ratioInt < 2*color_category_width ) ) {
+      r = 255 - (ratioInt - 1*color_category_width);
       g = 255;
       b = 0;
       color = (r<<16) + (g<<8) + b;
+
+      // debug
+      // std::cout << r << "  " << g << "  " <<  b << std::endl;
+
       return color;
     }
-    else if ( (2*color_categories_limit<ratio)&&(ratio<=3*color_categories_limit) ) {
+    else if ( (2*color_category_width <= ratioInt) && (ratioInt < 3*color_category_width) ) {
       r = 0;
       g = 255;
-      b = (int)floor(255*( (ratio - 0.04)/(0.06 - 0.04) )); //change floor 
+      b = 0 + (ratioInt - 2*color_category_width);
       color = (r<<16) + (g<<8) + b;
+
+      // debug
+      // std::cout << r << "  " << g << "  " <<  b << std::endl;
+
       return color;
     }
-    else if ( (3*color_categories_limit<ratio)&&(ratio<=4*color_categories_limit) ) {
+    else if ( (3*color_category_width <= ratioInt) && (ratioInt < 4*color_category_width) ) {
       r = 0;
-      g = (int)(255 - floor(255*( (ratio - 0.06)/(0.08 - 0.06) ))); //change floor 
+      g = 255 - (ratioInt - 3*color_category_width);
       b = 255;
       color = (r<<16) + (g<<8) + b;
+
+      // debug
+      // std::cout << r << "  " << g << "  " <<  b << std::endl;
+
       return color;
     }
-    else if ( (4*color_categories_limit<ratio)&&(ratio<=5*color_categories_limit) ) {
-      r = (int)floor(255*( (ratio - 0.08)/(0.10 - 0.08) )); //change floor
-      g = 0;
-      b = 255;
-      color = (r<<16) + (g<<8) + b;
-      return color;
-    }    
     else {
       r = 255;
       g = 255;
       b = 255;
       color = (r<<16) + (g<<8) + b;     
+      
+      // debug
+      // std::cout << r << "  " << g << "  " <<  b << std::endl;
+      
       return color;
     }
   }
+
+
+
+
+
+   
+
+  // old version calculating in floating point representation
+  /*     
+  const float color_categories_limit = limit/(float)color_categories;
+
+  if (mode == "rainbowFloat") {
+    if ( (0.0<=ratio)&&(ratio<=color_categories_limit) ) {
+      r = 255;
+      g = (unsigned int)floor(255.*color_categories*(ratio-0.0/color_categories)) + 0; //change floor
+      b = 0;
+      color = (r<<16) + (g<<8) + b;
+      
+      // debug
+      std::cout << r << "  " << g << "  " <<  b << std::endl;
+      
+      return color;
+    }
+    else if ( (color_categories_limit<ratio)&&(ratio<=2*color_categories_limit) ) {
+      r = (unsigned int)floor(-255.*color_categories*(ratio-1.0/color_categories)) + 255; //change floor
+      g = 255;
+      b = 0;
+      color = (r<<16) + (g<<8) + b;
+
+      // debug
+      std::cout << r << "  " << g << "  " <<  b << std::endl;
+
+      return color;
+    }
+    else if ( (2*color_categories_limit<ratio)&&(ratio<=3*color_categories_limit) ) {
+      r = 0;
+      g = 255;
+      b = (unsigned int)floor(255.*color_categories*(ratio-2.0/color_categories)) + 0; //change floor 
+      color = (r<<16) + (g<<8) + b;
+
+      // debug
+      std::cout << r << "  " << g << "  " <<  b << std::endl;
+
+      return color;
+    }
+    else if ( (3*color_categories_limit<ratio)&&(ratio<=4*color_categories_limit) ) {
+      r = 0;
+      g = (int)floor(-255.*color_categories*(ratio-3.0/color_categories)) + 255; //change floor 
+      b = 255;
+      color = (r<<16) + (g<<8) + b;
+
+      // debug
+      std::cout << r << "  " << g << "  " <<  b << std::endl;
+
+      return color;
+    }
+    else {
+      r = 255;
+      g = 255;
+      b = 255;
+      color = (r<<16) + (g<<8) + b;     
+      
+      // debug
+      std::cout << r << "  " << g << "  " <<  b << std::endl;
+      
+      return color;
+    }
+  }
+  */
+  
+
+
 
   else return 0;
 
