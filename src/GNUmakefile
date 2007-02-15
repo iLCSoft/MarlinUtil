@@ -4,7 +4,7 @@
 #
 # @author Frank Gaede
 # @author Jan Engels
-# @version $Id: GNUmakefile,v 1.8 2007-01-18 16:05:53 engels Exp $
+# @version $Id: GNUmakefile,v 1.9 2007-02-15 11:42:04 engels Exp $
 #
 ###########################################################
 
@@ -28,12 +28,17 @@ endif
 
 # additional user include/libraries
 ifndef USERINCLUDES
- USERINCLUDES += -I $(GSL_HOME)/include
- USERINCLUDES += -I $(CLHEP)/include
+ USERINCLUDES += -I$(GSL_HOME)/include
+ USERINCLUDES += -I$(LCIO)/src/cpp/include
+ USERINCLUDES += -I$(MARLIN)/include
+ USERINCLUDES += -D USE_CLHEP -I$(CLHEP)/include
+ USERINCLUDES += -D USE_GEAR -I$(GEAR)/src/cpp/include
 endif
 
 ifndef USERLIBS
- USERLIBS += -L $(GSL_HOME)/lib -lgsl -lgslcblas
+ USERLIBS += -L$(GSL_HOME)/lib -lgsl -lgslcblas
+ USERLIBS += -L$(GEAR)/lib -lgear -lgearxml
+ USERLIBS += -L$(CLHEP)/lib -lCLHEP
 endif
 
 #----------------------------------------------------------------------------
