@@ -4,7 +4,7 @@
 #
 # @author Frank Gaede
 # @author Jan Engels
-# @version $Id: GNUmakefile,v 1.10 2007-02-21 13:45:46 engels Exp $
+# @version $Id: GNUmakefile,v 1.11 2007-03-01 15:53:41 engels Exp $
 #
 ###########################################################
 
@@ -28,17 +28,20 @@ endif
 
 # additional user include/libraries
 ifndef USERINCLUDES
- USERINCLUDES += -I$(GSL_HOME)/include
- USERINCLUDES += -I$(LCIO)/src/cpp/include
  USERINCLUDES += -I$(MARLIN)/include
  USERINCLUDES += -D USE_CLHEP -I$(CLHEP)/include
  USERINCLUDES += -D USE_GEAR -I$(GEAR)/src/cpp/include
+ USERINCLUDES += -I$(GSL_HOME)/include
+ USERINCLUDES += -I$(LCIO)/src/cpp/include
 endif
 
 ifndef USERLIBS
- USERLIBS += -L$(GSL_HOME)/lib -lgsl -lgslcblas
- USERLIBS += -L$(GEAR)/lib -lgear -lgearxml
+ USERLIBS += -L$(MARLIN)/lib -lMarlin
  USERLIBS += -L$(CLHEP)/lib -lCLHEP
+ USERLIBS += -L$(GEAR)/lib -lgear -lgearxml
+ USERLIBS += -L$(GSL_HOME)/lib -lgsl -lgslcblas
+ USERLIBS += -L$(LCIO)/lib -llcio
+ USERLIBS += -L$(LCIO)/sio/lib -lsio -lz
 endif
 
 #----------------------------------------------------------------------------
@@ -47,7 +50,7 @@ endif
 
 # directories
 INCDIR = ../include
-LIBDIR = $(MARLINWORKDIR)/lib
+LIBDIR = ../lib
 BINDIR = $(MARLINWORKDIR)/bin
 DOCDIR = $(MARLINWORKDIR)/doc/$(PROGNAME)
 TMPDIR = $(MARLINWORKDIR)/tmp/$(PROGNAME)
