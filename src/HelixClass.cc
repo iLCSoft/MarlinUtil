@@ -1,4 +1,3 @@
-
 #include "HelixClass.h"
 #include <math.h>
 #include <stdlib.h>
@@ -39,7 +38,33 @@ void HelixClass::Initialize_VP(float * pos, float * mom, float q, float B) {
 	_phi0 -= _const_2pi;
     _xAtPCA = _xCentre + _radius*cos(_phiAtPCA);
     _yAtPCA = _yCentre + _radius*sin(_phiAtPCA);
-    _d0 = -_xAtPCA*sin(_phi0) + _yAtPCA*cos(_phi0);
+    //    _d0 = -_xAtPCA*sin(_phi0) + _yAtPCA*cos(_phi0);
+    double pxy = double(_pxy);
+    double radius = pxy/double(_FCT*B);
+    double xCentre = double(pos[0]) + radius*double(cos(_phiMomRefPoint-_const_pi2*q));
+    double yCentre = double(pos[1]) + radius*double(sin(_phiMomRefPoint-_const_pi2*q));
+    
+    double d0;
+
+    if (q>0) {
+      d0 = double(q)*radius - double(sqrt(xCentre*xCentre+yCentre*yCentre));
+    }
+    else {
+      d0 = double(q)*radius + double(sqrt(xCentre*xCentre+yCentre*yCentre));
+    }
+
+    _d0 = float(d0);
+
+//     if (fabs(_d0)>0.001 ) {
+//       std::cout << "New helix : " << std::endl;
+//       std::cout << " Position : " << pos[0] 
+// 		<< " " << pos[1]
+// 		<< " " << pos[2] << std::endl;
+//       std::cout << " Radius = " << _radius << std::endl;
+//       std::cout << " RC = " << sqrt(_xCentre*_xCentre+_yCentre*_yCentre) << std::endl;  
+//       std::cout << " D0 = " << _d0 << std::endl;
+//     }
+
     _pxAtPCA = _pxy*cos(_phi0);
     _pyAtPCA = _pxy*sin(_phi0);
     float deltaPhi = _phiRefPoint - _phiAtPCA;    
@@ -214,7 +239,7 @@ float HelixClass::getPointInXY(float x0, float y0, float ax, float ay,
 
 
   if (AA <= 0) {
-    time = 1.0e+10; 
+    time = -1.0e+20; 
     return time;
   }
 
@@ -310,12 +335,12 @@ float HelixClass::getPointOnCircle(float Radius, float * ref, float * point) {
   point[2] = 0.0;
 
   if ((distCenterToIP+_radius)<Radius) {
-    float xx = 1.0e+15;
+    float xx = -1.0e+20;
     return xx;
   }
 
   if ((_radius+Radius)<distCenterToIP) {
-    float xx = 1.0e+15;
+    float xx = -1.0e+20;
     return xx;
   }
 
@@ -405,7 +430,7 @@ float HelixClass::getPointInZ(float zLine, float * ref, float * point) {
   float time = zLine - ref[2];
 
   if (_momentum[2] == 0.) {
-    time = 1.0e+10;
+    time = -1.0e+20;
     point[0] = 0.;
     point[1] = 0.;
     point[2] = 0.;

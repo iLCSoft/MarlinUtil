@@ -215,15 +215,15 @@ int functParametrisation1(const gsl_vector* par, void* d, gsl_vector* f) {
   // first dimension
   for (int i(0); i < n; i++) {
     fi = (x0 + R*cos(b*z[i] + phi0)) - x[i];
-    float err = sqrt(ex[i]*ex[i]+R*b*R*b*sin(b*z[i] + phi0)*R*b*R*b*sin(b*z[i] + phi0)*ez[i]*ez[i]);
-    fi = fi/err;
+    //    float err = sqrt(ex[i]*ex[i]+R*b*R*b*sin(b*z[i] + phi0)*R*b*R*b*sin(b*z[i] + phi0)*ez[i]*ez[i]);
+    //    fi = fi/err;
     gsl_vector_set(f,i,fi);
   }
   // second dimension
   for (int i(0); i < n; i++) {
     fi = (y0 + R*sin(b*z[i] + phi0)) - y[i];
-    float err = sqrt(ey[i]*ey[i]+R*b*R*b*cos(b*z[i] + phi0)*R*b*R*b*cos(b*z[i] + phi0)*ez[i]*ez[i]);
-    fi = fi/err;  
+    //    float err = sqrt(ey[i]*ey[i]+R*b*R*b*cos(b*z[i] + phi0)*R*b*R*b*cos(b*z[i] + phi0)*ez[i]*ez[i]);
+    //    fi = fi/err;  
     gsl_vector_set(f,i+n,fi);
   }
 
@@ -250,23 +250,23 @@ int dfunctParametrisation1(const gsl_vector* par, void* d, gsl_matrix* J) {
 
   // part of Jacobi's matrix corresponding to first dimension
   for (int i(0); i < n; i++) {
-    float err = sqrt(ex[i]*ex[i]+R*b*R*b*sin(b*z[i] + phi0)*R*b*R*b*sin(b*z[i] + phi0)*ez[i]*ez[i]);
-    gsl_matrix_set(J,i,0,1/err);
+    //    float err = sqrt(ex[i]*ex[i]+R*b*R*b*sin(b*z[i] + phi0)*R*b*R*b*sin(b*z[i] + phi0)*ez[i]*ez[i]);
+    gsl_matrix_set(J,i,0,1);
     gsl_matrix_set(J,i,1,0);
-    gsl_matrix_set(J,i,2,cos(b*z[i]+phi0)/err);
-    gsl_matrix_set(J,i,3,-z[i]*R*sin(b*z[i]+phi0)/err);
-    gsl_matrix_set(J,i,4,-R*sin(b*z[i]+phi0)/err);
+    gsl_matrix_set(J,i,2,cos(b*z[i]+phi0));
+    gsl_matrix_set(J,i,3,-z[i]*R*sin(b*z[i]+phi0));
+    gsl_matrix_set(J,i,4,-R*sin(b*z[i]+phi0));
 
   }
 
   // part of Jacobi's matrix corresponding to second dimension
   for (int i(0); i < n; i++) {
-    float err = sqrt(ey[i]*ey[i]+R*b*R*b*cos(b*z[i] + phi0)*R*b*R*b*cos(b*z[i] + phi0)*ez[i]*ez[i]);
+    //    float err = sqrt(ey[i]*ey[i]+R*b*R*b*cos(b*z[i] + phi0)*R*b*R*b*cos(b*z[i] + phi0)*ez[i]*ez[i]);
     gsl_matrix_set(J,i+n,0,0);
-    gsl_matrix_set(J,i+n,1,1/err);
-    gsl_matrix_set(J,i+n,2,sin(b*z[i]+phi0)/err);
-    gsl_matrix_set(J,i+n,3,z[i]*R*cos(b*z[i]+phi0)/err);
-    gsl_matrix_set(J,i+n,4,R*cos(b*z[i]+phi0)/err);
+    gsl_matrix_set(J,i+n,1,1);
+    gsl_matrix_set(J,i+n,2,sin(b*z[i]+phi0));
+    gsl_matrix_set(J,i+n,3,z[i]*R*cos(b*z[i]+phi0));
+    gsl_matrix_set(J,i+n,4,R*cos(b*z[i]+phi0));
     
   }
   
@@ -432,6 +432,7 @@ ClusterShapes::ClusterShapes(int nhits, float* a, float* x, float* y, float* z){
   _exHit = new float[_nHits];   
   _eyHit = new float[_nHits];
   _ezHit = new float[_nHits];         
+  _types = new int[_nHits];
 
   _xl = new float[_nHits];
   _xt = new float[_nHits];
@@ -447,7 +448,7 @@ ClusterShapes::ClusterShapes(int nhits, float* a, float* x, float* y, float* z){
     _exHit[i] = 1.0;
     _eyHit[i] = 1.0;
     _ezHit[i] = 1.0;
-
+    _types[i] = 1; // all hits are assumed to be "cyllindrical"
   }
 
   _ifNotGravity     = 1;
@@ -469,6 +470,7 @@ ClusterShapes::~ClusterShapes() {
   delete[] _exHit;
   delete[] _eyHit;
   delete[] _ezHit;
+  delete[] _types;
   delete[] _xl;
   delete[] _xt;
   delete[] _t;
@@ -487,6 +489,13 @@ void ClusterShapes::setErrors(float *ex, float *ey, float *ez) {
 
 }
 
+void ClusterShapes::setHitTypes(int* typ) {
+  for (int i=0; i<_nHits; ++i) {
+    _types[i] = typ[i];
+
+  }
+  
+}
 
 
 
@@ -708,10 +717,7 @@ float ClusterShapes::getChi2Fit3DProfileAdvanced(float E0, float a, float b, flo
 int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
 			    float* parameter, float* dparameter, float& chi2, 
 			    float& distmax) {
-
-  // FIXME: version with double typed parameters needed 2006/06/10 OW
   
-
   if (_nHits < 3) {
       std::cout << "ClusterShapes : helix fit impossible, two few points" ;
       std::cout << std::endl;
@@ -721,11 +727,6 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
       }
       return 1;
   }
-
-
-
-
-
 
   // find initial parameters
 
@@ -966,11 +967,6 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
     return 0;
   }
 
-
-
-
-
-
   // converging criteria
   const double abs_error = 1e-4;
   const double rel_error = 1e-4;
@@ -1088,9 +1084,6 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
   return 0; 
 
 }
-
-
-
 
 
 

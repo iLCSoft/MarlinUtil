@@ -7,7 +7,7 @@
 #include <string>
 #include <sstream>
 #include <cstdlib>
-
+#include "HelixClass.h"
 #include <math.h>
 
 #include <gsl/gsl_vector.h>
@@ -21,7 +21,6 @@
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_sf_pow_int.h>
 
-#include "EVENT/Cluster.h"
 
 
 /**
@@ -31,7 +30,7 @@
  *    (GNU Scientific Library) are needed in this class.
  *
  *    @authors V. Morgunov (ITEP/DESY), A. Raspereza (DESY), O. Wendt (DESY)
- *    @version $Id: ClusterShapes.h,v 1.11 2006-05-18 16:17:41 gaede Exp $
+ *    @version $Id: ClusterShapes.h,v 1.12 2007-04-20 13:29:01 rasp Exp $
  *
  */
 class ClusterShapes {
@@ -62,11 +61,18 @@ class ClusterShapes {
    */
    void setErrors(float *ex, float* ey, float *ez);
 
+   /**
+    *   Defining hit types for Helix Fit :
+    *   type 1 - cyllindrical detector
+    *   type 2 - Z disk detector
+    */
+   void setHitTypes(int *ityp);
+
 
   /**
    * returns the number of elements of the cluster
    */
-  int getNumberOfHits();
+   int getNumberOfHits();
 
   /**
    * returns the accumulated amplitude for the whole cluster (just the sum of the 
@@ -80,9 +86,6 @@ class ClusterShapes {
    * of gravity is calculated with the energy of the entries of the cluster.
    */
   float* getCentreOfGravity();
-
-  /** US spelling */
-  float* getCenterOfGravity() { return getCentreOfGravity() ; }
 
   /**
    * array of the inertias of mass (i.\ e.\ energy) corresponding to the three main axes 
@@ -296,6 +299,7 @@ class ClusterShapes {
   float* _exHit;
   float* _eyHit;
   float* _ezHit;
+  int* _types;
   float* _xl;
   float* _xt;
   float* _t;

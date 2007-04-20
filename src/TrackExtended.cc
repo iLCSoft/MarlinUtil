@@ -15,6 +15,7 @@ TrackExtended::TrackExtended( Track * track) {
     _trackerHitVector.clear();
     _clusterVec.clear();
     _group = NULL;
+    
 }
 
 TrackExtended::TrackExtended( TrackerHitExtended * trackerhit) {
@@ -121,6 +122,9 @@ void TrackExtended::setOmega( float omega ) {
 void TrackExtended::setTanLambda( float tanLambda ) {
   _tanLambda = tanLambda;
 }
+void TrackExtended::setNDF( int ndf) {
+  _ndf = ndf;
+}
 
 
 float TrackExtended::getX0() {
@@ -161,6 +165,10 @@ float TrackExtended::getOmega() {
 
 float TrackExtended::getTanLambda() {
   return _tanLambda;
+}
+
+int TrackExtended::getNDF() {
+  return _ndf;
 }
 
 void TrackExtended::setStart(float * xStart) {
@@ -208,3 +216,12 @@ float * TrackExtended::getCovMatrix() {
   return _cov;
 }
 
+// void TrackExtended::setType(int type) {
+//   _type = type
+
+// }
+
+// int TrackExtended::getType() {
+//   return _type;
+
+// }

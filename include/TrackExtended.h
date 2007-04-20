@@ -22,7 +22,7 @@ typedef std::vector<ClusterExtended*> ClusterExtendedVec;
  * Class TrackExtended is used in TrackwiseClustering <br>
  * and Wolf processors. <br>
  * @author A. Raspereza (DESY)<br>
- * @version $Id: TrackExtended.h,v 1.6 2006-11-02 12:22:30 rasp Exp $<br>
+ * @version $Id: TrackExtended.h,v 1.7 2007-04-20 13:29:01 rasp Exp $<br>
  */
 
 class TrackExtended {
@@ -84,6 +84,9 @@ class TrackExtended {
     float getChi2();
     void setChi2(float chi2);
 
+    int getNDF();
+    void setNDF(int ndf);
+
     float * getCovMatrix();
     void setCovMatrix( float * cov);
 
@@ -112,9 +115,13 @@ class TrackExtended {
     float _tanLambda; // tanlambda in canonical parameterisation
     float _phi; // phi in canonical parameterisation 
 
-    float _chi2;
+    float _chi2; // chi2 of the fit
 
-    float _cov[15];
+    float _cov[15]; // covariance matrix
+    
+    int _ndf; // NDF
+
+    int _type; // Track type;
     
 };
 
