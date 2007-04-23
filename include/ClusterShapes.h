@@ -30,7 +30,7 @@
  *    (GNU Scientific Library) are needed in this class.
  *
  *    @authors V. Morgunov (ITEP/DESY), A. Raspereza (DESY), O. Wendt (DESY)
- *    @version $Id: ClusterShapes.h,v 1.12 2007-04-20 13:29:01 rasp Exp $
+ *    @version $Id: ClusterShapes.h,v 1.13 2007-04-23 17:06:23 gaede Exp $
  *
  */
 class ClusterShapes {
@@ -87,6 +87,9 @@ class ClusterShapes {
    */
   float* getCentreOfGravity();
 
+  /** US spelling of getCentreOfGravity */
+  inline float* getCenterOfGravity() { return getCentreOfGravity() ; }
+  
   /**
    * array of the inertias of mass (i.\ e.\ energy) corresponding to the three main axes 
    * of inertia. The array is sorted in ascending order.
