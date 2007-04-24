@@ -347,7 +347,7 @@ int MarlinTrackFit::DoFitting(int useExtraPoint, int fitOpt, // inputs
   // Calculation of helix parameters 
   // in canonical form
   // measurement code (R,R-PHI,Z)
-  std::cout << "Measurement code = " << fitCode << std::endl;
+  //  std::cout << "Measurement code = " << fitCode << std::endl;
   float xx = rfit[0]*cos(rfit[1]/rfit[0]);
   float yy = rfit[0]*sin(rfit[1]/rfit[0]);
   float pos[3];
