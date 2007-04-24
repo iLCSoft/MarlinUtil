@@ -23,4 +23,16 @@ Further documentation can be found in the MarlinReco manual
 (http://ilcsoft.desy.de -> Software Packages -> MarlinReco -> Documentation )
 
 
+---------------------------
+
+release notes:
+
+
+ v00-03
+
+     - included the ANN (Aproximate Nearest Neighbor) library
+       [ see: http://www.cs.umd.edu/~mount/ANN ]
+
+
+
 F.Gaede, DESY.

@@ -4,7 +4,7 @@
 #
 # @author Frank Gaede
 # @author Jan Engels
-# @version $Id: GNUmakefile,v 1.11 2007-03-01 15:53:41 engels Exp $
+# @version $Id: GNUmakefile,v 1.12 2007-04-24 10:46:28 gaede Exp $
 #
 ###########################################################
 
@@ -89,6 +89,24 @@ DEPS = $(patsubst %.o,%.d,$(OBJS) $(BINOBJS))
 # dependency files with path
 DEP = $(patsubst %,$(DEPDIR)/%,$(DEPS))
 
+
+#---- include ANN library: http://www.cs.umd.edu/~mount/ANN/
+ANNSRCS = $(wildcard ann/*.cpp)
+ANNOBJS = $(patsubst ann/%.cpp,%.o,$(ANNSRCS))
+ANNOBJ = $(patsubst %,$(OBJDIR)/%,$(ANNOBJS))
+ANNDEPS = $(patsubst %.o,%.d,$(ANNOBJS))
+ANNDEP = $(patsubst %,$(DEPDIR)/%,$(ANNDEPS))
+
+OBJ += $(ANNOBJ)
+DEP += $(ANNDEP)
+
+#bla: 
+#	@echo $(ANNSRCS) 
+#	@echo $(ANNOBJS) 
+#	@echo $(ANNOBJ) 
+#	@echo $(ANNDEPS) 
+#	@echo $(ANNDEP) 
+
 # c++ compiler
 ifdef MY_CXX
   CXX = $(MY_CXX)
@@ -161,13 +179,18 @@ $(OBJDIR)/%.o : %.cc
 	@$(DIR_EXISTS) $(OBJDIR) || mkdir -p $(OBJDIR)
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
 
+# objects rule
+$(OBJDIR)/%.o : ann/%.cpp
+	@$(DIR_EXISTS) $(OBJDIR) || mkdir -p $(OBJDIR)
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
+
 # library rule
-$(LIB) : $(OBJ)
+$(LIB) : $(OBJ) $(ANNOBJ)
 	@$(DIR_EXISTS) $(LIBDIR) || mkdir -p $(LIBDIR)
 	$(AR) $@ $?
 
 # dependency rule
-$(DEPDIR)/%.d : %.cc
+$(DEPDIR)/%.d : %.cc 
 	@$(DIR_EXISTS) $(DEPDIR) || mkdir -p $(DEPDIR)
 	@echo "Creating dependencies for $<" ; \
 	set -e; $(CXX) -MM $(CPPFLAGS) $< \
