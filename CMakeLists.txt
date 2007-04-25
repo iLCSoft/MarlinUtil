@@ -14,6 +14,9 @@ SET( CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS TRUE )
 # project name
 PROJECT( MarlinUtil )
 
+# project options
+OPTION( BUILD_SHARED_LIBS "Set this to OFF to build static libraries " ON )
+
 # project dependencies
 SET( ${PROJECT_NAME}_DEPENDS "Marlin;GEAR;LCIO;CLHEP;GSL" )
 
@@ -27,9 +30,9 @@ SET( ${PROJECT_NAME}_SOVERSION
     "${${PROJECT_NAME}_MAJOR_VERSION}.${${PROJECT_NAME}_MINOR_VERSION}" )
 
 # build shared libraries per default
-IF( NOT DEFINED BUILD_SHARED_LIBS )
-	SET( BUILD_SHARED_LIBS ON )
-ENDIF()
+#IF( NOT DEFINED BUILD_SHARED_LIBS )
+#	SET( BUILD_SHARED_LIBS ON )
+#ENDIF()
 
 # set default cmake build type to RelWithDebInfo
 IF( NOT CMAKE_BUILD_TYPE )
