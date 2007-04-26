@@ -5,7 +5,18 @@
 
 #include "Phys_Geom_Database.h"
 
+#include <marlin/Global.h>
+#include <gear/GEAR.h>
+#include <gear/TPCParameters.h>
+#include <gearimpl/TPCParametersImpl.h>
+#include <gearimpl/FixedPadSizeDiskLayout.h>
+#include <gear/CalorimeterParameters.h>
+#include <gear/LayerLayout.h>
+
+#include <Elements.h>
+
 using namespace std;
+using namespace marlin;
 
 /**  
  *    Physical Geometrical database will be used in the reconstruction
@@ -13,7 +24,7 @@ using namespace std;
  *    the particular and different calorimeter zones with different
  *    physical properties and geometrical relations between cells. 
  *
- *    Such a database can be created after readind the geometry 
+ *    Such a database can be created after reading the geometry 
  *    record in LCIO if it will be presented in or another kind of 
  *           outstanding geometrical database.
  *
@@ -22,233 +33,594 @@ using namespace std;
  *             during the detector geometry creation.
  *       That is much easy way to form such a database.
  *            and put it as member (or class) of LCIO.
- */
+ *
+ *
+ *
+ *
+ *       PGdb::ZONE PGdb::get_zone(Point3D &p)
+ *
+ *     function returns zone "number" (enum type)
+ *          for any arbitrary 3-d point
+ *
+ *
+ *    @author V. L. Morgunov, A. Zhelezov  (DESY/ITEP)
+ * 
+ **/
 
-/*
-  ===================== HBARREL geometry ============
-  Inner Calorimeter Barrel Radius=  170.cm
-  Outer Calorimeter Barrel Radius=  300.cm
-  ECAL thickness                    20.7999992cm
-  Inner HCAL barrel Radius=         190.800003cm
-  Outer HCAL barrel Radius=         296.799988cm
-  Z_size of  HCAL barrel=           265.850006cm
-  HCAL barrel wall thickness=       0.200000003cm
-  HCAL barrel absorber thickness=   2.cm
-  HCAL barrel scint thickness=      0.5cm
-  HCAL barrel gap thickness=        0.150000006cm
-  HCAL bar sampling =               2.6500001cm
+PGdb PGDB;
 
+PGDBP aPGDB;
 
-----------------------------------------------------------------------
-c TPC Dimensions:
-C Total inner thickness of TPC material is 3%X_0 and 1X_0 of Al is 8.9 cm
-c THickness of material in the Inner wall (Barrel) is 1%X_0
-      TPCTHBI=0.01*8.9
-c THickness of material in the Outer wall (Barrel) is 3%X_0
-      TPCTHBO=0.03*8.9
-c Endplate thickness - 30cm.
-      TPCTHKE=30.
-*     thinner endplates to accomodate the FCH and to not
-*     interfere with the ECAL
-      TPCTHKE=23.
-C Inner Radius
-      RTPCINN=32.
-C Outer Radius
-c MVL      RTPCOUT=170.
-      RTPCOUT=169.
-C Inner Active radius
-      TPCACRI=38.6
-C Outer Active radius
-      TPCACRO=162.6
-c  z-half-length of TPC:
-      TPCHLFZ=280.
-      TPCHLFZ=273.
-C Number of radial readout rings:
-c(kh) NRTPC=118
-      NRTPC=200
-C Maximum drift length:
-      ZDRIFT=TPCHLFZ-TPCTHKE
-c Radial pad size
-      TPCPADR=(TPCACRO-TPCACRI)/REAL(NRTPC)
-
-*/
-// --------------- Constructor ----------------------
-//-----------------------------------------------------------------------
-//     Everything are filled in Constructor now, once per run
-//-----------------------------------------------------------------------
-Phys_Geom_Database::Phys_Geom_Database(int nn) 
-{
-    ndb  = nn;             // number of zones in database
-    z = new PG_Zone [ndb]; // = malloc(start_size*sizeof(PG_Zone ))
-
+//============================================================================
+PGDBP::PGDBP() : Processor("PGDBP") {
+//============================================================================
+  _description = "Physical and Geometrical Database (for Boojum at least)" ;
+}
+//============================================================================
+void PGDBP::init() {             //the begin of the job
+//============================================================================
+  PGDB.init();
+}
+//============================================================================
+void PGdb::Zone::_init_tpc() {
+//============================================================================
+  const gear::TPCParameters  &pTPC      = Global::GEAR->getTPCParameters();
+  const gear::PadRowLayout2D &padLayout = pTPC.getPadLayout();
+  const gear::DoubleVec      &planeExt  = padLayout.getPlaneExtent();
+  no=TPC;
+  shape = CYLINDER; 
+  symmetry= 0;
+  phi0= 0.;
+  r_inner   = planeExt[0]; 
+  r_outer   = planeExt[1]; 
+  z_inner   = 0.0; 
+  z_outer   = pTPC.getMaxDriftLength(); 
+  n_sampl   = padLayout.getNRows (); 
+  sampling  = (r_outer- r_inner)/n_sampl; 
+  min_lay   = 0; 
+  max_lay   = n_sampl-1; 
+  absorber  = 0.0; 
+  abs_mat   = 0; 
+  detector  = sampling; 
+  det_mat   = 18; //  Argon has been taken for the moment
+  cell_size = sampling; // formaly 
 //---------------------------------
-//    Initialize ECAL zones
-//                 Barrel
+  mip_vis   = 30.0e-9 ; 
+  e_coeff   = 1.0     ;
+  x0eff     = 0.0 ;  // mm
 //---------------------------------
-    z[0].min_lay   =  1       ;  
-    z[0].max_lay   = 30       ;
-    z[0].th_sampl  =   4.35   ; 
-    z[0].th_det    =   0.5    ;
-    z[0].cell_size =  10.     ; 
-    z[0].mip_vis   = 170.0e-6 ; 
-    z[0].e_coeff   =  28.369  ;
-
-    z[1].min_lay   = 31       ;
-    z[1].max_lay   = 40       ; 
-    z[1].th_sampl  =   7.15   ; 
-    z[1].th_det    =   0.5    ; 
-    z[1].cell_size =  10.     ; 
-    z[1].mip_vis   = 170.0e-6 ; 
-    z[1].e_coeff   =  80.378  ;
-//---------------------------------
-//                  EndCaps
-//---------------------------------
-    z[2].min_lay   =  1       ;
-    z[2].max_lay   = 30       ; 
-    z[2].th_sampl  =   4.35   ; 
-    z[2].th_det    =   0.5    ;
-    z[2].cell_size =  10.     ; 
-    z[2].mip_vis   = 170.0e-6 ; 
-    z[2].e_coeff   = 28.369   ;
-
-    z[3].min_lay   = 31       ;  
-    z[3].max_lay   = 40       ;  
-    z[3].th_sampl  =   7.15   ; 
-    z[3].th_det    =   0.5    ;
-    z[3].cell_size =  10.     ; 
-    z[3].mip_vis   = 170.0e-6 ; 
-    z[3].e_coeff   =  80.378  ;
-    
-//---------------------------------
-//    Initialize HCAL zones
-//                 Barrel
-//---------------------------------
-    z[4].min_lay   =  1       ; 
-    z[4].max_lay   = 38       ; 
-    z[4].th_sampl  = 26.5     ; 
-    z[4].th_det    =  5.0     ;
-    z[4].cell_size =  10.     ; 
-    z[4].mip_vis   = 875.0e-6 ; 
-    z[4].e_coeff   =  35.46   ;
-//---------------------------------
-//                  EndCaps
-//---------------------------------
-    z[5].min_lay   =  1       ; 
-    z[5].max_lay   = 56       ; 
-    z[5].th_sampl  = 26.5     ; 
-    z[5].th_det    =  5.0     ; 
-    z[5].cell_size =  10.     ; 
-    z[5].mip_vis   = 875.0e-6 ; 
-    z[5].e_coeff   =  35.46   ;
-//---------------------------------
-//                  TPC
-//---------------------------------
-    z[6].min_lay   =  1      ; 
-    z[6].max_lay   = 200     ; 
-    z[6].th_sampl  = 0.5     ; 
-    z[6].th_det    = 0.5     ; 
-    z[6].cell_size =  6.     ; 
-    z[6].mip_vis   =  1.0e-4 ; 
-    z[6].e_coeff   =  1.0    ;
-
-
-//         Initialize calculatable values of database
-    for( int k=0 ; k < ndb ; k++ ){
-
-//      Predicted distance to neibour for particular zone
-//               1.41 is ~ sqrt(2)
-      z[k].r_neibour = 2.71*((z[k].cell_size < z[k].th_sampl) ? 
-			     z[k].th_sampl : z[k].cell_size);
-      z[k].r_neibour = z[k].r_neibour * z[k].r_neibour;
-// Volume including absorber
-      z[k].cell_vol = z[k].cell_size*z[k].cell_size*z[k].th_sampl;  
-
-//       Predicted cutoffs  for particular zone around MIP
-// 0.6 -- no MIP signal less than this energy
-      z[k].cut_noise = 0.5*z[k].mip_vis;   // in units of RAW data 
-
-//       MIP peak is within 0.6 MIP and 2.0 MIP
-// 2.0 -- choosen by eyes see page 267 old log book
-      z[k].cut_mip  = 2.0*z[k].mip_vis;   // in units of RAW data 
-
-// 4.7 -- choosen by eyes see page 267 in old log book
-      z[k].cut_hadr = 4.7*z[k].mip_vis;   // in units of RAW data 
-
-// MIP most probable  physical energy, i.e. including energy lost in absorber
-//       Predicted MIP amplitude and density
-      z[k].mip_whole = z[k].mip_vis*z[k].e_coeff;    // in [GeV]
-// MIP energy density in whole cell volume
-      z[k].mip_dens = z[k].mip_whole/z[k].cell_vol; // in [GeV]/[mm]^3
-    }
-
-//        ECAL and HCAL half of size in Z direction
-//        to distinguish between barrel and endcap
-    ecal_z_size = 2700.0;
-    hcal_z_size = 2658.5;
-    tpc_z_size  = 2500.0;
-    tpc_inn_rad =  386.0;
-    tpc_out_rad = 1626.0;
-/**
-    cout << "    =================================================================" 
-	 << endl ;
-    cout << "          Phys_Geom_Database created and initialized  "
-	 <<" with "<< ndb <<" zones "<< endl;
-    cout << "    =================================================================" 
-	 << endl ;
- */
-} 
-
-// --------------- Destructor ----------------------------
-Phys_Geom_Database::~Phys_Geom_Database()   
-{
-/**
-    cout << "    =================================================================" 
-	 << endl ;
-    cout << "         Destructor called for "
-	 << typeid(*this).name()
-	 <<" with "<< ndb <<" zones "<< endl;
-    cout << "    =================================================================" 
-	 << endl ;
- */
-    delete [] z;
 }
 
 
-   void Phys_Geom_Database::print()
-{
-    cout<<"==================================================================="<< endl;
-    cout<<" ================ Physical Geometrical Dtatabase  ================="<< endl;
-   for (int i = 0; i < ndb; i++){
-    cout<<"==================================================================="<< endl;
-       cout<<"                          Zone   "<< i<< endl;
-       cout<<"-----------------------------------------------------------------------"<< endl;
 
- cout<<" Min--Max layers,    Thicknesses,           Cell size,        Volume,       R-neib  "<< endl;
+//============================================================================
+void PGdb::Zone::_init_endpl1(){
+//============================================================================
+  const gear::TPCParameters  &pTPC      = Global::GEAR->getTPCParameters();
+  const gear::PadRowLayout2D &padLayout = pTPC.getPadLayout();
+  const gear::DoubleVec      &planeExt  = padLayout.getPlaneExtent();
+  no        = ENDPLATE1;
+  shape     = CYLINDER;
+  symmetry  = 0;
+  phi0      = 0.;
+  r_inner   = planeExt[0]; 
+  r_outer   = planeExt[1]; 
+  z_inner   =  pTPC.getMaxDriftLength();
+  z_outer   =  pTPC.getMaxDriftLength()+160.0;  
+ //-----------------dodao KP
+  Zeff      =    21.01;
+  Aeff      =    45.09;
+  Rhoeff    =   0.2643;
+  Ieff      =145.13e-9;
+  Rmeff     = 504.54;// mm
+  x0eff     = 419.29 ;  // mm
+  Eceff     = 17.628 ; // MeV  double dstreff; //mm
+  _init_all_common();
+}
+//============================================================================
+void PGdb::Zone::_init_endpl2(){
+//============================================================================
+  const gear::TPCParameters  &pTPC      = Global::GEAR->getTPCParameters();
+  const gear::PadRowLayout2D &padLayout = pTPC.getPadLayout();
+  const gear::DoubleVec      &planeExt  = padLayout.getPlaneExtent();
+  no        = ENDPLATE2;
+  shape     = CYLINDER;
+  symmetry  = 0;
+  phi0      = 0.;
+  r_inner   = planeExt[0]; 
+  r_outer   = planeExt[1]; 
+  z_inner   = -pTPC.getMaxDriftLength();
+  z_outer   = -(pTPC.getMaxDriftLength()+160.0);  
+ //-----------------dodao KP
+  Zeff      =    21.01;
+  Aeff      =    45.09;
+  Rhoeff    =   0.2643;
+  Ieff      =145.13e-9;
+  Rmeff     = 504.54;// mm
+  x0eff     = 419.29 ;  // mm
+  Eceff     = 17.628 ; // MeV  double dstreff; //mm
+  _init_all_common();
+}
 
-       cout<<"   "<< z[i].min_lay 
-	   <<'\t'<< z[i].max_lay
-	   <<'\t'<< z[i].th_sampl         <<" mm, "
-	   <<'\t'<< z[i].th_det           <<" mm, "
-	   <<'\t'<< z[i].cell_size        <<" mm, "
-	   <<'\t'<< z[i].cell_vol         <<" mm^3, "
-           <<'\t'<< sqrt(z[i].r_neibour)  <<" mm"        <<endl; 
-       cout<<"-----------------------------------------------------------------------"<< endl;
+//============================================================================
+static int _ecal_last_layer(const gear::CalorimeterParameters& pCAL){
+//============================================================================
+  int i;
+  const gear::LayerLayout &lb = pCAL.getLayerLayout() ;
+  int nLayerb = lb.getNLayers() ;
+  double tlb  = lb.getThickness(0);
+  double dlb  = lb.getAbsorberThickness(0);
+  for( i=1 ; i < nLayerb ; i++ )
+    if(abs(tlb-lb.getThickness(i))>0.0000001 ||
+       abs(dlb-lb.getAbsorberThickness(i))>0.0000001)
+      return i;
+  cerr<<"ERROR: Can't get boundary of CAL"<<endl;
+  return i;
+}
+//============================================================================
+void PGdb::Zone::_init_ecal_bar_common(){
+//============================================================================
+  const gear::CalorimeterParameters& pECAL_B = Global::GEAR->getEcalBarrelParameters();
+  shape    = POLYGON;
+  symmetry = pECAL_B.getSymmetryOrder();
+  phi0     = pECAL_B.getPhi0();
+  z_inner  = 0.0;
+  z_outer  = pECAL_B.getExtent()[3];
+  abs_mat  = 74; // Tungsten
+  detector = 0.5; // No chance to extract 
+  det_mat  = 14; // Silicon
+}
+//============================================================================
+void PGdb::Zone::_init_ecal1_bar(int last_layer){
+//============================================================================
+  const gear::CalorimeterParameters& pECAL_B = Global::GEAR->getEcalBarrelParameters();
+  const gear::LayerLayout &lb = pECAL_B.getLayerLayout() ;
+  no        = ECAL1_BAR;
+  r_inner   = lb.getDistance(0);
+  r_outer   = lb.getDistance(last_layer); 
+  n_sampl   = last_layer; 
+  sampling  = lb.getThickness(0); 
+  min_lay   = 0;
+  max_lay   = last_layer-1; 
+  absorber  = lb.getAbsorberThickness(0); 
+  cell_size = lb.getCellSize0(0); // should be 10 mm
+//---------------------------------
+  mip_vis   = 170.0e-6 ; 
+  e_coeff   = 28.25 ;  // for model LDC00
+  //-----------------dodao KP
+  Zeff      =    67.41;
+  Aeff      =  166.868;
+  Rhoeff    =     7.75;
+  Ieff      =706.67e-9;
+  Rmeff     = 22.0833;// mm
+  x0eff     = 9.4587 ;  // mm
+  Eceff     = 9.0804  ; // MeV  double dstreff; //mm
+   eprime    = 0.72002; 
+  //    z[0].e_coeff   = 46.7703 ;  // for model LDC01  Sould be in parameters
 
-       cout<<"      MIP visible       Noise cut,          MIP cut,      HADR cut "<< endl
-	   <<"   "<< z[i].mip_vis*1.e6  <<" [keV], "
-	   <<'\t'<<'\t'<< z[i].cut_noise*1.e6 <<" [keV], "
-	   <<'\t'<< z[i].cut_mip*1.e6   <<" [keV], "
-	   <<'\t'<< z[i].cut_hadr*1.e6  <<" [keV]  " << endl;
-       cout<<"-----------------------------------------------------------------------"<< endl;
+  _init_ecal_bar_common();
+}
+//============================================================================
+void PGdb::Zone::_init_ecal2_bar(int last_ecal1_layer){
+//============================================================================
+  const gear::CalorimeterParameters& pECAL_B = Global::GEAR->getEcalBarrelParameters();
+  const gear::LayerLayout &lb = pECAL_B.getLayerLayout() ;
+  int nLayerb = lb.getNLayers() ;
+  no        = ECAL2_BAR;
+  r_inner   = lb.getDistance(last_ecal1_layer); 
+  r_outer   = lb.getDistance(nLayerb-1)+lb.getThickness(nLayerb-1); 
+  n_sampl   = nLayerb-last_ecal1_layer; 
+  sampling  = lb.getThickness(nLayerb-1); 
+  min_lay   = last_ecal1_layer;
+  max_lay   = nLayerb-1; 
+  absorber  = lb.getAbsorberThickness(nLayerb-1); 
+  cell_size = lb.getCellSize0(nLayerb-1); // should be 10 mm
+//---------------------------------
+  mip_vis   = 170.0e-6 ; 
+  e_coeff   = 74.91 ;  //for model LDC00
+ //-----------------dodao KP
+  Zeff      =   71.635;
+  Aeff      =  177.614;
+  Rhoeff    =   12.577;
+  Ieff      =729.09e-9;
+  Rmeff     = 13.8418;// mm
+  x0eff     = 8.135953 ;  // mm
+  Eceff     = 8.4709  ; // MeV  dou
+  eprime    = 0.709672;
+  //    z[1].e_coeff   =  86.3749 ;  //for model LDC01
 
-       cout<<"     E_coeff;                   MIP whole [GeV];                 MIP density "<< endl
-	   <<"   "<< z[i].e_coeff  <<" Phys./Vis. [GeV], "  
-	   <<'\t'<< z[i].mip_whole <<" [GeV], "    
-	   <<'\t'<< z[i].mip_dens  <<" [GeV/mm^3]" << endl <<endl;
+  _init_ecal_bar_common();
+}
+//============================================================================
+void PGdb::Zone::_init_ecal_cap_common(){
+//============================================================================
+  const gear::CalorimeterParameters& pECAL_E = Global::GEAR->getEcalEndcapParameters();
+  shape     = POLYGON;
+  symmetry  = 8;
+  phi0      = pECAL_E.getPhi0();
+  r_inner   = pECAL_E.getExtent()[0]; 
+  r_outer   = pECAL_E.getExtent()[1]; 
+  abs_mat   = 74;  // Tungsten
+  detector  = 0.5; // No chance to extract 
+  det_mat   = 14;  // Silicon
+}
+//============================================================================
+void PGdb::Zone::_init_ecal1_cap(int last_layer){
+//============================================================================
+  const gear::CalorimeterParameters& pECAL_E = Global::GEAR->getEcalEndcapParameters();
+  const gear::LayerLayout &le = pECAL_E.getLayerLayout() ;
+  no        = ECAL1_CAP;
+  z_inner   = le.getDistance(0);; 
+  z_outer   = le.getDistance(last_layer); 
+  n_sampl   = last_layer; 
+  sampling  = le.getThickness(0); 
+  min_lay   = 0;
+  max_lay   = last_layer-1; 
+  absorber  = le.getAbsorberThickness(0); 
+  cell_size = le.getCellSize0(0); // should be 10 mm
+//---------------------------------
+  mip_vis   = 170.0e-6 ; 
+  e_coeff   = 33.02346 ;  // for model LDC00
+  //-----------------dodao KP
+  Zeff      =    67.41;
+  Aeff      =  166.868;
+  Rhoeff    =     7.75;
+  Ieff      =706.67e-9;
+  Rmeff     = 22.0833;// mm
+  x0eff     = 9.4587 ;  // mm
+  Eceff     = 9.0804  ; // MeV  double dstref
+  eprime    = 0.72002; 
+  //    e_coeff   = 46.7703 ;  // for model LDC01  Sould be in parameters
+
+  _init_ecal_cap_common();
+}
+//============================================================================
+void PGdb::Zone::_init_ecal2_cap(int last_ecal1_layer){
+//============================================================================
+  const gear::CalorimeterParameters& pECAL_E = Global::GEAR->getEcalEndcapParameters();
+  const gear::LayerLayout &le = pECAL_E.getLayerLayout() ;
+  int nLayere = le.getNLayers() ;
+  no        = ECAL2_CAP;
+  z_inner   = le.getDistance(last_ecal1_layer); 
+  z_outer   = le.getDistance(nLayere-1)+le.getThickness(nLayere-1);; 
+  n_sampl   = nLayere-last_ecal1_layer; 
+  sampling  = le.getThickness(nLayere-1); 
+  min_lay   = last_ecal1_layer;
+  max_lay   = nLayere-1; 
+  absorber  = le.getAbsorberThickness(nLayere-1); 
+  cell_size = le.getCellSize0(nLayere-1); // should be 10 mm
+//---------------------------------
+  mip_vis   = 170.0e-6 ; 
+  e_coeff   = 93.56822 ;  //for model LDC00
+ //-----------------dodao KP
+  Zeff      =   71.635;
+  Aeff      =  177.614;
+  Rhoeff    =   12.577;
+  Ieff      =729.09e-9;
+  Rmeff     = 13.8418;// mm
+  x0eff     = 8.135953 ;  // mm
+  Eceff     = 8.4709  ; // MeV  dou
+  eprime    = 0.709672;
+//    e_coeff   =  86.3749 ;  //for model LDC01   
+
+  _init_ecal_cap_common();
+}
+//============================================================================
+void PGdb::Zone::_init_hcal(PGdb::ZONE zone){
+//============================================================================
+  const gear::CalorimeterParameters *pHCAL;
+  if(zone==HCAL_BAR)
+    {
+   pHCAL = & Global::GEAR->getHcalBarrelParameters();
+   symmetry  =8;
+   phi0      = pHCAL->getPhi0();
+
+    }else{
+   pHCAL = & Global::GEAR->getHcalEndcapParameters();
+   symmetry  =8;
+   phi0      = pHCAL->getPhi0();
    }
-       cout<<"-----------------------------------------------------------------------"<< endl;
-} // ------- end Printing
+  const gear::LayerLayout &lhb = pHCAL->getLayerLayout() ;
+  no        = zone;
+  shape     = POLYGON;
+ 
+  r_inner   = pHCAL->getExtent()[0]; 
+  r_outer   = pHCAL->getExtent()[1] +30.0; 
+  z_inner   = pHCAL->getExtent()[2]; 
+  z_outer   = pHCAL->getExtent()[3]; 
+  n_sampl   = lhb.getNLayers() ;
+  sampling  = lhb.getThickness(0); 
+  min_lay   = 0;
+  max_lay   = n_sampl-1; 
+  absorber  = lhb.getAbsorberThickness(0); 
+  abs_mat   = 26;  // Iron
+  detector  = 5.0; // No chance to extract 
+  det_mat   = 6;  // Carbon
+  cell_size = lhb.getCellSize0(0); // should be 30 mm
+  //---------------------------------
+  mip_vis   = 875.0e-6 ; 
+  e_coeff   = 23.45;   // for model LDC00
 
+ //-----------------dodao KP
+  Zeff      =   25.318;
+  Aeff      =   54.354;
+  Rhoeff    =    6.134;
+  Ieff      =283.34e-9;
 
-// +++++++++++ End Class Phys_Geom_Database definition  +++++++++++++++++++++++
+  //    e_coeff   = 22.01925 ;  //for model LDC01
+}
+//============================================================================
+void PGdb::Zone::_init_all_common(){
+//============================================================================
+//   Absolutly voluntary -- never used
+  n_sampl  = 1; // Number of layers in calorimeter or TPC rings
+  sampling = 1; // Sampling layer thickness
+  min_lay  = 1; // Minimal Layer number
+  max_lay  = 1; // Maximal Layer number
+  absorber = 1; // Absorber layer thickness
+  abs_mat  = 1; // Absorber material
+  detector = 1; // Detector layer thickness
+  det_mat  = 1; // Detector material
+  cell_size= 1; // Cell size in X and Y (square shape)
+  mip_vis  = 1;
+  e_coeff  = 1;
+}
+//============================================================================
+void PGdb::Zone::_init_vtx(){
+//============================================================================
+  const gear::TPCParameters  &pTPC      = Global::GEAR->getTPCParameters();
+  const gear::PadRowLayout2D &padLayout = pTPC.getPadLayout();
+  const gear::DoubleVec      &planeExt  = padLayout.getPlaneExtent();
+  no        = VTX;
+  shape     = CYLINDER;
+  symmetry  = 0;
+  phi0      = 0.;
+  r_inner   = 0.; 
+  //r_outer   = PGDB[ECAL1_CAP].r_inner; 
+  r_outer   = planeExt[0]; 
+  z_inner   = 0; 
+  z_outer   = PGDB[HCAL_CAP].z_outer; 
+  x0eff     = 0.0 ;  // mm
+  _init_all_common();
+}
+//============================================================================
+void PGdb::Zone::_init_coil(){
+//============================================================================
+  no        = COIL;
+  shape     = CYLINDER;
+  symmetry  = 0;
+  phi0      = 0.;
+  r_inner   = 3027;//PGDB[HCAL_BAR].r_outer/cos(M_PI_2/PGDB[HCAL_BAR].symmetry); 
+  r_outer   = r_inner+850; 
+  z_inner   = 0;
+  z_outer   = 5250.0;   // PGDB[HCAL_CAP].z_outer; 
+ //-----------------dodao KP
+  Zeff      =  13.0;
+  Aeff      =  27.0;
+  Rhoeff    =   2.7;
+  Ieff      =166.0e-9;
+  _init_all_common();
+}
+//============================================================================
+void PGdb::Zone::_init_detector(){
+//============================================================================
+  no        = DETECTOR;
+  shape     = CYLINDER;
+  symmetry  = 0;
+  phi0      = 0.;
+  r_inner   = 0.; 
+  r_outer   = PGDB[COIL].r_outer; 
+  z_inner   = 0; 
+  z_outer   = PGDB[HCAL_CAP].z_outer; 
+  x0eff     = 0.0 ;  // mm
+  _init_all_common();
+}
+//============================================================================
+void PGdb::Zone::_init_world(){
+//============================================================================
+  no        = WORLD;
+  shape     = CYLINDER;
+  symmetry  = 0;
+  phi0      = 0.;
+  r_inner   = PGDB[COIL].r_outer; 
+  r_outer   = 1.e10; 
+  z_inner   = PGDB[HCAL_CAP].z_outer; 
+  z_outer   = 1.e10; 
+  x0eff     = 0.0 ;  // mm
+  _init_all_common();
+}
+//============================================================================
+void PGdb::Zone::_init_final() {
+//============================================================================
+  //      Predicted distance to neibour for particular zone
+  //               1.41 is ~ sqrt(2)
+  r_neibour = 1.8*((cell_size < sampling) ? sampling : cell_size);
+  r_neibour = r_neibour * r_neibour;
+
+  //          Volume including absorber
+  cell_vol = cell_size*cell_size*sampling;  
+
+  //       Predicted cutoffs  for particular zone around MIP
+
+  //         0.5 -- no MIP signal less than this energy
+  cut_noise = 0.5*mip_vis;   // in units of RAW data 
+
+  //       MIP peak is within 0.5 MIP and 2.0 MIP
+  //    2.0 -- choosen by eyes see page 267 old log book
+  cut_mip  = 2.0*mip_vis;   // in units of RAW data 
+
+  //      3.7 -- choosen by eyes see page 267 in old log book
+  cut_hadr = 3.7*mip_vis;   // in units of RAW data 
+
+  //        Just only green and red hits -- no blue hits at all
+  //      cut_hadr = 2.0*mip_vis;   // in units of RAW data 
+
+  // MIP most probable  physical energy, i.e. including energy lost in absorber
+  //       Predicted MIP amplitude and density
+  mip_whole = mip_vis*e_coeff;    // in [GeV]
+  // MIP energy density in whole cell volume
+  mip_dens = mip_whole/cell_vol; // in [GeV]/[mm]^3
+
+  if(shape==POLYGON && symmetry){   
+    a0= 2*M_PI/symmetry;  
+    r_max=r_outer/cos(a0/2.);
+    r_min=r_inner/cos(a0/2.);
+  } else {
+    a0  = 2*M_PI/8;  // default symmetry
+    r_max=r_outer;
+    r_min=r_inner;
+  }
+}
+//============================================================================
+void PGdb::init(){
+//============================================================================
+  B_Field  = Global::GEAR->getTPCParameters().getDoubleVal("BField");
+  
+  // Sequence is important !!!
+  zone[TPC]._init_tpc();
+  cout << " init  tpc " << endl;
+  int last_layer=_ecal_last_layer(Global::GEAR->getEcalBarrelParameters());
+  zone[ECAL1_BAR]._init_ecal1_bar(last_layer);
+  zone[ECAL2_BAR]._init_ecal2_bar(last_layer);
+ cout << " init  ecal bar " << endl;
+  last_layer=_ecal_last_layer(Global::GEAR->getEcalEndcapParameters());
+  zone[ECAL1_CAP]._init_ecal1_cap(last_layer);
+  zone[ECAL2_CAP]._init_ecal2_cap(last_layer);
+  cout << " init  ecal cap " << endl;
+  zone[HCAL_BAR]._init_hcal(HCAL_BAR);
+  zone[HCAL_CAP]._init_hcal(HCAL_CAP);
+  cout << " init  hcal " << endl;
+  zone[VTX]._init_vtx();
+  zone[COIL]._init_coil();
+  cout << " init  vtx and coil " << endl;
+  zone[ENDPLATE1]._init_endpl1();
+  zone[ENDPLATE2]._init_endpl2();
+  cout << " init  endplate " << endl;
+  zone[DETECTOR]._init_detector();
+  zone[WORLD]._init_world();
+  cout << " det world " << endl;
+  for( int k=0 ; k < ZONE_COUNT ; k++ )
+    zone[k]._init_final();
+
+  cout << "    =================================================================" 
+       << endl ;
+  cout << "          Phys_Geom_Database created and initialized  "
+       <<" with "<< ZONE_COUNT <<" zones "<< endl;
+  cout << "    =================================================================" 
+       << endl ;
+}   // End PGdb_init() 
+//============================================================================
+//============================================================================
+//             Simple Detector Geometry 
+//============================================================================
+//============================================================================
+bool PGdb::Zone::in_polygon(double r,Point3D &p){
+//============================================================================
+
+  double ph = atan2(p.y,p.x) + phi0;
+  if (ph < 0.0) ph = 2.*M_PI + ph;
+  return (p.rz > r/cos(ph-(trunc((ph+a0/2.)/a0)*a0) ))?false:true;  
+  
+}
+
+bool PGdb::Zone::inside(Point3D &p){
+//============================================================================
+  if(p.z < z_inner || p.z > z_outer)
+    return false;
+  if(p.rz > r_max)
+    return false;
+  if(p.rz > r_outer)
+    if(!in_polygon(r_outer,p))
+      return false;
+   if(p.rz > r_min)
+    return true;
+  if(p.rz > r_inner)
+    return !in_polygon(r_inner,p);
+
+    return false;
+}
+//============================================================================
+PGdb::ZONE PGdb::get_zone(Point3D &p){
+//============================================================================
+// As well as number of zones is small we can go along all of them
+//           can be optimized  -- latter
+//  DETECTOR contains of all of them; WORLD is outside region of DETECTOR
+//============================================================================
+  Point3D ap(abs(p.x),abs(p.y),abs(p.z));
+  if( p.x==0.0 && p.y==0.0 && p.z==0.0)
+    return VTX;
+  if(!zone[DETECTOR].inside(ap))
+    return WORLD;
+  for(unsigned i=0;i<DETECTOR;i++)
+    if(zone[i].inside(ap))
+      return (ZONE)i;
+  return DETECTOR;
+}
+//============================================================================
+PGdb::ZONE PGdb::get_zone2(int i){
+ return (ZONE)i;
+}
+
+ const char* PGdb::Zone::get_name() const{ 
+//============================================================================
+// These names should be the same as in ZONE typedef
+  static const char* names[]={ 
+    "VTX", "TPC" , "ECAL1_BAR", "ECAL2_BAR", "ECAL1_CAP", "ECAL2_CAP",
+    "HCAL_BAR", "HCAL_CAP", "COIL","ENDPLATE1","ENDPLATE2", "DETECTOR", "WORLD"
+  };
+  if(no>=sizeof(names)/sizeof(names[0]))
+    return "Unknown";
+  return names[no];
+}
+//============================================================================
+ostream &operator<<(ostream &o,const PGdb &d){
+//============================================================================
+  o<<"==================================================================="<< endl;
+  o<<" ================ Physical Geometrical Database  ================="<< endl;  
+  for (unsigned i = 0; i < PGdb::ZONE_COUNT; i++){
+    const PGdb::Zone &z=d[static_cast<PGdb::ZONE>(i)];
+    o<<"==================================================================="<< endl;
+    o<<" \x1b[30;46m                 Zone   "<< i << "  " << z.get_name() 
+     <<"                        \x1b[0m\x1b[30m"<< endl;
+    o<<"-----------------------------------------------------------------------"<< endl;
+    o<<" R inner    R outer    Z inner   Z outer    Shape    N samples"<< endl;
+    o<<"   "<<z.r_inner
+     <<"       "<<z.r_outer
+     <<"       "<<z.z_inner
+     <<"       "<<z.z_outer
+     <<"       "<<z.symmetry
+     <<"       "<<z.n_sampl<<endl;
+    o<<"-----------------------------------------------------------------------"<< endl;
+    o<<" Min--Max layers,    Thicknesses,         Cell size,        Volume,       R-neib  "<< endl;
+    o<<"    "<< z.min_lay 
+     <<"    "<< z.max_lay
+     <<"       "<< z.sampling         <<" mm, "
+     <<"  "<< z.detector         <<" mm, "
+     <<"        "<< z.cell_size        <<" mm, "
+     <<"      "<< z.cell_vol         <<" mm^3, "
+     <<"      "<< sqrt(z.r_neibour)  <<" mm"        <<endl; 
+    if(i==PGdb::HCAL_CAP  ||
+       i==PGdb::HCAL_BAR  ||  
+       i==PGdb::ECAL1_BAR ||  
+       i==PGdb::ECAL2_BAR ||  
+       i==PGdb::ECAL1_CAP ||  
+       i==PGdb::ECAL2_CAP ){
+      o<<"-----------------------------------------------------------------------"<< endl;
+      o<<"      MIP visible       Noise cut,          MIP cut,          HADR cut "<< endl
+       <<"      "<< z.mip_vis*1.e6   <<" [keV], "
+       <<"      "<< z.cut_noise*1.e6 <<" [keV], "
+       <<"      "<< z.cut_mip*1.e6   <<" [keV], "
+       <<"      "<< z.cut_hadr*1.e6  <<" [keV]  " << endl;
+      o<<"-----------------------------------------------------------------------"<< endl;
+      o<<"     E_coeff;                      MIP whole [GeV];               MIP density "<< endl
+       <<"   "<< z.e_coeff   <<" Phys./Vis.[GeV],"  
+       <<"      "<< z.mip_whole <<" [GeV], "    
+       <<"      "<< z.mip_dens  <<" [GeV/mm^3]" << endl <<endl;
+    }
+  }
+  o<<"-----------------------------------------------------------------------"<< endl;
+  return o;
+} // ------- end Output stream
+
+// +++++++++++ End Phys_Geom_Database definition  +++++++++++++++++++++++
 
