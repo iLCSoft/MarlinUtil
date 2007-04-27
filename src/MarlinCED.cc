@@ -40,7 +40,7 @@ void MarlinCED::newEvent( Processor* proc , int modelID ) {
   if( proc == instance()->_first ) {
 
     ced_new_event(); 
-//     drawDetector(modelID);
+    //drawDetector(modelID);
     drawGEARDetector();
 
   }
@@ -77,6 +77,12 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
   double cFactor = 2.9979251e-4;
     
   double pt = sqrt(px*px + py*py); // hypot(px,py)
+  double pl = pz;
+  double absp = sqrt(px*px + py*py + pz*pz);
+
+  // debug
+  // std::cout << "|p| = " << absp << "  " << "pt = " << pt << "  " << "pl = " << pl << std::endl;
+
 
 
   // FIXME: use a parameter for this cut or better this should be a function of the B field, charge and momentum 2006/07/04 OW    
@@ -106,7 +112,7 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
     double x1 =  x ; 
     double y1 =  y ;
     double z1 =  z ;
-    double step = 0.05;
+    double step = 0.01;  // initial 0.05
     
     int nSteps  = 50 + int( 150. / pt ) ;
     
@@ -196,7 +202,7 @@ void MarlinCED::drawTrajectory(const Trajectory* t, const int marker,
 			       const float zmax) 
 {
   if (rmax <= rmin || zmax == 0 ) return;
-  double stepSize = 0.05;
+  double stepSize = 5.0; // initial 0.05
   double nStepKill = int(2*3.14*rmax/stepSize);
 
   double rmax2 = rmax*rmax, rmin2 = rmin*rmin,xmagxy2;
@@ -562,13 +568,15 @@ void MarlinCED::drawGEARDetector() {
   float z_min_hcal_ecap = pHCAL_E.getExtent()[2];
   float z_max_hcal_ecap = pHCAL_E.getExtent()[3];
   
+  /*
   std::cout<<"  ++++++++++++ Parameters will be used for GeoCylinders to draw geometry   +++++++++++++++ "<<std::endl;
   std::cout<<" TPC       "<< r_min_tpc      <<"; "<<r_max_tpc      <<"; "<<z_max_tpc<<std::endl;
   std::cout<<" Ecal Bar  "<< r_min_ecal_bar <<"; "<<r_max_ecal_bar <<"; "<<z_min_ecal_bar <<"; "<<z_max_ecal_bar<<std::endl;
   std::cout<<" Hcal Bar  "<< r_min_hcal_bar <<"; "<<r_max_hcal_bar <<"; "<<z_min_hcal_bar <<"; "<<z_max_hcal_bar<<std::endl;
   std::cout<<" Ecal Ecap "<< r_min_ecal_ecap<<"; "<<r_max_ecal_ecap<<"; "<<z_min_ecal_ecap<<"; "<<z_max_ecal_ecap<<std::endl;
   std::cout<<" Hcal Ecap "<< r_min_hcal_ecap<<"; "<<r_max_hcal_ecap<<"; "<<z_min_hcal_ecap<<"; "<<z_max_hcal_ecap<<std::endl;
-  
+  */  
+
   //                   It was printed for LDC00Sc +0 +0
   //   ++++++++++++ Parameters will be used for GeoCylinders to draw geometry   +++++++++++++++
   //  TPC        386;   1626;           2500
