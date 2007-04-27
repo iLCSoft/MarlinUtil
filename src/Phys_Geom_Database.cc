@@ -20,16 +20,16 @@ using namespace marlin;
 
 /**  
  *    Physical Geometrical database will be used in the reconstruction
- *    procedure to get fast access to values/varibales dependent on
+ *    procedure to get fast access to values/variables dependent on
  *    the particular and different calorimeter zones with different
  *    physical properties and geometrical relations between cells. 
  *
  *    Such a database can be created after reading the geometry 
  *    record in LCIO if it will be presented in or another kind of 
- *           outstanding geometrical database.
+ *           outstanding geometrical database like GEAR.
  *
  *    Another way is to create such database during simulation
- *      step as an abligatory for any simulation program, 
+ *      step as an obligatory for any simulation program, 
  *             during the detector geometry creation.
  *       That is much easy way to form such a database.
  *            and put it as member (or class) of LCIO.
@@ -69,8 +69,8 @@ void PGdb::Zone::_init_tpc() {
   const gear::DoubleVec      &planeExt  = padLayout.getPlaneExtent();
   no=TPC;
   shape = CYLINDER; 
-  symmetry= 0;
-  phi0= 0.;
+  symmetry  = 0;
+  phi0      = 0.;
   r_inner   = planeExt[0]; 
   r_outer   = planeExt[1]; 
   z_inner   = 0.0; 
@@ -82,17 +82,13 @@ void PGdb::Zone::_init_tpc() {
   absorber  = 0.0; 
   abs_mat   = 0; 
   detector  = sampling; 
-  det_mat   = 18; //  Argon has been taken for the moment
+  det_mat   = 18;       //  Argon has been taken for the moment
   cell_size = sampling; // formaly 
 //---------------------------------
-  mip_vis   = 30.0e-9 ; 
-  e_coeff   = 1.0     ;
-  x0eff     = 0.0 ;  // mm
+  mip_vis   = 30.0e-9 ; // Should be in GEAR
+  e_coeff   = 1.0     ; // Should be in GEAR
 //---------------------------------
 }
-
-
-
 //============================================================================
 void PGdb::Zone::_init_endpl1(){
 //============================================================================
@@ -103,18 +99,18 @@ void PGdb::Zone::_init_endpl1(){
   shape     = CYLINDER;
   symmetry  = 0;
   phi0      = 0.;
-  r_inner   = planeExt[0]; 
-  r_outer   = planeExt[1]; 
+  r_inner   = planeExt[0];
+  r_outer   = planeExt[1];
   z_inner   =  pTPC.getMaxDriftLength();
-  z_outer   =  pTPC.getMaxDriftLength()+160.0;  
- //-----------------dodao KP
+  z_outer   =  pTPC.getMaxDriftLength()+160.0;
+ //-----------------added KP
   Zeff      =    21.01;
   Aeff      =    45.09;
   Rhoeff    =   0.2643;
-  Ieff      =145.13e-9;
+  Ieff      = 145.13e-9;
   Rmeff     = 504.54;// mm
   x0eff     = 419.29 ;  // mm
-  Eceff     = 17.628 ; // MeV  double dstreff; //mm
+  Eceff     = 17.628 ; // MeV  
   _init_all_common();
 }
 //============================================================================
@@ -127,21 +123,20 @@ void PGdb::Zone::_init_endpl2(){
   shape     = CYLINDER;
   symmetry  = 0;
   phi0      = 0.;
-  r_inner   = planeExt[0]; 
-  r_outer   = planeExt[1]; 
+  r_inner   = planeExt[0];
+  r_outer   = planeExt[1];
   z_inner   = -pTPC.getMaxDriftLength();
-  z_outer   = -(pTPC.getMaxDriftLength()+160.0);  
+  z_outer   = -(pTPC.getMaxDriftLength()+160.0);
  //-----------------dodao KP
   Zeff      =    21.01;
   Aeff      =    45.09;
   Rhoeff    =   0.2643;
-  Ieff      =145.13e-9;
+  Ieff      = 145.13e-9;
   Rmeff     = 504.54;// mm
   x0eff     = 419.29 ;  // mm
-  Eceff     = 17.628 ; // MeV  double dstreff; //mm
+  Eceff     = 17.628 ; // MeV
   _init_all_common();
 }
-
 //============================================================================
 static int _ecal_last_layer(const gear::CalorimeterParameters& pCAL){
 //============================================================================
@@ -160,20 +155,22 @@ static int _ecal_last_layer(const gear::CalorimeterParameters& pCAL){
 //============================================================================
 void PGdb::Zone::_init_ecal_bar_common(){
 //============================================================================
-  const gear::CalorimeterParameters& pECAL_B = Global::GEAR->getEcalBarrelParameters();
+  const gear::CalorimeterParameters& pECAL_B = 
+    Global::GEAR->getEcalBarrelParameters();
   shape    = POLYGON;
   symmetry = pECAL_B.getSymmetryOrder();
   phi0     = pECAL_B.getPhi0();
   z_inner  = 0.0;
   z_outer  = pECAL_B.getExtent()[3];
-  abs_mat  = 74; // Tungsten
-  detector = 0.5; // No chance to extract 
-  det_mat  = 14; // Silicon
+  abs_mat  = 74;  // Tungsten Should be in GEAR
+  detector = 0.5; // No chance to extract  Should be in GEAR
+  det_mat  = 14;  // Silicon Should be in GEAR
 }
 //============================================================================
 void PGdb::Zone::_init_ecal1_bar(int last_layer){
 //============================================================================
-  const gear::CalorimeterParameters& pECAL_B = Global::GEAR->getEcalBarrelParameters();
+  const gear::CalorimeterParameters& pECAL_B = 
+    Global::GEAR->getEcalBarrelParameters();
   const gear::LayerLayout &lb = pECAL_B.getLayerLayout() ;
   no        = ECAL1_BAR;
   r_inner   = lb.getDistance(0);
@@ -183,27 +180,28 @@ void PGdb::Zone::_init_ecal1_bar(int last_layer){
   min_lay   = 0;
   max_lay   = last_layer-1; 
   absorber  = lb.getAbsorberThickness(0); 
-  cell_size = lb.getCellSize0(0); // should be 10 mm
+  cell_size = lb.getCellSize0(0); // should be 10 mm in GEAR
 //---------------------------------
-  mip_vis   = 170.0e-6 ; 
-  e_coeff   = 28.25 ;  // for model LDC00
-  //-----------------dodao KP
+  mip_vis   = 170.0e-6 ;  // Should be in GEAR
+  e_coeff   = 33.02346 ;  // for model LDC00
+  // e_coeff   = 46.7703 ;  // for model LDC01  Should be in GEAR
+  //-----------------added KP
   Zeff      =    67.41;
   Aeff      =  166.868;
   Rhoeff    =     7.75;
   Ieff      =706.67e-9;
-  Rmeff     = 22.0833;// mm
+  Rmeff     = 22.0833;  // mm
   x0eff     = 9.4587 ;  // mm
-  Eceff     = 9.0804  ; // MeV  double dstreff; //mm
-   eprime    = 0.72002; 
-  //    z[0].e_coeff   = 46.7703 ;  // for model LDC01  Sould be in parameters
+  Eceff     = 9.0804  ; // MeV
+  eprime    = 0.72002;
 
   _init_ecal_bar_common();
 }
 //============================================================================
 void PGdb::Zone::_init_ecal2_bar(int last_ecal1_layer){
 //============================================================================
-  const gear::CalorimeterParameters& pECAL_B = Global::GEAR->getEcalBarrelParameters();
+  const gear::CalorimeterParameters& pECAL_B = 
+    Global::GEAR->getEcalBarrelParameters();
   const gear::LayerLayout &lb = pECAL_B.getLayerLayout() ;
   int nLayerb = lb.getNLayers() ;
   no        = ECAL2_BAR;
@@ -216,27 +214,28 @@ void PGdb::Zone::_init_ecal2_bar(int last_ecal1_layer){
   absorber  = lb.getAbsorberThickness(nLayerb-1); 
   cell_size = lb.getCellSize0(nLayerb-1); // should be 10 mm
 //---------------------------------
-  mip_vis   = 170.0e-6 ; 
-  e_coeff   = 74.91 ;  //for model LDC00
- //-----------------dodao KP
+  mip_vis   = 170.0e-6 ;  // Should be in GEAR
+  e_coeff   = 93.56822 ;  //for model LDC00
+  // e_coeff   =  86.3749 ;  //for model LDC01
+ //-----------------added KP
   Zeff      =   71.635;
   Aeff      =  177.614;
   Rhoeff    =   12.577;
-  Ieff      =729.09e-9;
+  Ieff      = 729.09e-9; //GeV
   Rmeff     = 13.8418;// mm
   x0eff     = 8.135953 ;  // mm
   Eceff     = 8.4709  ; // MeV  dou
   eprime    = 0.709672;
-  //    z[1].e_coeff   =  86.3749 ;  //for model LDC01
 
   _init_ecal_bar_common();
 }
 //============================================================================
 void PGdb::Zone::_init_ecal_cap_common(){
 //============================================================================
-  const gear::CalorimeterParameters& pECAL_E = Global::GEAR->getEcalEndcapParameters();
+  const gear::CalorimeterParameters& pECAL_E = 
+    Global::GEAR->getEcalEndcapParameters();
   shape     = POLYGON;
-  symmetry  = 8;
+  symmetry  = pECAL_E.getSymmetryOrder();
   phi0      = pECAL_E.getPhi0();
   r_inner   = pECAL_E.getExtent()[0]; 
   r_outer   = pECAL_E.getExtent()[1]; 
@@ -247,7 +246,8 @@ void PGdb::Zone::_init_ecal_cap_common(){
 //============================================================================
 void PGdb::Zone::_init_ecal1_cap(int last_layer){
 //============================================================================
-  const gear::CalorimeterParameters& pECAL_E = Global::GEAR->getEcalEndcapParameters();
+  const gear::CalorimeterParameters& pECAL_E = 
+    Global::GEAR->getEcalEndcapParameters();
   const gear::LayerLayout &le = pECAL_E.getLayerLayout() ;
   no        = ECAL1_CAP;
   z_inner   = le.getDistance(0);; 
@@ -259,25 +259,26 @@ void PGdb::Zone::_init_ecal1_cap(int last_layer){
   absorber  = le.getAbsorberThickness(0); 
   cell_size = le.getCellSize0(0); // should be 10 mm
 //---------------------------------
-  mip_vis   = 170.0e-6 ; 
+  mip_vis   = 170.0e-6 ;  // Should be in GEAR
   e_coeff   = 33.02346 ;  // for model LDC00
-  //-----------------dodao KP
+  //    e_coeff   = 46.7703 ;  // for model LDC01  Should be in parameters
+  //-----------------added KP
   Zeff      =    67.41;
   Aeff      =  166.868;
   Rhoeff    =     7.75;
-  Ieff      =706.67e-9;
+  Ieff      = 706.67e-9;
   Rmeff     = 22.0833;// mm
   x0eff     = 9.4587 ;  // mm
-  Eceff     = 9.0804  ; // MeV  double dstref
-  eprime    = 0.72002; 
-  //    e_coeff   = 46.7703 ;  // for model LDC01  Sould be in parameters
+  Eceff     = 9.0804  ; // MeV
+  eprime    = 0.72002;
 
   _init_ecal_cap_common();
 }
 //============================================================================
 void PGdb::Zone::_init_ecal2_cap(int last_ecal1_layer){
 //============================================================================
-  const gear::CalorimeterParameters& pECAL_E = Global::GEAR->getEcalEndcapParameters();
+  const gear::CalorimeterParameters& pECAL_E = 
+    Global::GEAR->getEcalEndcapParameters();
   const gear::LayerLayout &le = pECAL_E.getLayerLayout() ;
   int nLayere = le.getNLayers() ;
   no        = ECAL2_CAP;
@@ -290,18 +291,18 @@ void PGdb::Zone::_init_ecal2_cap(int last_ecal1_layer){
   absorber  = le.getAbsorberThickness(nLayere-1); 
   cell_size = le.getCellSize0(nLayere-1); // should be 10 mm
 //---------------------------------
-  mip_vis   = 170.0e-6 ; 
+  mip_vis   = 170.0e-6 ;  // Should be in GEAR
   e_coeff   = 93.56822 ;  //for model LDC00
- //-----------------dodao KP
+//    e_coeff   =  86.3749 ;  //for model LDC01   
+ //-----------------added KP
   Zeff      =   71.635;
   Aeff      =  177.614;
   Rhoeff    =   12.577;
   Ieff      =729.09e-9;
   Rmeff     = 13.8418;// mm
   x0eff     = 8.135953 ;  // mm
-  Eceff     = 8.4709  ; // MeV  dou
+  Eceff     = 8.4709  ; // MeV
   eprime    = 0.709672;
-//    e_coeff   =  86.3749 ;  //for model LDC01   
 
   _init_ecal_cap_common();
 }
@@ -310,22 +311,16 @@ void PGdb::Zone::_init_hcal(PGdb::ZONE zone){
 //============================================================================
   const gear::CalorimeterParameters *pHCAL;
   if(zone==HCAL_BAR)
-    {
    pHCAL = & Global::GEAR->getHcalBarrelParameters();
-   symmetry  =8;
-   phi0      = pHCAL->getPhi0();
-
-    }else{
+  else
    pHCAL = & Global::GEAR->getHcalEndcapParameters();
-   symmetry  =8;
-   phi0      = pHCAL->getPhi0();
-   }
   const gear::LayerLayout &lhb = pHCAL->getLayerLayout() ;
   no        = zone;
   shape     = POLYGON;
- 
+  symmetry  = pHCAL->getSymmetryOrder();
+  phi0      = pHCAL->getPhi0();
   r_inner   = pHCAL->getExtent()[0]; 
-  r_outer   = pHCAL->getExtent()[1] +30.0; 
+  r_outer   = pHCAL->getExtent()[1]; 
   z_inner   = pHCAL->getExtent()[2]; 
   z_outer   = pHCAL->getExtent()[3]; 
   n_sampl   = lhb.getNLayers() ;
@@ -333,21 +328,19 @@ void PGdb::Zone::_init_hcal(PGdb::ZONE zone){
   min_lay   = 0;
   max_lay   = n_sampl-1; 
   absorber  = lhb.getAbsorberThickness(0); 
-  abs_mat   = 26;  // Iron
-  detector  = 5.0; // No chance to extract 
-  det_mat   = 6;  // Carbon
+  abs_mat   = 26;  // atomic number = Iron
+  detector  = 5.0; // Thickness [mm] -- No chance to extract 
+  det_mat   = 6;   //  atomic number = Carbon
   cell_size = lhb.getCellSize0(0); // should be 30 mm
   //---------------------------------
-  mip_vis   = 875.0e-6 ; 
-  e_coeff   = 23.45;   // for model LDC00
-
- //-----------------dodao KP
+  mip_vis   = 875.0e-6 ;   // Should be in GEAR
+  e_coeff   = 21.196262;   // for model LDC00
+  //    e_coeff   = 22.01925 ;  //for model LDC01
+ //-----------------added KP
   Zeff      =   25.318;
   Aeff      =   54.354;
   Rhoeff    =    6.134;
-  Ieff      =283.34e-9;
-
-  //    e_coeff   = 22.01925 ;  //for model LDC01
+  Ieff      = 283.34e-9;
 }
 //============================================================================
 void PGdb::Zone::_init_all_common(){
@@ -368,19 +361,14 @@ void PGdb::Zone::_init_all_common(){
 //============================================================================
 void PGdb::Zone::_init_vtx(){
 //============================================================================
-  const gear::TPCParameters  &pTPC      = Global::GEAR->getTPCParameters();
-  const gear::PadRowLayout2D &padLayout = pTPC.getPadLayout();
-  const gear::DoubleVec      &planeExt  = padLayout.getPlaneExtent();
   no        = VTX;
   shape     = CYLINDER;
   symmetry  = 0;
   phi0      = 0.;
   r_inner   = 0.; 
-  //r_outer   = PGDB[ECAL1_CAP].r_inner; 
-  r_outer   = planeExt[0]; 
+  r_outer   = PGDB[ECAL1_CAP].r_inner; 
   z_inner   = 0; 
   z_outer   = PGDB[HCAL_CAP].z_outer; 
-  x0eff     = 0.0 ;  // mm
   _init_all_common();
 }
 //============================================================================
@@ -390,15 +378,16 @@ void PGdb::Zone::_init_coil(){
   shape     = CYLINDER;
   symmetry  = 0;
   phi0      = 0.;
-  r_inner   = 3027;//PGDB[HCAL_BAR].r_outer/cos(M_PI_2/PGDB[HCAL_BAR].symmetry); 
-  r_outer   = r_inner+850; 
+  r_inner   = PGDB[HCAL_BAR].r_outer/cos(M_PI/PGDB[HCAL_BAR].symmetry); 
+  r_outer   = r_inner+850;  // Should be in GEAR
   z_inner   = 0;
-  z_outer   = 5250.0;   // PGDB[HCAL_CAP].z_outer; 
- //-----------------dodao KP
+  z_outer   = PGDB[HCAL_CAP].z_outer; 
+ //-----------------added KP
   Zeff      =  13.0;
   Aeff      =  27.0;
   Rhoeff    =   2.7;
-  Ieff      =166.0e-9;
+  Ieff      = 166.0e-9;
+
   _init_all_common();
 }
 //============================================================================
@@ -412,7 +401,7 @@ void PGdb::Zone::_init_detector(){
   r_outer   = PGDB[COIL].r_outer; 
   z_inner   = 0; 
   z_outer   = PGDB[HCAL_CAP].z_outer; 
-  x0eff     = 0.0 ;  // mm
+  x0eff     = 100000.0 ;  // mm
   _init_all_common();
 }
 //============================================================================
@@ -426,26 +415,26 @@ void PGdb::Zone::_init_world(){
   r_outer   = 1.e10; 
   z_inner   = PGDB[HCAL_CAP].z_outer; 
   z_outer   = 1.e10; 
-  x0eff     = 0.0 ;  // mm
+  x0eff     = 100000.0 ;  // mm
   _init_all_common();
 }
 //============================================================================
 void PGdb::Zone::_init_final() {
 //============================================================================
-  //      Predicted distance to neibour for particular zone
+  //      Predicted distance to neighbor for particular zone
   //               1.41 is ~ sqrt(2)
-  r_neibour = 1.8*((cell_size < sampling) ? sampling : cell_size);
-  r_neibour = r_neibour * r_neibour;
+  r_neighbor = 1.4*((cell_size < sampling) ? sampling : cell_size/2.);
+  r_neighbor = r_neighbor * r_neighbor;
 
   //          Volume including absorber
   cell_vol = cell_size*cell_size*sampling;  
 
-  //       Predicted cutoffs  for particular zone around MIP
+//  Predicted cutoffs  for particular zone around MIP
+//             Should be in GEAR
+  //   0.5 -- no MIP signal less than this energy
+  cut_noise = 0.3*mip_vis;   // in units of RAW data 
 
-  //         0.5 -- no MIP signal less than this energy
-  cut_noise = 0.5*mip_vis;   // in units of RAW data 
-
-  //       MIP peak is within 0.5 MIP and 2.0 MIP
+  //   MIP peak is within 0.5 MIP and 2.0 MIP
   //    2.0 -- choosen by eyes see page 267 old log book
   cut_mip  = 2.0*mip_vis;   // in units of RAW data 
 
@@ -461,12 +450,15 @@ void PGdb::Zone::_init_final() {
   // MIP energy density in whole cell volume
   mip_dens = mip_whole/cell_vol; // in [GeV]/[mm]^3
 
-  if(shape==POLYGON && symmetry){   
-    a0= 2*M_PI/symmetry;  
+  if(shape==POLYGON && symmetry){
+    if(symmetry == 2)  
+// because GEAR think that endcap has a symmetry = 2 instead of 8
+      symmetry = 8;
+    a0 = 2*M_PI/symmetry;
     r_max=r_outer/cos(a0/2.);
     r_min=r_inner/cos(a0/2.);
   } else {
-    a0  = 2*M_PI/8;  // default symmetry
+    a0 = 2.*M_PI/8;  // default symmetry
     r_max=r_outer;
     r_min=r_inner;
   }
@@ -478,27 +470,25 @@ void PGdb::init(){
   
   // Sequence is important !!!
   zone[TPC]._init_tpc();
-  cout << " init  tpc " << endl;
+  zone[ENDPLATE1]._init_endpl1();
+  zone[ENDPLATE2]._init_endpl2();
+
   int last_layer=_ecal_last_layer(Global::GEAR->getEcalBarrelParameters());
   zone[ECAL1_BAR]._init_ecal1_bar(last_layer);
   zone[ECAL2_BAR]._init_ecal2_bar(last_layer);
- cout << " init  ecal bar " << endl;
+
   last_layer=_ecal_last_layer(Global::GEAR->getEcalEndcapParameters());
   zone[ECAL1_CAP]._init_ecal1_cap(last_layer);
   zone[ECAL2_CAP]._init_ecal2_cap(last_layer);
-  cout << " init  ecal cap " << endl;
+
   zone[HCAL_BAR]._init_hcal(HCAL_BAR);
   zone[HCAL_CAP]._init_hcal(HCAL_CAP);
-  cout << " init  hcal " << endl;
+
   zone[VTX]._init_vtx();
   zone[COIL]._init_coil();
-  cout << " init  vtx and coil " << endl;
-  zone[ENDPLATE1]._init_endpl1();
-  zone[ENDPLATE2]._init_endpl2();
-  cout << " init  endplate " << endl;
   zone[DETECTOR]._init_detector();
   zone[WORLD]._init_world();
-  cout << " det world " << endl;
+
   for( int k=0 ; k < ZONE_COUNT ; k++ )
     zone[k]._init_final();
 
@@ -510,19 +500,15 @@ void PGdb::init(){
        << endl ;
 }   // End PGdb_init() 
 //============================================================================
-//============================================================================
-//             Simple Detector Geometry 
-//============================================================================
+//      Simple Detector Geometry Zone Finder
 //============================================================================
 bool PGdb::Zone::in_polygon(double r,Point3D &p){
 //============================================================================
-
   double ph = atan2(p.y,p.x) + phi0;
   if (ph < 0.0) ph = 2.*M_PI + ph;
-  return (p.rz > r/cos(ph-(trunc((ph+a0/2.)/a0)*a0) ))?false:true;  
-  
+  return (p.rz > r/cos(ph-(trunc((ph+a0/2.)/a0)*a0) ))?false:true;
 }
-
+//============================================================================
 bool PGdb::Zone::inside(Point3D &p){
 //============================================================================
   if(p.z < z_inner || p.z > z_outer)
@@ -532,12 +518,11 @@ bool PGdb::Zone::inside(Point3D &p){
   if(p.rz > r_outer)
     if(!in_polygon(r_outer,p))
       return false;
-   if(p.rz > r_min)
+  if(p.rz > r_min)
     return true;
   if(p.rz > r_inner)
     return !in_polygon(r_inner,p);
-
-    return false;
+  return false;
 }
 //============================================================================
 PGdb::ZONE PGdb::get_zone(Point3D &p){
@@ -547,7 +532,7 @@ PGdb::ZONE PGdb::get_zone(Point3D &p){
 //  DETECTOR contains of all of them; WORLD is outside region of DETECTOR
 //============================================================================
   Point3D ap(abs(p.x),abs(p.y),abs(p.z));
-  if( p.x==0.0 && p.y==0.0 && p.z==0.0)
+  if( p.x==0.0 && p.y==0.0 && p.z==0.0)// ???????
     return VTX;
   if(!zone[DETECTOR].inside(ap))
     return WORLD;
@@ -557,16 +542,12 @@ PGdb::ZONE PGdb::get_zone(Point3D &p){
   return DETECTOR;
 }
 //============================================================================
-PGdb::ZONE PGdb::get_zone2(int i){
- return (ZONE)i;
-}
-
- const char* PGdb::Zone::get_name() const{ 
+const char *PGdb::Zone::get_name() const {
 //============================================================================
 // These names should be the same as in ZONE typedef
-  static const char* names[]={ 
+  static const char *names[]={ 
     "VTX", "TPC" , "ECAL1_BAR", "ECAL2_BAR", "ECAL1_CAP", "ECAL2_CAP",
-    "HCAL_BAR", "HCAL_CAP", "COIL","ENDPLATE1","ENDPLATE2", "DETECTOR", "WORLD"
+    "HCAL_BAR", "HCAL_CAP", "COIL", "DETECTOR", "WORLD"
   };
   if(no>=sizeof(names)/sizeof(names[0]))
     return "Unknown";
@@ -588,7 +569,7 @@ ostream &operator<<(ostream &o,const PGdb &d){
      <<"       "<<z.r_outer
      <<"       "<<z.z_inner
      <<"       "<<z.z_outer
-     <<"       "<<z.symmetry
+     <<"       "<<z.shape
      <<"       "<<z.n_sampl<<endl;
     o<<"-----------------------------------------------------------------------"<< endl;
     o<<" Min--Max layers,    Thicknesses,         Cell size,        Volume,       R-neib  "<< endl;
@@ -598,7 +579,7 @@ ostream &operator<<(ostream &o,const PGdb &d){
      <<"  "<< z.detector         <<" mm, "
      <<"        "<< z.cell_size        <<" mm, "
      <<"      "<< z.cell_vol         <<" mm^3, "
-     <<"      "<< sqrt(z.r_neibour)  <<" mm"        <<endl; 
+     <<"      "<< sqrt(z.r_neighbor)  <<" mm"        <<endl; 
     if(i==PGdb::HCAL_CAP  ||
        i==PGdb::HCAL_BAR  ||  
        i==PGdb::ECAL1_BAR ||  
