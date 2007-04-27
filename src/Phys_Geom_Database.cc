@@ -146,8 +146,8 @@ static int _ecal_last_layer(const gear::CalorimeterParameters& pCAL){
   double tlb  = lb.getThickness(0);
   double dlb  = lb.getAbsorberThickness(0);
   for( i=1 ; i < nLayerb ; i++ )
-    if(abs(tlb-lb.getThickness(i))>0.0000001 ||
-       abs(dlb-lb.getAbsorberThickness(i))>0.0000001)
+    if(fabs(tlb-lb.getThickness(i))>0.0000001 ||
+       fabs(dlb-lb.getAbsorberThickness(i))>0.0000001)
       return i;
   cerr<<"ERROR: Can't get boundary of CAL"<<endl;
   return i;
@@ -531,7 +531,7 @@ PGdb::ZONE PGdb::get_zone(Point3D &p){
 //           can be optimized  -- latter
 //  DETECTOR contains of all of them; WORLD is outside region of DETECTOR
 //============================================================================
-  Point3D ap(abs(p.x),abs(p.y),abs(p.z));
+  Point3D ap(fabs(p.x),fabs(p.y),fabs(p.z));
   if( p.x==0.0 && p.y==0.0 && p.z==0.0)// ???????
     return VTX;
   if(!zone[DETECTOR].inside(ap))
