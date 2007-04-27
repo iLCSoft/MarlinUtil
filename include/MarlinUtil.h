@@ -7,6 +7,8 @@
 #include <cmath>
 #include <string>
 #include <vector>
+#include <utility>
+#include <algorithm>
 
 #include <CLHEP/HepPDT/TableBuilder.hh>
 #include <CLHEP/HepPDT/ParticleDataTable.hh>
@@ -23,6 +25,9 @@
 
 #include "HelixClass.h"
 
+#include "csvparser.h"
+
+
 using namespace lcio;
 
 
@@ -30,14 +35,14 @@ class MarlinUtil {
 
 
  public:
-  static void printTrack(Track* track, double bField=4.0);
-  static const double* getMomentum(Track* track, double bField=4.0);
-  static const double getAbsMomentum(Track* track, double bField=4.0);
-  static void printCluster(Cluster* cluster);
-  static void printRecoParticle(ReconstructedParticle* recoParticle, double bField=4.0);
+
   static void printMCParticle(MCParticle* MCP, bool printDaughters = false);
-  static int countAllSimTrackerHits(LCEvent* evt,MCParticle* MCP);
-  static int countAllSimCalorimeterHits(LCEvent* evt,MCParticle* MCP,double& accumulatedSimCaloEnergy);
+  static std::string getMCName(int PDGCode);
+  static int getPDGCode(std::string name);
+  static MCParticleVec getAllMCParents(MCParticle* mcPart );
+  static MCParticleVec getAllMCDaughters(MCParticle* mcPart);
+  static bool isDaughterOf( MCParticle* daughter, MCParticle* parent );
+  static bool DecayChainInTree(std::vector<int> DecayChannel, LCEvent* evt);
 
   /** Function to get the accumulated sum of the energy per event and the number of particles within different categories at IP. The return values are given in the array accumulatedEnergies of size 21 with the following content. Only MC particles with generator status 1 are considered:
    *
@@ -64,13 +69,41 @@ class MarlinUtil {
    *  accumulatedEnergies[20] : energy of MC particles which is possible to measure (real sum [see 0])
    */   
   static void getMC_Balance(LCEvent* evt, double* accumulatedEnergies);
-  
 
-  static std::string getMCName(int PDGCode);
-  static int getPDGCode(std::string name);
-  static bool DecayChainInTree(std::vector<int> DecayChannel, LCEvent* evt);
+  static void printTrack(Track* track, double bField=4.0);
+  static const double* getMomentum(Track* track, double bField=4.0);
+  static const double getAbsMomentum(Track* track, double bField=4.0);
+  static void printCluster(Cluster* cluster);
+  static void printRecoParticle(ReconstructedParticle* recoParticle, double bField=4.0);
+  static int countAllSimTrackerHits(LCEvent* evt,MCParticle* MCP);
+  static int countAllSimCalorimeterHits(LCEvent* evt,MCParticle* MCP,double& accumulatedSimCaloEnergy);
+  static double getEnergyDepositedInFullCalorimeter(LCEvent* evt);
+
 
 };
 
+
+
+
+// FIXME: the whole MC particle related stuff should be placed somewhere else (see MarlinUtil as well)
+
+
+class MCParticleHelper {
+
+ public: 
+
+  MCParticleHelper();
+  std::string getMCCharge(int PDGCode);
+
+
+ private: 
+
+  std::vector<int> _pdgCodesMCParticles;
+  std::vector<double> _massMCParticles;
+  std::vector<std::string> _nameMCParticles;
+  std::vector<std::string> _chargeMCParticles;
+
+
+};
 
 #endif
