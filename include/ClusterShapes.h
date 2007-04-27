@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <sstream>
 #include <cstdlib>
@@ -30,7 +31,7 @@
  *    (GNU Scientific Library) are needed in this class.
  *
  *    @authors V. Morgunov (ITEP/DESY), A. Raspereza (DESY), O. Wendt (DESY)
- *    @version $Id: ClusterShapes.h,v 1.13 2007-04-23 17:06:23 gaede Exp $
+ *    @version $Id: ClusterShapes.h,v 1.14 2007-04-27 13:56:53 owendt Exp $
  *
  */
 class ClusterShapes {
@@ -225,7 +226,11 @@ class ClusterShapes {
    *                          set to 0.0
    */
   int FitHelix(int max_iter, int status_out, int parametrisation,
-	       float* parameter, float* dparameter, float& chi2, float& distmax);
+	       double* parameter, double* dparameter, double& chi2, double& distmax, int direction=1);
+
+
+  int FitHelix(int max_iter, int status_out, int parametrisation,
+	       float* parameter, float* dparameter, float& chi2, float& distmax, int direction=1);
 
   /**
    * distance to the centre of gravity measured from IP
@@ -343,8 +348,8 @@ class ClusterShapes {
   float findDistance(int i);
   float vecProduct(float * x1, float * x2);
   float vecProject(float * x, float * axis);
-  float DistanceHelix(float x, float y, float z, float X0, float Y0, float R0, float bz,
-		      float phi0, float * distRPhiZ);
+  double DistanceHelix(double x, double y, double z, double X0, double Y0, double R0, double bz,
+		      double phi0, double * distRPhiZ);
   int transformToEigensystem(float* xStart, int& index_xStart, float X0, float Xm);
   float calculateChi2Fit3DProfileSimple(float a, float b, float c, float d);
   float calculateChi2Fit3DProfileAdvanced(float E0, float a, float b, float d, float t0);
