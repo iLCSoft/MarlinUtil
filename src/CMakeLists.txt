@@ -32,6 +32,7 @@ SET( exc_srcs testmarlinutil.cc )
 
 # get list of all source files in this directory
 AUX_SOURCE_DIRECTORY( . all_srcs )
+AUX_SOURCE_DIRECTORY( ann ann_srcs )
 
 # remove "./" from the list of source files
 STRING( REPLACE "./" "" all_srcs "${all_srcs}" )
@@ -42,7 +43,7 @@ IF( bin_srcs OR exc_bin_srcs )
 ENDIF()
 
 # library sources
-SET( lib_srcs ${all_srcs} )
+SET( lib_srcs ${all_srcs} ${ann_srcs} )
 
 ####################################################################################################
 ### LIBRARY
