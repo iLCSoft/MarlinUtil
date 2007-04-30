@@ -1,5 +1,7 @@
 #include "CutOnCosThetaQQbar.h"
 
+#include <cmath>
+
 using namespace lcio ;
 using namespace marlin ;
 
