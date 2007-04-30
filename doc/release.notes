@@ -1,0 +1,24 @@
+================================
+
+ release notes for MarlinUtil
+
+================================
+
+ --------
+| v00-03 |
+ --------
+  - suport for Full Tracking  (A.Raspereza)
+
+  -  suport for TrackBasedPFA (O.Wendt)
+
+  - suport for PhotonFinderKit (P. Krstonosic)
+
+  - included the ANN (Aproximate Nearest Neighbor) library
+    [ see: http://www.cs.umd.edu/~mount/ANN ]
+
+  - added cmake support (epxerimental)
+ 
+
+ for details see the ChangeLog file
+
+
