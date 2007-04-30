@@ -1,0 +1,812 @@
+2007-04-30 15:32  gaede
+
+	* src/CutOnCosThetaQQbar.cc: added <cmath> for gcc3.4
+
+2007-04-28 19:01  engels
+
+	* src/CMakeLists.txt: added ann
+
+2007-04-27 16:04  owendt
+
+	* include/CalorimeterHitWithAttributes.h,
+	  include/ClusterImplWithAttributes.h, include/ConvertToMIPScale.h,
+	  include/CutOnCosThetaQQbar.h, include/CutOnGEANT4Bug.h,
+	  include/DrawMCParticles.h, include/SkipNEvents.h,
+	  include/TrackwiseClusters.h, include/csvparser.h,
+	  src/ConvertToMIPScale.cc, src/CutOnCosThetaQQbar.cc,
+	  src/CutOnGEANT4Bug.cc, src/DrawMCParticles.cc,
+	  src/SkipNEvents.cc, src/TrackwiseClusters.cc, src/csvparser.cc,
+	  src/mass_width_2006.csv: added helper classes/functions for the
+	  Track-Based PFlow Processor
+
+2007-04-27 15:58  owendt
+
+	* src/MarlinCED.cc: modified draw utilities
+
+2007-04-27 15:57  owendt
+
+	* include/MarlinUtil.h, src/MarlinUtil.cc: added functionality
+
+2007-04-27 15:56  owendt
+
+	* include/ClusterShapes.h, src/ClusterShapes.cc: updated helix fit
+
+2007-04-27 12:38  gaede
+
+	* src/Phys_Geom_Database.cc: replaced abs() with fabs()
+
+2007-04-27 11:23  gaede
+
+	* src/B_Util.cc: new version from vassilly
+
+2007-04-27 11:22  gaede
+
+	* include/B_Util.h, include/Phys_Geom_Database.h,
+	  src/Phys_Geom_Database.cc: updated version from vassilly
+
+2007-04-26 12:11  krstonos
+
+	* include/: B_Util.h, Elements.h, Phys_Geom_Database.h: [no log
+	  message]
+
+2007-04-26 12:11  krstonos
+
+	* src/Phys_Geom_Database.cc: extended version of database
+
+2007-04-25 14:57  engels
+
+	* CMakeLists.txt, src/CMakeLists.txt: improved build_shared_libs
+
+2007-04-25 11:53  engels
+
+	* CMakeLists.txt: bug fix: install_prefix
+
+2007-04-25 11:10  gaede
+
+	* include/ANN/ANN.h: set ANN_ALLOW_SELF_MATCH to  ANNfalse, ie.
+	  point is not neighbour of itself
+
+2007-04-25 11:02  engels
+
+	* CMakeLists.txt, src/CMakeLists.txt: moved dependencies to
+	  top-level CMakeLists.txt
+
+2007-04-24 13:27  rasp
+
+	* src/MarlinTrackFit.cc:
+	  All prinout statements are commented out.
+
+2007-04-24 12:46  gaede
+
+	* README, include/ANN/ANN.h, include/ANN/ANNperf.h,
+	  include/ANN/ANNx.h, include/ANN/Copyright.txt, src/GNUmakefile,
+	  src/ann/ANN.cpp, src/ann/Copyright.txt,
+	  src/ann/bd_fix_rad_search.cpp, src/ann/bd_pr_search.cpp,
+	  src/ann/bd_search.cpp, src/ann/bd_tree.cpp, src/ann/bd_tree.h,
+	  src/ann/brute.cpp, src/ann/kd_dump.cpp,
+	  src/ann/kd_fix_rad_search.cpp, src/ann/kd_fix_rad_search.h,
+	  src/ann/kd_pr_search.cpp, src/ann/kd_pr_search.h,
+	  src/ann/kd_search.cpp, src/ann/kd_search.h, src/ann/kd_split.cpp,
+	  src/ann/kd_split.h, src/ann/kd_tree.cpp, src/ann/kd_tree.h,
+	  src/ann/kd_util.cpp, src/ann/kd_util.h, src/ann/perf.cpp,
+	  src/ann/pr_queue.h, src/ann/pr_queue_k.h: included the ANN
+	  (Aproximate Nearest Neighbor) library [ see:
+	  http://www.cs.umd.edu/~mount/ANN ]
+
+2007-04-23 19:18  engels
+
+	* CMakeLists.txt, MarlinUtilConfig.cmake.in,
+	  cmake_uninstall.cmake.in, src/CMakeLists.txt: added CMake files
+
+2007-04-23 19:06  gaede
+
+	* include/ClusterShapes.h: added us spelling of getCentreOfGravity
+
+2007-04-20 15:34  rasp
+
+	* include/MarlinTrackFit.h:
+	  Header file for the new track fit class
+
+2007-04-20 15:33  rasp
+
+	* src/MarlinTrackFit.cc:
+	  New class for track fitting
+
+2007-04-20 15:29  rasp
+
+	* include/ClusterShapes.h, include/HelixClass.h,
+	  include/TrackExtended.h, src/ClusterShapes.cc, src/HelixClass.cc,
+	  src/TrackExtended.cc:
+	  New versions of header and source files
+
+2007-03-01 16:53  engels
+
+	* src/GNUmakefile: library put back to the original place
+
+2007-02-21 14:45  engels
+
+	* src/GNUmakefile: bug fix: -I CPP Flag whitespace removed
+
+2007-02-15 12:42  engels
+
+	* src/GNUmakefile: fixed for building without
+	  $MARLIN/marlin_includes.sh and $MARLIN/marlin_libs.sh removed
+	  whitespaces from compile flags
+
+2007-02-05 21:47  owendt
+
+	* include/MarlinDrawUtil.h, src/MarlinDrawUtil.cc: debugging of
+	  method getColorAmplitude()
+
+2007-01-18 17:05  engels
+
+	* src/GNUmakefile: fixed dependencies
+
+2007-01-11 18:02  engels
+
+	* README, doc/Doxyfile, src/GNUmakefile: modified Makefiles to work
+	  with $MARLINWORKDIR
+
+2007-01-02 17:16  samson
+
+	* src/MarlinDrawUtil.cc: Insert missing #include <cmath>
+
+2006-12-18 15:35  gaede
+
+	* include/NNClusters.h: made compliant with g++ 4.x
+
+2006-11-28 15:33  gaede
+
+	* README: updated doc
+
+2006-11-03 17:47  tkraemer
+
+	* src/testmarlinutil.cc: additional statements to test new
+	  implementations.
+
+2006-11-03 17:45  tkraemer
+
+	* src/LCLine3D.cc: added functionality to initialize a LCLine3D
+	  Object using canonical  parameters.  Free Parameter of a line
+	  starts at the Point of closesed approach according to
+	  LC-DET-2006-004.
+
+2006-11-03 17:44  tkraemer
+
+	* src/LCCylinder.cc: minor modifications for debugging
+
+2006-11-03 17:43  tkraemer
+
+	* include/LCLine3D.h: added new constructors for canonical
+	  parametrisation of a line with 4 parameters
+
+2006-11-02 13:22  rasp
+
+	* include/TrackExtended.h, include/TrackerHitExtended.h,
+	  src/TrackExtended.cc, src/TrackerHitExtended.cc:
+	  modified Classes to use in FullLDCTracking processor
+
+2006-11-02 13:21  rasp
+
+	* include/HelixClass.h:
+	  modified Helix class header
+
+2006-11-02 13:20  rasp
+
+	* src/HelixClass.cc:
+	  Modified HelixClass
+
+2006-10-31 17:20  tkraemer
+
+	* include/MarlinCED.h, src/MarlinCED.cc: added new function in
+	  MarlinCED: drawTrajectory to draw any kind of trajectory derived
+	  from the trajectory interface.
+
+2006-10-31 14:46  tkraemer
+
+	* include/SimpleHelix.h, src/SimpleHelix.cc, src/SimpleLine.cc,
+	  src/testmarlinutil.cc: implementation of the
+	  getIntersectionWithCylinder method of SimpleHelix
+
+2006-10-27 11:16  tkraemer
+
+	* src/: LCPlane3D.cc, SimpleHelix.cc, SimpleLine.cc: removed
+	  statments from the debugging
+
+2006-10-27 11:08  tkraemer
+
+	* src/: LCCylinder.cc, SimpleLine.cc: removed cout statements from
+	  debugging
+
+2006-10-27 10:48  tkraemer
+
+	* src/: LCCylinder.cc, LCLine3D.cc, SimpleLine.cc,
+	  testmarlinutil.cc: Implementation of
+	  getIntersectionWithCylinder() of the SimpleLine class
+
+2006-10-25 17:47  tkraemer
+
+	* include/LCLine3D.h, src/SimpleLine.cc: Implementation of
+	  getIntersectionWithCylinder() in the SimpleLine class
+
+2006-10-25 11:21  tkraemer
+
+	* include/LCLine3D.h, include/SimpleLine.h, src/LCLine3D.cc,
+	  src/SimpleLine.cc: implemented the functionality of SimpleLine
+	  using the LCLine3D class to avoid the duplication of
+	  functionality
+
+2006-10-24 17:06  tkraemer
+
+	* include/LCLine3D.h, src/LCLine3D.cc, src/LCPlane3D.cc,
+	  src/SimpleHelix.cc: removed small bugs, changed the
+	  implementation of the "operator <<" function of the LCPlane3D
+	  class, added "const" to parameters an Functions.
+
+2006-10-24 10:54  tkraemer
+
+	* include/SimpleHelix.h, include/SimpleLine.h,
+	  include/Trajectory.h, src/SimpleHelix.cc, src/SimpleLine.cc:
+	  replaced the parametrisation of a cylinder by the
+	  LCCylinder-object.
+
+2006-10-20 17:06  tkraemer
+
+	* include/SimpleHelix.h, src/SimpleHelix.cc: added errormatrix in
+	  constructor of the SimpleHelix class
+
+2006-10-19 17:59  tkraemer
+
+	* include/LCLine3D.h, include/LCPlane3D.h, src/LCLine3D.cc,
+	  src/LCPlane3D.cc, src/SimpleHelix.cc, src/testmarlinutil.cc:
+	  implementation of the interaction with plane function of the
+	  SimpleHelix class.
+
+2006-10-18 13:39  tkraemer
+
+	* src/GNUmakefile: Removed MathCore from make-file
+
+2006-10-17 17:05  tkraemer
+
+	* include/LCPlane3D.h, src/LCPlane3D.cc: added another constructor
+	  to construct LCPlane from a normal vector and a distance from the
+	  Origen.
+
+2006-10-17 15:17  tkraemer
+
+	* include/LCLine3D.h, src/LCLine3D.cc, src/LCPlane3D.cc,
+	  src/testmarlinutil.cc: added: intersection with Plane
+	  functionality in LCLine
+
+2006-10-16 17:38  tkraemer
+
+	* include/LCLine3D.h, src/LCCylinder.cc, src/LCLine3D.cc: Changed
+	  name of method point() to position() in class LCLine.  This
+	  required also some changes in class LCCylinder.
+
+2006-10-16 17:23  tkraemer
+
+	* include/LCCylinder.h, src/LCCylinder.cc, src/LCLine3D.cc,
+	  src/testmarlinutil.cc: added class LCCylinder describing a
+	  cylinder in 3D space
+
+2006-10-13 16:03  gaede
+
+	* src/: GNUmakefile, LCLine3D.cc: renamed point to pointAt
+
+2006-10-12 11:19  tkraemer
+
+	* include/LCLine3D.h, src/LCLine3D.cc, src/LCPlane3D.cc: added the
+	  class LCLine3D describing a simple line in 3d space.
+
+2006-10-11 18:03  tkraemer
+
+	* include/LCGeometryTypes.h, include/LCPlane3D.h,
+	  include/Trajectory.h, src/LCPlane3D.cc, src/testmarlinutil.cc:
+	  added LCPlane3D as a plane in 3D space.  Changed the SimpelLine
+	  and SimpleHelix objects to use this definition of a Plane.
+	  removed the LCPlane3D definition from the LCGeometryTypes.h file.
+
+2006-10-11 11:01  tkraemer
+
+	* include/LCGeometryTypes.h, include/SimpleHelix.h,
+	  include/SimpleLine.h, include/Trajectory.h, src/SimpleHelix.cc,
+	  src/SimpleLine.cc, src/testmarlinutil.cc: replaced LCPoint3D with
+	  LCVector3D
+
+2006-10-11 10:49  tkraemer
+
+	* src/testmarlinutil.cc: added funtionality to test SimpleHelix
+	  class
+
+2006-10-10 18:34  tkraemer
+
+	* include/SimpleHelix.h: added print properties method
+
+2006-10-10 18:33  tkraemer
+
+	* src/SimpleHelix.cc: added PrintProperties method
+
+2006-10-10 16:54  tkraemer
+
+	* src/SimpleHelix.cc: first implementation of a simple helix as an
+	  derived object of the trajectory interface
+
+2006-10-10 16:53  tkraemer
+
+	* include/SimpleHelix.h: prototype file for the Implementation of a
+	  simple Helix as an trajectory
+
+2006-09-08 11:29  gaede
+
+	* src/SimpleLine.cc: modified documenation
+
+2006-09-08 11:26  gaede
+
+	* include/LCGeometryTypes.h, include/SimpleLine.h,
+	  include/Trajectory.h, src/GNUmakefile, src/SimpleLine.cc,
+	  src/testmarlinutil.cc: first version of Trajectory and SimpleLine
+	  plus test program
+
+2006-09-06 14:13  gaede
+
+	* include/MarlinCED.h, src/MarlinCED.cc: draw detector from GEAR
+	  parameters
+
+2006-08-15 10:50  gaede
+
+	* include/NNClusters.h:   fix for transition from CLHEP 1.8 to 1.9
+	  - namespace
+
+2006-07-31 15:40  owendt
+
+	* src/MarlinCED.cc: modified drawHelix(...) method
+
+2006-07-04 10:41  owendt
+
+	* src/MarlinUtil.cc: added particle type 'muon' in method
+	  'printRecoParticle()'
+
+2006-07-04 10:40  owendt
+
+	* src/ClusterShapes.cc: bug fixes
+
+2006-07-04 10:39  owendt
+
+	* include/MarlinCED.h, src/MarlinCED.cc: added method
+	  'drawClusterImpl(...)'
+
+2006-07-04 10:37  owendt
+
+	* include/HelixClass.h, src/HelixClass.cc: implemented method
+	  'printParameters()' and bug fixes
+
+2006-06-28 13:01  owendt
+
+	* include/MarlinDrawUtil.h, src/MarlinDrawUtil.cc: draw utility
+	  class for MarlinCED. Providing color codes for MC particles etc.
+
+2006-06-17 21:25  owendt
+
+	* include/HelixClass.h, src/HelixClass.cc: debugging
+
+2006-06-17 21:12  owendt
+
+	* include/HelixClass.h, src/HelixClass.cc: debugging
+
+2006-06-17 18:53  owendt
+
+	* include/MarlinUtil.h, src/MarlinUtil.cc: Added methods
+	  'getMomentum(...)' and 'getAbsMomentum(...)' plus some debuging
+
+2006-06-17 18:50  owendt
+
+	* include/MarlinCED.h, src/MarlinCED.cc: Added method
+	  'drawMCParticleTree(...)' plus some debuging
+
+2006-06-17 18:46  owendt
+
+	* include/HelixClass.h, src/HelixClass.cc: Added following methods:
+
+	  1. overloaded method 'getDistanceToPoint(...)' which additionally
+	  returns the projected point on the helix
+
+	  2. 'getPathLength(...)' which calculates the path lenght on the
+	  helix between two points
+
+	  3. 'isOnHelix(...)' which returns true if a point is on the helix
+	  and false if not ( at the moment only a skeleton )
+
+2006-06-13 13:54  samson
+
+	* include/MarlinUtil.h: nothing
+
+2006-06-13 13:43  owendt
+
+	* src/MarlinCED.cc: added if case to draw a straight line for
+	  particles with a pt less than 0.0000001 (limit arbitrarily
+	  choosen) in method 'drawMCParticle(...)'
+
+2006-06-13 12:57  owendt
+
+	* include/MarlinCED.h: added wire frame for the calice test beam
+	  geometry in method 'newEvent(...)'
+
+2006-06-02 11:12  owendt
+
+	* include/MarlinUtil.h, src/MarlinUtil.cc: added methods
+	  countAllSimTrackerHits(...) and  countAllSimCalorimeterHits(..)
+
+2006-06-02 11:10  owendt
+
+	* include/MarlinCED.h, src/MarlinCED.cc: introduced flag
+	  'DrawOndifferentLayer' in method drawMCParticle(...)
+
+2006-05-28 18:01  owendt
+
+	* include/MarlinUtil.h, src/MarlinUtil.cc: added option
+	  'printDaughters' in method printMCParticle()
+
+2006-05-28 17:39  owendt
+
+	* src/MarlinCED.cc: replaced int by unsigned int types in several
+	  methods and expanded the functionality of the method
+	  drawMCParticle(...)
+
+2006-05-28 17:38  owendt
+
+	* include/MarlinCED.h: replaced int by unsigned int types in
+	  several methods
+
+2006-05-19 18:11  gaede
+
+	* include/NNClusters.h: filling cluster attributes properly
+
+2006-05-18 18:19  gaede
+
+	* include/NNClusters.h: initial version of NN clustering
+
+2006-05-18 18:17  gaede
+
+	* include/ClusterShapes.h: added getCenterOfGravity() - US spelling
+
+2006-05-03 16:42  owendt
+
+	* include/MarlinCED.h: removed all 'MarlinCED::...' within the
+	  declaration of the methods
+
+2006-05-03 16:17  owendt
+
+	* include/SimpleTimer.h: bug fix
+
+2006-05-03 16:16  owendt
+
+	* include/MarlinUtil.h, src/MarlinCED.cc, src/MarlinUtil.cc: added
+	  new functionality
+
+2006-04-26 12:03  rasp
+
+	* include/TrackExtended.h: Updated TrackExtended class.
+
+2006-04-26 12:02  rasp
+
+	* include/HelixClass.h: Updated Helix Class.
+
+2006-04-26 12:01  rasp
+
+	* src/TrackerHitExtended.cc, include/TrackerHitExtended.h: Updated
+	  TrackerHitExtended class.
+
+2006-03-31 23:47  samson
+
+	* include/MarlinCED.h: Fix of syntax for compatibilty with gcc4
+
+2006-02-25 14:34  owendt
+
+	* include/MarlinUtil.h: documentation
+
+2006-02-22 15:53  owendt
+
+	* include/CaloHitExtended.h: new version by  A.Raspereza
+
+2006-02-22 15:41  owendt
+
+	* include/ClusterExtended.h, include/ClusterShapes.h,
+	  include/HelixClass.h, include/LineClass.h, include/MarlinUtil.h,
+	  include/SelectEvents.h, include/TrackExtended.h,
+	  include/TrackerHitExtended.h, include/random.h,
+	  src/CaloHitExtended.cc, src/ClusterExtended.cc,
+	  src/ClusterShapes.cc, src/HelixClass.cc, src/LineClass.cc,
+	  src/MarlinUtil.cc, src/SelectEvents.cc, src/SimpleTimer.cc,
+	  src/TrackExtended.cc, src/TrackerHitExtended.cc: merged new
+	  non-cvs versions of reconstruciton code (O.Wendt, F.Gaede)
+
+2006-02-09 19:57  owendt
+
+	* src/MarlinCED.cc: added methos drawSpike()
+
+2006-02-09 19:56  owendt
+
+	* include/MarlinCED.h: added method drawSpike()
+
+2006-02-09 19:02  owendt
+
+	* src/SimpleTimer.cc: added option to measure elapsed time per
+	  event and for all events
+
+2006-02-09 19:01  owendt
+
+	* include/SimpleTimer.h: added method to measure elapsed time per
+	  event and show the time elapsed for the whole job
+
+2006-02-08 16:00  owendt
+
+	* src/MarlinCED.cc: Added methos drawTrack
+
+2006-02-08 16:00  owendt
+
+	* include/MarlinCED.h: Added method drawTrack
+
+2006-02-03 16:10  owendt
+
+	* include/SimpleTimer.h: cosmetic changes
+
+2005-11-11 19:01  gaede
+
+	* src/GNUmakefile: added example for USERINCLUDES
+
+2005-11-04 17:57  owendt
+
+	* src/SimpleTimer.cc: Removed bug. Before the processor waited
+	  always the time specified in processor parameter 'SecondsToWait'.
+
+2005-11-04 17:55  owendt
+
+	* include/SimpleTimer.h: documentation
+
+2005-11-04 17:54  owendt
+
+	* include/PseudoHistogram.h: expanded documentation
+
+2005-10-28 14:22  owendt
+
+	* include/SimpleTimer.h, src/SimpleTimer.cc: simple delay processor
+
+2005-10-28 13:56  owendt
+
+	* src/MarlinCED.cc: see header
+
+2005-10-28 13:56  owendt
+
+	* src/ClusterShapes.cc: see header file
+
+2005-10-28 13:55  owendt
+
+	* include/MarlinCED.h: added toggle 'wait for keyboard'
+
+2005-10-28 13:54  owendt
+
+	* include/: ClusterShapes.h, PseudoHistogram.h: documentation
+
+2005-10-19 16:38  owendt
+
+	* src/ClusterShapes.cc: See corresponding header file.
+
+2005-10-19 16:37  owendt
+
+	* src/PseudoHistogram.cc: Added new class PseudoHistogram
+
+2005-10-19 16:36  owendt
+
+	* include/PseudoHistogram.h: Added new class PseudoHistogram.
+
+2005-10-19 16:26  owendt
+
+	* include/ClusterShapes.h: The following new methods have been
+	  added:
+
+	  getEigenSytemCoordinates(float* xlong, float* xtrans)
+	  getEigenSytemCoordinates(float* xlong, float* xtrans, float* a)
+	  transformToEigensystem(float* xStart, int& index_xStart, float
+	  X0, float Xm) calculateChi2Fit3DProfileSimple(float a, float b,
+	  float c, float d) float calculateChi2Fit3DProfileAdvanced(float
+	  E0, float a, float b, float d, float t0) int
+	  fit3DProfileSimple(float& chi2, float& a, float& b, float& c,
+	  float& d) int fit3DProfileAdvanced(float& chi2, double* par_init,
+	  double* par, int npar, float* t, float* s, float* E, float E0)
+
+	  Changed the implementation of the method:
+
+	  int fit3DProfile(float& chi2, float& a, float& b, float& c,
+	  float& d, float& xl0, float * xStart, int& index_xStart, float
+	  X0, float Rm);
+
+	  Some additional changes in the general concept of implementation
+	  and the documentation
+
+2005-10-19 11:32  rasp
+
+	* include/HelixClass.h: added getPointOnCircle member function
+
+2005-10-19 08:58  rasp
+
+	* src/HelixClass.cc: getPointOnCircle method in HelixClass is
+	  added.
+
+2005-09-19 17:32  samson
+
+	* src/: ClusterShapes.cc, MarlinCED.cc: Removed non ANSI math
+	  functions
+
+2005-09-16 17:15  samson
+
+	* src/MarlinCED.cc: inserted missing #include<cmath>
+
+2005-08-08 09:09  aplin
+
+	* include/marlin_tpcgeom.h, src/marlin_tpcgeom.cc: Made f77
+	  tracking code use GEAR to define the geomtery of the TPC. LTPDRO
+	  now defines the maximum number of rows is used to define the size
+	  of arrays, this is limited to 224 due the use of 7 '32 bit' bit
+	  registers in trkfnd.F increased, though at present it is not
+	  likely that anybody would want more. The number of TPC padrows is
+	  defined at run time by NRTPC which should of course not exceed
+	  LTPDRO, although this is checked and the programe exits with a
+	  verbose error message. A wrapper function gettpcgeom is used to
+	  pass the GEAR TPC parameters from C++ to f77.
+	  MarlinUtil/include/marlin_tpcgeom.h have
+	  MarlinUtil/src/marlin_tpcgeom.cc consequently been removed as
+	  they are no longer needed.
+
+2005-08-07 18:16  gaede
+
+	* include/: CaloHitExtended.h, ClusterExtended.h, ClusterShapes.h,
+	  GroupTracks.h, HelixClass.h, MCTree.h, TrackExtended.h,
+	  TrackerHitExtended.h: changed ld: to Id: in the headers
+
+2005-08-07 18:15  gaede
+
+	* include/tpc.h, src/tpc.cc: not needed any more - usinf GEAR now
+
+2005-08-04 15:20  aplin
+
+	* src/MarlinCED.cc: removed unnecesarry std::couts
+
+2005-08-04 15:19  aplin
+
+	* src/MarlinCED.cc: increased number of steps for drawhelix
+
+2005-08-04 14:54  aplin
+
+	* src/MarlinCED.cc: [no log message]
+
+2005-08-04 12:49  gaede
+
+	* include/GenericViewer.h, include/MarlinCED.h,
+	  src/GenericViewer.cc, src/MarlinCED.cc: moved to packaged
+	  CEDViewer
+
+2005-08-03 20:32  aplin
+
+	* src/MarlinCED.cc: reduced step size of drawhelix
+
+2005-08-03 19:01  aplin
+
+	* include/MarlinCED.h: changed max values of drawhelix
+
+2005-08-03 14:26  owendt
+
+	* doc/Doxyfile: added directory doc in the marlin util package
+
+2005-08-03 13:41  owendt
+
+	* include/ClusterShapes.h, src/ClusterShapes.cc: Added output index
+	  (reference) for the method Fit3DProfile.
+
+2005-08-03 12:48  rasp
+
+	* src/HelixClass.cc: iostream library is set properly.
+
+2005-08-03 12:17  rasp
+
+	* include/GroupTracks.h: Brief documentation.
+
+2005-08-03 11:52  rasp
+
+	* src/TrackExtended.cc: Modified class.
+
+2005-08-03 11:49  rasp
+
+	* include/: CaloHitExtended.h, TrackerHitExtended.h,
+	  TrackExtended.h, ClusterExtended.h, HelixClass.h: Class is
+	  provided with documentation.
+
+2005-08-02 12:41  aplin
+
+	* include/MarlinCED.h: changed drawing of helix to stop at outer
+	  boundry of tpc volume, the numbers are hard coded. This should be
+	  changed to use GEAR
+
+2005-07-28 09:04  owendt
+
+	* include/ClusterShapes.h: adjusted documentation
+
+2005-07-27 11:37  owendt
+
+	* include/ClusterShapes.h, src/ClusterShapes.cc: debuged some
+	  warnings and changed documentation
+
+2005-07-27 11:15  owendt
+
+	* src/MCTree.cc, include/MCTree.h: initial version
+
+2005-07-27 11:14  rasp
+
+	* include/GenericViewer.h, src/GenericViewer.cc: Initial version
+
+2005-07-27 11:12  rasp
+
+	* include/HelixClass.h: Extended Helix Class
+
+2005-07-27 11:12  rasp
+
+	* src/HelixClass.cc: Extended version of Helix Class
+
+2005-07-21 12:37  aplin
+
+	* src/ClusterShapes.cc: changed max and min from math.h to std::max
+	  and std::min
+
+2005-07-20 18:18  owendt
+
+	* include/ClusterShapes.h: included math.h in ClusterShapes.h
+
+2005-07-20 17:20  owendt
+
+	* include/ClusterShapes.h, src/ClusterShapes.cc: added a second
+	  parametrisation for the Helix-Fit
+
+2005-07-18 11:19  aplin
+
+	* include/tpc.h, src/tpc.cc: corrected arguments to tpc constructer
+	  to include pixel dimentions and resolution
+
+2005-07-15 15:26  owendt
+
+	* src/ClusterShapes.cc: Removed memory leaks in
+	  src/ClusterShapes.cc
+
+2005-07-12 18:00  aplin
+
+	* src/GNUmakefile: corrected project name in makefile
+
+2005-07-08 17:08  aplin
+
+	* README, include/CaloHitExtended.h, include/ClusterExtended.h,
+	  include/ClusterShapes.h, include/GroupTracks.h,
+	  include/HelixClass.h, include/MarlinCED.h, include/PG_Zone.h,
+	  include/Phys_Geom_Database.h, include/TrackExtended.h,
+	  include/TrackerHitExtended.h, include/ced.h, include/ced_cli.h,
+	  include/constants.h, include/marlin_tpcgeom.h, include/tpc.h,
+	  src/CaloHitExtended.cc, src/ClusterExtended.cc,
+	  src/ClusterShapes.cc, src/GNUmakefile, src/GroupTracks.cc,
+	  src/HelixClass.cc, src/MarlinCED.cc, src/Phys_Geom_Database.cc,
+	  src/TrackExtended.cc, src/TrackerHitExtended.cc, src/ced.cc,
+	  src/ced_cli.cc, src/constants.cc, src/marlin_tpcgeom.cc,
+	  src/tpc.cc: Initial revision
+
+2005-07-08 17:08  aplin
+
+	* README, include/CaloHitExtended.h, include/ClusterExtended.h,
+	  include/ClusterShapes.h, include/GroupTracks.h,
+	  include/HelixClass.h, include/MarlinCED.h, include/PG_Zone.h,
+	  include/Phys_Geom_Database.h, include/TrackExtended.h,
+	  include/TrackerHitExtended.h, include/ced.h, include/ced_cli.h,
+	  include/constants.h, include/marlin_tpcgeom.h, include/tpc.h,
+	  src/CaloHitExtended.cc, src/ClusterExtended.cc,
+	  src/ClusterShapes.cc, src/GNUmakefile, src/GroupTracks.cc,
+	  src/HelixClass.cc, src/MarlinCED.cc, src/Phys_Geom_Database.cc,
+	  src/TrackExtended.cc, src/TrackerHitExtended.cc, src/ced.cc,
+	  src/ced_cli.cc, src/constants.cc, src/marlin_tpcgeom.cc,
+	  src/tpc.cc: Initial version
+
