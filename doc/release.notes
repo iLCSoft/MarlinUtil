@@ -13,6 +13,9 @@
 
   - suport for PhotonFinderKit (P. Krstonosic)
 
+  - first version of Trajectory implementation
+    SimpleLine and SimpleHelix (Th. Kraemer)
+
   - included the ANN (Aproximate Nearest Neighbor) library
     [ see: http://www.cs.umd.edu/~mount/ANN ]
 
