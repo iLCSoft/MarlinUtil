@@ -1,3 +1,19 @@
+2007-04-30 17:55  gaede
+
+	* README:    ----- tag v00-03 -----------------------
+
+2007-04-30 17:54  gaede
+
+	* doc/release.notes: added trajectory
+
+2007-04-30 17:52  gaede
+
+	* doc/release.notes:  added for tag v00-03
+
+2007-04-30 17:49  gaede
+
+	* ChangeLog: initial version
+
 2007-04-30 15:32  gaede
 
 	* src/CutOnCosThetaQQbar.cc: added <cmath> for gcc3.4
