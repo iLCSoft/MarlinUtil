@@ -84,7 +84,6 @@ class TrackwiseClusters {
 
  public:
 
-  // startPoint and startDirection not used yet.
   TrackwiseClusters(const std::vector<CalorimeterHitWithAttributes*> calorimeterHitsWithAttributes,const std::vector<float> startPoint,const std::vector<float> startDirection,
 		    const TrackwiseClustersParameters* trackwiseClustersParameters, const TrackwiseClustersGeometryParameters* trackwiseClustersGeometryParameters);
   TrackwiseClusters(const std::vector<CalorimeterHitWithAttributes*> calorimeterHitsWithAttributes,const float* startPoint,const float* startDirection,
