@@ -858,7 +858,29 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
 			    float& distmax, int direction) {
 
 
-  return FitHelix(max_iter,status_out,parametrisation,(double*)(parameter),(double*)(dparameter),(double&)chi2,(double&)distmax,direction);
+  // Modified by Hengne Li @ LAL
+  
+  double parameterdb[5];
+  double dparameterdb[5];
+  double chi2db;
+  double distmaxdb;
+  for ( int i=0; i<5; i++ ){
+    parameterdb[i] = double(parameter[i]);
+    dparameterdb[i] = double(dparameter[i]);
+  }
+  chi2db = double(chi2);
+  distmaxdb = double(distmax);
+  
+  int returnvalue = FitHelix(max_iter,status_out,parametrisation,parameterdb,dparameterdb,chi2db,distmaxdb,direction);
+  
+  for ( int i=0; i<5; i++ ){
+    parameter[i] = float(parameterdb[i]);
+    dparameter[i] = float(dparameterdb[i]);
+  }
+  chi2 = float(chi2db);
+  distmax = float(distmaxdb);
+  
+  return returnvalue ;
 
 }
 
