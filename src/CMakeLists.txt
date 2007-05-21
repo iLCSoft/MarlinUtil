@@ -22,7 +22,8 @@ INSTALL( DIRECTORY "${${PROJECT_NAME}_SOURCE_DIR}/include"
 ####################################################################################################
 
 # require proper c++
-ADD_DEFINITIONS( "-Wall -ansi -pedantic" )
+# FIXME -pedantic flag crashes under sl4
+ADD_DEFINITIONS( "-Wall -ansi" )
 
 # binary sources: list of all sources from which you want to create a binary
 #SET( bin_srcs testmarlinutil.cc )
