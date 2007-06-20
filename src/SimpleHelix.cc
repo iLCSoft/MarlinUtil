@@ -9,6 +9,9 @@
 #include <float.h>
 #include <exception>
 
+const double SimpleHelix::_a  = 2.99792458E-4;
+const double SimpleHelix::_pi = M_PI;
+
 SimpleHelix::SimpleHelix( double d0, double phi0, double omega,
 			  double z0, double tanLambda,
 			  LCVector3D referencePoint, LCErrorMatrix* errors) 
