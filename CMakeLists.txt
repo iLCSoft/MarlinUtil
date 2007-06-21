@@ -63,7 +63,7 @@ INSTALL( DIRECTORY "${CMAKE_SOURCE_DIR}/include"
         PATTERN "*~" EXCLUDE
         PATTERN "*CVS*" EXCLUDE )
 
-### SOURCES #################################################################
+### SOURCES ##################################################################
 
 # require proper c++
 # FIXME -pedantic flag crashes under sl4
@@ -84,6 +84,40 @@ SET( binary_sources "src/testmarlinutil.cc" )
 
 # filter out binary sources from the library sources
 LIST( REMOVE_ITEM library_sources ${binary_sources} )
+
+### DOCUMENTATION ############################################################
+
+FIND_PACKAGE( Doxygen )
+IF( DOXYGEN_FOUND )
+
+    ADD_CUSTOM_COMMAND(
+        OUTPUT  "${CMAKE_SOURCE_DIR}/doc/html"
+        COMMAND "${DOXYGEN_EXECUTABLE}"
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/doc"
+        COMMENT "Building API Documentation..."
+        VERBATIM )
+
+    # add doc target
+    ADD_CUSTOM_TARGET( doc DEPENDS
+        "${CMAKE_SOURCE_DIR}/doc/html" )
+ELSE()
+    MESSAGE( SEND_ERROR "Doxygen not found in your system!!" )
+    IF( INSTALL_DOC )
+        MESSAGE( STATUS "INSTALL_DOC forced to OFF" )
+        SET( INSTALL_DOC OFF )
+    ENDIF()
+ENDIF()
+
+# install documentation
+IF( INSTALL_DOC )
+    # make sure doxygen is executed (make doc) before make install
+    INSTALL( CODE "EXEC_PROGRAM(${CMAKE_BUILD_TOOL} ${CMAKE_BINARY_DIR} ARGS doc)" )
+    # install documentation
+    INSTALL( DIRECTORY "${CMAKE_SOURCE_DIR}/doc"
+            DESTINATION .
+            PATTERN "*CVS*" EXCLUDE )
+ENDIF()
+
 
 ##########################################################################################
 # End of User section: please try not to modify below this line
@@ -168,46 +202,14 @@ IF( BUILD_TESTJOBS )
     ENDFOREACH()
 ENDIF()
 
-# DOCUMENTATION
-FIND_PACKAGE( Doxygen )
-IF( DOXYGEN_FOUND )
-
-    ADD_CUSTOM_COMMAND(
-        OUTPUT  "${CMAKE_SOURCE_DIR}/doc/html"
-        COMMAND "${DOXYGEN_EXECUTABLE}"
-        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/doc"
-        COMMENT "Building API Documentation..."
-        VERBATIM )
-
-    # add doc target
-    ADD_CUSTOM_TARGET( doc DEPENDS
-        "${CMAKE_SOURCE_DIR}/doc/html" )
-ELSE()
-    MESSAGE( SEND_ERROR "Doxygen not found in your system!!" )
-    IF( INSTALL_DOC )
-        MESSAGE( STATUS "INSTALL_DOC forced to OFF" )
-        SET( INSTALL_DOC OFF )
-    ENDIF()
-ENDIF()
-
-# install documentation
-IF( INSTALL_DOC )
-    # make sure doxygen is executed (make doc) before make install
-    INSTALL( CODE "EXEC_PROGRAM(${CMAKE_BUILD_TOOL} ${CMAKE_BINARY_DIR} ARGS doc)" )
-    # install documentation
-    INSTALL( DIRECTORY "${CMAKE_SOURCE_DIR}/doc"
-            DESTINATION .
-            PATTERN "*CVS*" EXCLUDE )
-ENDIF()
-
 # create uninstall configuration file 
-CONFIGURE_FILE( "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
-                "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+CONFIGURE_FILE( "${CMAKE_SOURCE_DIR}/cmake_uninstall.cmake.in"
+                "${CMAKE_BINARY_DIR}/cmake_uninstall.cmake"
                 IMMEDIATE @ONLY )
 
 # create uninstall target
 ADD_CUSTOM_TARGET( uninstall
-  "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" )
+  "${CMAKE_COMMAND}" -P "${CMAKE_BINARY_DIR}/cmake_uninstall.cmake" )
 
 # create configuration file from .in file
 CONFIGURE_FILE( "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}Config.cmake.in"
