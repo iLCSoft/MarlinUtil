@@ -10,14 +10,14 @@
 extern "C" {
   void tfithl_(int & NPT, double * XF,double * YF, float * RF, float *PF, double * WF,float * ZF,
 	       float * WZF, int & IOPT, float * VV0,
-	       float * EE0, float & CH2PH, float & CH2Z);
+	       float * EE0, float & CH2PH, float & CH2Z){} // je: replaced ';' with '{}' 
 }
 
 extern "C" {
   void trackfit_(int & nhits, int * idet, int * itype, 
 		 float * x, float * y, float * z, float * phireso, float * zreso,
 		 float * ref, int & ierr, float * rfit, float * rfite, float & chi2, int & ndf,
-		 int & fitcode);
+		 int & fitcode){} // je: replaced ';' with '{}'
   
 }
 
