@@ -32,10 +32,8 @@ void HelixClass::Initialize_VP(float * pos, float * mom, float q, float B) {
     _phiRefPoint = atan2(pos[1]-_yCentre,pos[0]-_xCentre);
     _phiAtPCA = atan2(-_yCentre,-_xCentre);
     _phi0 = -_const_pi2*q + _phiAtPCA;
-    if (_phi0 < -_const_pi)
-	_phi0 += _const_2pi;
-    if (_phi0 > _const_pi)
-	_phi0 -= _const_2pi;
+    while (_phi0<0) _phi0+=_const_2pi;
+    while (_phi0>=_const_2pi) _phi0-=_const_2pi;
     _xAtPCA = _xCentre + _radius*cos(_phiAtPCA);
     _yAtPCA = _yCentre + _radius*sin(_phiAtPCA);
     //    _d0 = -_xAtPCA*sin(_phi0) + _yAtPCA*cos(_phi0);
@@ -135,11 +133,9 @@ void HelixClass::Initialize_BZ(float xCentre, float yCentre, float radius,
   _yCentre = yCentre;
   _omega = _charge/radius;
   _phiAtPCA = atan2(-_yCentre,-_xCentre);
-  _phi0 = -_const_pi2*_charge + _phiAtPCA; 
-  if (_phi0 < -_const_pi)
-    _phi0 += _const_2pi;
-  if (_phi0 > _const_pi)
-    _phi0 -= _const_2pi;
+  _phi0 = -_const_pi2*_charge + _phiAtPCA;
+  while (_phi0<0) _phi0+=_const_2pi;
+  while (_phi0>=_const_2pi) _phi0-=_const_2pi;
   _xAtPCA = _xCentre + _radius*cos(_phiAtPCA);
   _yAtPCA = _yCentre + _radius*sin(_phiAtPCA);
   _d0 = -_xAtPCA*sin(_phi0) + _yAtPCA*cos(_phi0);
