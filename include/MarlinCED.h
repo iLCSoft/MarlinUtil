@@ -29,7 +29,6 @@
 
 using namespace marlin ;
 
-
 /** Singleton class to manage access to CED from several processors. All processors using CED
  *  have to use the methods init(), newEvent() and draw().
  */
@@ -90,6 +89,9 @@ class MarlinCED {
 
   /** Draws the detector using the geometry parameters from GEAR */
   static void drawGEARDetector() ;
+
+  /** Draws the telescope using the geometry parameters from GEAR */
+  static void drawGEARTelescope() ;
 
   /** Draws the detector only. modelID: LDC(0) - default , SID(1), GLD(2), 
    * CaliceTestBeam(3). Needed if you would like to draw the detector 

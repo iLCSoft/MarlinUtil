@@ -9,8 +9,10 @@
 #include <gear/CalorimeterParameters.h>
 #include <gear/LayerLayout.h>
 #include <gear/PadRowLayout2D.h>
+#include <gear/SiPlanesParameters.h>
+#include <gear/SiPlanesLayerLayout.h>
 #include <LCGeometryTypes.h>
-
+#include "ced_cli.h"
 
 MarlinCED* MarlinCED::_me = 0 ;
 
@@ -41,7 +43,8 @@ void MarlinCED::newEvent( Processor* proc , int modelID ) {
 
     ced_new_event(); 
     //drawDetector(modelID);
-    drawGEARDetector();
+    if ( modelID == 99999 ) drawGEARTelescope();
+    else drawGEARDetector();
 
   }
 }
@@ -56,7 +59,6 @@ void MarlinCED::draw( Processor* proc , int waitForKeyboard ) {
     if ( waitForKeyboard == 1 ) {
       
       std::cout << "        [ Press return for next event ] " << std::endl ; 
-      
       getchar();
 
     }
@@ -520,6 +522,30 @@ void MarlinCED::drawRecoParticle(ReconstructedParticle* reco, int marker, int si
   }
 
 }
+
+
+void MarlinCED::drawGEARTelescope() {
+  
+  const gear::SiPlanesParameters&  siPlanesParameters  = Global::GEAR->getSiPlanesParameters();
+  const gear::SiPlanesLayerLayout& siPlanesLayerLayout = siPlanesParameters.getSiPlanesLayerLayout();
+  
+  double * sizes  = new double[3];
+  double * center = new double[3];
+  unsigned int color = 0xFFFFFF;
+
+  for ( int iLayer = 0 ; iLayer < siPlanesLayerLayout.getNLayers() ; iLayer++ ) {
+    center[0] = scaleFactor * siPlanesLayerLayout.getSensitivePositionX(iLayer);
+    center[1] = scaleFactor * siPlanesLayerLayout.getSensitivePositionY(iLayer);
+    center[2] = scaleFactor * siPlanesLayerLayout.getSensitivePositionZ(iLayer);
+    sizes[0]  = scaleFactor * siPlanesLayerLayout.getSensitiveSizeX(iLayer);
+    sizes[1]  = scaleFactor * siPlanesLayerLayout.getSensitiveSizeY(iLayer);
+    sizes[2]  = scaleFactor * siPlanesLayerLayout.getSensitiveThickness(iLayer) ;
+    ced_geobox( sizes, center, color );
+  }
+  delete [] center;
+  delete [] sizes;
+}
+
 
 
 void MarlinCED::drawGEARDetector() {
