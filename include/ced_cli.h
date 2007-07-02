@@ -1,4 +1,4 @@
-/** "C" event display.
+/* "C" event display.
  * Enduser accessable API.
  *
  * Alexey Zhelezov, DESY/ITEP, 2005 */
@@ -6,12 +6,8 @@
 #ifndef __CED_CLI_H
 #define __CED_CLI_H
 
-// fg: this is only needed if ced is compiled as standalone with gcc (and not g++)
-// #ifdef __cplusplus 
-// extern "C" {
-// #endif
 
-/**
+/*
  * This is the first function to call (before any other).
  *
  *  host - host with CED (must be "localhost")
@@ -22,7 +18,7 @@
  */
 void ced_client_init(const char *host,unsigned short port);
 
-/**
+/*
  * Cancel current event output. So, all elements
  * queued will be discarded.
  *
@@ -31,7 +27,7 @@ void ced_client_init(const char *host,unsigned short port);
 void ced_new_event(void);
 
 
-/**
+/*
  * This function really attempt to display event in CED.
  * When CED is not available, this function discard
  * current event information.
@@ -41,7 +37,7 @@ void ced_new_event(void);
  */
 void ced_draw_event(void);
 
-/**
+/*
  * This function really attempt to display event in CED.
  * Unlike ced_draw_event() does not reset the event.
  *
@@ -51,7 +47,7 @@ void ced_draw_event(void);
 void ced_send_event(void);
 
 
-/**********************************************
+/*********************************************
  *
  * The following is elements API.
  *
@@ -70,7 +66,7 @@ typedef struct {
   float z;
 } CED_Point;
 
-/**
+/*
  * Hit element
  */
 
@@ -89,7 +85,7 @@ typedef struct {
 
 void ced_hit(float x,float y,float z,unsigned type,unsigned size,unsigned color);
 
-/**
+/*
  * Line element
  */
 
@@ -105,7 +101,7 @@ void ced_line(float x0,float y0,float z0,
 	      float x1,float y1,float z1,
 	      unsigned type,unsigned width,unsigned color);
 
-/**
+/*
  * GeoCylinder
  */
 typedef struct {
@@ -121,8 +117,30 @@ void ced_geocylinder(float d,unsigned sides,float rotate,float z,float shift,
 		     unsigned color);
 void ced_geocylinders(unsigned n,CED_GeoCylinder *all);
 
-// #ifdef __cplusplus
-// };
-// #endif
+  /** GeoBox structure
+   */
+  typedef struct {
+    /** The three box sizes in mm */
+    double sizes[3];
+    /** position of the center of the box*/
+    double center[3];
+    /** box color */
+    unsigned int color;
+  } CED_GeoBox;
+
+  /** Send/Draw a box at position center (x,y,z in mm) with lengths along the 
+   * axes specified in sizes.
+   * 
+   * @author A.Bulgheroni, INFN
+   */
+  void ced_geobox(double * sizes, double * center, unsigned int color );
+
+    /** Send/Draw several boxes.
+   * 
+   * @author A.Bulgheroni, INFN
+   */
+  void ced_geoboxes( unsigned int nBox, CED_GeoBox * allBoxes);
+
+
 
 #endif /* __CED_CLI_H */

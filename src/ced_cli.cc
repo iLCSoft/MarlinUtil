@@ -78,8 +78,36 @@ void ced_geocylinders(unsigned n,CED_GeoCylinder *all){
   }
 }
 
+
+static unsigned GEOB_ID=0;
+
+void ced_geobox(double * sizes, double * center, unsigned int color ) {
+  int iDim;
+  CED_GeoBox * box = (CED_GeoBox*) ced_add(GEOB_ID);
+  if ( ! box ) return;
+  for ( iDim = 0; iDim < 3; iDim ++ ) {
+    box->sizes[iDim]   = sizes[iDim];
+    box->center[iDim]  = center[iDim];
+  }
+  box->color   = color;
+
+}
+
+void ced_geoboxes(unsigned int nBox, CED_GeoBox * allBoxes ) {
+  
+  CED_GeoBox * box;
+  unsigned int iBox;
+  for ( iBox = 0; iBox < nBox ; iBox++ ) {
+    box = (CED_GeoBox *) ced_add(GEOB_ID);
+    if ( ! box ) return;
+    memcpy( box, allBoxes + iBox, sizeof(CED_GeoBox) );
+  }
+}
+
 void ced_register_elements(void){
   GEOC_ID  =ced_register_element(sizeof(CED_GeoCylinder),0);
   LINE_ID  =ced_register_element(sizeof(CED_Line),0);
   HIT_ID   =ced_register_element(sizeof(CED_Hit),0);
+  GEOB_ID  =ced_register_element(sizeof(CED_GeoBox), 0);
 }
+
