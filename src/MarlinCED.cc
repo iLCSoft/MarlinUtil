@@ -534,12 +534,12 @@ void MarlinCED::drawGEARTelescope() {
   unsigned int color = 0xFFFFFF;
 
   for ( int iLayer = 0 ; iLayer < siPlanesLayerLayout.getNLayers() ; iLayer++ ) {
-    center[0] = scaleFactor * siPlanesLayerLayout.getSensitivePositionX(iLayer);
-    center[1] = scaleFactor * siPlanesLayerLayout.getSensitivePositionY(iLayer);
-    center[2] = scaleFactor * siPlanesLayerLayout.getSensitivePositionZ(iLayer);
-    sizes[0]  = scaleFactor * siPlanesLayerLayout.getSensitiveSizeX(iLayer);
-    sizes[1]  = scaleFactor * siPlanesLayerLayout.getSensitiveSizeY(iLayer);
-    sizes[2]  = scaleFactor * siPlanesLayerLayout.getSensitiveThickness(iLayer) ;
+    center[0] = siPlanesLayerLayout.getSensitivePositionX(iLayer);
+    center[1] = siPlanesLayerLayout.getSensitivePositionY(iLayer);
+    center[2] = siPlanesLayerLayout.getSensitivePositionZ(iLayer);
+    sizes[0]  = siPlanesLayerLayout.getSensitiveSizeX(iLayer);
+    sizes[1]  = siPlanesLayerLayout.getSensitiveSizeY(iLayer);
+    sizes[2]  = siPlanesLayerLayout.getSensitiveThickness(iLayer) ;
     ced_geobox( sizes, center, color );
   }
   delete [] center;
