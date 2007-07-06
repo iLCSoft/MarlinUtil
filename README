@@ -16,8 +16,27 @@ until we have the geometry for reconstruction package (GEAR).
 This package is needed in praticular for MarlinReco but can also be included in other 
 Marlin based programs.
 
-The easisiest way to install and build MarlinUtil is to copy it into the 
-$MARLINWORKDIR/packages directory and use the global toplevel Makefile of Marlin.
+
+Build Instructions (cmake):
+---------------------------------------------------------
+
+1st: edit the file BuildSetup.cmake
+     according to your system setup.
+
+2nd: type the following commands:
+
+   $ mkdir build
+   $ cd build
+   $ cmake -C ../BuildSetup.cmake ..
+   $ make install
+
+For more information on CMake for the ILCSoftware check:
+http://www-flc.desy.de/ilcsoft/ (will be available soon!)
+
+CMake's official website:
+http://www.cmake.org
+
+---------------------------------------------------------
 
 Further documentation can be found in the MarlinReco manual 
 (http://ilcsoft.desy.de -> Software Packages -> MarlinReco -> Documentation )
