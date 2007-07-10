@@ -1,7 +1,7 @@
 #############################################################################
 # cmake build setup for MarlinUtil
 #
-# For building lcio with cmake type:
+# For building MarlinUtil with cmake type:
 # (1) $ mkdir build
 # (2) $ cd build
 # (3) $ cmake -C ../BuildSetup.cmake ..
@@ -47,7 +47,6 @@ SET( CMAKE_MODULE_PATH "${ILC_HOME}/CMakeModules/v01-00"
 # Project Options
 ###############################################
 
-#SET( BUILD_SHARED_LIBS OFF CACHE BOOL "Set to OFF to build static libraries" FORCE )
 #SET( BUILD_TESTJOBS ON CACHE BOOL "Set to ON to build MarlinUtil testjobs" FORCE )
 #SET( INSTALL_DOC OFF CACHE BOOL "Set to OFF to skip build/install Documentation" FORCE )
 
@@ -58,6 +57,8 @@ SET( CMAKE_MODULE_PATH "${ILC_HOME}/CMakeModules/v01-00"
 ###############################################
 # Advanced Options
 ###############################################
+
+#SET( BUILD_SHARED_LIBS OFF CACHE BOOL "Set to OFF to build static libraries" FORCE )
 
 # installation path for MarlinUtil
 #SET( CMAKE_INSTALL_PREFIX "/foo/bar" CACHE STRING "Where to install MarlinUtil" FORCE )
