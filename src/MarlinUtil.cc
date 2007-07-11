@@ -795,13 +795,15 @@ void MarlinUtil::printTrack(Track* track, double bField) {
 
   const double* p = getMomentum(track,bField);
   const double pAbs = getAbsMomentum(track,bField);
+  const double pt = sqrt( p[0]*p[0] + p[1]*p[1] );
   double d0 = track->getD0();
   double z0 = track->getZ0();
   double omega = track->getOmega();
   double phi0  = track->getPhi();
   double tanlambda = track->getTanLambda();
   
-  std::cout << "Track id() : " << track->id() << "  " << "|p| = " << pAbs << "  " << "p = " << "(" << p[0] << "," << p[1] << "," << p[2] << ")" << std::endl
+  std::cout << "Track id() : " << track->id() << "  " << "|p| = " << pAbs << "  " << "pt = " << pt << "  " 
+	    << "p = " << "(" << p[0] << "," << p[1] << "," << p[2] << ")" << std::endl
 	    << "(d0,z0,phi0,omega,tanL) = " << "(" << d0 << "," << z0 << "," << phi0 << "," << omega << "," << tanlambda << ")" << std::endl 
 	    << "Ri = " << track->getRadiusOfInnermostHit() << "  " << "# of SubTracks = " << track->getTracks().size() 
 	    << "   " << "# of tracker hits = " << track->getTrackerHits().size() << std::endl << std::endl;
