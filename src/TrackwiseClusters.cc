@@ -1,4 +1,4 @@
- #include "TrackwiseClusters.h"
+#include "TrackwiseClusters.h"
 
 
 using namespace lcio;
@@ -10,12 +10,15 @@ using namespace lcio;
 
 
 TrackwiseClusters::TrackwiseClusters(const std::vector<CalorimeterHitWithAttributes*> calorimeterHitsWithAttributes, std::vector<float> const startPoint, 
+				     const float pathLengthOnHelixOfStartPoint, const float distanceToHelixOfStartPoint, 
 				     const std::vector<float> startDirection, const TrackwiseClustersParameters* trackwiseClustersParameters, 
 				     const TrackwiseClustersGeometryParameters* trackwiseClustersGeometryParameters) {
   
 
   _calorimeterHitsWithAttributes = calorimeterHitsWithAttributes;
-  _startPoint     = startPoint;
+  _startPoint = startPoint;
+  _pathLengthOnHelixOfStartPoint = pathLengthOnHelixOfStartPoint;
+  _distanceToHelixOfStartPoint = distanceToHelixOfStartPoint;
   _startDirection = startDirection;
 
 
@@ -65,17 +68,24 @@ TrackwiseClusters::TrackwiseClusters(const std::vector<CalorimeterHitWithAttribu
   _xmin_in_distance = 1.0e+10;
   _xmax_in_distance = -1.0e+10;
 
+
+  _debugLevel = 0;
+
 }
 
 
 
-TrackwiseClusters::TrackwiseClusters(const std::vector<CalorimeterHitWithAttributes*> calorimeterHitsWithAttributes,const float* startPoint, 
+TrackwiseClusters::TrackwiseClusters(const std::vector<CalorimeterHitWithAttributes*> calorimeterHitsWithAttributes,const float* startPoint,
+				     const float pathLengthOnHelixOfStartPoint, const float distanceToHelixOfStartPoint,
 				     const float* startDirection, const TrackwiseClustersParameters* trackwiseClustersParameters, 
 				     const TrackwiseClustersGeometryParameters* trackwiseClustersGeometryParameters) {
 
 
 
   _calorimeterHitsWithAttributes = calorimeterHitsWithAttributes;  
+  
+  _pathLengthOnHelixOfStartPoint = pathLengthOnHelixOfStartPoint;
+  _distanceToHelixOfStartPoint = distanceToHelixOfStartPoint;
   
   for (int i = 0; i < 3; ++i) {
     
@@ -131,6 +141,9 @@ TrackwiseClusters::TrackwiseClusters(const std::vector<CalorimeterHitWithAttribu
   _xmin_in_distance = 1.0e+10;
   _xmax_in_distance = -1.0e+10;
 
+
+  _debugLevel = 0;
+
 }
 
 
@@ -179,6 +192,15 @@ void TrackwiseClusters::initialiseCollections() {
   int nHits = 0;
 
   nHits = _calorimeterHitsWithAttributes.size();
+
+  // debug
+  if ( _debugLevel > 5 ) { 
+    std::cout << "Start Point: " << "(" << _startPoint.at(0) << "," << _startPoint.at(1) << "," << _startPoint.at(2) << ")" << "  " 
+	      << "s on helix: " << _pathLengthOnHelixOfStartPoint << "  " << "dist to helix: " << _distanceToHelixOfStartPoint << std::endl;
+    ced_hit ( _startPoint.at(0),_startPoint.at(1),_startPoint.at(2), 2 | 5 << CED_LAYER_SHIFT, 5, 0xff22c8 );
+    ced_send_event();
+  }
+  
   
   for (int j =0; j < nHits; ++j) {
     CalorimeterHit * hit = dynamic_cast<CalorimeterHit*>(_calorimeterHitsWithAttributes.at(j)->getCalorimeterHit());
@@ -195,8 +217,27 @@ void TrackwiseClusters::initialiseCollections() {
     
     if (_typeOfGenericDistance == 0) calohit->setGenericDistance(dist[0]);
     else if (_typeOfGenericDistance == 1) calohit->setGenericDistance(dist[1]);
-    else calohit->setGenericDistance(_calorimeterHitsWithAttributes.at(j)->getPathLengthOnHelix());
-    
+    else { 
+     
+      float pathLengthOnHelixOfCaloHit = _calorimeterHitsWithAttributes.at(j)->getPathLengthOnHelix();
+      float distanceToHelixOfCaloHit = _calorimeterHitsWithAttributes.at(j)->getDistanceToHelix();
+
+      float distanceInHelixCoordinates = sqrt( pow( (pathLengthOnHelixOfCaloHit - _pathLengthOnHelixOfStartPoint),2) + 
+					       pow( (distanceToHelixOfCaloHit - _distanceToHelixOfStartPoint),2) );
+
+
+      calohit->setGenericDistance(distanceInHelixCoordinates);
+
+      // debug 
+      if ( _debugLevel > 5 ) { 
+	std::cout << "CaloHit: " << hit << "  " << "_typeOfGenericDistance = " << _typeOfGenericDistance << "  " 
+		  << "s on helix: " << _calorimeterHitsWithAttributes.at(j)->getPathLengthOnHelix() << "  " 
+		  << "dist to helix: " << _calorimeterHitsWithAttributes.at(j)->getDistanceToHelix() << "  "
+		  << "dist to start point: " << distanceInHelixCoordinates << std::endl;
+      }
+
+    }
+  
     calohit->setDistanceToCalo(dist[1]); // never used !!!!
     float distance = calohit->getGenericDistance();
     if (distance < _xmin_in_distance) 
@@ -338,7 +379,7 @@ void TrackwiseClusters::GlobalClustering() {
   _allClusters.clear();
 
   // insert a pseudo hit with the position and direction _startPoint and _startDirection;
-  
+  /*    
   CalorimeterHitImpl* pseudoHitImpl = new CalorimeterHitImpl();
   pseudoHitImpl->setEnergy(0.0);
   float position[3];
@@ -349,14 +390,17 @@ void TrackwiseClusters::GlobalClustering() {
   pseudoHitExtended->setGenericDistance(0.0);  // change generic distance !!!!!!!!!!!!!!!!!!!!!!! needs to be given by MIP stub finder
 
   _allHits.insert(_allHits.begin(),pseudoHitExtended);
+  */
 
 
-
+  // debug
+  if ( _debugLevel > 5 ) std::cout << "n of hits in Trackwise Clustering = " << _allHits.size() << std::endl;
 
 
   for (unsigned int ihitTo(0); ihitTo < _allHits.size(); ++ihitTo) {
 
     CaloHitExtended * CaloHitTo = _allHits[ihitTo];
+
     int ihitFrom = ihitTo - 1;
     int ifound = 0;
     int idTo = CaloHitTo->getType();
@@ -368,31 +412,142 @@ void TrackwiseClusters::GlobalClustering() {
     float YResMin = 1.0e+10;
     float YResCut = _resolutionParameter[idTo];
     float YDistMin = 1.0e+10;
+
+    
+    // debug 
+    if ( _debugLevel > 5 ) { 
+
+      CalorimeterHitWithAttributes* calorimeterHitWithAttributesCorrespondingToCaloHitTo = getCalorimeterHitWithAttributes(CaloHitTo);
+
+      std::cout << "before while loop: " << std::endl
+		<< "ihitTo: " << ihitTo << "  " << "Hit : " << CaloHitTo->getCalorimeterHit() << "  " << "type: " << CaloHitTo->getType() << "  " 
+		<< "assigned generic distance: " << CaloHitTo->getGenericDistance() << "  " 
+		<< "s: " << calorimeterHitWithAttributesCorrespondingToCaloHitTo->getPathLengthOnHelix() - _pathLengthOnHelixOfStartPoint << "  "
+		<< "d: " << calorimeterHitWithAttributesCorrespondingToCaloHitTo->getDistanceToHelix() - _distanceToHelixOfStartPoint << std::endl
+		<< "ihitFrom: " << ihitFrom << "  " << "ifound: " << ifound << "  " << "r_step: " << r_step << "  " << "r_min: " << r_min << "  " << "r_dist: " << r_dist 
+		<< std::endl
+		<< "YResMin: " << YResMin << "  " << "YResCut: " << YResCut << "  " << "YDistMin: " << YDistMin << std::endl;
+
+      ced_hit ( CaloHitTo->getCalorimeterHit()->getPosition()[0],CaloHitTo->getCalorimeterHit()->getPosition()[1],CaloHitTo->getCalorimeterHit()->getPosition()[2], 
+		2 | 1 << CED_LAYER_SHIFT, 6, 0xff0000 );
+      ced_send_event();
+      //getchar();
+    }
+
+    // debug
+    int ihitFrominitialValue = ihitFrom;
     
     while (ihitFrom >=0) {
       
       CaloHitExtended * CaloHitFrom = _allHits[ihitFrom];
-      float dist_in_generic = CaloHitTo->getGenericDistance()-CaloHitFrom->getGenericDistance();
-      if (dist_in_generic > r_min) {
-	if (ifound ==1)
-	  break;
-	r_min +=  r_step; 
+      float dist_in_generic = DBL_MAX;
+
+      float XDist = 0.0;
+      float YRes  = 0.0;
+
+      if ( (_typeOfGenericDistance == 0) ||  (_typeOfGenericDistance == 1) ) { 
+
+	dist_in_generic = CaloHitTo->getGenericDistance()-CaloHitFrom->getGenericDistance();
+
+	float pos1[3];
+	float pos2[3];
+	for (int iposi=0; iposi<3; ++iposi) {
+	  pos1[iposi] = 
+	    (float)CaloHitTo->getCalorimeterHit()->getPosition()[iposi];
+	  pos2[iposi] = 
+	    (float)CaloHitFrom->getCalorimeterHit()->getPosition()[iposi];
+	}
+      
+	XDist = DistanceBetweenPoints(pos1,pos2);
+
+	YRes = findResolutionParameter(CaloHitFrom, CaloHitTo);
+
+      }      
+      else { 
+     
+	CalorimeterHitWithAttributes* calorimeterHitWithAttributesCorrespondingToCaloHitTo = getCalorimeterHitWithAttributes(CaloHitTo);
+	CalorimeterHitWithAttributes* calorimeterHitWithAttributesCorrespondingToCaloHitFrom = getCalorimeterHitWithAttributes(CaloHitFrom);
+	
+	float pathLengthOnHelixOfCaloHitTo = calorimeterHitWithAttributesCorrespondingToCaloHitTo->getPathLengthOnHelix();
+	float pathLengthOnHelixOfCaloHitFrom = calorimeterHitWithAttributesCorrespondingToCaloHitFrom->getPathLengthOnHelix();
+
+	float distanceToHelixOfCaloHitTo = calorimeterHitWithAttributesCorrespondingToCaloHitTo->getDistanceToHelix();
+	float distanceToHelixOfCaloHitFrom = calorimeterHitWithAttributesCorrespondingToCaloHitFrom->getDistanceToHelix();
+
+	dist_in_generic = CaloHitTo->getGenericDistance()-CaloHitFrom->getGenericDistance();
+
+	XDist = sqrt( pow( (pathLengthOnHelixOfCaloHitTo - pathLengthOnHelixOfCaloHitFrom),2) + 
+		      pow( (distanceToHelixOfCaloHitTo - distanceToHelixOfCaloHitFrom),2) );
+
+
+	YRes = findResolutionParameter(CaloHitFrom, CaloHitTo);
+
       }
       
-      if (dist_in_generic > r_dist)
-	break;
+
+
+
+      if ( _debugLevel > 5 ) { 
+
+	CalorimeterHitWithAttributes* calorimeterHitWithAttributesCorrespondingToCaloHitTo = getCalorimeterHitWithAttributes(CaloHitTo);
+	CalorimeterHitWithAttributes* calorimeterHitWithAttributesCorrespondingToCaloHitFrom = getCalorimeterHitWithAttributes(CaloHitFrom);
+
+	std::cout << "in while loop: " << std::endl
+		  << "ihitTo: " << ihitTo << "  " << "Hit : " << CaloHitTo->getCalorimeterHit() << "  " << "type: " << CaloHitTo->getType() << "  " 
+		  << "assigned generic distance: " << CaloHitTo->getGenericDistance()  << "  " 
+		  << "s: " << calorimeterHitWithAttributesCorrespondingToCaloHitTo->getPathLengthOnHelix() - _pathLengthOnHelixOfStartPoint << "  "
+		  << "d: " << calorimeterHitWithAttributesCorrespondingToCaloHitTo->getDistanceToHelix() - _distanceToHelixOfStartPoint << std::endl
+		  << "ihitFrom: " << ihitFrom << "  " << "Hit: " << CaloHitFrom->getCalorimeterHit() << "  " << "type: " << CaloHitFrom->getType() << "  " 
+		  << "assigned generic distance: " << CaloHitFrom->getGenericDistance()  << "  " 
+		  << "s: " << calorimeterHitWithAttributesCorrespondingToCaloHitFrom->getPathLengthOnHelix() - _pathLengthOnHelixOfStartPoint << "  "
+		  << "d: " << calorimeterHitWithAttributesCorrespondingToCaloHitFrom->getDistanceToHelix() - _distanceToHelixOfStartPoint << std::endl
+		  << "ifound: " << ifound << "  " << "r_step: " << r_step << "  " << "r_min: " << r_min << "  " << "r_dist: " << r_dist << std::endl
+		  << "YResMin: " << YResMin << "  " << "YResCut: " << YResCut << "  " << "YDistMin: " << YDistMin << std::endl;
+	std::cout << "dist_in_generic = " << dist_in_generic << std::endl;
+	
+	if ( ihitFrom == ihitFrominitialValue ) {
+	  ced_hit ( CaloHitFrom->getCalorimeterHit()->getPosition()[0],CaloHitFrom->getCalorimeterHit()->getPosition()[1],CaloHitFrom->getCalorimeterHit()->getPosition()[2], 
+		    0 | 1 << CED_LAYER_SHIFT, 2, 0xf2ff00 );
+	  ced_send_event();
+	  //getchar();
+	}
+
+      }
+
+
 	    
-      float pos1[3];
-      float pos2[3];
-      for (int iposi=0; iposi<3; ++iposi) {
-	pos1[iposi] = 
-	  (float)CaloHitTo->getCalorimeterHit()->getPosition()[iposi];
-	pos2[iposi] = 
-	  (float)CaloHitFrom->getCalorimeterHit()->getPosition()[iposi];
+    
+
+
+      // relaxing cut on 'distance'
+      if (dist_in_generic > r_min) {
+	if (ifound ==1) {
+
+	  if ( _debugLevel > 5 ) { 	  
+	    std::cout << "dist_in_generic: " << dist_in_generic << "  " << "r_min: " << r_min << "  " << "dist_in_generic > r_min: " << (dist_in_generic > r_min) << "  "
+		      << "and ifound: " << ifound << " => BREAK while loop" << std::endl;
+	  }
+
+	  break;
+
+	}
+
+	r_min +=  r_step; 
+
       }
-      
-      float XDist = DistanceBetweenPoints(pos1,pos2);
-      float YRes = findResolutionParameter(CaloHitFrom, CaloHitTo);
+
+      // break on max distance allowed      
+      if (dist_in_generic > r_dist) {
+
+	if ( _debugLevel > 5 ) { 
+	  std::cout << "dist_in_generic: " << dist_in_generic << "  " << "r_dist: " << r_dist << "  " << "dist_in_generic > r_dist: " << (dist_in_generic > r_dist) << "  "
+		    << " => BREAK while loop" << std::endl;
+	}
+
+	break;
+
+      }
+
       if (YRes < 0.)
 	std::cout << "Resolution parameter < 0" << std::endl; 
       
@@ -400,24 +555,55 @@ void TrackwiseClusters::GlobalClustering() {
       float YDist = 1 + _weightForReso*YRes + _weightForDist*XDist;
       
       bool proxCriterion = YDist < YDistMin;
-      
+         
+      if ( _debugLevel > 5 ) { 
+	std::cout << "dist_in_generic: " << dist_in_generic << "  " << "r_min: " << r_min << "  " << "(dist_in_generic > r_min): " << (dist_in_generic > r_min) << "  " 
+		  << "r_dist: " << r_dist << "  " << "(dist_in_generic > r_dist): " << (dist_in_generic > r_dist) << std::endl
+		  << "XDist: " << XDist << "  " << "YRes: " << YRes << "  " << "YResCut: " << YResCut << "  " << "YDist: " << YDist << "  " << "YDistMin: " << YDistMin << "  " 
+		  << "YDist < YDistMin (proxCriterion): " << proxCriterion << std::endl;
+      }
+
       if ( proxCriterion ) {
 	YResMin = YRes;
 	YDistMin = YDist;
 	CaloHitTo->setCaloHitFrom(CaloHitFrom);
 	CaloHitTo->setYresFrom(YRes);
+	
+	  if ( _debugLevel > 5 ) { 
+	    std::cout << "proxCriterion fullfilled (" << proxCriterion << "): " << "YResMin = YRes = " << YResMin << "  " << "YDistMin = YDist = " << YDistMin << std::endl;
+	  }
+
+
       }
       
-      if ( proxCriterion ) {
+      if ( proxCriterion && YRes < YResCut ) {
 	YResMin = YRes;
 	YDistMin = YDist;
 	CaloHitTo->setCaloHitFrom(CaloHitFrom);
 	CaloHitTo->setYresFrom(YRes);		
+
+	if ( _debugLevel > 5 ) {
+	  std::cout << "proxCriterion and YRes < YResCut fullfilled (" << (proxCriterion && YRes < YResCut) << "): " << "YResMin = YRes = " << YResMin << "  " 
+		    << "YDistMin = YDist = " << YDistMin << std::endl;
+	}
+
       }
       
       
-      if ( YRes < YResCut )
+      if ( YRes < YResCut ) {
+
 	ifound = 1;
+
+	if ( _debugLevel > 5 ) std::cout << "YRes < YResCut fullfilled (" << (YRes < YResCut) << "): " << "ifound = " << ifound << std::endl;
+	
+      }
+
+
+      if ( _debugLevel > 5 ) { 
+	std::cout << "END of while loop, reducing ihitFrom by one: " << ihitFrom << " -> " << (ihitFrom-1) << "  " << "(if < 0 -> while loop will end)" 
+		  << std::endl << std::endl;
+      }
+
       
       ihitFrom --;		
     }
@@ -429,6 +615,17 @@ void TrackwiseClusters::GlobalClustering() {
       CaloHitExtendedVec calohitvec = cluster->getCaloHitExtendedVec();
       CaloHitTo->setClusterExtended(cluster);
       cluster->addCaloHitExtended(CaloHitTo);
+
+      // debug
+      if ( _debugLevel > 5 ) { 
+	std::cout << "assign hit to existing cluster ... " << std::endl;
+	int color = 1024*(int)cluster+0xFF9988;
+	ced_hit ( CaloHitTo->getCalorimeterHit()->getPosition()[0],CaloHitTo->getCalorimeterHit()->getPosition()[1],CaloHitTo->getCalorimeterHit()->getPosition()[2], 
+		  0 | 1 << CED_LAYER_SHIFT, 8, color );
+	ced_send_event();
+	// getchar();
+      }
+
       float distanceToHit = 0.0;
       for (int ii=0;ii<3;++ii) {
 	float xx =  CaloHitTo->getCalorimeterHit()->getPosition()[ii]
@@ -500,14 +697,45 @@ void TrackwiseClusters::GlobalClustering() {
       CaloHitTo->setDirVec(xDir);
     }
     else { // Create new cluster
-
-      if (ihitTo==0) {
+      
+      if ( ihitTo==0 ) {
 	
 	ClusterExtended * cluster = new ClusterExtended(CaloHitTo);
+
+	// debug
+	if ( _debugLevel > 5 ) { 
+	  std::cout << "create new cluster ... " << std::endl;
+	  int color = 1024*(int)cluster+0xFF9988;
+	  ced_hit ( CaloHitTo->getCalorimeterHit()->getPosition()[0],CaloHitTo->getCalorimeterHit()->getPosition()[1],CaloHitTo->getCalorimeterHit()->getPosition()[2], 
+		    0 | 1 << CED_LAYER_SHIFT, 8, color );
+	  ced_send_event();
+	  // getchar();
+	}
+	
+
 	CaloHitTo->setClusterExtended(cluster);
 	CaloHitTo->setDistanceToNearestHit(0.0);
 	float xDir[3];
-	for (int i(0); i < 3; ++i) xDir[i] = _startDirection.at(i);
+
+	if ( (_typeOfGenericDistance == 0) ||  (_typeOfGenericDistance == 1) ) {
+
+	  for (int i(0); i < 3; ++i) xDir[i] = CaloHitTo->getCalorimeterHit()->getPosition()[i];
+
+	}
+	else {
+
+	  CalorimeterHitWithAttributes* calorimeterHitWithAttributesCorrespondingToCaloHitTo = getCalorimeterHitWithAttributes(CaloHitTo);
+	  
+	  float pathLengthOnHelixOfCaloHitTo = calorimeterHitWithAttributesCorrespondingToCaloHitTo->getPathLengthOnHelix();
+	  float distanceToHelixOfCaloHitTo = calorimeterHitWithAttributesCorrespondingToCaloHitTo->getDistanceToHelix();
+
+	  float distanceInHelixCoordinates = sqrt( pow( (pathLengthOnHelixOfCaloHitTo - _pathLengthOnHelixOfStartPoint),2) + 
+						   pow( (distanceToHelixOfCaloHitTo - _distanceToHelixOfStartPoint),2) );
+
+	  for (int i(0); i < 3; ++i) xDir[i] = distanceInHelixCoordinates*_startDirection.at(i);
+
+	}
+	
 	CaloHitTo->setDirVec(xDir);	    
 	_allClusters.push_back( cluster );
 
@@ -516,13 +744,45 @@ void TrackwiseClusters::GlobalClustering() {
       else {
 
 	ClusterExtended * cluster = new ClusterExtended(CaloHitTo);
+
+	// debug
+	if ( _debugLevel > 5 ) { 
+	  std::cout << "create new cluster ... " << std::endl;
+	  int color = 1024*(int)cluster+0xFF9988;
+	  ced_hit ( CaloHitTo->getCalorimeterHit()->getPosition()[0],CaloHitTo->getCalorimeterHit()->getPosition()[1],CaloHitTo->getCalorimeterHit()->getPosition()[2], 
+		    0 | 1 << CED_LAYER_SHIFT, 8, color );
+	  ced_send_event();
+	  // getchar();
+	}
+
+
+
 	CaloHitTo->setClusterExtended(cluster);
 	CaloHitTo->setDistanceToNearestHit(0.0);
 	float xDir[3];
-	for (int i(0); i < 3; ++i) xDir[i] = CaloHitTo->getCalorimeterHit()->getPosition()[i];
+
+	if ( (_typeOfGenericDistance == 0) ||  (_typeOfGenericDistance == 1) ) {
+
+	  for (int i(0); i < 3; ++i) xDir[i] = CaloHitTo->getCalorimeterHit()->getPosition()[i];
+
+	}
+	else {
+
+	  CalorimeterHitWithAttributes* calorimeterHitWithAttributesCorrespondingToCaloHitTo = getCalorimeterHitWithAttributes(CaloHitTo);
+	  
+	  float pathLengthOnHelixOfCaloHitTo = calorimeterHitWithAttributesCorrespondingToCaloHitTo->getPathLengthOnHelix();
+	  float distanceToHelixOfCaloHitTo = calorimeterHitWithAttributesCorrespondingToCaloHitTo->getDistanceToHelix();
+
+	  float distanceInHelixCoordinates = sqrt( pow( (pathLengthOnHelixOfCaloHitTo - _pathLengthOnHelixOfStartPoint),2) + 
+						   pow( (distanceToHelixOfCaloHitTo - _distanceToHelixOfStartPoint),2) );
+
+	  for (int i(0); i < 3; ++i) xDir[i] = distanceInHelixCoordinates*(CaloHitTo->getCalorimeterHit()->getPosition()[i]);
+
+	}
+
 	CaloHitTo->setDirVec(xDir);	    
 	_allClusters.push_back( cluster );
-
+	
       }
 
     }
@@ -879,12 +1139,43 @@ float TrackwiseClusters::findResolutionParameter(CaloHitExtended* fromHit, CaloH
   float xdist(0.);
   float product(0.);
   float dir(0.);
-  for (int i(0); i < 3; i++) {
-    xdistvec[i] = toHit->getCalorimeterHit()->getPosition()[i] - fromHit->getCalorimeterHit()->getPosition()[i];
-    xdist += xdistvec[i]*xdistvec[i];
-    dirvec[i] = fromHit->getDirVec()[i];
-    dir += dirvec[i]*dirvec[i];
-    product += xdistvec[i]*dirvec[i]; 
+
+  if ( (_typeOfGenericDistance == 0) ||  (_typeOfGenericDistance == 1) ) { 
+
+    for (int i(0); i < 3; i++) {
+      xdistvec[i] = toHit->getCalorimeterHit()->getPosition()[i] - fromHit->getCalorimeterHit()->getPosition()[i];
+      xdist += xdistvec[i]*xdistvec[i];
+      dirvec[i] = fromHit->getDirVec()[i];
+      dir += dirvec[i]*dirvec[i];
+      product += xdistvec[i]*dirvec[i]; 
+    }
+  }      
+  else { 
+
+    /*     
+    CalorimeterHitWithAttributes* calorimeterHitWithAttributesCorrespondingToCaloHitTo = getCalorimeterHitWithAttributes(toHit);
+    CalorimeterHitWithAttributes* calorimeterHitWithAttributesCorrespondingToCaloHitFrom = getCalorimeterHitWithAttributes(fromHit);
+    
+    float pathLengthOnHelixOfCaloHitTo = calorimeterHitWithAttributesCorrespondingToCaloHitTo->getPathLengthOnHelix();
+    float pathLengthOnHelixOfCaloHitFrom = calorimeterHitWithAttributesCorrespondingToCaloHitFrom->getPathLengthOnHelix();
+    
+    float distanceToHelixOfCaloHitTo = calorimeterHitWithAttributesCorrespondingToCaloHitTo->getDistanceToHelix();
+    float distanceToHelixOfCaloHitFrom = calorimeterHitWithAttributesCorrespondingToCaloHitFrom->getDistanceToHelix();
+
+
+    xdist = pow( (pathLengthOnHelixOfCaloHitTo - pathLengthOnHelixOfCaloHitFrom),2) + pow( (distanceToHelixOfCaloHitTo - distanceToHelixOfCaloHitFrom),2);
+    */
+
+    for (int i(0); i < 3; i++) {
+      xdistvec[i] = toHit->getCalorimeterHit()->getPosition()[i] - fromHit->getCalorimeterHit()->getPosition()[i];     
+      xdist += xdistvec[i]*xdistvec[i];
+      dirvec[i] = fromHit->getDirVec()[i];
+      dir += dirvec[i]*dirvec[i];
+      product += xdistvec[i]*dirvec[i]; 
+    }
+
+
+
   }
   
   xdist = sqrt(xdist);
@@ -996,5 +1287,28 @@ void TrackwiseClusters::CleanUp() {
   }
   
   _allClusters.clear();
+
+}
+
+
+
+CalorimeterHitWithAttributes* TrackwiseClusters::getCalorimeterHitWithAttributes(CaloHitExtended* calorimeterHitExtended) {
+
+
+  CalorimeterHitWithAttributes* correspondingCalorimeterHitWithAttributes = 0;
+
+  for(std::vector<CalorimeterHitWithAttributes*>::const_iterator i = _calorimeterHitsWithAttributes.begin(); i != _calorimeterHitsWithAttributes.end(); ++i) {
+
+    if ( ((*i)->getCalorimeterHit()) == (calorimeterHitExtended->getCalorimeterHit()) ) {
+
+      correspondingCalorimeterHitWithAttributes = (*i);
+      return correspondingCalorimeterHitWithAttributes;
+
+    }
+
+  }
+
+  std::cout << "WARNING: Corresponding CalorimeterHitWithAttributes not found in TrackwiseClusters::getCalorimeterHitWithAttributes(), returning zero pointer" << std::endl;
+  return correspondingCalorimeterHitWithAttributes;
 
 }

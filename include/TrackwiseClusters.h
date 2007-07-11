@@ -28,8 +28,8 @@
 #include <gear/CalorimeterParameters.h>
 #include "random.h"
 
-
-
+// for debugging only
+#include <MarlinCED.h>
 
 
 struct TrackwiseClustersParameters {
@@ -84,9 +84,11 @@ class TrackwiseClusters {
 
  public:
 
-  TrackwiseClusters(const std::vector<CalorimeterHitWithAttributes*> calorimeterHitsWithAttributes,const std::vector<float> startPoint,const std::vector<float> startDirection,
+  TrackwiseClusters(const std::vector<CalorimeterHitWithAttributes*> calorimeterHitsWithAttributes,const std::vector<float> startPoint,
+		    const float pathLengthOnHelixOfStartPoint, const float distanceToHelixOfStartPoint, const std::vector<float> startDirection,
 		    const TrackwiseClustersParameters* trackwiseClustersParameters, const TrackwiseClustersGeometryParameters* trackwiseClustersGeometryParameters);
-  TrackwiseClusters(const std::vector<CalorimeterHitWithAttributes*> calorimeterHitsWithAttributes,const float* startPoint,const float* startDirection,
+  TrackwiseClusters(const std::vector<CalorimeterHitWithAttributes*> calorimeterHitsWithAttributes,const float* startPoint,
+		    const float pathLengthOnHelixOfStartPoint, const float distanceToHelixOfStartPoint, const float* startDirection,
 		    const TrackwiseClustersParameters* trackwiseClustersParameters, const TrackwiseClustersGeometryParameters* trackwiseClustersGeometryParameters);
 
   ~TrackwiseClusters();
@@ -154,11 +156,14 @@ class TrackwiseClusters {
 
   float _bField;
 
+  int _debugLevel;
+
 
   std::vector<CalorimeterHitWithAttributes*> _calorimeterHitsWithAttributes;
   std::vector<float> _startPoint;
+  float _pathLengthOnHelixOfStartPoint;
+  float _distanceToHelixOfStartPoint;
   std::vector<float> _startDirection;
-
   
   void initialiseCollections();
   float findResolutionParameter(CaloHitExtended* fromHit, CaloHitExtended* toHit);
@@ -174,6 +179,7 @@ class TrackwiseClusters {
   void calculateProperties(ClusterExtended* Cl);
   void propertiesForAll();
   void CleanUp();
+  CalorimeterHitWithAttributes* getCalorimeterHitWithAttributes(CaloHitExtended* calorimeterHitExtended);
 
 } ;
 
