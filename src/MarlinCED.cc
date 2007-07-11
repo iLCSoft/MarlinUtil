@@ -517,6 +517,7 @@ void MarlinCED::drawRecoParticle(ReconstructedParticle* reco, int marker, int si
   for (unsigned int i = 0; i < NofClusters; ++i) {
 
     Cluster* cluster = reco->getClusters()[i];
+
     drawCluster(cluster,marker,size,color,layer);
 
   }

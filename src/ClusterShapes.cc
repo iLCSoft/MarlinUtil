@@ -1155,8 +1155,8 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
     //double d0 = R0 + Y0/cos(Phi0);
 
     double d0 = 0.0;
-    if (true/*direction != 1*/) d0 = R0 - sqrt(X0*X0 + Y0*Y0);
-    //    else d0 = R0 + sqrt(X0*X0 + Y0*Y0);
+    if (true /*direction != 1*/) d0 = R0 - sqrt(X0*X0 + Y0*Y0);
+    // else d0 = R0 + sqrt(X0*X0 + Y0*Y0);
 
 
 
@@ -1166,7 +1166,7 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
     // double Phi0 = asin(X0/(R0-d0));
 
     
-    double z0 = (1/bz)*(-phi0+Phi0+(omega*pi)/(2.0*fabs(omega)));
+    double z0 = (1/bz)*((-1.0)*phi0+Phi0+(omega*pi)/(2.0*fabs(omega)));
 
 
     // debug
@@ -1177,11 +1177,11 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
 
     // debug        
     /*
-    d0    = 0.000179883892997168;
-    z0    = 0.0;    
-    Phi0  = 0.785398125648499;
-    omega = 0.000120111413707491;
-    tanL  = 0.176776692271233;
+    d0    = 0.00016512;
+    z0    = 0.000853511;
+    Phi0  = 1.11974;
+    omega = -4.22171e-05;
+    tanL  = -0.33436;
     */
 
 
