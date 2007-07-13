@@ -1,3 +1,129 @@
+2007-07-13 16:14  engels
+
+	* README: updated
+
+2007-07-12 15:03  engels
+
+	* README: updated
+
+2007-07-11 15:19  owendt
+
+	* src/MarlinUtil.cc: more output in the method 'printTrack(...);
+
+2007-07-11 15:18  owendt
+
+	* src/: ClusterShapes.cc, MarlinCED.cc: no essential changes
+
+2007-07-11 15:16  owendt
+
+	* include/TrackwiseClusters.h, src/TrackwiseClusters.cc: improved
+	  clustering in 'trajectory coordinates': path-length and distance
+	  to trajectory
+
+2007-07-10 11:52  engels
+
+	* BuildSetup.cmake: updated
+
+2007-07-06 15:41  engels
+
+	* README: added cmake build instructions
+
+2007-07-04 16:06  engels
+
+	* CMakeLists.txt: added rpath for apple
+
+2007-07-03 14:25  gaede
+
+	* src/MarlinCED.cc: removed scalefactor
+
+2007-07-02 15:22  engels
+
+	* BuildSetup.cmake, CMakeLists.txt: added BuildSetup.cmake
+
+2007-07-02 12:06  gaede
+
+	* src/MarlinCED.cc, include/MarlinCED.h: added drawGEARTelescope
+	  (author A.Bulgheroni)
+
+2007-07-02 12:05  gaede
+
+	* include/ced_cli.h, src/ced_cli.cc: added geo_boxes (author
+	  A.Bulgheroni)
+
+2007-06-27 15:39  engels
+
+	* CMakeLists.txt: replaced SEND_ERROR with STATUS
+
+2007-06-22 16:21  rasp
+
+	* include/MarlinTrackFit.h, src/MarlinTrackFit.cc: moved to
+	  MarlinReco/BrahmsTracking
+
+2007-06-22 16:20  rasp
+
+	* src/HelixClass.cc: the phi angle is restricted to be within -pi ;
+	  +pi
+
+2007-06-22 12:44  engels
+
+	* include/MarlinTrackFit.h: added default implementation for
+	  trackfit_ and tfithl_ was causing undefined references
+
+2007-06-21 16:36  engels
+
+	* CMakeLists.txt: moved documentation to user section
+
+2007-06-21 15:00  engels
+
+	* src/CMakeLists.txt: [no log message]
+
+2007-06-21 15:00  engels
+
+	* CMakeLists.txt: improved regular expressions more user friendly
+	  code removed src/CMakeLists.txt
+
+2007-06-20 20:47  samson
+
+	* include/SimpleHelix.h, src/SimpleHelix.cc: Move initialisation of
+	  double constants to .cc file
+
+2007-06-05 17:35  engels
+
+	* include/NNClusters.h: bug fix for g++ 4
+
+2007-05-29 18:31  engels
+
+	* CMakeLists.txt: updated version
+
+2007-05-21 12:49  engels
+
+	* src/CMakeLists.txt: bug fix: -pedantic flag crashes under sl4
+
+2007-05-16 16:31  engels
+
+	* CMakeLists.txt, src/CMakeLists.txt: moved dependencies code to a
+	  macro
+
+2007-05-14 17:29  owendt
+
+	* src/ClusterShapes.cc: Fixed a bug in FitHelix(int max_iter, int
+	  status_out, int parametrisation,float* parameter, float*
+	  dparameter, float& chi2,float& distmax, int direction), thanks to
+	  Hengne Li @ LAL
+
+2007-05-11 13:32  owendt
+
+	* include/TrackwiseClusters.h: bugfix
+
+2007-05-11 10:17  engels
+
+	* CMakeLists.txt, src/CMakeLists.txt: bug fix: build_with and
+	  link_with were calling load_package with required arg
+
+2007-04-30 17:55  gaede
+
+	* ChangeLog: [no log message]
+
 2007-04-30 17:55  gaede
 
 	* README:    ----- tag v00-03 -----------------------

@@ -5,6 +5,32 @@
 ================================
 
  --------
+| v00-04 |
+ --------
+      - cmake now default build tool (J.Engels)
+         -> see README for instructions
+
+      - TrackwiseClusters (O.Wendt) 
+          improved clustering in 'trajectory coordinates': 
+          path-length and distance to trajectory
+
+
+      - MarlinCED / ced_cli.cc (A.Bulgheroni)
+          added drawGEARTelescope
+	  added geo_boxes
+
+      - ClusterShapes (O.Wendt) Fixed a bug in FitHelix(int max_iter, int
+	  status_out, int parametrisation,float* parameter, float*
+	  dparameter, float& chi2,float& distmax, int direction), thanks to
+	  Hengne Li @ LAL
+
+      - additional bug fixes 
+          + compliance with SL4 (gcc3.4/gcc4)
+          + ...
+
+      see Changelog for details 
+
+ --------
 | v00-03 |
  --------
   - suport for Full Tracking  (A.Raspereza)
