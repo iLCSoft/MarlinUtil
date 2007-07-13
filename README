@@ -31,7 +31,7 @@ Build Instructions (cmake):
    $ make install
 
 For more information on CMake for the ILCSoftware check:
-http://ilcsoft.desy.de/portal/general_documentation/index_eng.html (will be available soon!)
+http://ilcsoft.desy.de/portal/general_documentation/index_eng.html
 
 CMake's official website:
 http://www.cmake.org
