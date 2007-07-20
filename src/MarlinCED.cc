@@ -1,6 +1,10 @@
 
 #ifdef USE_CLHEP  // only if CLHEP is available !
+#ifdef USE_SEPARATE_HEPPDT
+#include "HepPDT/ParticleID.hh"
+#else
 #include "CLHEP/HepPDT/ParticleID.hh"
+#endif
 #endif
 
 #include "MarlinCED.h"

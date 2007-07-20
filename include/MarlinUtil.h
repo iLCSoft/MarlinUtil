@@ -10,10 +10,15 @@
 #include <utility>
 #include <algorithm>
 
+#ifdef USE_SEPARATE_HEPPDT
+#include <HepPDT/TableBuilder.hh>
+#include <HepPDT/ParticleDataTable.hh>
+#include <HepPDT/TempParticleData.hh>
+#else
 #include <CLHEP/HepPDT/TableBuilder.hh>
 #include <CLHEP/HepPDT/ParticleDataTable.hh>
 #include <CLHEP/HepPDT/TempParticleData.hh>
-
+#endif
 
 #include <lcio.h>
 #include <EVENT/LCEvent.h>
