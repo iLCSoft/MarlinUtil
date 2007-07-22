@@ -619,7 +619,7 @@ void TrackwiseClusters::GlobalClustering() {
       // debug
       if ( _debugLevel > 5 ) { 
 	std::cout << "assign hit to existing cluster ... " << std::endl;
-	int color = 1024*(int)cluster+0xFF9988;
+	int color = static_cast<int>(1024*reinterpret_cast<long int>(cluster)+0xFF9988);
 	ced_hit ( CaloHitTo->getCalorimeterHit()->getPosition()[0],CaloHitTo->getCalorimeterHit()->getPosition()[1],CaloHitTo->getCalorimeterHit()->getPosition()[2], 
 		  0 | 1 << CED_LAYER_SHIFT, 8, color );
 	ced_send_event();
@@ -705,7 +705,7 @@ void TrackwiseClusters::GlobalClustering() {
 	// debug
 	if ( _debugLevel > 5 ) { 
 	  std::cout << "create new cluster ... " << std::endl;
-	  int color = 1024*(int)cluster+0xFF9988;
+	  int color = static_cast<int>(1024*reinterpret_cast<long int>(cluster)+0xFF9988);
 	  ced_hit ( CaloHitTo->getCalorimeterHit()->getPosition()[0],CaloHitTo->getCalorimeterHit()->getPosition()[1],CaloHitTo->getCalorimeterHit()->getPosition()[2], 
 		    0 | 1 << CED_LAYER_SHIFT, 8, color );
 	  ced_send_event();
@@ -748,7 +748,7 @@ void TrackwiseClusters::GlobalClustering() {
 	// debug
 	if ( _debugLevel > 5 ) { 
 	  std::cout << "create new cluster ... " << std::endl;
-	  int color = 1024*(int)cluster+0xFF9988;
+	  int color = static_cast<int>(1024*reinterpret_cast<long int>(cluster)+0xFF9988);
 	  ced_hit ( CaloHitTo->getCalorimeterHit()->getPosition()[0],CaloHitTo->getCalorimeterHit()->getPosition()[1],CaloHitTo->getCalorimeterHit()->getPosition()[2], 
 		    0 | 1 << CED_LAYER_SHIFT, 8, color );
 	  ced_send_event();
