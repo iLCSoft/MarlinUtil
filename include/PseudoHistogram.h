@@ -5,7 +5,7 @@
  *    Simple class with a histogram-like array without any display features
  *
  *    @author O. Wendt (DESY)
- *    @version $Id: PseudoHistogram.h,v 1.3 2005-11-04 16:54:59 owendt Exp $
+ *    @version $Id: PseudoHistogram.h,v 1.4 2007-07-23 10:57:29 engels Exp $
  *
  */
 class PseudoHistogram {
@@ -41,6 +41,15 @@ class PseudoHistogram {
    */
   void fill(double x, double w);
 
+  /**
+   * Find the bin containing x
+   *
+   * @param x : value on the x axis
+   *
+   * @return the bin containing @c x
+   */
+  int findBin(double x);
+  
   /**
    * Returns content of bin
    *

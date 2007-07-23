@@ -78,6 +78,25 @@ void PseudoHistogram::fill(double x, double w) {
 
 //=============================================================================
 
+int PseudoHistogram::findBin(double x) {
+
+  if (x < _MinValue) {
+    return 0;
+  }
+  else if (x > _MaxValue) {
+    return _FullNumberOfBins-1;
+  }
+  else if (x == _MaxValue) {
+    return _FullNumberOfBins-2;
+  }
+  else {
+  return (int)floor((((double)_NumberOfBins)/
+            (_MaxValue - _MinValue))*(x - _MinValue)) + 1;
+  }
+}
+
+//=============================================================================
+
 double PseudoHistogram::getBinContent(int bin) {
 
   if ( isInRange(bin) ) {
