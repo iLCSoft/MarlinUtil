@@ -22,7 +22,7 @@ typedef std::vector<ClusterExtended*> ClusterExtendedVec;
  * Class TrackExtended is used in TrackwiseClustering <br>
  * and Wolf processors. <br>
  * @author A. Raspereza (DESY)<br>
- * @version $Id: TrackExtended.h,v 1.7 2007-04-20 13:29:01 rasp Exp $<br>
+ * @version $Id: TrackExtended.h,v 1.8 2007-09-05 09:39:49 rasp Exp $<br>
  */
 
 class TrackExtended {

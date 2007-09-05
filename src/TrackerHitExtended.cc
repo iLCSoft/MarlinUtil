@@ -2,7 +2,9 @@
 
 TrackerHitExtended::TrackerHitExtended(TrackerHit * trackerhit) {
     _trackerHit = trackerhit;
+    _trackAR = NULL;
     _trackVecAR.clear();
+    _usedInFit = false;
 }
 
 TrackerHitExtended::~TrackerHitExtended() {
@@ -119,3 +121,12 @@ int TrackerHitExtended::getType() {
 int TrackerHitExtended::getDet() {
     return _idet;
 }
+
+void TrackerHitExtended::setUsedInFit(bool usedInFit) {
+    _usedInFit = usedInFit;
+}
+
+bool TrackerHitExtended::getUsedInFit() {
+    return _usedInFit;
+}
+
