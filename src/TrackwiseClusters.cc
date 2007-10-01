@@ -394,7 +394,23 @@ void TrackwiseClusters::GlobalClustering() {
 
 
   // debug
-  if ( _debugLevel > 5 ) std::cout << "n of hits in Trackwise Clustering = " << _allHits.size() << std::endl;
+  if ( _debugLevel > 5 ) {
+
+    std::cout << "n of hits in Trackwise Clustering = " << _allHits.size() << std::endl << std::endl;
+    for (unsigned int iHit = 0; iHit < _allHits.size(); ++iHit) {
+
+      CaloHitExtended* caloHit = _allHits[iHit];
+      CalorimeterHitWithAttributes* calorimeterHitWithAttributesCorrespondingToCaloHitTo = getCalorimeterHitWithAttributes(caloHit);
+
+      std::cout << "CaloHit: " << caloHit << "  " << "_typeOfGenericDistance = " << _typeOfGenericDistance << "  " 
+		<< "type of CaloHit: " << caloHit->getType() << "  " 
+		<< "s on helix: " << ((calorimeterHitWithAttributesCorrespondingToCaloHitTo->getPathLengthOnHelix()) - _pathLengthOnHelixOfStartPoint) << "  " 
+		<< "dist to helix: " << ((calorimeterHitWithAttributesCorrespondingToCaloHitTo->getDistanceToHelix()) - _distanceToHelixOfStartPoint) << "  "
+		<< "dist to start point: " << caloHit->getGenericDistance() << std::endl;
+
+    }
+
+  }
 
 
   for (unsigned int ihitTo(0); ihitTo < _allHits.size(); ++ihitTo) {
@@ -422,8 +438,8 @@ void TrackwiseClusters::GlobalClustering() {
       std::cout << "before while loop: " << std::endl
 		<< "ihitTo: " << ihitTo << "  " << "Hit : " << CaloHitTo->getCalorimeterHit() << "  " << "type: " << CaloHitTo->getType() << "  " 
 		<< "assigned generic distance: " << CaloHitTo->getGenericDistance() << "  " 
-		<< "s: " << calorimeterHitWithAttributesCorrespondingToCaloHitTo->getPathLengthOnHelix() - _pathLengthOnHelixOfStartPoint << "  "
-		<< "d: " << calorimeterHitWithAttributesCorrespondingToCaloHitTo->getDistanceToHelix() - _distanceToHelixOfStartPoint << std::endl
+		<< "s: " << ((calorimeterHitWithAttributesCorrespondingToCaloHitTo->getPathLengthOnHelix()) - _pathLengthOnHelixOfStartPoint) << "  "
+		<< "d: " << ((calorimeterHitWithAttributesCorrespondingToCaloHitTo->getDistanceToHelix()) - _distanceToHelixOfStartPoint) << std::endl
 		<< "ihitFrom: " << ihitFrom << "  " << "ifound: " << ifound << "  " << "r_step: " << r_step << "  " << "r_min: " << r_min << "  " << "r_dist: " << r_dist 
 		<< std::endl
 		<< "YResMin: " << YResMin << "  " << "YResCut: " << YResCut << "  " << "YDistMin: " << YDistMin << std::endl;
@@ -431,7 +447,7 @@ void TrackwiseClusters::GlobalClustering() {
       ced_hit ( CaloHitTo->getCalorimeterHit()->getPosition()[0],CaloHitTo->getCalorimeterHit()->getPosition()[1],CaloHitTo->getCalorimeterHit()->getPosition()[2], 
 		2 | 1 << CED_LAYER_SHIFT, 6, 0xff0000 );
       ced_send_event();
-      //getchar();
+      getchar();
     }
 
     // debug
@@ -509,7 +525,7 @@ void TrackwiseClusters::GlobalClustering() {
 	  ced_hit ( CaloHitFrom->getCalorimeterHit()->getPosition()[0],CaloHitFrom->getCalorimeterHit()->getPosition()[1],CaloHitFrom->getCalorimeterHit()->getPosition()[2], 
 		    0 | 1 << CED_LAYER_SHIFT, 2, 0xf2ff00 );
 	  ced_send_event();
-	  //getchar();
+	  getchar();
 	}
 
       }
@@ -619,11 +635,11 @@ void TrackwiseClusters::GlobalClustering() {
       // debug
       if ( _debugLevel > 5 ) { 
 	std::cout << "assign hit to existing cluster ... " << std::endl;
-	int color = static_cast<int>(1024*reinterpret_cast<long int>(cluster)+0xFF9988);
+	int color = static_cast<int>(16*reinterpret_cast<long int>(cluster)+0x009988);
 	ced_hit ( CaloHitTo->getCalorimeterHit()->getPosition()[0],CaloHitTo->getCalorimeterHit()->getPosition()[1],CaloHitTo->getCalorimeterHit()->getPosition()[2], 
 		  0 | 1 << CED_LAYER_SHIFT, 8, color );
 	ced_send_event();
-	// getchar();
+	getchar();
       }
 
       float distanceToHit = 0.0;
@@ -705,11 +721,11 @@ void TrackwiseClusters::GlobalClustering() {
 	// debug
 	if ( _debugLevel > 5 ) { 
 	  std::cout << "create new cluster ... " << std::endl;
-	  int color = static_cast<int>(1024*reinterpret_cast<long int>(cluster)+0xFF9988);
+	  int color = static_cast<int>(16*reinterpret_cast<long int>(cluster)+0x009988);
 	  ced_hit ( CaloHitTo->getCalorimeterHit()->getPosition()[0],CaloHitTo->getCalorimeterHit()->getPosition()[1],CaloHitTo->getCalorimeterHit()->getPosition()[2], 
 		    0 | 1 << CED_LAYER_SHIFT, 8, color );
 	  ced_send_event();
-	  // getchar();
+	  getchar();
 	}
 	
 
@@ -752,7 +768,7 @@ void TrackwiseClusters::GlobalClustering() {
 	  ced_hit ( CaloHitTo->getCalorimeterHit()->getPosition()[0],CaloHitTo->getCalorimeterHit()->getPosition()[1],CaloHitTo->getCalorimeterHit()->getPosition()[2], 
 		    0 | 1 << CED_LAYER_SHIFT, 8, color );
 	  ced_send_event();
-	  // getchar();
+	  getchar();
 	}
 
 
