@@ -1,3 +1,60 @@
+2007-11-07 18:55  gaede
+
+	* CMakeLists.txt:     ---- version v00-05 --------
+
+2007-11-07 18:54  gaede
+
+	* BuildSetup.cmake: versions of ilcsoft release v01-03
+
+2007-10-12 11:25  engels
+
+	* doc/Doxyfile: bug fixed: predefined USE_CLHEP
+
+2007-10-01 17:01  owendt
+
+	* src/TrackwiseClusters.cc: debugging
+
+2007-09-12 09:57  engels
+
+	* CMakeLists.txt, src/GNUmakefile: replaced CMAKE_XXX_DIR with
+	  PROJECT_XXX_DIR
+
+2007-09-05 11:39  rasp
+
+	* include/GroupTracks.h, include/HelixClass.h,
+	  include/TrackExtended.h, include/TrackerHitExtended.h,
+	  src/GroupTracks.cc, src/TrackerHitExtended.cc: Updated versions
+	  of classes
+
+2007-09-05 11:38  rasp
+
+	* include/TrackHitPair.h, src/TrackHitPair.cc: New utility class
+	  for FullLDCTracking processor
+
+2007-07-23 12:57  engels
+
+	* include/PseudoHistogram.h, src/PseudoHistogram.cc: applied patch
+	  from Antonio Bulgheroni (findBin)
+
+2007-07-22 07:47  engels
+
+	* src/TrackwiseClusters.cc: patched for 64 bit (by Martin
+	  Killenberg)
+
+2007-07-20 11:34  engels
+
+	* include/MarlinUtil.h, src/MarlinCED.cc: bug fixes for
+	  compatibility with latest CLHEP versions
+
+2007-07-13 20:07  gaede
+
+	* CMakeLists.txt, ChangeLog, doc/release.notes: ----  release
+	  v00-04 -------------
+
+2007-07-13 20:04  gaede
+
+	* BuildSetup.cmake: updated pathes to release v01-01
+
 2007-07-13 16:14  engels
 
 	* README: updated

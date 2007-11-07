@@ -5,6 +5,18 @@
 ================================
 
  --------
+| v00-05 |
+ --------
+    - improved versions of Track utility classes (A.Raspereza)
+
+    - made compatible with CLHEP 2.0.3.x
+
+    - bug fixes:
+        -  Doxyfile predefined USE_CLHEP
+	-  patched for 64 bit (M.Killenberg)
+        - ...
+
+ --------
 | v00-04 |
  --------
       - cmake now default build tool (J.Engels)
