@@ -24,7 +24,7 @@ SET( Marlin_HOME "${ILC_HOME}/Marlin/v00-09-10"
     CACHE PATH "Path to Marlin" FORCE )
 
 # Path to LCIO
-SET( LCIO_HOME "${ILC_HOME}/lcio/v01-08-05"
+SET( LCIO_HOME "${ILC_HOME}/lcio/v01-09"
     CACHE PATH "Path to LCIO" FORCE )
 
 # Path to GEAR
