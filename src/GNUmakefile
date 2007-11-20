@@ -4,7 +4,7 @@
 #
 # @author Frank Gaede
 # @author Jan Engels
-# @version $Id: GNUmakefile,v 1.13 2007-09-12 07:57:16 engels Exp $
+# @version $Id: GNUmakefile,v 1.14 2007-11-20 10:41:52 engels Exp $
 #
 ###########################################################
 
@@ -100,6 +100,17 @@ ANNDEP = $(patsubst %,$(DEPDIR)/%,$(ANNDEPS))
 OBJ += $(ANNOBJ)
 DEP += $(ANNDEP)
 
+#---- include Millepede library: http://www.desy.de/~blobel/Mptwo.tgz
+MILLESRCS = $(wildcard mille/*.cc)
+MILLEOBJS = $(patsubst mille/%.cc,%.o,$(MILLESRCS))
+MILLEOBJ = $(patsubst %,$(OBJDIR)/%,$(MILLEOBJS))
+MILLEDEPS = $(patsubst %.o,%.d,$(MILLEOBJS))
+MILLEDEP = $(patsubst %,$(DEPDIR)/%,$(MILLEDEPS))
+
+OBJ += $(MILLEOBJ)
+DEP += $(MILLEDEP)
+
+
 # c++ compiler
 ifdef MY_CXX
   CXX = $(MY_CXX)
@@ -163,7 +174,7 @@ distclean:
 -include $(DEP)
 
 # binary rule
-$(BIN) : $(OBJ) $(ANNOBJ) $(BINOBJ)
+$(BIN) : $(OBJ) $(ANNOBJ) $(MILLEOBJ) $(BINOBJ)
 	@$(DIR_EXISTS) $(BINDIR) || mkdir -p $(BINDIR)
 	$(LD) $(OBJDIR)/$(notdir $@).o $(LDFLAGS) $(LIBS) -o $@
 
@@ -178,7 +189,7 @@ $(OBJDIR)/%.o : ann/%.cpp
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
 
 # library rule
-$(LIB) : $(OBJ) $(ANNOBJ)
+$(LIB) : $(OBJ) $(ANNOBJ) $(MILLEOBJ)
 	@$(DIR_EXISTS) $(LIBDIR) || mkdir -p $(LIBDIR)
 	$(AR) $@ $?
 
@@ -192,6 +203,14 @@ $(DEPDIR)/%.d : %.cc
 
 # dependency rule
 $(DEPDIR)/%.d : ann/%.cpp
+	@$(DIR_EXISTS) $(DEPDIR) || mkdir -p $(DEPDIR)
+	@echo "Creating dependencies for $<" ; \
+	set -e; $(CXX) -MM $(CPPFLAGS) $< \
+	| sed 's|\($*\)\.o[ :]*|$(OBJDIR)/\1.o $(DEPDIR)/$*.d : |g'\
+	> $@; [ -s $@ ] || rm -f $@
+
+# dependency rule
+$(DEPDIR)/%.d : mille/%.cpp
 	@$(DIR_EXISTS) $(DEPDIR) || mkdir -p $(DEPDIR)
 	@echo "Creating dependencies for $<" ; \
 	set -e; $(CXX) -MM $(CPPFLAGS) $< \

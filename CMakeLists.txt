@@ -78,6 +78,7 @@ ADD_DEFINITIONS( "-Wall -ansi" )
 # get list of all source files
 AUX_SOURCE_DIRECTORY( "src" library_sources )
 AUX_SOURCE_DIRECTORY( "src/ann" library_sources )
+AUX_SOURCE_DIRECTORY( "src/mille" library_sources )
 
 # testjobs: list of all sources from which you want to create a binary
 SET( binary_sources "src/testmarlinutil.cc" )
