@@ -4,7 +4,7 @@
 #
 # @author Frank Gaede
 # @author Jan Engels
-# @version $Id: GNUmakefile,v 1.14 2007-11-20 10:41:52 engels Exp $
+# @version $Id: GNUmakefile,v 1.15 2007-11-20 11:25:25 engels Exp $
 #
 ###########################################################
 
@@ -183,8 +183,13 @@ $(OBJDIR)/%.o : %.cc
 	@$(DIR_EXISTS) $(OBJDIR) || mkdir -p $(OBJDIR)
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
 
-# objects rule
+# ann objects rule
 $(OBJDIR)/%.o : ann/%.cpp
+	@$(DIR_EXISTS) $(OBJDIR) || mkdir -p $(OBJDIR)
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
+
+# mille objects rule
+$(OBJDIR)/%.o : mille/%.cc
 	@$(DIR_EXISTS) $(OBJDIR) || mkdir -p $(OBJDIR)
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
 
@@ -201,7 +206,7 @@ $(DEPDIR)/%.d : %.cc
 	| sed 's|\($*\)\.o[ :]*|$(OBJDIR)/\1.o $(DEPDIR)/$*.d : |g'\
 	> $@; [ -s $@ ] || rm -f $@
 
-# dependency rule
+# ann dependency rule
 $(DEPDIR)/%.d : ann/%.cpp
 	@$(DIR_EXISTS) $(DEPDIR) || mkdir -p $(DEPDIR)
 	@echo "Creating dependencies for $<" ; \
@@ -209,7 +214,7 @@ $(DEPDIR)/%.d : ann/%.cpp
 	| sed 's|\($*\)\.o[ :]*|$(OBJDIR)/\1.o $(DEPDIR)/$*.d : |g'\
 	> $@; [ -s $@ ] || rm -f $@
 
-# dependency rule
+# mille dependency rule
 $(DEPDIR)/%.d : mille/%.cpp
 	@$(DIR_EXISTS) $(DEPDIR) || mkdir -p $(DEPDIR)
 	@echo "Creating dependencies for $<" ; \
