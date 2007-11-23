@@ -10,6 +10,7 @@
     - improved versions of Track utility classes (A.Raspereza)
 
     - made compatible with CLHEP 2.0.3.x
+        - removed HepPDT dependency
 
     - bug fixes:
         -  Doxyfile predefined USE_CLHEP
