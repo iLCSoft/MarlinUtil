@@ -32,7 +32,7 @@ SET( GEAR_HOME "${ILC_HOME}/gear/v00-07"
     CACHE PATH "Path to GEAR" FORCE )
 
 # Path to CLHEP
-SET( CLHEP_HOME "${ILC_HOME}/CLHEP/2.0.2.2"
+SET( CLHEP_HOME "${ILC_HOME}/CLHEP/2.0.3.1"
     CACHE PATH "Path to CLHEP" FORCE )
 
 # Path to GSL
@@ -40,7 +40,7 @@ SET( GSL_HOME "${ILC_HOME}/gsl/1.8"
     CACHE PATH "Path to GSL" FORCE )
 
 # CMake Modules Path
-SET( CMAKE_MODULE_PATH "${ILC_HOME}/CMakeModules/v01-04"
+SET( CMAKE_MODULE_PATH "${ILC_HOME}/CMakeModules/v01-04-01"
     CACHE PATH "Path to CMake Modules" FORCE )
 
 ###############################################
