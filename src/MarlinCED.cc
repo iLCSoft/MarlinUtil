@@ -1,12 +1,3 @@
-
-#ifdef USE_CLHEP  // only if CLHEP is available !
-#ifdef USE_SEPARATE_HEPPDT
-#include "HepPDT/ParticleID.hh"
-#else
-#include "CLHEP/HepPDT/ParticleID.hh"
-#endif
-#endif
-
 #include "MarlinCED.h"
 #include "gear/GearMgr.h" 
 #include <gear/TPCParameters.h>
@@ -288,11 +279,7 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
   unsigned int l = 0;
   
 
-  #ifdef USE_CLHEP  // only if CLHEP is available !
-  charge =   HepPDT::ParticleID( MCP->getPDG() ).threeCharge() / 3.00;
-  #else
   charge = MCP->getCharge();
-  #endif
 
   // debug
   // std::cout << bField << "  " << charge << "  " << x1 << "  " << y1 << "  " << z1 << "  " << p1 << "  " << p2 << "  " << p3 << "  " << color << std::endl;
