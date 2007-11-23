@@ -1,5 +1,14 @@
 #include "MarlinUtil.h"
- 
+
+//#ifdef USE_SEPARATE_HEPPDT
+//#include <HepPDT/TableBuilder.hh>
+//#include <HepPDT/ParticleDataTable.hh>
+//#include <HepPDT/TempParticleData.hh>
+//#else
+//#include <CLHEP/HepPDT/TableBuilder.hh>
+//#include <CLHEP/HepPDT/ParticleDataTable.hh>
+//#include <CLHEP/HepPDT/TempParticleData.hh>
+//#endif
 
 
 void MarlinUtil::printMCParticle(MCParticle* MCP, bool printDaughters) {
