@@ -12,6 +12,8 @@
     - made compatible with CLHEP 2.0.3.x
         - removed HepPDT dependency
 
+    - added code for writing millipede files 
+
     - bug fixes:
         -  Doxyfile predefined USE_CLHEP
 	-  patched for 64 bit (M.Killenberg)

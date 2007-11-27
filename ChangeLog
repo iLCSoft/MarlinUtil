@@ -1,3 +1,43 @@
+2007-11-23 16:23  engels
+
+	* BuildSetup.cmake: updated for ilcsoft release v01-03
+
+2007-11-23 16:23  engels
+
+	* doc/release.notes: updated
+
+2007-11-23 11:20  engels
+
+	* src/MarlinUtil.cc: commented out #include <HepPDT/...>
+	  statements, since the code that needs them is also commented out
+
+2007-11-23 11:17  engels
+
+	* include/MarlinUtil.h: moved #include <HepPDT/...> statements to
+	  MarlinUtil.cc (the only place where they are needed)
+
+2007-11-23 11:13  engels
+
+	* src/MarlinCED.cc: removed HepPDT dependency
+
+2007-11-20 12:25  engels
+
+	* src/GNUmakefile: bug fix: object rule for mille was missing
+
+2007-11-20 11:41  engels
+
+	* CMakeLists.txt, include/mille/Mille.h, src/GNUmakefile,
+	  src/mille/Mille.cc: added Millepede II
+	  (http://www.desy.de/~blobel/Mptwo.tgz)
+
+2007-11-16 13:54  engels
+
+	* BuildSetup.cmake: updated for release v01-03
+
+2007-11-07 18:56  gaede
+
+	* ChangeLog, doc/release.notes: ----- version v00-05 ----------
+
 2007-11-07 18:55  gaede
 
 	* CMakeLists.txt:     ---- version v00-05 --------
