@@ -540,132 +540,222 @@ void MarlinCED::drawGEARTelescope() {
 
 
 
-void MarlinCED::drawGEARDetector() {
-  //
-  // code from V.Morgunov, DESY
-  //
+// void MarlinCED::drawGEARDetector() {
+//   //
+//   // code from V.Morgunov, DESY
+//   //
 
-  const gear::TPCParameters&  pTPC      = Global::GEAR->getTPCParameters();
-  const gear::PadRowLayout2D& padLayout = pTPC.getPadLayout();
-  const gear::DoubleVec&      planeExt  = padLayout.getPlaneExtent();
-  float r_min_tpc = planeExt[0];
-  float r_max_tpc = planeExt[1];
-  float z_max_tpc = pTPC.getMaxDriftLength();
-  // ===================================================================
-  //               Get gear file parameters  for calorimeters
-  // ===================================================================
+//   const gear::TPCParameters&  pTPC      = Global::GEAR->getTPCParameters();
+//   const gear::PadRowLayout2D& padLayout = pTPC.getPadLayout();
+//   const gear::DoubleVec&      planeExt  = padLayout.getPlaneExtent();
+//   float r_min_tpc = planeExt[0];
+//   float r_max_tpc = planeExt[1];
+//   float z_max_tpc = pTPC.getMaxDriftLength();
+//   // ===================================================================
+//   //               Get gear file parameters  for calorimeters
+//   // ===================================================================
 
-  const gear::CalorimeterParameters& pECAL_B = 
-    Global::GEAR->getEcalBarrelParameters();
+//   const gear::CalorimeterParameters& pECAL_B = 
+//     Global::GEAR->getEcalBarrelParameters();
 
-  float r_min_ecal_bar = pECAL_B.getExtent()[0];
-  float r_max_ecal_bar = pECAL_B.getExtent()[1]; // wrong, takes the ECAL_1 structure only
-  float z_min_ecal_bar = pECAL_B.getExtent()[2];
-  float z_max_ecal_bar = pECAL_B.getExtent()[3];
+//   float r_min_ecal_bar = pECAL_B.getExtent()[0];
+//   float r_max_ecal_bar = pECAL_B.getExtent()[1]; // wrong, takes the ECAL_1 structure only
+//   float z_min_ecal_bar = pECAL_B.getExtent()[2];
+//   float z_max_ecal_bar = pECAL_B.getExtent()[3];
   
   
-  const gear::CalorimeterParameters& pECAL_E = 
-    Global::GEAR->getEcalEndcapParameters();
-  float r_min_ecal_ecap = pECAL_E.getExtent()[0];
-  float r_max_ecal_ecap = pECAL_E.getExtent()[1];
-  float z_min_ecal_ecap = pECAL_E.getExtent()[2];
-  float z_max_ecal_ecap = pECAL_E.getExtent()[3]; // wrong, takes the ECAL_1 structure only
+//   const gear::CalorimeterParameters& pECAL_E = 
+//     Global::GEAR->getEcalEndcapParameters();
+//   float r_min_ecal_ecap = pECAL_E.getExtent()[0];
+//   float r_max_ecal_ecap = pECAL_E.getExtent()[1];
+//   float z_min_ecal_ecap = pECAL_E.getExtent()[2];
+//   float z_max_ecal_ecap = pECAL_E.getExtent()[3]; // wrong, takes the ECAL_1 structure only
   
   
-  const gear::CalorimeterParameters& pHCAL_B = Global::GEAR->getHcalBarrelParameters();
-  //  _innerHcalRadius = float(pHcalBarrel.getExtent()[0]);
-  float r_min_hcal_bar = pHCAL_B.getExtent()[0];
-  float r_max_hcal_bar = pHCAL_B.getExtent()[1];
-  float z_min_hcal_bar = pHCAL_B.getExtent()[2];
-  float  z_max_hcal_bar = pHCAL_B.getExtent()[3];
+//   const gear::CalorimeterParameters& pHCAL_B = Global::GEAR->getHcalBarrelParameters();
+//   //  _innerHcalRadius = float(pHcalBarrel.getExtent()[0]);
+//   float r_min_hcal_bar = pHCAL_B.getExtent()[0];
+//   float r_max_hcal_bar = pHCAL_B.getExtent()[1];
+//   float z_min_hcal_bar = pHCAL_B.getExtent()[2];
+//   float  z_max_hcal_bar = pHCAL_B.getExtent()[3];
   
 
-  const gear::CalorimeterParameters& pHCAL_E = Global::GEAR->getHcalEndcapParameters();
-  float r_min_hcal_ecap = pHCAL_E.getExtent()[0];
-  float r_max_hcal_ecap = pHCAL_E.getExtent()[1];
-  float z_min_hcal_ecap = pHCAL_E.getExtent()[2];
-  float z_max_hcal_ecap = pHCAL_E.getExtent()[3];
+//   const gear::CalorimeterParameters& pHCAL_E = Global::GEAR->getHcalEndcapParameters();
+//   float r_min_hcal_ecap = pHCAL_E.getExtent()[0];
+//   float r_max_hcal_ecap = pHCAL_E.getExtent()[1];
+//   float z_min_hcal_ecap = pHCAL_E.getExtent()[2];
+//   float z_max_hcal_ecap = pHCAL_E.getExtent()[3];
   
-  /*
-  std::cout<<"  ++++++++++++ Parameters will be used for GeoCylinders to draw geometry   +++++++++++++++ "<<std::endl;
-  std::cout<<" TPC       "<< r_min_tpc      <<"; "<<r_max_tpc      <<"; "<<z_max_tpc<<std::endl;
-  std::cout<<" Ecal Bar  "<< r_min_ecal_bar <<"; "<<r_max_ecal_bar <<"; "<<z_min_ecal_bar <<"; "<<z_max_ecal_bar<<std::endl;
-  std::cout<<" Hcal Bar  "<< r_min_hcal_bar <<"; "<<r_max_hcal_bar <<"; "<<z_min_hcal_bar <<"; "<<z_max_hcal_bar<<std::endl;
-  std::cout<<" Ecal Ecap "<< r_min_ecal_ecap<<"; "<<r_max_ecal_ecap<<"; "<<z_min_ecal_ecap<<"; "<<z_max_ecal_ecap<<std::endl;
-  std::cout<<" Hcal Ecap "<< r_min_hcal_ecap<<"; "<<r_max_hcal_ecap<<"; "<<z_min_hcal_ecap<<"; "<<z_max_hcal_ecap<<std::endl;
-  */  
+//   /*
+//   std::cout<<"  ++++++++++++ Parameters will be used for GeoCylinders to draw geometry   +++++++++++++++ "<<std::endl;
+//   std::cout<<" TPC       "<< r_min_tpc      <<"; "<<r_max_tpc      <<"; "<<z_max_tpc<<std::endl;
+//   std::cout<<" Ecal Bar  "<< r_min_ecal_bar <<"; "<<r_max_ecal_bar <<"; "<<z_min_ecal_bar <<"; "<<z_max_ecal_bar<<std::endl;
+//   std::cout<<" Hcal Bar  "<< r_min_hcal_bar <<"; "<<r_max_hcal_bar <<"; "<<z_min_hcal_bar <<"; "<<z_max_hcal_bar<<std::endl;
+//   std::cout<<" Ecal Ecap "<< r_min_ecal_ecap<<"; "<<r_max_ecal_ecap<<"; "<<z_min_ecal_ecap<<"; "<<z_max_ecal_ecap<<std::endl;
+//   std::cout<<" Hcal Ecap "<< r_min_hcal_ecap<<"; "<<r_max_hcal_ecap<<"; "<<z_min_hcal_ecap<<"; "<<z_max_hcal_ecap<<std::endl;
+//   */  
 
-  //                   It was printed for LDC00Sc +0 +0
-  //   ++++++++++++ Parameters will be used for GeoCylinders to draw geometry   +++++++++++++++
-  //  TPC        386;   1626;           2500
-  //  Ecal Bar  1700;   1840;     0;    2730
-  //  Hcal Bar  1910;   2890;     0;    2800
-  //  Ecal Ecap  300;   1884;  2829.5;  2969.5
-  //  Hcal Ecap  300;   2920;  3018;    3998
+//   //                   It was printed for LDC00Sc +0 +0
+//   //   ++++++++++++ Parameters will be used for GeoCylinders to draw geometry   +++++++++++++++
+//   //  TPC        386;   1626;           2500
+//   //  Ecal Bar  1700;   1840;     0;    2730
+//   //  Hcal Bar  1910;   2890;     0;    2800
+//   //  Ecal Ecap  300;   1884;  2829.5;  2969.5
+//   //  Hcal Ecap  300;   2920;  3018;    3998
   
-  //                   It was printed for LDC00Sc +20 +20
-  //  ++++++++++++ Parameters will be used for GeoCylinders to draw geometry   +++++++++++++++
-  // TPC         386;   1826;           2700
-  // Ecal Bar   1900;   2040;     0;    2930
-  // Hcal Bar   2110;   3090;     0;    3000
-  // Ecal Ecap   300;   2084;  3029.5;  3169.5
-  // Hcal Ecap   300;   3120;  3218;    4198
-  // ===============================================================================
-  // To convert inner radius of polygone to its outer radius to draw correct geocylinders
-  float Cos4  = cos(M_PI/4.0);
-  float Cos8  = cos(M_PI/8.0);
-  float Cos16 = cos(M_PI/16.);
+//   //                   It was printed for LDC00Sc +20 +20
+//   //  ++++++++++++ Parameters will be used for GeoCylinders to draw geometry   +++++++++++++++
+//   // TPC         386;   1826;           2700
+//   // Ecal Bar   1900;   2040;     0;    2930
+//   // Hcal Bar   2110;   3090;     0;    3000
+//   // Ecal Ecap   300;   2084;  3029.5;  3169.5
+//   // Hcal Ecap   300;   3120;  3218;    4198
+//   // ===============================================================================
+//   // To convert inner radius of polygone to its outer radius to draw correct geocylinders
+//   float Cos4  = cos(M_PI/4.0);
+//   float Cos8  = cos(M_PI/8.0);
+//   float Cos16 = cos(M_PI/16.);
   
-  float r_inn_ecal_bar     = r_min_ecal_bar/Cos8;   // convertion of  inner radius of polygone to its outer radius
-  float r_out_ecal_bar     = (r_max_ecal_bar+56.0)/Cos8 ; // + second ECAL structure thickness = 56 mm
-  float r_inn_ecal_ecap    = r_min_ecal_ecap/Cos4;
-  float r_out_ecal_ecap    = r_max_ecal_ecap/Cos8;
-  float thick_ecal_ecap    = 0.5*(z_max_ecal_ecap + 56.0 - z_min_ecal_ecap); // + second ECAL structure thickness = 56 mm
-  float shift_ecal_z_plus  = z_min_ecal_ecap;
-  float shift_ecal_z_minus = z_min_ecal_ecap + 2.0*thick_ecal_ecap;
+//   float r_inn_ecal_bar     = r_min_ecal_bar/Cos8;   // convertion of  inner radius of polygone to its outer radius
+//   float r_out_ecal_bar     = (r_max_ecal_bar+56.0)/Cos8 ; // + second ECAL structure thickness = 56 mm
+//   float r_inn_ecal_ecap    = r_min_ecal_ecap/Cos4;
+//   float r_out_ecal_ecap    = r_max_ecal_ecap/Cos8;
+//   float thick_ecal_ecap    = 0.5*(z_max_ecal_ecap + 56.0 - z_min_ecal_ecap); // + second ECAL structure thickness = 56 mm
+//   float shift_ecal_z_plus  = z_min_ecal_ecap;
+//   float shift_ecal_z_minus = z_min_ecal_ecap + 2.0*thick_ecal_ecap;
   
-  float r_inn_hcal_bar     = r_min_hcal_bar/Cos8;
-  float r_out_hcal_bar     = r_max_hcal_bar/Cos16;
+//   float r_inn_hcal_bar     = r_min_hcal_bar/Cos8;
+//   float r_out_hcal_bar     = r_max_hcal_bar/Cos16;
   
-  float r_inn_hcal_ecap    = r_min_hcal_ecap/Cos4;
-  float r_out_hcal_ecap    = r_max_hcal_ecap/Cos8;
-  float thick_hcal_ecap    = 0.5*(z_max_hcal_ecap - z_min_hcal_ecap + 20.0); // +20 by hand to see hits inside
-  float shift_hcal_z_plus  = z_min_hcal_ecap;
-  float shift_hcal_z_minus = z_min_hcal_ecap + 2.0*thick_hcal_ecap;
-  // ===============================================================================
-  /**
-     GeoCylinder
-     typedef struct {
-     float d;           // radius (outer) of polygone
-     unsigned  sides;   // poligon order
-     float rotate;      // angle degree
-     float z;           // 1/2 length
-     float shift;       // in z
-     unsigned color;
-     } CED_GeoCylinder;
-  */
-  static CED_GeoCylinder geoCylindersANY[] = {       // for ANY Detector Geometry
-    { r_min_tpc,        4, 45.0, z_max_tpc, -z_max_tpc, 0xff      }, // inner TPC
-    { r_inn_ecal_bar ,  8, 22.5, z_max_ecal_bar,  -z_max_ecal_bar,     0x7f7f1f  }, // inner ECAL Barrel
-    { r_out_ecal_bar ,  8, 22.5, z_max_ecal_bar,  -z_max_ecal_bar,     0x7f7f1f  }, // outer ECAL Barrel
-    //      { r_inn_ecal_ecap,  4,  0.0, thick_ecal_ecap,  shift_ecal_z_plus,  0x7f7f1f  }, // inner endcap ECAL +Z
-    //      { r_inn_ecal_ecap,  4,  0.0, thick_ecal_ecap, -shift_ecal_z_minus, 0x7f7f1f  }, // inner endcap ECAL -Z
-    { r_out_ecal_ecap,  8, 22.5, thick_ecal_ecap,  shift_ecal_z_plus,  0x7f7f1f  }, // outer endcap ECAL +Z
-    { r_out_ecal_ecap,  8, 22.5, thick_ecal_ecap, -shift_ecal_z_minus, 0x7f7f1f  }, // outer endcap ECAL -Z
-    { r_inn_hcal_bar ,  8, 22.5, z_max_hcal_bar,  -z_max_hcal_bar,     0x00cf00  }, // inner HCAL Barrel
-    { r_out_hcal_bar , 16,  0.0, z_max_hcal_bar,  -z_max_hcal_bar,     0x00cf00  }, // outer HCAL Barrel
-    //      { r_inn_hcal_ecap,  4,  0.0, thick_hcal_ecap,  shift_hcal_z_plus,  0x00cf00  }, // inner endcap HCAL +Z
-    //      { r_inn_hcal_ecap,  4,  0.0, thick_hcal_ecap, -shift_hcal_z_minus, 0x00cf00  }, // inner endcap HCAL -Z
-    { r_out_hcal_ecap,  8,  0.0, thick_hcal_ecap,  shift_hcal_z_plus,  0x00cf00  }, // outer endcap HCAL +Z
-    { r_out_hcal_ecap,  8,  0.0, thick_hcal_ecap, -shift_hcal_z_minus, 0x00cf00  }  // outer endcap HCAL -Z
-  };
+//   float r_inn_hcal_ecap    = r_min_hcal_ecap/Cos4;
+//   float r_out_hcal_ecap    = r_max_hcal_ecap/Cos8;
+//   float thick_hcal_ecap    = 0.5*(z_max_hcal_ecap - z_min_hcal_ecap + 20.0); // +20 by hand to see hits inside
+//   float shift_hcal_z_plus  = z_min_hcal_ecap;
+//   float shift_hcal_z_minus = z_min_hcal_ecap + 2.0*thick_hcal_ecap;
+//   // ===============================================================================
+//   /**
+//      GeoCylinder
+//      typedef struct {
+//      float d;           // radius (outer) of polygone
+//      unsigned  sides;   // poligon order
+//      float rotate;      // angle degree
+//      float z;           // 1/2 length
+//      float shift;       // in z
+//      unsigned color;
+//      } CED_GeoCylinder;
+//   */
+//   static CED_GeoCylinder geoCylindersANY[] = {       // for ANY Detector Geometry
+//     { r_min_tpc,        4, 45.0, z_max_tpc, -z_max_tpc, 0xff      }, // inner TPC
+//     { r_inn_ecal_bar ,  8, 22.5, z_max_ecal_bar,  -z_max_ecal_bar,     0x7f7f1f  }, // inner ECAL Barrel
+//     { r_out_ecal_bar ,  8, 22.5, z_max_ecal_bar,  -z_max_ecal_bar,     0x7f7f1f  }, // outer ECAL Barrel
+//     //      { r_inn_ecal_ecap,  4,  0.0, thick_ecal_ecap,  shift_ecal_z_plus,  0x7f7f1f  }, // inner endcap ECAL +Z
+//     //      { r_inn_ecal_ecap,  4,  0.0, thick_ecal_ecap, -shift_ecal_z_minus, 0x7f7f1f  }, // inner endcap ECAL -Z
+//     { r_out_ecal_ecap,  8, 22.5, thick_ecal_ecap,  shift_ecal_z_plus,  0x7f7f1f  }, // outer endcap ECAL +Z
+//     { r_out_ecal_ecap,  8, 22.5, thick_ecal_ecap, -shift_ecal_z_minus, 0x7f7f1f  }, // outer endcap ECAL -Z
+//     { r_inn_hcal_bar ,  8, 22.5, z_max_hcal_bar,  -z_max_hcal_bar,     0x00cf00  }, // inner HCAL Barrel
+//     { r_out_hcal_bar , 16,  0.0, z_max_hcal_bar,  -z_max_hcal_bar,     0x00cf00  }, // outer HCAL Barrel
+//     //      { r_inn_hcal_ecap,  4,  0.0, thick_hcal_ecap,  shift_hcal_z_plus,  0x00cf00  }, // inner endcap HCAL +Z
+//     //      { r_inn_hcal_ecap,  4,  0.0, thick_hcal_ecap, -shift_hcal_z_minus, 0x00cf00  }, // inner endcap HCAL -Z
+//     { r_out_hcal_ecap,  8,  0.0, thick_hcal_ecap,  shift_hcal_z_plus,  0x00cf00  }, // outer endcap HCAL +Z
+//     { r_out_hcal_ecap,  8,  0.0, thick_hcal_ecap, -shift_hcal_z_minus, 0x00cf00  }  // outer endcap HCAL -Z
+//   };
   
-  ced_geocylinders(sizeof(geoCylindersANY)/sizeof(CED_GeoCylinder),geoCylindersANY);
-  
-  
-  
-  // ===============================================================================
-  // ===============================================================================
+//   ced_geocylinders(sizeof(geoCylindersANY)/sizeof(CED_GeoCylinder),geoCylindersANY);
   
   
-}
+  
+//   // ===============================================================================
+//   // ===============================================================================
+  
+  
+// }
+
+void MarlinCED::drawGEARDetector(){
+//
+// code from V.Morgunov, MPI
+//
+
+   const gear::TPCParameters&  pTPC      = Global::GEAR->getTPCParameters();
+   const gear::PadRowLayout2D& padLayout = pTPC.getPadLayout();
+   const gear::DoubleVec&      planeExt  = padLayout.getPlaneExtent();
+   float r_min_tpc = planeExt[0];
+   float r_max_tpc = planeExt[1];
+   float z_max_tpc = pTPC.getMaxDriftLength();
+   const gear::CalorimeterParameters& pECAL_B = 
+            Global::GEAR->getEcalBarrelParameters();
+   float r_min_ecal_bar = pECAL_B.getExtent()[0];
+   float r_max_ecal_bar = pECAL_B.getExtent()[1];
+   float z_min_ecal_bar = pECAL_B.getExtent()[2];
+   float z_max_ecal_bar = pECAL_B.getExtent()[3];
+   const gear::CalorimeterParameters& pECAL_E = 
+            Global::GEAR->getEcalEndcapParameters();
+   float r_min_ecal_ecap = pECAL_E.getExtent()[0];
+   float r_max_ecal_ecap = pECAL_E.getExtent()[1];
+   float z_min_ecal_ecap = pECAL_E.getExtent()[2];
+   float z_max_ecal_ecap = pECAL_E.getExtent()[3];
+   const gear::CalorimeterParameters& pHCAL_B = 
+            Global::GEAR->getHcalBarrelParameters();
+   //  _innerHcalRadius = float(pHcalBarrel.getExtent()[0]);
+   float r_min_hcal_bar = pHCAL_B.getExtent()[0];
+   float r_max_hcal_bar = pHCAL_B.getExtent()[1];
+   float z_min_hcal_bar = pHCAL_B.getExtent()[2];
+   float z_max_hcal_bar = pHCAL_B.getExtent()[3];
+   const gear::CalorimeterParameters& pHCAL_R = 
+             Global::GEAR->getHcalRingParameters();
+   float r_min_hcal_ring = pHCAL_R.getExtent()[0];
+    float r_max_hcal_ring = pHCAL_R.getExtent()[1];
+    float z_min_hcal_ring = pHCAL_R.getExtent()[2];
+    float z_max_hcal_ring = pHCAL_R.getExtent()[3];
+   const gear::CalorimeterParameters& pHCAL_E = 
+            Global::GEAR->getHcalEndcapParameters();
+   float r_min_hcal_ecap = pHCAL_E.getExtent()[0];
+   float r_max_hcal_ecap = pHCAL_E.getExtent()[1];
+   float z_min_hcal_ecap = pHCAL_E.getExtent()[2];
+   float z_max_hcal_ecap = pHCAL_E.getExtent()[3];
+// =======================================================================
+//To convert inner radius of polygone to its outer radius
+   float Cos4  = cos(M_PI/4.0);
+   float Cos8  = cos(M_PI/8.0);
+   float Cos16 = cos(M_PI/16.);
+// convertion of  inner radius of polygone to its outer radius
+   float r_inn_ecal_bar     = r_min_ecal_bar/Cos8;  
+   float r_out_ecal_bar     = (r_max_ecal_bar)/Cos8 ;
+   float r_inn_ecal_ecap    = r_min_ecal_ecap/Cos4;
+   float r_out_ecal_ecap    = r_max_ecal_ecap/Cos8;
+   float thick_ecal_ecap    = 0.5*(z_max_ecal_ecap - z_min_ecal_ecap);
+   float shift_ecal_z_plus  = z_min_ecal_ecap;
+   float shift_ecal_z_minus = z_min_ecal_ecap + 2.0*thick_ecal_ecap;
+   float r_inn_hcal_bar     = r_min_hcal_bar/Cos8;
+   float r_out_hcal_bar     = r_max_hcal_bar/Cos16;
+   float r_inn_hcal_ring    = r_min_hcal_ring/Cos4;
+   float r_out_hcal_ring    = r_max_hcal_ring/Cos8;
+   float thick_hcal_ring    = 0.5*(z_max_hcal_ring - 
+		 z_min_hcal_ring + 20.0); // +20 by hand to see hits inside
+   float shift_hcalr_z_plus  = z_min_hcal_ring;
+   float shift_hcalr_z_minus = z_min_hcal_ring + 2.0*thick_hcal_ring;
+   float r_inn_hcal_ecap    = r_min_hcal_ecap/Cos4;
+   float r_out_hcal_ecap    = r_max_hcal_ecap/Cos8;
+   float thick_hcal_ecap    = 0.5*(z_max_hcal_ecap - 
+		 z_min_hcal_ecap + 20.0); // +20 by hand to see hits inside
+   float shift_hcal_z_plus  = z_min_hcal_ecap;
+   float shift_hcal_z_minus = z_min_hcal_ecap + 2.0*thick_hcal_ecap;
+// ========================================================================
+    static CED_GeoCylinder geoCylindersANY[] = {       // for ANY Detector Geometry
+      { r_min_tpc,        40, 0.0, z_max_tpc,       -z_max_tpc,          0xff      }, // inner TPC  40 also temporary
+      { r_max_tpc,        40, 0.0, z_max_tpc,       -z_max_tpc,          0xff      }, // outer TPC  temporary
+      { r_inn_ecal_bar ,  8, 22.5, z_max_ecal_bar,  -z_max_ecal_bar,     0x7f7f1f  }, // inner ECAL Barrel
+      { r_out_ecal_bar ,  8, 22.5, z_max_ecal_bar,  -z_max_ecal_bar,     0x7f7f1f  }, // outer ECAL Barrel
+      { r_out_ecal_ecap,  8, 22.5, thick_ecal_ecap,  shift_ecal_z_plus,  0x7f7f1f  }, // outer endcap ECAL +Z
+      { r_out_ecal_ecap,  8, 22.5, thick_ecal_ecap, -shift_ecal_z_minus, 0x7f7f1f  }, // outer endcap ECAL -Z
+      { r_inn_hcal_bar ,  8, 22.5, z_max_hcal_bar,  -z_max_hcal_bar,     0x00cf00  }, // inner HCAL Barrel
+      { r_out_hcal_bar , 16,  0.0, z_max_hcal_bar,  -z_max_hcal_bar,     0x00cf00  }, // outer HCAL Barrel
+      { r_out_hcal_ring,  8,  0.0, thick_hcal_ring,  shift_hcalr_z_plus,  0x00cf00  }, // outer ring HCAL +Z
+      { r_out_hcal_ring,  8,  0.0, thick_hcal_ring, -shift_hcalr_z_minus, 0x00cf00 } , // outer ring HCAL -Z      
+      { r_out_hcal_ecap,  8,  0.0, thick_hcal_ecap,  shift_hcal_z_plus,  0x00cf00  }, // outer endcap HCAL +Z
+      { r_out_hcal_ecap,  8,  0.0, thick_hcal_ecap, -shift_hcal_z_minus, 0x00cf00  }  // outer endcap HCAL -Z      
+    };
+// ========================================================================
+      ced_geocylinders(sizeof(geoCylindersANY)/sizeof(CED_GeoCylinder),
+		       geoCylindersANY);
+} // End of class DrawGeometry
+
