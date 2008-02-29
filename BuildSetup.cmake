@@ -1,7 +1,10 @@
 #############################################################################
-# cmake build setup for MarlinUtil
+# EXAMPLE cmake build setup for MarlinUtil
 #
-# For building MarlinUtil with cmake type:
+# For building MarlinUtil with cmake:
+#
+# (0) --  modify the pathes and versions of the software packages !!!!
+#
 # (1) $ mkdir build
 # (2) $ cd build
 # (3) $ cmake -C ../BuildSetup.cmake ..

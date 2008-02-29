@@ -5,6 +5,17 @@
 ================================
 
  --------
+| v00-06 |
+ --------
+	* MarlinCED:  modified drawGEARDetector(): incl. Hcal ring/
+	  removed overlap Ecal/Hcal (M.Morgunov)
+
+        * Added Circle class: finds a circle from 3 points. Used by TPCDigi. 
+          (S.Aplin)
+
+        * improved cmake scriots (J.Engels)
+
+ --------
 | v00-05 |
  --------
     - improved versions of Track utility classes (A.Raspereza)
