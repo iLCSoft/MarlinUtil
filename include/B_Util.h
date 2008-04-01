@@ -108,7 +108,7 @@ Point3D Projection(Point3D &p,Point3D &p0,Point3D &p1);
 class Sphere3D {
 //-----------------------------------------------------------------------
  public:
-  static const double RADDEG = 57.2957795130823209;
+  static const double RADDEG;// = 57.2957795130823209;
 
   double r;  // Radius
   double t;  // Theta
