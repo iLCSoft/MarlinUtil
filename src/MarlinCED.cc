@@ -74,8 +74,8 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
   double cFactor = 2.9979251e-4;
     
   double pt = sqrt(px*px + py*py); // hypot(px,py)
-  double pl = pz;
-  double absp = sqrt(px*px + py*py + pz*pz);
+// double pl = pz;
+// double absp = sqrt(px*px + py*py + pz*pz);
 
   // debug
   // std::cout << "|p| = " << absp << "  " << "pt = " << pt << "  " << "pl = " << pl << std::endl;
@@ -685,11 +685,11 @@ void MarlinCED::drawGEARDetector(){
             Global::GEAR->getEcalBarrelParameters();
    float r_min_ecal_bar = pECAL_B.getExtent()[0];
    float r_max_ecal_bar = pECAL_B.getExtent()[1];
-   float z_min_ecal_bar = pECAL_B.getExtent()[2];
+// float z_min_ecal_bar = pECAL_B.getExtent()[2];
    float z_max_ecal_bar = pECAL_B.getExtent()[3];
    const gear::CalorimeterParameters& pECAL_E = 
             Global::GEAR->getEcalEndcapParameters();
-   float r_min_ecal_ecap = pECAL_E.getExtent()[0];
+// float r_min_ecal_ecap = pECAL_E.getExtent()[0];
    float r_max_ecal_ecap = pECAL_E.getExtent()[1];
    float z_min_ecal_ecap = pECAL_E.getExtent()[2];
    float z_max_ecal_ecap = pECAL_E.getExtent()[3];
@@ -698,42 +698,42 @@ void MarlinCED::drawGEARDetector(){
    //  _innerHcalRadius = float(pHcalBarrel.getExtent()[0]);
    float r_min_hcal_bar = pHCAL_B.getExtent()[0];
    float r_max_hcal_bar = pHCAL_B.getExtent()[1];
-   float z_min_hcal_bar = pHCAL_B.getExtent()[2];
+// float z_min_hcal_bar = pHCAL_B.getExtent()[2];
    float z_max_hcal_bar = pHCAL_B.getExtent()[3];
    const gear::CalorimeterParameters& pHCAL_R = 
              Global::GEAR->getHcalRingParameters();
-   float r_min_hcal_ring = pHCAL_R.getExtent()[0];
+// float r_min_hcal_ring = pHCAL_R.getExtent()[0];
     float r_max_hcal_ring = pHCAL_R.getExtent()[1];
     float z_min_hcal_ring = pHCAL_R.getExtent()[2];
     float z_max_hcal_ring = pHCAL_R.getExtent()[3];
    const gear::CalorimeterParameters& pHCAL_E = 
             Global::GEAR->getHcalEndcapParameters();
-   float r_min_hcal_ecap = pHCAL_E.getExtent()[0];
+// float r_min_hcal_ecap = pHCAL_E.getExtent()[0];
    float r_max_hcal_ecap = pHCAL_E.getExtent()[1];
    float z_min_hcal_ecap = pHCAL_E.getExtent()[2];
    float z_max_hcal_ecap = pHCAL_E.getExtent()[3];
 // =======================================================================
 //To convert inner radius of polygone to its outer radius
-   float Cos4  = cos(M_PI/4.0);
+// float Cos4  = cos(M_PI/4.0);
    float Cos8  = cos(M_PI/8.0);
    float Cos16 = cos(M_PI/16.);
 // convertion of  inner radius of polygone to its outer radius
    float r_inn_ecal_bar     = r_min_ecal_bar/Cos8;  
    float r_out_ecal_bar     = (r_max_ecal_bar)/Cos8 ;
-   float r_inn_ecal_ecap    = r_min_ecal_ecap/Cos4;
+//   float r_inn_ecal_ecap    = r_min_ecal_ecap/Cos4;
    float r_out_ecal_ecap    = r_max_ecal_ecap/Cos8;
    float thick_ecal_ecap    = 0.5*(z_max_ecal_ecap - z_min_ecal_ecap);
    float shift_ecal_z_plus  = z_min_ecal_ecap;
    float shift_ecal_z_minus = z_min_ecal_ecap + 2.0*thick_ecal_ecap;
    float r_inn_hcal_bar     = r_min_hcal_bar/Cos8;
    float r_out_hcal_bar     = r_max_hcal_bar/Cos16;
-   float r_inn_hcal_ring    = r_min_hcal_ring/Cos4;
+//   float r_inn_hcal_ring    = r_min_hcal_ring/Cos4;
    float r_out_hcal_ring    = r_max_hcal_ring/Cos8;
    float thick_hcal_ring    = 0.5*(z_max_hcal_ring - 
 		 z_min_hcal_ring + 20.0); // +20 by hand to see hits inside
    float shift_hcalr_z_plus  = z_min_hcal_ring;
    float shift_hcalr_z_minus = z_min_hcal_ring + 2.0*thick_hcal_ring;
-   float r_inn_hcal_ecap    = r_min_hcal_ecap/Cos4;
+//   float r_inn_hcal_ecap    = r_min_hcal_ecap/Cos4;
    float r_out_hcal_ecap    = r_max_hcal_ecap/Cos8;
    float thick_hcal_ecap    = 0.5*(z_max_hcal_ecap - 
 		 z_min_hcal_ecap + 20.0); // +20 by hand to see hits inside
