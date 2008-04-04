@@ -218,9 +218,9 @@ int functParametrisation1(const gsl_vector* par, void* d, gsl_vector* f) {
   float* x = ((struct data*)d)->x;
   float* y = ((struct data*)d)->y;
   float* z = ((struct data*)d)->z;
-  float* ex = ((struct data*)d)->ex;
-  float* ey = ((struct data*)d)->ey;
-  float* ez = ((struct data*)d)->ez;
+//float* ex = ((struct data*)d)->ex;
+//float* ey = ((struct data*)d)->ey;
+//float* ez = ((struct data*)d)->ez;
   float fi = 0.0;
 
   // first dimension
@@ -252,10 +252,10 @@ int dfunctParametrisation1(const gsl_vector* par, void* d, gsl_matrix* J) {
 
   int n    = ((struct data*)d)->n;
   float* z = ((struct data*)d)->z;
-  float* ex = ((struct data*)d)->ex;
-  float* ey = ((struct data*)d)->ey;
-  float* ez = ((struct data*)d)->ez;
-  
+//float* ex = ((struct data*)d)->ex;
+//float* ey = ((struct data*)d)->ey;
+//float* ez = ((struct data*)d)->ez;
+
 
   // calculate Jacobi's matrix J[i][j] = dfi/dparj
 

@@ -524,8 +524,8 @@ float * HelixClass::getDistanceToHelix(HelixClass * helix, float * pos, float * 
   float x02 = helix->getXC();
   float y02 = helix->getYC();
   
-  float rad1 = _radius;
-  float rad2 = helix->getRadius();
+//float rad1 = _radius;
+//float rad2 = helix->getRadius();
 
   
 
