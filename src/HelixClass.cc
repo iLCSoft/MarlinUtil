@@ -516,22 +516,20 @@ void HelixClass::setHelixEdges(float * xStart, float * xEnd) {
 
 }
 
-float * HelixClass::getDistanceToHelix(HelixClass * helix, float * pos, float * mom) {
+// float * HelixClass::getDistanceToHelix(HelixClass * helix, float * pos, float * mom) {
 
-  float x01 = _xCentre;
-  float y01 = _yCentre;
+//   float x01 = _xCentre;
+//   float y01 = _yCentre;
   
-  float x02 = helix->getXC();
-  float y02 = helix->getYC();
+//   float x02 = helix->getXC();
+//   float y02 = helix->getYC();
   
-//float rad1 = _radius;
-//float rad2 = helix->getRadius();
+// //float rad1 = _radius;
+// //float rad2 = helix->getRadius();
 
-  
+//   float distance = sqrt((x01-x02)*(x01-x02)+(y01-y02)*(y01-y02));
 
-  float distance = sqrt((x01-x02)*(x01-x02)+(y01-y02)*(y01-y02));
-
-}
+// }
 
 float HelixClass::getDistanceToLine(LineClass * line) {
 
