@@ -80,6 +80,8 @@ AUX_SOURCE_DIRECTORY( "src" library_sources )
 AUX_SOURCE_DIRECTORY( "src/ann" library_sources )
 AUX_SOURCE_DIRECTORY( "src/mille" library_sources )
 
+SET_SOURCE_FILES_PROPERTIES( "src/ann/kd_pr_search.cpp" PROPERTIES COMPILE_FLAGS "-fno-strict-aliasing" )
+
 # testjobs: list of all sources from which you want to create a binary
 SET( binary_sources "src/testmarlinutil.cc" )
 
