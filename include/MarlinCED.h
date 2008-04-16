@@ -43,19 +43,26 @@ class MarlinCED {
   static void init( Processor* proc ) ;
 
   /** To be called by every processor that uses CED in processEvent() before actually drawing 
-   *  something. Draws the detector with modelID: LDC(0) - default , SID(1), GLD(2).
+   *  something. Draws the detector depending on modelID:
+   * <ul>
+   * <li>0:       use gear file to draw full detector</li>
+   * <li>99999:   draw EUTelescope from gear file</li>
+   * <li>other:   don't draw a detector model</li>
+   * </ul>
    *  
    */
   static void newEvent( Processor* proc , int modelID=0  ) ;
 
   /** To be called by every processor that uses CED in processEvent() after drawing everything. 
-   *  Actually draws the event. The flag waitForKeyboard indicates if after an event is drawn an input from the keyboard is expected (waitForKeyboard=1) or not (waitForKeyboard=0). 
+   *  Actually draws the event. The flag waitForKeyboard indicates if after an event is drawn 
+   *  an input from the keyboard is expected (waitForKeyboard=1) or not (waitForKeyboard=0). 
    */
   static void draw( Processor* proc , int waitForKeyboard=1 ) ;
   
 
   /** Draw all objects in iterator range [first,last) which have a method getPosition() with the given color marker and 
-   *  size in the given layer (default 0). The template takes classes providing a class method 'getPosition()' as template argument.
+   *  size in the given layer (default 0). The template takes classes providing a class method 'getPosition()' 
+   *  as template argument.
    */
   template <class In>
   static void drawObjectsWithPosition(In first, In last, int marker, int size ,unsigned int color, unsigned int layer=0) {
@@ -173,14 +180,25 @@ class MarlinCED {
 
   }
   
-  /** Draws a thin line between vertex-point and end-point of a MC particle, another thin line at the vertex-point symbolising the initial momentum vector and all the hits in the SimTrackerHit- and SimCalorimeterHitCollections which are produced by this MC particle, if toggle drawSimHits is true. These SimHits are drawn with a marker of size and color. All objects are drawn on the same layer.
+  /** Draws a thin line between vertex-point and end-point of a MC particle, another thin line at the vertex-point
+   * symbolising the initial momentum vector and all the hits in the SimTrackerHit- and 
+   * SimCalorimeterHitCollections which are produced by this MC particle, if toggle drawSimHits is true. 
+   * These SimHits are drawn with a marker of size and color. All objects are drawn on the same layer.
    */
-  static void drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event, int marker, int size, unsigned int color, unsigned int layer=0, double bField = 4.0, 
-			     double rmin = 0.0, double zmin = 0.0, double rmax = 3000.0, double zmax = 4500.0, bool drawOnDifferentLayers = true);
-
-  /** Draws the full MC Particle Tree on the layers 1, 2 and 3. On layer 1 the charged particles are displayed and on layer shift-1 their corresponding SimHits. On layer 2 all the neutral particles are shown, again with their SimHits on layer shift-2. The layers 3 and shift-3 are used for the backscattered MC Particles. The variables energyCut, rIn, zIn, rOut and zOut are cut values meant to reduce the number particles displayed; i.e. only particles with energy larger than 'energyCut' and within the cylinder described by rIn, zIn, rOut, zOut are shown.
+  static void drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event, int marker, int size, 
+			     unsigned int color, unsigned int layer=0, double bField = 4.0, 
+			     double rmin = 0.0, double zmin = 0.0, double rmax = 3000.0, double zmax = 4500.0, 
+			     bool drawOnDifferentLayers = true);
+  
+  /** Draws the full MC Particle Tree on the layers 1, 2 and 3. On layer 1 the charged particles are displayed and on 
+   * layer shift-1 their corresponding SimHits. On layer 2 all the neutral particles are shown, again with their 
+   * SimHits on layer shift-2. The layers 3 and shift-3 are used for the backscattered MC Particles. 
+   * The variables energyCut, rIn, zIn, rOut and zOut are cut values meant to reduce the number particles displayed; 
+   * i.e. only particles with energy larger than 'energyCut' and within the cylinder described 
+   * by rIn, zIn, rOut, zOut are shown.
    */
-  static void drawMCParticleTree(LCEvent* event, std::string colNameMC, double energyCut,  double bField = 4.0, double rIn = 0.0, double zIn = 0.0, 
+  static void drawMCParticleTree(LCEvent* event, std::string colNameMC, double energyCut,  
+				 double bField = 4.0, double rIn = 0.0, double zIn = 0.0, 
 				 double rOut = 3000.0 , double zOut = 4500.0);
 
   /** Draws the hits of all SimTrackerHit Collections of event with a marker of size and color on layer
@@ -233,7 +251,8 @@ protected:
   Processor* _last ;
 
   // helper method to draw hit collections by type
-  static void drawHitCollectionsByType(LCEvent* event, const char* type, int marker, int size, unsigned int color, unsigned int layer=0) {
+  static void drawHitCollectionsByType(LCEvent* event, const char* type, int marker, int size, 
+				       unsigned int color, unsigned int layer=0) {
     
     try {
       
@@ -283,7 +302,8 @@ protected:
 
   // FIXME: Not so elegant, refine! Use iterators, templates etc. See drawHitCollectionsByType(...).
   // helper method to draw hit collections by MC Contribution
-  static void drawHitCollectionsByMCContribution(LCEvent* event, MCParticle* MCP, int marker, int size, unsigned int color, unsigned int layer=0) {
+  static void drawHitCollectionsByMCContribution(LCEvent* event, MCParticle* MCP, int marker, int size, 
+						 unsigned int color, unsigned int layer=0) {
     
     std::vector< std::string >::const_iterator iter;
     const std::vector< std::string >* ColNames = event->getCollectionNames();
