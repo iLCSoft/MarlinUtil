@@ -1,3 +1,37 @@
+2008-04-16 16:36  gaede
+
+	* CMakeLists.txt: ------- version v00-07 -----------------
+
+2008-04-16 16:33  gaede
+
+	* include/MarlinCED.h, src/MarlinCED.cc: modfied
+	  MarlinCED::newEvent to not draw detector for modelID=-1
+
+2008-04-16 16:31  gaede
+
+	* src/TrackwiseClusters.cc: fixed 'possible undefined variable'
+	  warning w/ calohitAttachTo
+
+2008-04-16 10:18  engels
+
+	* src/SelectEvents.cc: removed AIDA #includes (not used anywhere in
+	  this processor)
+
+2008-04-09 23:25  samson
+
+	* CMakeLists.txt: Set compiler flag to avoid miscompilation due to
+	  optimisation
+
+2008-04-04 17:13  samson
+
+	* src/MarlinCED.cc: remove/comment unused variables to avoid
+	  compiler warnings
+
+2008-04-04 15:43  gaede
+
+	* ChangeLog, include/HelixClass.h, src/HelixClass.cc: removed
+	  incomplete function: HelixClass::getDistanceToHelix()
+
 2008-04-04 15:12  samson
 
 	* src/: ClusterExtended.cc, ClusterShapes.cc, HelixClass.cc:

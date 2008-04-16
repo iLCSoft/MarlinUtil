@@ -5,6 +5,17 @@
 ================================
 
  --------
+| v00-07 |
+ --------
+   * removed optional AIDA dependency ( SelectEvents.cc )  J.Engels
+
+   * fixed compiler warnings  J.Samson
+
+   * removed  deprecated HelixClass::getDistanceToHelix()
+
+   * modfied MarlinCED::newEvent to not draw detector for modelID=-1
+
+ --------
 | v00-06 |
  --------
 	* MarlinCED:  modified drawGEARDetector(): incl. Hcal ring/
