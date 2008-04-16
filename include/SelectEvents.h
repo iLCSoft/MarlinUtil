@@ -10,21 +10,15 @@ using namespace lcio ;
 using namespace marlin ;
 
 
-/**  Example processor for marlin.
+/** Select a range of events by setting the boolean 'SelectEvents' to true 
+ *  for the events processed by this processor in the range 
+ *  FirstEvent-LastEvent.
  * 
- *  If compiled with MARLIN_USE_AIDA 
- *  it creates a histogram (cloud) of the MCParticle energies.
+ * @param FirstEvent  first processed event where 'SelectEvents' is true
+ * @param LastEvent   last processed event where 'SelectEvents' is true
  * 
- *  <h4>Input - Prerequisites</h4>
- *  Needs the collection of MCParticles.
- *
- *  <h4>Output</h4> 
- *  A histogram.
- * 
- * @param CollectionName Name of the MCParticle collection
- * 
- * @author F. Gaede, DESY
- * @version $Id: SelectEvents.h,v 1.1 2006-02-22 14:41:41 owendt Exp $ 
+ * @author O. Wendt, DESY
+ * @version $Id: SelectEvents.h,v 1.2 2008-04-16 15:03:03 gaede Exp $ 
  */
 
 class SelectEvents : public Processor {
