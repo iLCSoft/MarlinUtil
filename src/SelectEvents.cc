@@ -1,13 +1,6 @@
 #include "SelectEvents.h"
 #include <iostream>
 
-#ifdef MARLIN_USE_AIDA
-#include <marlin/AIDAProcessor.h>
-#include <AIDA/IHistogramFactory.h>
-#include <AIDA/ICloud1D.h>
-//#include <AIDA/IHistogram1D.h>
-#endif
-
 #include <EVENT/LCCollection.h>
 #include <EVENT/MCParticle.h>
 
