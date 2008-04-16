@@ -989,7 +989,7 @@ void TrackwiseClusters::mergeForward() {
     int nHits = (int)hitvec.size();
     int iforw(0);
     int iback(0);
-    CaloHitExtended * calohitAttachTo ;
+    CaloHitExtended * calohitAttachTo = 0  ;
     if (nHits > _nhit_minimal && nHits < _nhit_merge_forward) {
       //      std::cout << "attempt to merge forward" << std::endl;
       //      for (int i=1; i<nHits; ++i) {
