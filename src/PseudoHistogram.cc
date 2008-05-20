@@ -1,5 +1,7 @@
 #include "PseudoHistogram.h"
 
+//SJA:FIXED:added to make gcc4.3 compliant
+#include <cstdlib>
 
 
 

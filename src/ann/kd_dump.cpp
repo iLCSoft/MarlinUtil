@@ -34,6 +34,11 @@
 #include "kd_tree.h"					// kd-tree declarations
 #include "bd_tree.h"					// bd-tree declarations
 
+//SJA:FIXED:added to make gcc4.3 compliant
+#include <cstdlib>
+#include <cstring>
+
+
 using namespace std;					// make std:: available
 
 //----------------------------------------------------------------------

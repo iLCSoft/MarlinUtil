@@ -27,6 +27,10 @@
 #include <ANN/ANNx.h>					// all ANN includes
 #include <ANN/ANNperf.h>				// ANN performance 
 
+//SJA:FIXED:added to make gcc4.3 compliant
+#include <cstdlib>
+
+
 using namespace std;					// make std:: accessible
 
 //----------------------------------------------------------------------

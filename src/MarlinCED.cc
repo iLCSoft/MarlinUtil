@@ -9,6 +9,10 @@
 #include <LCGeometryTypes.h>
 #include "ced_cli.h"
 
+//SJA:FIXED:added to make gcc4.3 compliant
+#include <cstdlib>
+
+
 MarlinCED* MarlinCED::_me = 0 ;
 
 MarlinCED* MarlinCED::instance() {

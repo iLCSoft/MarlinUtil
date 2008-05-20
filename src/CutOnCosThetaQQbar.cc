@@ -1,6 +1,9 @@
 #include "CutOnCosThetaQQbar.h"
 
 #include <cmath>
+//SJA:FIXED:added to make gcc4.3 compliant
+#include <cstdlib>
+
 
 using namespace lcio ;
 using namespace marlin ;
