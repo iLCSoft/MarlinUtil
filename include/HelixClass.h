@@ -43,7 +43,7 @@
  *    z (beam) axis and determination of the distance of closest approach<br>
  *    from arbitrary 3D point to the helix. <br>
  *    @author A. Raspereza (DESY)<br>
- *    @version $Id: HelixClass.h,v 1.15 2008-04-04 13:43:01 gaede Exp $<br>
+ *    @version $Id: HelixClass.h,v 1.16 2008-06-05 13:47:18 rasp Exp $<br>
  *
  */
 
@@ -216,12 +216,7 @@ class HelixClass {
      * pos[3] - position of the point of closest approach <br>
      * mom[3] - momentum of V0 <br>
      */
-  //    float * getDistanceToHelix(HelixClass * helix, float * pos, float * mom);
-
-    /**
-     * Returns distance to Line.
-     */
-    float getDistanceToLine(LineClass * line);
+    float getDistanceToHelix(HelixClass * helix, float * pos, float * mom);
 
     /**
      * Set Edges of helix 
@@ -257,7 +252,6 @@ class HelixClass {
      * Returns charge 
      */
     float getCharge();
-
 
  private:    
     float _momentum[3]; // momentum @ ref point 

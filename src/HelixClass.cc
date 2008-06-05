@@ -516,24 +516,195 @@ void HelixClass::setHelixEdges(float * xStart, float * xEnd) {
 
 }
 
-// float * HelixClass::getDistanceToHelix(HelixClass * helix, float * pos, float * mom) {
+float HelixClass::getDistanceToHelix(HelixClass * helix, float * pos, float * mom) {
 
-//   float x01 = _xCentre;
-//   float y01 = _yCentre;
+  float x01 = getXC();
+  float y01 = getYC();
   
-//   float x02 = helix->getXC();
-//   float y02 = helix->getYC();
+  float x02 = helix->getXC();
+  float y02 = helix->getYC();
   
-// //float rad1 = _radius;
-// //float rad2 = helix->getRadius();
+  float rad1 = getRadius();
+  float rad2 = helix->getRadius();
 
-//   float distance = sqrt((x01-x02)*(x01-x02)+(y01-y02)*(y01-y02));
+  float distance = sqrt((x01-x02)*(x01-x02)+(y01-y02)*(y01-y02));
 
-// }
+  bool singlePoint = true;
 
-float HelixClass::getDistanceToLine(LineClass * line) {
+  float phi1 = 0;
+  float phi2 = 0;
 
-  return 1;
+  if (rad1+rad2<distance) {
+    phi1 = atan2(y02-y01,x02-x01);
+    phi2 = atan2(y01-y02,x01-x02);
+  }
+  else if (distance+rad2<rad1) {
+    phi1 = atan2(y02-y01,x02-x01);
+    phi2 = phi1;
+  }
+  else if (distance+rad1<rad2) {
+    phi1 = atan2(y01-y02,x01-x02);
+    phi2 = phi1;
+  }
+  else {
+    singlePoint = false;
+    float cosAlpha = 0.5*(distance*distance+rad2*rad2-rad1*rad1)/(distance*rad2);
+    float alpha = acos(cosAlpha);
+    float phi0 = atan2(y01-y02,x01-x02);
+    phi1 = phi0 + alpha;
+    phi2 = phi0 - alpha;
+  }
+  
+
+  float ref1[3];
+  float ref2[3];
+  for (int i=0;i<3;++i) {
+    ref1[i]=_referencePoint[i];
+    ref2[i]=helix->getReferencePoint()[i];
+  }
+  
+  float pos1[3];
+  float pos2[3];
+  float mom1[3];
+  float mom2[3];
+
+
+  if (singlePoint ) {
+
+    float xSect1 = x01 + rad1*cos(phi1);
+    float ySect1 = y01 + rad1*sin(phi1);
+    float xSect2 = x02 + rad2*cos(phi2);
+    float ySect2 = y02 + rad2*sin(phi2);
+    float R1 = sqrt(xSect1*xSect1+ySect1*ySect1);
+    float R2 = sqrt(xSect2*xSect2+ySect2*ySect2);
+
+    getPointOnCircle(R1,ref1,pos1);
+    helix->getPointOnCircle(R2,ref2,pos2);
+    
+  }
+  else {    
+
+    float xSect1 = x02 + rad2*cos(phi1);
+    float ySect1 = y02 + rad2*sin(phi1);
+    float xSect2 = x02 + rad2*cos(phi2);
+    float ySect2 = y02 + rad2*sin(phi2);
+
+//     std::cout << "(xSect1,ySect1)=(" << xSect1 << "," << ySect1 << ")" << std::endl;
+//     std::cout << "(xSect2,ySect2)=(" << xSect2 << "," << ySect2 << ")" << std::endl;
+
+    float temp21[3];
+    float temp22[3];
+
+    float phiI2  = atan2(ref2[1]-y02,ref2[0]-x02); 
+    float phiF21 = atan2(ySect1-y02,xSect1-x02);
+    float phiF22 = atan2(ySect2-y02,xSect2-x02);
+    float deltaPhi21 = phiF21 - phiI2;
+    float deltaPhi22 = phiF22 - phiI2;
+    float charge2 = helix->getCharge();
+    float pxy2 = helix->getPXY();
+    float pz2   = helix->getMomentum()[2];
+    if (deltaPhi21 < 0 && charge2 < 0) {
+      deltaPhi21 += _const_2pi;
+    }
+    else if (deltaPhi21 > 0 && charge2 > 0) { 
+      deltaPhi21 -= _const_2pi;
+    }
+
+    if (deltaPhi22 < 0 && charge2 < 0) {
+      deltaPhi22 += _const_2pi;
+    }
+    else if (deltaPhi22 > 0 && charge2 > 0) { 
+      deltaPhi22 -= _const_2pi;
+    }
+
+    float time21 = -charge2*deltaPhi21*rad2/pxy2;
+    float time22 = -charge2*deltaPhi22*rad2/pxy2;
+
+    float Z21 = ref2[2] + time21*pz2;
+    float Z22 = ref2[2] + time22*pz2;
+
+    temp21[0] = xSect1; temp21[1] = ySect1; temp21[2] = Z21;
+    temp22[0] = xSect2; temp22[1] = ySect2; temp22[2] = Z22;
+    
+
+//     std::cout << "temp21 = " << temp21[0] << " " << temp21[1] << " " << temp21[2] << std::endl;
+//     std::cout << "temp22 = " << temp22[0] << " " << temp22[1] << " " << temp22[2] << std::endl;
+
+
+    float temp11[3];
+    float temp12[3];
+
+    float phiI1  = atan2(ref1[1]-y01,ref1[0]-x01); 
+    float phiF11 = atan2(ySect1-y01,xSect1-x01);
+    float phiF12 = atan2(ySect2-y01,xSect2-x01);
+    float deltaPhi11 = phiF11 - phiI1;
+    float deltaPhi12 = phiF12 - phiI1;
+    float charge1 = _charge;
+    float pxy1 = _pxy;
+    float pz1   = _momentum[2];
+    if (deltaPhi11 < 0 && charge1 < 0) {
+      deltaPhi11 += _const_2pi;
+    }
+    else if (deltaPhi11 > 0 && charge1 > 0) { 
+      deltaPhi11 -= _const_2pi;
+    }
+
+    if (deltaPhi12 < 0 && charge1 < 0) {
+      deltaPhi12 += _const_2pi;
+    }
+    else if (deltaPhi12 > 0 && charge1 > 0) { 
+      deltaPhi12 -= _const_2pi;
+    }
+
+    float time11 = -charge1*deltaPhi11*rad1/pxy1;
+    float time12 = -charge1*deltaPhi12*rad1/pxy1;
+
+    float Z11 = ref1[2] + time11*pz1;
+    float Z12 = ref1[2] + time12*pz1;
+
+    temp11[0] = xSect1; temp11[1] = ySect1; temp11[2] = Z11;
+    temp12[0] = xSect2; temp12[1] = ySect2; temp12[2] = Z12;
+    
+//     std::cout << "temp11 = " << temp11[0] << " " << temp11[1] << " " << temp11[2] << std::endl;
+//     std::cout << "temp12 = " << temp12[0] << " " << temp12[1] << " " << temp12[2] << std::endl;
+
+    float Dist1 = 0;
+    float Dist2 = 0;
+
+    for (int j=0;j<3;++j) {
+      Dist1 += (temp11[j]-temp21[j])*(temp11[j]-temp21[j]);
+      Dist2 += (temp12[j]-temp22[j])*(temp12[j]-temp22[j]);
+    }
+
+    if (Dist1<Dist2) {
+      for (int l=0;l<3;++l) {
+	pos1[l] = temp11[l];
+	pos2[l] = temp21[l];
+      }
+    }
+    else {
+       for (int l=0;l<3;++l) {
+	pos1[l] = temp12[l];
+	pos2[l] = temp22[l];
+      }
+    }
+
+  }
+
+  getExtrapolatedMomentum(pos1,mom1);
+  helix->getExtrapolatedMomentum(pos2,mom2);
+
+  float helixDistance = 0;
+
+  for (int i=0;i<3;++i) {
+    helixDistance += (pos1[i] - pos2[i])*(pos1[i] - pos2[i]);
+    pos[i] = 0.5*(pos1[i]+pos2[i]);
+    mom[i] = mom1[i]+mom2[i];
+  }
+  helixDistance = sqrt(helixDistance);
+
+  return helixDistance;
+
 }
 
 void HelixClass::getExtrapolatedMomentum(float * pos, float * momentum) {
