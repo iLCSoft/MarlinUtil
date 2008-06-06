@@ -1,3 +1,25 @@
+2008-06-05 15:47  rasp
+
+	* include/HelixClass.h, src/HelixClass.cc: Updated HelixClass. A
+	  new method added which identifies neutral vertecies constituted
+	  by the two helical tracks
+
+2008-05-20 10:56  aplin
+
+	* include/random.h, src/CutOnCosThetaQQbar.cc, src/MarlinCED.cc,
+	  src/MarlinDrawUtil.cc, src/PseudoHistogram.cc, src/ann/ANN.cpp,
+	  src/ann/kd_dump.cpp: cleaned up and added includes to make gcc4.3
+	  compliant
+
+2008-04-16 17:04  gaede
+
+	* ChangeLog, doc/release.notes: -------- version v00-07
+	  --------------------
+
+2008-04-16 17:03  gaede
+
+	* include/SelectEvents.h: added documentation
+
 2008-04-16 16:36  gaede
 
 	* CMakeLists.txt: ------- version v00-07 -----------------

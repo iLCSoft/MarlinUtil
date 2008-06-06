@@ -5,6 +5,15 @@
 ================================
 
  --------
+| v00-08 |
+ --------
+
+    * Updated HelixClass. (A.Raspereza)
+      added new  method added which identifies neutral vertices
+
+    * cleaned up code and made gcc4.3 compliant (S.Aplin)
+
+ --------
 | v00-07 |
  --------
    * removed optional AIDA dependency ( SelectEvents.cc )  J.Engels
