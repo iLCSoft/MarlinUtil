@@ -39,8 +39,8 @@ class TrackPair {
 
   TrackVec  _trkVec;
   float _distance;
-  float * _vertex;
-  float * _momentum;
+  float  _vertex[3];
+  float  _momentum[3];
   float _mass;
   int _code;
 

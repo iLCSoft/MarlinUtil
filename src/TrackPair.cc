@@ -40,11 +40,15 @@ float TrackPair::getDistance() {
 } 
 
 void TrackPair::setVertex( float * vertex ) {
-  _vertex = vertex;
+  _vertex[0] = vertex[0];
+  _vertex[1] = vertex[1];
+  _vertex[2] = vertex[2];
 }
 
 void TrackPair::setMomentum( float * momentum ) {
-  _momentum = momentum;
+  _momentum[0] = momentum[0];
+  _momentum[1] = momentum[1];
+  _momentum[2] = momentum[2];
 }
 
 float * TrackPair::getVertex() {
