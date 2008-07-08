@@ -5,6 +5,14 @@
 ================================
 
  --------
+| v00-09 |
+ --------
+
+    * src/TrackPair.cc: 
+      New class used to associate tracks coming from neutral vertices
+      (needed by MarlinReco/Tracking/V0Finder) 
+
+ --------
 | v00-08 |
  --------
 
