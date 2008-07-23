@@ -1,3 +1,13 @@
+2008-07-08 13:33  rasp
+
+	* include/TrackPair.h, src/TrackPair.cc: Modified versions of
+	  TrackPair class
+
+2008-07-08 12:34  gaede
+
+	* CMakeLists.txt, ChangeLog, doc/release.notes: ---------------
+	  version: v00-09 ------------------
+
 2008-07-08 10:42  rasp
 
 	* src/TrackPair.cc: New class used to associate tracks coming from

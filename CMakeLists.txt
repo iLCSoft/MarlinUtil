@@ -25,7 +25,7 @@ PROJECT( MarlinUtil )
 
 # project version
 SET( ${PROJECT_NAME}_MAJOR_VERSION 0 )
-SET( ${PROJECT_NAME}_MINOR_VERSION 9 )
+SET( ${PROJECT_NAME}_MINOR_VERSION 10 )
 SET( ${PROJECT_NAME}_PATCH_LEVEL 0 )
 
 
@@ -166,11 +166,18 @@ IF( DEFINED ${PROJECT_NAME}_DEPENDS OR DEFINED BUILD_WITH OR DEFINED LINK_WITH )
     CHECK_DEPS()
 ENDIF()
 
+#------------------ CED -------------------
+LOAD_PACKAGE( CED REQUIRED )
+INCLUDE_DIRECTORIES( ${CED_INCLUDE_DIRS} )
+LINK_LIBRARIES( ${CED_LIBRARIES} )
+#-------------------------------------
+
+
 # LIBRARY
 ADD_LIBRARY( lib_${PROJECT_NAME} ${library_sources} )
 # create symbolic lib target for calling target lib_XXX
 ADD_CUSTOM_TARGET( lib DEPENDS lib_${PROJECT_NAME} )
-# change lib_target properties
+# change lib_target properties 
 SET_TARGET_PROPERTIES( lib_${PROJECT_NAME} PROPERTIES
     # create *nix style library versions + symbolic links
     VERSION ${${PROJECT_NAME}_VERSION}
