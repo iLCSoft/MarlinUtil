@@ -1,3 +1,9 @@
+2008-07-23 16:51  gaede
+
+	* CMakeLists.txt, ChangeLog, doc/release.notes, include/ced.h,
+	  include/ced_cli.h, src/ced.cc, src/ced_cli.cc:  ---- removed
+	  duplicated code from CED  (need CED v00-04-01 )
+
 2008-07-08 13:33  rasp
 
 	* include/TrackPair.h, src/TrackPair.cc: Modified versions of
