@@ -8,7 +8,6 @@
 #include "marlin/Processor.h"
 #include "marlin/Global.h"
 
-#include "ced.h"
 #include "ced_cli.h"
 
 #include <lcio.h>
