@@ -1,3 +1,16 @@
+2008-07-24 18:24  engels
+
+	* MarlinUtilConfig.cmake.in: added export of ced client (ced_cli.h)
+	  include dir
+
+2008-07-24 18:09  engels
+
+	* include/MarlinCED.h: removed include of unnecessary ced.h
+
+2008-07-23 16:53  gaede
+
+	* ChangeLog: --------------- version v00-10 ----------------------
+
 2008-07-23 16:51  gaede
 
 	* CMakeLists.txt, ChangeLog, doc/release.notes, include/ced.h,

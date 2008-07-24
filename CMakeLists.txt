@@ -25,7 +25,7 @@ PROJECT( MarlinUtil )
 
 # project version
 SET( ${PROJECT_NAME}_MAJOR_VERSION 0 )
-SET( ${PROJECT_NAME}_MINOR_VERSION 10 )
+SET( ${PROJECT_NAME}_MINOR_VERSION 11 )
 SET( ${PROJECT_NAME}_PATCH_LEVEL 0 )
 
 
@@ -38,7 +38,7 @@ OPTION( INSTALL_DOC "Set to OFF to skip build/install Documentation" ON )
 
 # project dependencies
 # e.g. SET( ${PROJECT_NAME}_DEPENDS "Marlin MarlinUtil LCIO GEAR CLHEP GSL RAIDA" )
-SET( ${PROJECT_NAME}_DEPENDS "Marlin GEAR LCIO CLHEP GSL" )
+SET( ${PROJECT_NAME}_DEPENDS "Marlin GEAR LCIO CLHEP GSL CED" )
 
 # set default cmake build type to RelWithDebInfo
 # possible options are: None Debug Release RelWithDebInfo MinSizeRel
@@ -167,9 +167,9 @@ IF( DEFINED ${PROJECT_NAME}_DEPENDS OR DEFINED BUILD_WITH OR DEFINED LINK_WITH )
 ENDIF()
 
 #------------------ CED -------------------
-LOAD_PACKAGE( CED REQUIRED )
-INCLUDE_DIRECTORIES( ${CED_INCLUDE_DIRS} )
-LINK_LIBRARIES( ${CED_LIBRARIES} )
+#LOAD_PACKAGE( CED REQUIRED )
+#INCLUDE_DIRECTORIES( ${CED_INCLUDE_DIRS} )
+#LINK_LIBRARIES( ${CED_LIBRARIES} )
 #-------------------------------------
 
 

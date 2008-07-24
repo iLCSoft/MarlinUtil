@@ -5,6 +5,14 @@
 ================================
 
  --------
+| v00-11 |
+ --------
+    * bug fix MarlinCED.h (removed unneeded "#include ced.h" statement)
+    * bug fix in CED dependency:
+        -> MarMarlinUtilConfig.cmake.in now exports ced_cli.h
+        -> needs CED >= v00-05
+ 
+ --------
 | v00-10 |
  --------
     * removed duplicated code from CED 
