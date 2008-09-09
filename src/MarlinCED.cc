@@ -9,6 +9,9 @@
 #include <LCGeometryTypes.h>
 #include "ced_cli.h"
 
+#include <gear/VXDLayerLayout.h>
+#include <gear/VXDParameters.h>
+
 //SJA:FIXED:added to make gcc4.3 compliant
 #include <cstdlib>
 
@@ -85,26 +88,29 @@ void MarlinCED::draw( Processor* proc , int waitForKeyboard ) {
 
 }
 
+
+/**
+ * Improved drawHelix() method. Draws straight lines as well.
+ */
 void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
 			  float px, float py, float pz, int marker, int size, unsigned int col,
 			  float rmin, float rmax, float zmax) {
 
-  // FIXME : check for zmin as well, i.e. cylindrical coordinates
+  	// FIXME : check for zmin as well, i.e. cylindrical coordinates
 
-  
-  double cFactor = 2.9979251e-4;
+	double cFactor = 2.9979251e-4;
     
-  double pt = sqrt(px*px + py*py); // hypot(px,py)
-// double pl = pz;
-// double absp = sqrt(px*px + py*py + pz*pz);
+  	double pt = sqrt(px*px + py*py);
+	// double pl = pz;
+	// double absp = sqrt(px*px + py*py + pz*pz);
 
   // debug
   // std::cout << "|p| = " << absp << "  " << "pt = " << pt << "  " << "pl = " << pl << std::endl;
 
-
-
-  // FIXME: use a parameter for this cut or better this should be a function of the B field, charge and momentum 2006/07/04 OW    
-  if ( (pt >= 0.001) && (pt <= 40.0) ) {
+  // FIXME: use a parameter for this cut or better this should be a function of the B field, charge and momentum 2006/07/04 OW  
+  
+  // SD: FIXME: Adaptive step-number (or get rid of it!) and adaptive draw step!  
+  if ( (pt >= 0.01) && (pt <= 40.0 && charge!=0) ) {
   
     //   double p  = sqrt(px*px + py*py + pz*pz); // hypot(pt,pz);
     
@@ -130,9 +136,26 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
     double x1 =  x ; 
     double y1 =  y ;
     double z1 =  z ;
-    double step = 0.01;  // initial 0.05
+    double step = 0.05;  // initial 0.05
+//    double ptt = 0.01;
     
-    int nSteps  = 50 + int( 150. / pt ) ;
+    //int nSteps  = 1500000 + int( 150. / pt ) ;
+//    if (px>py) {
+//    	ptt = px;}
+//    else ptt = py; 
+    // FIX ME: do the adaptive step number...
+	
+	// cheap adaptive algorithms
+	if (px>1 || py >1 || px <-1 || py <-1 ){
+		step = 0.005;
+		if (px>5 || py >5 || px <-5 || py <-5){
+			step = 0.001;
+			//std::cout << "Above 5 momenta" << std::endl;
+		}
+	}
+	//std::cout << step << std::endl;
+    
+    int nSteps = 1000000;
     
     for (int j = 0; j < nSteps ; j++) {
       
@@ -142,77 +165,99 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
       double y2 = cy + r * sin( phi + sign * alpha ) ;
       double z2 = cz + r * alpha * pz / pt ;
       
-      double r_current  = sqrt( x2*x2 + y2*y2); // hypot( x2, y2 ) 
+      double r_current  = sqrt(x2*x2 + y2*y2); // hypot( x2, y2 ) 
 
+	/*
+	 *  interpolation and loop break
+	 */
+      if( std::abs(z2) > zmax || r_current > rmax  ) {
+      	
+      	double alpha = step*(j+0.5); 
+      	
+     	 x2 = cx + r * cos( phi + sign * alpha ) ;
+      	 y2 = cy + r * sin( phi + sign * alpha ) ;
+      	 z2 = cz + r * alpha * pz / pt ;
+      	std::cout 	<< "Number of steps = " << j << std::endl;
+		break ;
+      }
       
-      // debug
-      /*    
-      std::cout << "step = " << step << "  " << "nSteps = " << nSteps << "  " << "alpha = " << alpha << "  " << "|z2| = " << std::abs(z2) << "  " << "zmax = " << zmax 
-		<< "  " << "r_current = " << r_current << "  " << "rmax = " << rmax << "  " << "rmin = " << rmin << std::endl;
-      */
+		if( r_current >= (rmin+step)) {
+			ced_line( x1, y1, z1, x2, y2, z2 , marker , size, col);
+      	}
+    x1 = x2;
+    y1 = y2;
+    z1 = z2;
 
-
-      if( std::abs(z2) > zmax || r_current > rmax  ) 
-	break ;
-    
-      if( r_current > rmin ) 
-	ced_line( x1, y1, z1, x2, y2, z2 , marker , size, col);	 
-      
-      x1 = x2;
-      y1 = y2;
-      z1 = z2;
     }
 
   }
   else { //if pt < 0.001, draw a straight line from start point to the intersection point of the momentum extrapolation with the outer cylinder shell (rmax,zmax)
-      
 
     float absP =sqrt(px*px + py*py + pz*pz);
     float k = 0.0;
     float kr = 0.0;
     float kz = 0.0;
+    //float k_min = 0.0;
+    //float kr_min = 0.0;
+    //float kz_min = 0.0;
     float summand = 0.0;
     float radicant = 0.0;
+    //float summand_min = 0.0;
+    //float radicant_min = 0.0;
 
     // find intersection with rmax
     summand = (-1)*( absP*(px*x + py*y)/(pow(px,2) + pow(py,2)) );
     radicant = summand*summand - ( (pow(absP,2)*(pow(x,2)+pow(y,2)-pow(rmax,2)))/(pow(px,2) + pow(py,2)) );
     
     if (radicant < 0) {
-
       std::cout << "Error in 'MarlinCED::drawHelix()': Startpoint beyond (rmax,zmax)" << std::endl;
       return;
-
     }
     
     kr = summand + sqrt(radicant);
     kz = ((zmax-z)*absP)/pz;
 
-    if ( kr >= kz ) k = kr;
-    else k = kz;
+	// this has been improved
 
-    if (k < 0.0) {
-      
+	if (z + (kr*pz)/absP > zmax || z + (kr*pz)/absP < -zmax){
+		k = kz;
+	}
+	else k = kr;
+	
+    if (k < 0.0 && k!=kz) {
       std::cout << "Error in 'MarlinCED::drawHelix()': No intersection point with the outer cylinder shell (rmax,zmax) found" << std::endl;
       return;
-
     }
-
-    float xEnd = x + (k*px)/absP;
+    
+	float xEnd = x + (k*px)/absP;
     float yEnd = y + (k*py)/absP;
     float zEnd = z + (k*pz)/absP;
-
-
-    // debug
-    std::cout << "start point = " << "( " << x << ", " << y << ", " << z << " )" << "  " 
-	      << "end point = " << "( " << xEnd << ", " << yEnd << ", " << zEnd << " )" << std::endl;
+    
+    if (rmin != 0){
+		std::cout << "FIX ME: Inner cylinder not taken into account!" << std::endl;
+		return;
+	}
+    
+    ced_line(z, y, z, xEnd, yEnd, zEnd , marker , size, col);
     
 
-    ced_line( x, y, z, xEnd, yEnd, zEnd , marker , size, col);	 
-    
+
+//		// find intersection with rmin
+//	    summand_min = (-1)*( absP*(px*x + py*y)/(pow(px,2) + pow(py,2)) );
+//	    radicant_min = summand_min*summand_min - ( (pow(absP,2)*(pow(x,2)+pow(y,2)-pow(rmin,2)))/(pow(px,2) + pow(py,2)) );
+//		
+//		kr_min = summand_min + sqrt(radicant_min);
+//		//kz_min = ((zmax-z)*absP)/pz;
+//		
+//		k_min = kr_min;
+//	    
+//		// correction for the 'inner circle'
+//		float xStart = x + (k_min*px)/absP;
+//		float yStart = y + (k_min*py)/absP;
+//		float zStart = z + (k_min*pz)/absP;
+	}
   }
 
-} 
 
 void MarlinCED::drawTrajectory(const Trajectory* t, const int marker,
 			       const int size, const unsigned int col,
@@ -604,6 +649,74 @@ void MarlinCED::drawGEARDetector(){
    float r_max_hcal_ecap = pHCAL_E.getExtent()[1];
    float z_min_hcal_ecap = pHCAL_E.getExtent()[2];
    float z_max_hcal_ecap = pHCAL_E.getExtent()[3];
+   
+     // **************************************** //
+  // ** Building VTX Detector ** //
+  // **************************************** //
+
+  //--Get GEAR Parameters--
+  const gear::VXDParameters& pVXDDetMain = Global::GEAR->getVXDParameters();
+  const gear::VXDLayerLayout& pVXDLayerLayout = pVXDDetMain.getVXDLayerLayout();
+
+  int nLayersVTX = pVXDLayerLayout.getNLayers();
+
+  float Pi = acos(-1);
+  float rad2deg = 180.0 / Pi;
+
+  for (int i=0; i<nLayersVTX; ++i) {
+
+    int nLadders = pVXDLayerLayout.getNLadders(i);
+
+    float _ladder_phi0 = float(pVXDLayerLayout.getPhi0(i));
+
+    float _sensitive_distance = float(pVXDLayerLayout.getSensitiveDistance(i));
+    float _sensitive_thickness = float(pVXDLayerLayout.getSensitiveThickness(i));
+    float _sensitive_width = float(pVXDLayerLayout.getSensitiveWidth(i));
+    float _sensitive_length = float(pVXDLayerLayout.getSensitiveLength(i));
+    float _sensitive_offset = float (pVXDLayerLayout.getSensitiveOffset(i));
+
+    float currPhi;
+    float angleLadders = 2*Pi / nLadders;
+    float cosphi, sinphi;
+
+    _sensitive_distance +=0.5* _sensitive_thickness;
+
+    for (int j=0; j<nLadders; ++j) {
+
+      currPhi = _ladder_phi0 + (angleLadders * j);
+      cosphi = cos(currPhi);
+      sinphi = sin(currPhi);
+
+      double * sizes  = new double[3];
+      double * center = new double[3];
+      unsigned int color = 0xFFFFFF;
+
+      center[0] = (_sensitive_distance*cosphi - _sensitive_offset*sinphi);
+      center[1] = (_sensitive_distance*sinphi + _sensitive_offset*cosphi);
+      center[2] = 0.0;
+      sizes[0]  = _sensitive_thickness;
+      sizes[1]  = _sensitive_width;
+      sizes[2]  = _sensitive_length;
+
+      unsigned int layer = 11<<CED_LAYER_SHIFT;
+      
+      double *rotate = new double[3];
+      rotate[2] = currPhi*rad2deg;
+
+      ced_geobox_r( sizes, center, rotate, color, layer);
+
+      delete [] center;
+      delete [] sizes;
+
+
+
+    }
+
+  }
+
+
+   
+   
 // =======================================================================
 //To convert inner radius of polygone to its outer radius
 // float Cos4  = cos(M_PI/4.0);

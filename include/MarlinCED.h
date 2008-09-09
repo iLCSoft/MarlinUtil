@@ -82,6 +82,7 @@ class MarlinCED {
 			unsigned int col,
 			float rmin=10.0, float rmax=3000.0, float zmax=4500.0);
   
+  
   /** Draws a trajectory in the volume described by rmin, rmax, zmax
    */
   static void drawTrajectory(const Trajectory* t, const int marker, 
