@@ -33,11 +33,10 @@ SET( ${PROJECT_NAME}_PATCH_LEVEL 0 )
 
 # project options
 OPTION( BUILD_SHARED_LIBS "Set to OFF to build static libraries" ON )
-OPTION( BUILD_TESTJOBS "Set to ON to build MarlinUtil testjobs" OFF )
+OPTION( BUILD_32BIT_COMPATIBLE "Set to ON to build in 32 bit compatibility mode" ON )
 OPTION( INSTALL_DOC "Set to OFF to skip build/install Documentation" ON )
 
 # project dependencies
-# e.g. SET( ${PROJECT_NAME}_DEPENDS "Marlin MarlinUtil LCIO GEAR CLHEP GSL RAIDA" )
 SET( ${PROJECT_NAME}_DEPENDS "Marlin GEAR LCIO CLHEP GSL CED" )
 
 # set default cmake build type to RelWithDebInfo
@@ -50,6 +49,28 @@ ENDIF()
 IF( CMAKE_INSTALL_PREFIX STREQUAL "/usr/local" )
     SET( CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}" )
 ENDIF()
+
+#---------------- 32/64 bit issues ---------------------------------------
+IF( CMAKE_SIZEOF_VOID_P EQUAL 4 )
+    MESSAGE( STATUS "32 bit architecture detected" )
+ENDIF()
+
+IF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+    MESSAGE( STATUS "64 bit architecture detected" )
+
+    IF( BUILD_32BIT_COMPATIBLE )
+        IF( COMMAND SET_PROPERTY )
+            SET_PROPERTY(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS 0)
+            SET( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32" )
+        ELSE()
+            MESSAGE( FATAL_ERROR "to build in 32 bit compatibility mode you need cmake >= 2.6" )
+        ENDIF()
+        MESSAGE( STATUS "Build in 32 bit compatibility mode" )
+    ELSE()
+        MESSAGE( STATUS "Build in native 64 bit mode" )
+    ENDIF()
+ENDIF()
+#-------------------------------------------------------------------------
 
 
 ### INCLUDES #################################################################
@@ -69,11 +90,8 @@ INSTALL( DIRECTORY "${PROJECT_SOURCE_DIR}/include"
 # FIXME -pedantic flag crashes under sl4
 ADD_DEFINITIONS( "-Wall -ansi" )
 
-# add debug definitions
-#IF( CMAKE_BUILD_TYPE STREQUAL "Debug" OR
-#    CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo" )
-#    ADD_DEFINITIONS( "-DDEBUG" )
-#ENDIF()
+#----- need long long for int64 for now ------
+ADD_DEFINITIONS( "-Wno-long-long" )
 
 # get list of all source files
 AUX_SOURCE_DIRECTORY( "src" library_sources )
@@ -82,11 +100,8 @@ AUX_SOURCE_DIRECTORY( "src/mille" library_sources )
 
 SET_SOURCE_FILES_PROPERTIES( "src/ann/kd_pr_search.cpp" PROPERTIES COMPILE_FLAGS "-fno-strict-aliasing" )
 
-# testjobs: list of all sources from which you want to create a binary
-SET( binary_sources "src/testmarlinutil.cc" )
-
-# filter out binary sources from the library sources
-LIST( REMOVE_ITEM library_sources ${binary_sources} )
+# filter out testmarlinutil from the library sources
+LIST( REMOVE_ITEM library_sources "src/testmarlinutil.cc" )
 
 ### DOCUMENTATION ############################################################
 
@@ -128,10 +143,8 @@ ENDIF()
 
 
 # library *nix style versioning
-SET( ${PROJECT_NAME}_SOVERSION
-    "${${PROJECT_NAME}_MAJOR_VERSION}.${${PROJECT_NAME}_MINOR_VERSION}" )
-SET( ${PROJECT_NAME}_VERSION
-    "${${PROJECT_NAME}_SOVERSION}.${${PROJECT_NAME}_PATCH_LEVEL}" )
+SET( ${PROJECT_NAME}_SOVERSION "${${PROJECT_NAME}_MAJOR_VERSION}.${${PROJECT_NAME}_MINOR_VERSION}" )
+SET( ${PROJECT_NAME}_VERSION "${${PROJECT_NAME}_SOVERSION}.${${PROJECT_NAME}_PATCH_LEVEL}" )
 
 # add install path to the rpath list
 SET( CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib" )
@@ -166,13 +179,6 @@ IF( DEFINED ${PROJECT_NAME}_DEPENDS OR DEFINED BUILD_WITH OR DEFINED LINK_WITH )
     CHECK_DEPS()
 ENDIF()
 
-#------------------ CED -------------------
-#LOAD_PACKAGE( CED REQUIRED )
-#INCLUDE_DIRECTORIES( ${CED_INCLUDE_DIRS} )
-#LINK_LIBRARIES( ${CED_LIBRARIES} )
-#-------------------------------------
-
-
 # LIBRARY
 ADD_LIBRARY( lib_${PROJECT_NAME} ${library_sources} )
 # create symbolic lib target for calling target lib_XXX
@@ -193,28 +199,9 @@ INSTALL( TARGETS lib_${PROJECT_NAME} DESTINATION lib PERMISSIONS
         GROUP_READ GROUP_EXECUTE
         WORLD_READ WORLD_EXECUTE )
 
-# BINARIES
-IF( BUILD_TESTJOBS )
-    # create symbolic bin target for calling targets bin_XXX
-    ADD_CUSTOM_TARGET( bin )
-   
-    # loop through list of binaries
-    FOREACH( src ${binary_sources} )
-        # create bin_name and bin_target (remove path and extension from files)
-        STRING( REGEX REPLACE ".*\\/(.+)\\..+$" "bin_\\1" bin_target "${src}" )
-        STRING( REGEX REPLACE ".*\\/(.+)\\..+$" "\\1" bin_name "${src}" )
-        # create target for binary
-        ADD_EXECUTABLE( ${bin_target} EXCLUDE_FROM_ALL ${src} )
-        # tell bin target to call this bin_XXX target
-        ADD_DEPENDENCIES( bin ${bin_target} )
-        # avoid conflicts between library and binary target names
-        SET_TARGET_PROPERTIES( ${bin_target} PROPERTIES OUTPUT_NAME ${bin_name} )
-        # link against project library
-        TARGET_LINK_LIBRARIES( ${bin_target} lib_${PROJECT_NAME} )
-        # install binary commando
-        INSTALL( TARGETS ${bin_target} DESTINATION bin )
-    ENDFOREACH()
-ENDIF()
+# MarlinUtil testjob
+ADD_EXECUTABLE( testmarlinutil EXCLUDE_FROM_ALL "src/testmarlinutil.cc" )
+TARGET_LINK_LIBRARIES( testmarlinutil lib_${PROJECT_NAME} )
 
 # create uninstall configuration file 
 CONFIGURE_FILE( "${PROJECT_SOURCE_DIR}/cmake_uninstall.cmake.in"
@@ -222,8 +209,7 @@ CONFIGURE_FILE( "${PROJECT_SOURCE_DIR}/cmake_uninstall.cmake.in"
                 IMMEDIATE @ONLY )
 
 # create uninstall target
-ADD_CUSTOM_TARGET( uninstall
-  "${CMAKE_COMMAND}" -P "${PROJECT_BINARY_DIR}/cmake_uninstall.cmake" )
+ADD_CUSTOM_TARGET( uninstall "${CMAKE_COMMAND}" -P "${PROJECT_BINARY_DIR}/cmake_uninstall.cmake" )
 
 # create configuration file from .in file
 CONFIGURE_FILE( "${PROJECT_SOURCE_DIR}/${PROJECT_NAME}Config.cmake.in"
@@ -239,9 +225,11 @@ MESSAGE( STATUS "BUILD_SHARED_LIBS = ${BUILD_SHARED_LIBS}" )
 MESSAGE( STATUS "CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}" )
 MESSAGE( STATUS "CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}" )
 MESSAGE( STATUS "CMAKE_MODULE_PATH = ${CMAKE_MODULE_PATH}" )
+IF( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+    MESSAGE( STATUS "BUILD_32BIT_COMPATIBLE = ${BUILD_32BIT_COMPATIBLE}" )
+ENDIF()
 MESSAGE( STATUS "${PROJECT_NAME}_DEPENDS = \"${${PROJECT_NAME}_DEPENDS}\"" )
 MESSAGE( STATUS "BUILD_WITH = \"${BUILD_WITH}\"" )
-MESSAGE( STATUS "BUILD_TESTJOBS = ${BUILD_TESTJOBS}" )
 MESSAGE( STATUS "INSTALL_DOC = ${INSTALL_DOC}" )
 MESSAGE( STATUS "Change a value with: cmake -D<Variable>=<Value>" )
 MESSAGE( STATUS "-------------------------------------------------------------------------------" )
@@ -257,15 +245,14 @@ SET( CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
     "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE )
 SET( CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" CACHE PATH
     "Path to custom CMake Modules" FORCE )
-SET( BUILD_TESTJOBS "${BUILD_TESTJOBS}" CACHE BOOL
-    "Set to ON to build MarlinUtil testjobs" FORCE )
 SET( INSTALL_DOC "${INSTALL_DOC}" CACHE BOOL
     "Set to OFF to skip build/install Documentation" FORCE )
 
 # export build settings
 INCLUDE( CMakeExportBuildSettings )
 CMAKE_EXPORT_BUILD_SETTINGS( "${PROJECT_NAME}BuildSettings.cmake" )
+INSTALL( FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}BuildSettings.cmake" DESTINATION lib/cmake )
 
 # export library dependencies (keep this as the last line in the file)
 EXPORT_LIBRARY_DEPENDENCIES( "${PROJECT_NAME}LibDeps.cmake" )
-
+INSTALL( FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}LibDeps.cmake" DESTINATION lib/cmake )
