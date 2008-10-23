@@ -1,3 +1,19 @@
+2008-10-14 14:50  engels
+
+	* CMakeLists.txt, MarlinUtilConfig.cmake.in: added 32 bit
+	  compatibility option
+
+2008-09-09 16:21  darasz
+
+	* include/MarlinCED.h, src/MarlinCED.cc: added drawing of the VTX
+	  detector in drawGEARDetector() [S.Aplin] improved drawing of
+	  neutral particles in drawHelix (straight lines)
+
+2008-07-24 18:26  engels
+
+	* CMakeLists.txt, ChangeLog, doc/release.notes: -------- v00-11
+	  ---------
+
 2008-07-24 18:24  engels
 
 	* MarlinUtilConfig.cmake.in: added export of ced client (ced_cli.h)

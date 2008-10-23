@@ -5,6 +5,15 @@
 ================================
 
  --------
+| v00-12 |
+ --------
+    * added drawing of the VTX detector in drawGEARDetector() [S.Aplin]
+    * improved drawing of neutral particles in drawHelix (straight lines)
+    * made cmake 2.6 compliant
+    * added LIBRARY_DIRS
+    * added 32 bit compatibility build option
+
+ --------
 | v00-11 |
  --------
     * bug fix MarlinCED.h (removed unneeded "#include ced.h" statement)
