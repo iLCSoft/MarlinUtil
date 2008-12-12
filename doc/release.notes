@@ -5,6 +5,11 @@
 ================================
 
  --------
+| v00-13 |
+ --------
+    * added helper class CalorimeterHitType for encoding/decoding CalorimeterHit      types (for the ILD detector)
+
+ --------
 | v00-12 |
  --------
     * added drawing of the VTX detector in drawGEARDetector() [S.Aplin]
