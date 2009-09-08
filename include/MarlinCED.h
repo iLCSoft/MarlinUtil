@@ -4,7 +4,8 @@
 #include <cmath>
 
 #include <vector>
-
+#include <iostream>
+#include <iomanip>
 #include "marlin/Processor.h"
 #include "marlin/Global.h"
 
@@ -12,6 +13,7 @@
 
 #include <lcio.h>
 #include <UTIL/LCTypedVector.h>
+#include <UTIL/LCTOOLS.h>
 #include <EVENT/LCCollection.h>
 #include <EVENT/MCParticle.h>
 #include <EVENT/Track.h>
@@ -36,6 +38,7 @@ class MarlinCED {
  public:
   static MarlinCED* instance() ;
   
+  LCEvent* _currEvent;
   
   /** To be called by every processor that uses CED in intit(). 
    */
@@ -50,7 +53,7 @@ class MarlinCED {
    * </ul>
    *  
    */
-  static void newEvent( Processor* proc , int modelID=0  ) ;
+  static void newEvent( Processor* proc , int modelID=0, LCEvent* evt=0  ) ;
 
   /** To be called by every processor that uses CED in processEvent() after drawing everything. 
    *  Actually draws the event. The flag waitForKeyboard indicates if after an event is drawn 
@@ -58,6 +61,8 @@ class MarlinCED {
    */
   static void draw( Processor* proc , int waitForKeyboard=1 ) ;
   
+  static MCParticle * getMCParticleFromID(int, LCEvent*);
+  static void printMCParticle(MCParticle* mcp, int daughterIndent=0, int motherIndent=0);
 
   /** Draw all objects in iterator range [first,last) which have a method getPosition() with the given color marker and 
    *  size in the given layer (default 0). The template takes classes providing a class method 'getPosition()' 
@@ -66,10 +71,11 @@ class MarlinCED {
   template <class In>
   static void drawObjectsWithPosition(In first, In last, int marker, int size ,unsigned int color, unsigned int layer=0) {
     while( first != last ) {
-      ced_hit( (*first)->getPosition()[0],
+         int id = (*first)->id(); 
+      ced_hit_ID( (*first)->getPosition()[0],
 	       (*first)->getPosition()[1],
 	       (*first)->getPosition()[2],
-	       marker | ( layer << CED_LAYER_SHIFT ) , size , color ) ;
+	       marker | ( layer << CED_LAYER_SHIFT ) , size , color, id ) ;
       ++first ;
     }  
   }
@@ -80,7 +86,7 @@ class MarlinCED {
   static void drawHelix(float b, float charge, float x, float y, float z,
 			float px, float py, float pz, int marker, int size, 
 			unsigned int col,
-			float rmin=10.0, float rmax=3000.0, float zmax=4500.0);
+			float rmin=10.0, float rmax=3000.0, float zmax=4500.0, unsigned int id = 0);
   
   
   /** Draws a trajectory in the volume described by rmin, rmax, zmax
@@ -249,7 +255,6 @@ protected:
   
   Processor* _first ;
   Processor* _last ;
-
   // helper method to draw hit collections by type
   static void drawHitCollectionsByType(LCEvent* event, const char* type, int marker, int size, 
 				       unsigned int color, unsigned int layer=0) {
@@ -314,57 +319,54 @@ protected:
       
       if ( col->getTypeName() == LCIO::SIMTRACKERHIT ) {
 
-	int n = col->getNumberOfElements();
+    	int n = col->getNumberOfElements();
 	
-	for (int i = 0; i < n; ++i) {
+    	for (int i = 0; i < n; ++i) {
 
-	  SimTrackerHit* hit = dynamic_cast<SimTrackerHit*>(col->getElementAt(i));
+    	  SimTrackerHit* hit = dynamic_cast<SimTrackerHit*>(col->getElementAt(i));
 	  
-	  if (hit->getMCParticle() == MCP) {
+    	  if (hit->getMCParticle() == MCP) {
 	    
-	    double x = hit->getPosition()[0];
-	    double y = hit->getPosition()[1];
-	    double z = hit->getPosition()[2];
-	    ced_hit(x,y,z,marker | ( layer << CED_LAYER_SHIFT ),size,color );
+    	    double x = hit->getPosition()[0];
+    	    double y = hit->getPosition()[1];
+    	    double z = hit->getPosition()[2];
+    	    ced_hit_ID(x,y,z,marker | ( layer << CED_LAYER_SHIFT ),size,color, MCP->id());
 
-	  }
-	}
+    	  }
+    	}
       }
 
       if ( col->getTypeName() == LCIO::SIMCALORIMETERHIT ) {
 
-	int n = col->getNumberOfElements();
+    	int n = col->getNumberOfElements();
 	
-	for (int i = 0; i < n; ++i) {
+    	for (int i = 0; i < n; ++i) {
 	  
-	  SimCalorimeterHit* hit = dynamic_cast<SimCalorimeterHit*>(col->getElementAt(i));
+    	  SimCalorimeterHit* hit = dynamic_cast<SimCalorimeterHit*>(col->getElementAt(i));
 
-	  int nMC = hit->getNMCContributions();
+    	  int nMC = hit->getNMCContributions();
 
-	  bool found = false;
-	  for (int j = 0; j < nMC; ++j) {
-	    if (hit->getParticleCont(j) == MCP) {
-	      found = true; 
-	      break;
-	    }
-	  }  
-	  
-	  if (found) {
-  
-	    double x = hit->getPosition()[0];
-	    double y = hit->getPosition()[1];
-	    double z = hit->getPosition()[2];
-	    ced_hit(x,y,z,marker | ( layer << CED_LAYER_SHIFT ),size,color );
-
-	  }
-	}
+    	  bool found = false;
+    	  for (int j = 0; j < nMC; ++j) {
+    	    if (hit->getParticleCont(j) == MCP) {
+    	      found = true; 
+    	      break;
+    	    }
+    	  }  
+    	  
+    	  if (found) {
+      
+    	    double x = hit->getPosition()[0];
+    	    double y = hit->getPosition()[1];
+    	    double z = hit->getPosition()[2];
+    	    ced_hit_ID(x,y,z,marker | ( layer << CED_LAYER_SHIFT ),size,color, MCP->id());
+    
+    	  }
+    	}
       }
     }
-    
   }
 
-
-  
 } ;
 #endif
 
