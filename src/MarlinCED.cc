@@ -15,7 +15,6 @@
 //SJA:FIXED:added to make gcc4.3 compliant
 #include <cstdlib>
 
-
 MarlinCED* MarlinCED::_me = 0 ;
 
 MarlinCED* MarlinCED::instance() {
@@ -40,11 +39,11 @@ void MarlinCED::init( Processor* proc ) {
 }
 
 
-void MarlinCED::newEvent( Processor* proc , int modelID ) {
+void MarlinCED::newEvent( Processor* proc , int modelID, LCEvent* evt) {
   if( proc == instance()->_first ) {
-
     ced_new_event(); 
-
+    if(evt!=0) 
+        instance()->_currEvent = evt;
 //     //drawDetector(modelID);
 //     if ( modelID == 99999 ) drawGEARTelescope();
 //     else drawGEARDetector();
@@ -68,6 +67,86 @@ void MarlinCED::newEvent( Processor* proc , int modelID ) {
   }
 }
 
+MCParticle* MarlinCED::getMCParticleFromID(int partID, LCEvent* evt) {
+    //SM-H This could probably be improved...
+    LCCollection * mcpcol ;
+    if(partID>0) {
+        if(evt!=0) {
+            try {
+                mcpcol = evt->getCollection("MCParticle");
+                int nelem = mcpcol->getNumberOfElements();
+                for (int ielem(0); ielem < nelem; ++ielem) {
+                    MCParticle * mcp = 
+                    dynamic_cast<MCParticle*>(mcpcol->getElementAt(ielem));
+                    if(mcp->id()==partID) {
+                     //Found particle with appropriate ID
+                         return mcp;
+                    }
+                }             
+            }
+            catch(DataNotAvailableException &e) {
+                 std::cout << "Data not available" << std::endl;
+            }
+        }
+    }
+    //If particle is not in collection, return a null pointer
+    return NULL;
+}
+
+void MarlinCED::printMCParticle(MCParticle* part, int daughterIndent, int motherIndent) {
+    //Define width of numbers, and decimal precision 
+    const int width = 10;
+    const int prec = 2;
+    std::string daughterIndent_str;
+    std::string motherIndent_str;
+    for (int i = 0; i < daughterIndent; i++) {
+        daughterIndent_str.append("->");
+    }
+    for (int i = 0; i < motherIndent; i++) {
+        motherIndent_str.append("<-");
+    }
+    streamlog_out(MESSAGE) << std::endl
+        << motherIndent_str
+        << daughterIndent_str
+        <<  "[   id   ]PDG    |  px      ,  py      ,  pz      |  energy  |gen|[simstat]|  vertex x,      y   ,    z     |  endpoint x,      y  ,   z       |    mass  |  charge  | [parents] - [daughters] |"    
+        << std::endl;
+
+    std::setiosflags(std::ios::fixed);
+    streamlog_out(MESSAGE) << motherIndent_str;
+    streamlog_out(MESSAGE) << daughterIndent_str;
+    streamlog_out(MESSAGE) << std::setfill(' ');
+    streamlog_out(MESSAGE) << "[" << std::setw(8) << part->id() << "]"; 
+    streamlog_out(MESSAGE) << std::setw(7) << part->getPDG() << "|";
+    streamlog_out(MESSAGE) << std::scientific << std::setw(width) << std::setprecision(prec)
+        << std::setw(width) << part->getMomentum()[0] << ","
+        << std::setw(width) << part->getMomentum()[1] << ","
+        << std::setw(width) << part->getMomentum()[2] << "|";
+    streamlog_out(MESSAGE) << std::scientific << std::setw(width) << std::setprecision(prec)
+        << part->getEnergy() << "|";
+    streamlog_out(MESSAGE) << part->getGeneratorStatus() << "  |";
+    streamlog_out(MESSAGE) << LCTOOLS::getSimulatorStatusString( part ).c_str() << "|";
+    streamlog_out(MESSAGE) << std::scientific << std::setw(width) << std::setprecision(prec)
+        << std::setw(width) << part->getVertex()[0] << ","
+        << std::setw(width) << part->getVertex()[1] << ","
+        << std::setw(width) << part->getVertex()[2] << "|";
+    streamlog_out(MESSAGE) << std::scientific << std::setw(width) << std::setprecision(prec)
+        << std::setw(width) << part->getEndpoint()[0] << ", "
+        << std::setw(width) << part->getEndpoint()[1] << ", "
+        << std::setw(width) << part->getEndpoint()[2] << "|";
+    streamlog_out(MESSAGE) << std::scientific << std::setw(width) << std::setprecision(prec)
+        << part->getMass() << "|";
+    streamlog_out(MESSAGE) << std::scientific << std::setw(width) << std::setprecision(prec)
+        << part->getCharge() << "|";
+    streamlog_out(MESSAGE) << "    [" ;
+
+    streamlog_out(MESSAGE) << part->getParents().size();
+    streamlog_out(MESSAGE) << "]    -    [" ;
+    streamlog_out(MESSAGE) << part->getDaughters().size();
+    streamlog_out(MESSAGE) << "] " << std::endl ;
+    streamlog_out(MESSAGE) << std::endl 
+        << "-------------------------------------------------------------------------------- " 
+        << std::endl;
+}
 
 void MarlinCED::draw( Processor* proc , int waitForKeyboard ) {
   
@@ -76,58 +155,63 @@ void MarlinCED::draw( Processor* proc , int waitForKeyboard ) {
     ced_draw_event();
    
     if ( waitForKeyboard == 1 ) {
-      
-      std::cout << "        [ Press return for next event ] " << std::endl ; 
-      getchar();
-
+      std::cout << "[ Press any key for next event ]" << std::endl ; 
+      //SM-H: TODO: Experimental picking code 
+      //std::cout << "[ Press 'p' to enter picking mode, or any key for next event ]" << std::endl ; 
+      char c = getchar();
+      //if(c=='p' || c=='P') {
+      //  std::cout << "Entered picking mode" << std::endl;
+      //  int old_id = 0; //Check whether this was the previous particle selected: if yes, don't reprint it
+      //  for(;;) {
+      //    int id = ced_selected_id();
+      //    //std::cout << id << std::endl;
+      //    if(id>0 && id!=old_id) {
+      //      //Need to get MCParticle from ID -> require knowledge of event
+      //      old_id = id;
+      //      if(instance()->_currEvent!=0) {
+      //        MCParticle* mcp = MarlinCED::getMCParticleFromID(id, instance()->_currEvent);
+      //        if(mcp!=0) {
+      //            printMCParticle(mcp);
+      //        }
+      //      }
+      //    }
+      //    else if(id == 0) { 
+      //        std::cout << "No particle selected" << std::endl;
+      //    }
+      //    //else {
+      //    //  break;
+      //    //}
+      //  }
+      //}
     }
-    
   }
   //   else
   //   ced_send_event();
-
 }
 
 
 /**
  * Improved drawHelix() method. Draws straight lines as well.
  */
+//SM-H: Added id to drawHelix (default zero), which allows for implementation of picking
 void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
 			  float px, float py, float pz, int marker, int size, unsigned int col,
-			  float rmin, float rmax, float zmax) {
+			  float rmin, float rmax, float zmax, unsigned int id)  {
 
   	// FIXME : check for zmin as well, i.e. cylindrical coordinates
 
 	double cFactor = 2.9979251e-4;
-    
+    const double high_pt = 100.0;//Transverse momentum high enough for the particle not to curve noticeably 
   	double pt = sqrt(px*px + py*py);
-	// double pl = pz;
-	// double absp = sqrt(px*px + py*py + pz*pz);
-
-  // debug
-  // std::cout << "|p| = " << absp << "  " << "pt = " << pt << "  " << "pl = " << pl << std::endl;
 
   // FIXME: use a parameter for this cut or better this should be a function of the B field, charge and momentum 2006/07/04 OW  
   
   // SD: FIXME: Adaptive step-number (or get rid of it!) and adaptive draw step!  
-  if ( (pt >= 0.01) && (pt <= 40.0 && charge!=0) ) {
-  
-    //   double p  = sqrt(px*px + py*py + pz*pz); // hypot(pt,pz);
-    
+  if ( (pt >= 0.01) && (pt <= high_pt && charge!=0) ) {
     double r =  pt / ( cFactor * b * std::abs( charge )  ) ;
-    //   double phi = std::atan2( x , y ) ; 
-    
     double sign =  charge > 0 ? 1 : -1 ;
     sign = - sign  ; // FIXME: need to check the convention - but this works !?
-    
     double phi = std::atan2( py , px ) + ( 2. + sign ) * M_PI / 2. ;
-    
-    //   std::cout << "  atan2( py , px ) : " 
-    // 	    << std::atan2( py , px ) 
-    // 	    << " px,py,pz: " << px << ", " << py << ", " << pz 
-    // 	    << " charge:  " << charge 
-    // 	    << std::endl ;
-    
     //center of helix
     double cx = x - ( sign * py * r / pt ) ;
     double cy = y + ( sign * px * r / pt ) ;
@@ -137,12 +221,7 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
     double y1 =  y ;
     double z1 =  z ;
     double step = 0.05;  // initial 0.05
-//    double ptt = 0.01;
     
-    //int nSteps  = 1500000 + int( 150. / pt ) ;
-//    if (px>py) {
-//    	ptt = px;}
-//    else ptt = py; 
     // FIX ME: do the adaptive step number...
 	
 	// cheap adaptive algorithms
@@ -177,12 +256,12 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
      	 x2 = cx + r * cos( phi + sign * alpha ) ;
       	 y2 = cy + r * sin( phi + sign * alpha ) ;
       	 z2 = cz + r * alpha * pz / pt ;
-      	std::cout 	<< "Number of steps = " << j << std::endl;
+      	//std::cout 	<< "Number of steps = " << j << std::endl;
 		break ;
       }
       
 		if( r_current >= (rmin+step)) {
-			ced_line( x1, y1, z1, x2, y2, z2 , marker , size, col);
+			ced_line_ID( x1, y1, z1, x2, y2, z2 , marker , size, col, id);
       	}
     x1 = x2;
     y1 = y2;
@@ -191,72 +270,61 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
     }
 
   }
-  else { //if pt < 0.001, draw a straight line from start point to the intersection point of the momentum extrapolation with the outer cylinder shell (rmax,zmax)
-
-    float absP =sqrt(px*px + py*py + pz*pz);
-    float k = 0.0;
-    float kr = 0.0;
-    float kz = 0.0;
-    //float k_min = 0.0;
-    //float kr_min = 0.0;
-    //float kz_min = 0.0;
-    float summand = 0.0;
-    float radicant = 0.0;
-    //float summand_min = 0.0;
-    //float radicant_min = 0.0;
-
-    // find intersection with rmax
-    summand = (-1)*( absP*(px*x + py*y)/(pow(px,2) + pow(py,2)) );
-    radicant = summand*summand - ( (pow(absP,2)*(pow(x,2)+pow(y,2)-pow(rmax,2)))/(pow(px,2) + pow(py,2)) );
+  //For high momentum tracks, just draw straight line 
+  else if (pt > high_pt) { 
+        std::cout << "pt = " << pt << std::endl;
+        float absP =sqrt(px*px + py*py + pz*pz);
+        float k = 0.0;
+        float kr = 0.0;
+        float kz = 0.0;
+        float summand = 0.0;
+        float radicant = 0.0;
+        
+        // find intersection with rmax
+        summand = (-1)*( absP*(px*x + py*y)/(pow(px,2) + pow(py,2)) );
+        radicant = summand*summand - ( (pow(absP,2)*(pow(x,2)+pow(y,2)-pow(rmax,2)))/(pow(px,2) + pow(py,2)) );
+        
+        if (radicant < 0) {
+          std::cout << "Error in 'MarlinCED::drawHelix()': Startpoint beyond (rmax,zmax)" << std::endl;
+          return;
+        }
+        
+        kr = summand + sqrt(radicant);
+        kz = ((zmax-z)*absP)/pz;
+        
+        // this has been improved
+        
+        if (z + (kr*pz)/absP > zmax || z + (kr*pz)/absP < -zmax){
+        	k = kz;
+        }
+        else k = kr;
+        
+        if (k < 0.0 && k!=kz) {
+          std::cout << "Error in 'MarlinCED::drawHelix()': No intersection point with the outer cylinder shell (rmax,zmax) found" << std::endl;
+          return;
+        }
+        
+        float xEnd = x + (k*px)/absP;
+        float yEnd = y + (k*py)/absP;
+        float zEnd = z + (k*pz)/absP;
+        
+        if (rmin != 0){
+        	std::cout << "FIX ME: Inner cylinder not taken into account!" << std::endl;
+        	return;
+        }
+        
+        ced_line_ID(x, y, z, xEnd, yEnd, zEnd , marker , size, col, id);
     
-    if (radicant < 0) {
-      std::cout << "Error in 'MarlinCED::drawHelix()': Startpoint beyond (rmax,zmax)" << std::endl;
-      return;
+  	}
+    else {
+        std::cout << "Low momentum particle given point instead of helix" << std::endl;
+        const double delta = 0.0001;
+        ced_line_ID(x, y, z, x+delta, y+delta, z+delta, marker , size, col, id);
+
+        //ced_hit ( x,y,z, marker,size , col);
     }
-    
-    kr = summand + sqrt(radicant);
-    kz = ((zmax-z)*absP)/pz;
-
-	// this has been improved
-
-	if (z + (kr*pz)/absP > zmax || z + (kr*pz)/absP < -zmax){
-		k = kz;
-	}
-	else k = kr;
-	
-    if (k < 0.0 && k!=kz) {
-      std::cout << "Error in 'MarlinCED::drawHelix()': No intersection point with the outer cylinder shell (rmax,zmax) found" << std::endl;
-      return;
-    }
-    
-	float xEnd = x + (k*px)/absP;
-    float yEnd = y + (k*py)/absP;
-    float zEnd = z + (k*pz)/absP;
-    
-    if (rmin != 0){
-		std::cout << "FIX ME: Inner cylinder not taken into account!" << std::endl;
-		return;
-	}
-    
-    ced_line(z, y, z, xEnd, yEnd, zEnd , marker , size, col);
-    
-
-
-//		// find intersection with rmin
-//	    summand_min = (-1)*( absP*(px*x + py*y)/(pow(px,2) + pow(py,2)) );
-//	    radicant_min = summand_min*summand_min - ( (pow(absP,2)*(pow(x,2)+pow(y,2)-pow(rmin,2)))/(pow(px,2) + pow(py,2)) );
-//		
-//		kr_min = summand_min + sqrt(radicant_min);
-//		//kz_min = ((zmax-z)*absP)/pz;
-//		
-//		k_min = kr_min;
-//	    
-//		// correction for the 'inner circle'
-//		float xStart = x + (k_min*px)/absP;
-//		float yStart = y + (k_min*py)/absP;
-//		float zStart = z + (k_min*pz)/absP;
-	}
-  }
+}
+  
 
 
 void MarlinCED::drawTrajectory(const Trajectory* t, const int marker,
@@ -266,7 +334,7 @@ void MarlinCED::drawTrajectory(const Trajectory* t, const int marker,
 {
   if (rmax <= rmin || zmax == 0 ) return;
   double stepSize = 5.0; // initial 0.05
-  double nStepKill = int(2*3.14*rmax/stepSize);
+  double nStepKill = int(2*M_PI*rmax/stepSize);
 
   double rmax2 = rmax*rmax, rmin2 = rmin*rmin,xmagxy2;
   double s = - stepSize;
@@ -326,6 +394,7 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
 			       double rmin, double zmin, double rmax, double zmax, bool drawOnDifferentLayers) {
 
 
+  //SM-H: Calls drawHelix with MCP->Iid(), which allows for implementation of picking
   if ( MCP == 0 ) return;
  
   double x1 = MCP->getVertex()[0];
@@ -348,17 +417,20 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
   charge = MCP->getCharge();
 
   // debug
-  // std::cout << bField << "  " << charge << "  " << x1 << "  " << y1 << "  " << z1 << "  " << p1 << "  " << p2 << "  " << p3 << "  " << color << std::endl;
+  std::cout << bField << "  " << charge << "  " << x1 << "  " << y1 << "  " << z1 << "  " << x2 << "  " << y2 << "  " << z2 << "  " << color << " " 
+            << p1 << "  " << p2 << "  " << p3 << "  " << std::endl;
+
 
   bool isCharged       = charge != 0.0;    
   bool isNeutrino      = (abs(MCP->getPDG())==12) || (abs(MCP->getPDG())==14) || (abs(MCP->getPDG())==16);
   bool isBackscattered = MCP->isBackscatter();
     
+  //std::cout << "isCharged = " << isCharged << " isNeutrino = " << isNeutrino << " isBackscattered " << isBackscattered << std::endl;
 
   // charged MC Particles are displayed on layer and their SimHits optionally on (layer + 10)
   if (isCharged && !isNeutrino && !isBackscattered) {
 
-    drawHelix(bField,charge,x1,y1,z1,p1,p2,p3, marker | ( layer << CED_LAYER_SHIFT ), size, color, (float)rmin, (float)rmax, (float)zmax);
+    drawHelix(bField,charge,x1,y1,z1,p1,p2,p3, marker | ( layer << CED_LAYER_SHIFT ), size, color, (float)rmin, (float)rmax, (float)zmax, MCP->id());
     if (drawSimHits) drawHitCollectionsByMCContribution(event,MCP,marker,size+2,color,layer+10);
 
   }
@@ -369,7 +441,7 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
     if (drawOnDifferentLayers) l = layer+1;
     else l = layer;
 
-    ced_line(x1,y1,z1,x2,y2,z2, marker | ( l << CED_LAYER_SHIFT ), size, color);
+    ced_line_ID(x1,y1,z1,x2,y2,z2, marker | ( l << CED_LAYER_SHIFT ), size, color, MCP->id());
 
     if (drawSimHits) {
       if (drawOnDifferentLayers) l = layer+11;
@@ -378,13 +450,13 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
     }
 
   }
-  // backscatterd charged particles and neutrinos are displayed on (layer+2) and their SimHits optionally on (layer + 12)
+  // backscattered charged particles and neutrinos are displayed on (layer+2) and their SimHits optionally on (layer + 12)
   else if (isCharged && !isNeutrino && isBackscattered) {
 
     if (drawOnDifferentLayers) l = layer+2;
     else l = layer;
 
-    drawHelix(bField,charge,x1,y1,z1,p1,p2,p3, marker | ( l << CED_LAYER_SHIFT ), size, color, (float)rmin, (float)rmax, (float)zmax);
+    drawHelix(bField,charge,x1,y1,z1,p1,p2,p3, marker | ( l << CED_LAYER_SHIFT ), size, color, (float)rmin, (float)rmax, (float)zmax, MCP->id());
 
     if (drawSimHits) {
       if (drawOnDifferentLayers) l = layer+12;
@@ -393,13 +465,13 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
     }
 
   }
-  // backscatterd charged particles and neutrinos are displayed on (layer+2) and their SimHits optionally on (layer + 12)
+  // backscattered charged particles and neutrinos are displayed on (layer+2) and their SimHits optionally on (layer + 12)
   else if (!isCharged && isNeutrino || isBackscattered) {
   
     if (drawOnDifferentLayers) l = layer+2;
     else l = layer;
 
-    ced_line(x1,y1,z1,x2,y2,z2, marker | ( l << CED_LAYER_SHIFT ), size, color);
+    ced_line_ID(x1,y1,z1,x2,y2,z2, marker | ( l << CED_LAYER_SHIFT ), size, color, MCP->id());
 
     if (drawSimHits) {
       if (drawOnDifferentLayers) l = layer+12;
@@ -428,41 +500,41 @@ void MarlinCED::drawMCParticleTree(LCEvent* event, std::string colNameMC, double
       
       if ( (col->getTypeName() == LCIO::MCPARTICLE) && (*i == colNameMC) ) {
 	
-	int nMCP = col->getNumberOfElements();
+    	int nMCP = col->getNumberOfElements();
 
-	for(int j=0; j<nMCP; ++j){
-
-	  MCParticle* mcP = dynamic_cast<MCParticle*> ( col->getElementAt( j ) ) ;
-
-	  double energy = mcP->getEnergy();
-
-	  if ( energy >= energyCut ) {
-
-	    const double* rStart = mcP->getVertex();
-	    const double* rEnd   = mcP->getEndpoint();
-
-	    double r2Start_rp = rStart[0]*rStart[0] + rStart[1]*rStart[1];
-	    double zStart     = rStart[2];
-	    
-	    double r2End_rp   = rEnd[0]*rEnd[0] + rEnd[1]*rEnd[1];
-	    double zEnd       = rEnd[2];
-	    
-	    // completely inside innermost detector
-	    bool withinInnerDetector = (r2Start_rp < rIn*rIn) && (r2End_rp < rIn*rIn) && (zStart < zIn) && (zEnd < zIn);
-	    // completely beyond outermost detector not taking into account the calorimeters (because of showering)
-	    bool beyondOuterDetector = (r2Start_rp > rOut*rOut) && (r2End_rp > rOut*rOut) && (zStart > zOut) && (zEnd > zOut);
-	  
-	    if (!withinInnerDetector && !beyondOuterDetector) {
-
-	      unsigned int color = MarlinDrawUtil::getColor(mcP->getPDG());   
-	  
-	      MarlinCED::drawMCParticle(mcP,true,event,2,1,color,1,bField,rIn,zIn,rOut,zOut, true);
-	     
-	    }
-
-	  }
-
-	}
+    	for(int j=0; j<nMCP; ++j){
+    
+    	  MCParticle* mcP = dynamic_cast<MCParticle*> ( col->getElementAt( j ) ) ;
+    
+    	  double energy = mcP->getEnergy();
+    
+    	  if ( energy >= energyCut ) {
+    
+    	    const double* rStart = mcP->getVertex();
+    	    const double* rEnd   = mcP->getEndpoint();
+    
+    	    double r2Start_rp = rStart[0]*rStart[0] + rStart[1]*rStart[1];
+    	    double zStart     = rStart[2];
+    	    
+    	    double r2End_rp   = rEnd[0]*rEnd[0] + rEnd[1]*rEnd[1];
+    	    double zEnd       = rEnd[2];
+    	    
+    	    // completely inside innermost detector
+    	    bool withinInnerDetector = (r2Start_rp < rIn*rIn) && (r2End_rp < rIn*rIn) && (zStart < zIn) && (zEnd < zIn);
+    	    // completely beyond outermost detector not taking into account the calorimeters (because of showering)
+    	    bool beyondOuterDetector = (r2Start_rp > rOut*rOut) && (r2End_rp > rOut*rOut) && (zStart > zOut) && (zEnd > zOut);
+    	  
+    	    if (!withinInnerDetector && !beyondOuterDetector) {
+    
+    	      unsigned int color = MarlinDrawUtil::getColor(mcP->getPDG());   
+    	  
+    	      MarlinCED::drawMCParticle(mcP,true,event,2,1,color,1,bField,rIn,zIn,rOut,zOut, true);
+    	     
+    	    }
+    
+    	  }
+    
+    	}
 
       }
 
@@ -659,9 +731,8 @@ void MarlinCED::drawGEARDetector(){
   const gear::VXDLayerLayout& pVXDLayerLayout = pVXDDetMain.getVXDLayerLayout();
 
   int nLayersVTX = pVXDLayerLayout.getNLayers();
-
-  float Pi = acos(-1);
-  float rad2deg = 180.0 / Pi;
+  
+  float rad2deg = 180.0 / M_PI;
 
   for (int i=0; i<nLayersVTX; ++i) {
 
@@ -676,7 +747,7 @@ void MarlinCED::drawGEARDetector(){
     float _sensitive_offset = float (pVXDLayerLayout.getSensitiveOffset(i));
 
     float currPhi;
-    float angleLadders = 2*Pi / nLadders;
+    float angleLadders = 2*M_PI / nLadders;
     float cosphi, sinphi;
 
     _sensitive_distance +=0.5* _sensitive_thickness;
