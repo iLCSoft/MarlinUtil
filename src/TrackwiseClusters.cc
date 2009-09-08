@@ -58,8 +58,7 @@ TrackwiseClusters::TrackwiseClusters(const std::vector<CalorimeterHitWithAttribu
   _allClusters.clear();
   
 
-  _const_pi    = acos(-1.);
-  _const_2pi = 2.0*_const_pi;
+  _const_2pi = 2.0*M_PI;
   _const_pi_n  = _const_pi/float(_nsymmetry);
   _const_2pi_n = 2.0*_const_pi/float(_nsymmetry);
   _thetaofendcap = (float)atan((double)(_rofbarrel/_zofendcap));
@@ -131,8 +130,7 @@ TrackwiseClusters::TrackwiseClusters(const std::vector<CalorimeterHitWithAttribu
   _allClusters.clear();
   
 
-  _const_pi    = acos(-1.);
-  _const_2pi = 2.0*_const_pi;
+  _const_2pi = 2.0*M_PI;
   _const_pi_n  = _const_pi/float(_nsymmetry);
   _const_2pi_n = 2.0*_const_pi/float(_nsymmetry);
   _thetaofendcap = (float)atan((double)(_rofbarrel/_zofendcap));

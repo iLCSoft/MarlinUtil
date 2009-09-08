@@ -5,9 +5,8 @@
 #include "ced_cli.h"
 
 HelixClass::HelixClass() {
-    _const_pi = acos(-1.0);
-    _const_2pi = 2.0*_const_pi;
-    _const_pi2 = 0.5*_const_pi;
+    _const_2pi = 2.0*M_PI;
+    _const_pi2 = 0.5*M_PI;
     _FCT = 2.99792458E-4;
 }
 
@@ -184,7 +183,7 @@ const float * HelixClass::getReferencePoint() {
 }
 float HelixClass::getPhi0() {
   if (_phi0<0.0)
-    _phi0 += 2*acos(-1.);
+    _phi0 += 2*M_PI;
   return _phi0;
 }
 float HelixClass::getD0() {

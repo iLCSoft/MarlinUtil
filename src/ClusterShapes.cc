@@ -444,7 +444,6 @@ int functParametrisation3(const gsl_vector* par, void* d, gsl_vector* f) {
   double phii = 0.0;
   double fi = 0.0;
   double si = 0.0;
-  const double pi = acos(-1.0);
 
   // first dimension
   for (int i(0); i < n; i++) {
@@ -461,7 +460,7 @@ int functParametrisation3(const gsl_vector* par, void* d, gsl_vector* f) {
   // third dimension
   for (int i(0); i < n; i++) {
     phii = atan2( ( ((double)y[i]) + ((1/omega) - d0 )*cos(Phi0) ), ( ((double)x[i]) - ((1/omega) - d0 )*sin(Phi0) ) );
-    si = (-1.0)*( (sqrt(1+pow(tanL,2)))/omega )*(phii - Phi0 - (omega*pi)/(2*fabs(omega)));
+    si = (-1.0)*( (sqrt(1+pow(tanL,2)))/omega )*(phii - Phi0 - (omega*M_PI)/(2*fabs(omega)));
     fi = ( z0 + (tanL/sqrt(1+pow(tanL,2)))*si ) - ((double)z[i]);
     gsl_vector_set(f,i+2*n,fi);
   }
@@ -487,19 +486,18 @@ int dfunctParametrisation3(const gsl_vector* par, void* d, gsl_matrix* J) {
   // float* z = ((struct data*)d)->z; // not needed
   double phii = 0.0;
   double si = 0.0;
-  const double pi = acos(-1.0);
 
   // calculate Jacobi's matrix J[i][j] = dfi/dparj
 
   // part of Jacobi's matrix corresponding to first dimension
   for (int i(0); i < n; i++) {
     phii = atan2( ( ((double)y[i]) + ((1/omega) - d0 ) * cos(Phi0) ), ( ((double)x[i]) - ((1/omega) - d0 )*sin(Phi0) ) );
-    si = (-1.0)*( (sqrt(1+pow(tanL,2)))/omega )*(phii - Phi0 - (omega*pi)/(2*fabs(omega)));
+    si = (-1.0)*( (sqrt(1+pow(tanL,2)))/omega )*(phii - Phi0 - (omega*M_PI)/(2*fabs(omega)));
 
     gsl_matrix_set(J,i,0,0);
     gsl_matrix_set(J,i,1,((1/omega) - d0) * cos(Phi0) - (1/fabs(omega)) * sin(phii) );
     gsl_matrix_set(J,i,2,((-1.0)*sin(Phi0))/pow(omega,2) - ( (signum(omega))/(pow(fabs(omega),2)) ) * cos(phii) - 
-                   (1/fabs(omega)) * sin(phii) * ( ( ((-1.0)/sqrt(1+pow(tanL,2)))*si) + (pi)/(2*fabs(omega)) - (signum(omega)*omega*pi)/(2*pow(fabs(omega),2)) ) );
+                   (1/fabs(omega)) * sin(phii) * ( ( ((-1.0)/sqrt(1+pow(tanL,2)))*si) + (M_PI)/(2*fabs(omega)) - (signum(omega)*omega*M_PI)/(2*pow(fabs(omega),2)) ) );
     gsl_matrix_set(J,i,3,(-1.0)*sin(Phi0));
     gsl_matrix_set(J,i,4,((-1.0)/fabs(omega))*sin(phii) * ( (omega*tanL*si)/sqrt(pow(1+pow(tanL,2),3)) ) );
 
@@ -508,12 +506,12 @@ int dfunctParametrisation3(const gsl_vector* par, void* d, gsl_matrix* J) {
   // part of Jacobi's matrix corresponding to second dimension
   for (int i(0); i < n; i++) {
     phii = atan2( ( ((double)y[i]) + ((1/omega) - d0 )*cos(Phi0) ), ( ((double)x[i]) - ((1/omega) - d0 )*sin(Phi0) ) );
-    si = (-1.0)*( (sqrt(1+pow(tanL,2)))/omega )*(phii - Phi0 - (omega*pi)/(2*fabs(omega)));
+    si = (-1.0)*( (sqrt(1+pow(tanL,2)))/omega )*(phii - Phi0 - (omega*M_PI)/(2*fabs(omega)));
 
     gsl_matrix_set(J,i+n,0,0);
     gsl_matrix_set(J,i+n,1,((1/omega) - d0)*sin(Phi0) + (1/fabs(omega)) * cos(phii) );
     gsl_matrix_set(J,i+n,2,cos(Phi0)/pow(omega,2) + ( (signum(omega))/(pow(fabs(omega),2)) ) * sin(phii) + 
-                   (1/fabs(omega))*cos(phii) * ( ( ((-1.0)/sqrt(1+pow(tanL,2)))*si) + (pi)/(2*fabs(omega)) - (signum(omega)*omega*pi)/(2*pow(fabs(omega),2)) ) );
+                   (1/fabs(omega))*cos(phii) * ( ( ((-1.0)/sqrt(1+pow(tanL,2)))*si) + (M_PI)/(2*fabs(omega)) - (signum(omega)*omega*M_PI)/(2*pow(fabs(omega),2)) ) );
     gsl_matrix_set(J,i+n,3,cos(Phi0));
     gsl_matrix_set(J,i+n,4,(1/fabs(omega))*cos(phii) * ( (omega*tanL*si)/sqrt(pow(1+pow(tanL,2),3)) ) );
     
@@ -522,7 +520,7 @@ int dfunctParametrisation3(const gsl_vector* par, void* d, gsl_matrix* J) {
   // part of Jacobi's matrix corresponding to third dimension
   for (int i(0); i < n; i++) {
     phii = atan2( ( ((double)y[i]) + ((1/omega) - d0 )*cos(Phi0) ), ( ((double)x[i]) - ((1/omega) - d0 )*sin(Phi0) ) );
-    si = (-1.0)*( (sqrt(1+pow(tanL,2)))/omega )*(phii - Phi0 - (omega*pi)/(2*fabs(omega)));
+    si = (-1.0)*( (sqrt(1+pow(tanL,2)))/omega )*(phii - Phi0 - (omega*M_PI)/(2*fabs(omega)));
 
     gsl_matrix_set(J,i+2*n,0,1.0);
     gsl_matrix_set(J,i+2*n,1,0);
@@ -1052,9 +1050,6 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
    }
   */
 
-
-  double _pi = acos(-1.);
-
   double phi1 = (double)atan2(_yHit[i1]-Y0,_xHit[i1]-X0);
   double phi2 = (double)atan2(_yHit[i2]-Y0,_xHit[i2]-X0);
   double phi3 = (double)atan2(_yHit[i3]-Y0,_xHit[i3]-X0);
@@ -1062,11 +1057,11 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
 // testing bz > 0 hypothesis
 
   if ( phi1 > phi2 ) 
-      phi2 = phi2 + 2.0*_pi;
+      phi2 = phi2 + 2.0*M_PI;
   if ( phi1 > phi3 )
-      phi3 = phi3 + 2.0*_pi;
+      phi3 = phi3 + 2.0*M_PI;
   if ( phi2 > phi3 )
-      phi3 = phi3 + 2.0*_pi;
+      phi3 = phi3 + 2.0*M_PI;
 
   double bz_plus = (phi3 - phi1) / (_zHit[i3]-_zHit[i1]);
   double phi0_plus = phi1 - bz_plus * _zHit[i1];
@@ -1079,11 +1074,11 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
   phi3 = (double)atan2(_yHit[i3]-Y0,_xHit[i3]-X0);
 
   if ( phi1 < phi2 ) 
-      phi2 = phi2 - 2.0*_pi;
+      phi2 = phi2 - 2.0*M_PI;
   if ( phi1 < phi3 )
-      phi3 = phi3 - 2.0*_pi;
+      phi3 = phi3 - 2.0*M_PI;
   if ( phi2 < phi3 )
-      phi3 = phi3 - 2.0*_pi;
+      phi3 = phi3 - 2.0*M_PI;
 
   double bz_minus = (phi3 - phi1) / (_zHit[i3]-_zHit[i1]);
   double phi0_minus = phi1 - bz_minus * _zHit[i1];
@@ -1120,7 +1115,6 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
   }
 
   else if (parametrisation == 3) {  // parameter vector: (z0,Phi0,omega,d0,tanL)
-    double pi    = acos(-1.0);
 
     // debug
     // std::cout << std::setprecision(6) << "InitFit (X0,Y0,R0,bz,phi0) = " << "(" << X0 << "," << Y0 << "," << R0 << "," << bz << "," << phi0 << ")" << std::endl;
@@ -1146,8 +1140,8 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
     
     if (direction == 1) {
 
-      if (tanL >= 0.0) Phi0 += pi; // add pi (see LC-DET-2006-004) //  >= or > ?
-      else Phi0 -= pi; // < or <= ?
+      if (tanL >= 0.0) Phi0 += M_PI; // add pi (see LC-DET-2006-004) //  >= or > ?
+      else Phi0 -= M_PI; // < or <= ?
       
     }
 
@@ -1166,7 +1160,7 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
     // double Phi0 = asin(X0/(R0-d0));
 
     
-    double z0 = (1/bz)*((-1.0)*phi0+Phi0+(omega*pi)/(2.0*fabs(omega)));
+    double z0 = (1/bz)*((-1.0)*phi0+Phi0+(omega*M_PI)/(2.0*fabs(omega)));
 
 
     // debug
@@ -1322,7 +1316,6 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
     phi0 = (double)(-gsl_vector_get(s->x,2)/gsl_vector_get(s->x,4));
   }
   else if (parametrisation == 3) { // (parameter vector: (z0,phi0,omega,d0,tanL)
-    double pi    = acos(-1.0);
 
     double z0    = gsl_vector_get(s->x,0);
     double Phi0  = gsl_vector_get(s->x,1);
@@ -1334,7 +1327,7 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
     Y0   = (double)( (-1)*( (1/omega) - d0 )*cos(Phi0) );
     R0   = (double)( 1/fabs(omega) );
     bz   = (double)( (-1)*(omega/tanL) );
-    phi0 = (double)( ( (z0*omega)/tanL ) + Phi0 + ( (omega*pi)/(2*fabs(omega)) ) );
+    phi0 = (double)( ( (z0*omega)/tanL ) + Phi0 + ( (omega*M_PI)/(2*fabs(omega)) ) );
   }
   else return 1;
 
@@ -1656,7 +1649,7 @@ double ClusterShapes::DistanceHelix(double x, double y, double z, double X0, dou
   double phi  = atan2(y-Y0,x-X0);
   double R    = sqrt( (y-Y0)*(y-Y0) + (x-X0)*(x-X0) );
   double dXY2 = (R-R0)*(R-R0);
-  double _const_2pi = 2.0*acos(-1.0);
+  double _const_2pi = 2.0*M_PI;
   double xN = (bz*z + phi0 - phi)/_const_2pi;
 
   int n1 = 0;
