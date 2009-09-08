@@ -63,6 +63,11 @@ class MarlinCED {
   
   static MCParticle * getMCParticleFromID(int, LCEvent*);
   static void printMCParticle(MCParticle* mcp, int daughterIndent=0, int motherIndent=0);
+  void printMCFamily(MCParticle* part, unsigned int daughterBranches, unsigned int motherBranches, 
+                     unsigned int daughterIndent=0, unsigned int motherIndent=0);
+  void printAndDrawMCFamily(MCParticle* part, LCEvent * evt, unsigned int daughterBranches, unsigned int motherBranches, 
+                            unsigned int daughterIndent=0, unsigned int motherIndent=0);
+
 
   /** Draw all objects in iterator range [first,last) which have a method getPosition() with the given color marker and 
    *  size in the given layer (default 0). The template takes classes providing a class method 'getPosition()' 

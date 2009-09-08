@@ -11,6 +11,9 @@
 
 #include <gear/VXDLayerLayout.h>
 #include <gear/VXDParameters.h>
+#include <gear/GEAR.h>
+#include <gear/BField.h>
+#include <gearimpl/Vector3D.h>
 
 //SJA:FIXED:added to make gcc4.3 compliant
 #include <cstdlib>
@@ -146,6 +149,71 @@ void MarlinCED::printMCParticle(MCParticle* part, int daughterIndent, int mother
     streamlog_out(MESSAGE) << std::endl 
         << "-------------------------------------------------------------------------------- " 
         << std::endl;
+}
+
+//SM-H: Loop recursively through each level of the family hierarchy, up to some specified limit
+void MarlinCED::printMCFamily(MCParticle* part, unsigned int daughterBranches, unsigned int motherBranches,
+                               unsigned int daughterIndent, unsigned int motherIndent) {
+
+    printMCParticle(part, daughterIndent, motherIndent);
+    for (unsigned int i = 0; i < daughterBranches; i++) {
+        for (unsigned int j = 0; j < part->getDaughters().size(); j++) {
+            MCParticle* part_daughter = part->getDaughters()[j];
+            printMCFamily(part_daughter, daughterBranches-1, 0, daughterIndent+1, 0);
+        }
+    }
+    for (unsigned int i = 0; i < motherBranches; i++) {
+        for (unsigned int j = 0; j < part->getParents().size(); j++) {
+            MCParticle* part_mother = part->getParents()[j];
+            printMCFamily(part_mother, 0, motherBranches-1, 0, motherIndent+1);
+        }
+    }
+    return;
+}
+
+//SM-H: Loop recursively through each level of the family hierarchy, up to some specified limit
+//Draw each particle in the hierarchy
+void MarlinCED::printAndDrawMCFamily(MCParticle* part, LCEvent* evt, unsigned int daughterBranches, 
+                                      unsigned int motherBranches, unsigned int daughterIndent, unsigned int motherIndent) {
+
+    double bField = Global::GEAR->getBField().at(gear::Vector3D(0,0,0)).z() ;
+    const gear::TPCParameters& gearTPC = Global::GEAR->getTPCParameters() ;
+
+    //int colour = 0xff00ff;
+    int colour = abs(0xff00ff-abs((daughterIndent-motherIndent)*128));
+    double endpoint_r = gearTPC.getPadLayout().getPlaneExtent()[1];
+    double endpoint_z = gearTPC.getMaxDriftLength();
+    if(gearTPC.getPadLayout().getPlaneExtent()[1] > sqrt(part->getEndpoint()[0]*part->getEndpoint()[0] + part->getEndpoint()[1]*part->getEndpoint()[1]))
+        endpoint_r = sqrt(part->getEndpoint()[0]*part->getEndpoint()[0] + part->getEndpoint()[1]*part->getEndpoint()[1]);
+    if(gearTPC.getMaxDriftLength() > part->getEndpoint()[2])
+        endpoint_z = part->getEndpoint()[2];
+    if(part->getPDG() < 81 || part->getPDG() > 100) {
+        //Ignore internal MC particles and neutrals
+
+        //MarlinCED::newEvent( this, _detModel ) ;
+        int layer = daughterIndent + 1;
+        MarlinCED::drawMCParticle(part, false, evt, 1, 1, colour, layer, bField, 0, 0,endpoint_r, 
+                endpoint_z, false);
+        printMCParticle(part, daughterIndent, motherIndent);
+        //MarlinCED::draw( this, _waitForKeyboard ) ;
+
+    }
+    for (unsigned int i = 0; i < daughterBranches; i++) {
+        for (unsigned int j = 0; j < part->getDaughters().size(); j++) {
+            std::cout << "Daughter of " << part->id() << std::endl;
+            MCParticle* part_daughter = part->getDaughters()[j];
+            printAndDrawMCFamily(part_daughter, evt, daughterBranches-1, 0, daughterIndent+1, 0);
+        }
+    }
+    for (unsigned int i = 0; i < motherBranches; i++) {
+        for (unsigned int j = 0; j < part->getParents().size(); j++) {
+            std::cout << "Mother of " <<  part->id()<< std::endl;
+            MCParticle* part_mother = part->getParents()[j];
+            printAndDrawMCFamily(part_mother, evt, 0, motherBranches-1, 0, motherIndent+1);
+        }
+    }
+
+    return;
 }
 
 void MarlinCED::draw( Processor* proc , int waitForKeyboard ) {
