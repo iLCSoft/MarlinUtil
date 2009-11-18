@@ -4,6 +4,18 @@
 
 ================================
 
+
+ --------
+| v00-14 |
+ --------
+
+        * New helper functions for MarlinCED< print(andDraw)MCFamily
+        * Header file changes associated with new picking/client-server (as in MarlinCED.cc)
+        * src/MarlinCED.cc: SM-H: Added Picking code 
+        * Added a (as yet commented out) version of client server communication
+        * Changed references to pi = acos(-1) to pi = M_PI
+          (Stewart Martin-Haugh)        
+
  --------
 | v00-13 |
  --------
