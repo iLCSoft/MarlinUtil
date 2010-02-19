@@ -181,6 +181,12 @@ ENDIF()
 
 # LIBRARY
 ADD_LIBRARY( lib_${PROJECT_NAME} ${library_sources} )
+
+IF(APPLE)
+  TARGET_LINK_LIBRARIES( lib_${PROJECT_NAME} streamlog )
+ENDIF(APPLE)
+
+
 # create symbolic lib target for calling target lib_XXX
 ADD_CUSTOM_TARGET( lib DEPENDS lib_${PROJECT_NAME} )
 # change lib_target properties 
