@@ -38,6 +38,9 @@ OPTION( INSTALL_DOC "Set to OFF to skip build/install Documentation" ON )
 
 # project dependencies
 SET( ${PROJECT_NAME}_DEPENDS "Marlin GEAR LCIO CLHEP GSL CED" )
+IF(APPLE)
+   SET( ${PROJECT_NAME}_DEPENDS "${${PROJECT_NAME}_DEPENDS} streamlog" )
+ENDIF(APPLE)
 
 # set default cmake build type to RelWithDebInfo
 # possible options are: None Debug Release RelWithDebInfo MinSizeRel
