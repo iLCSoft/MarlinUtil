@@ -17,6 +17,7 @@
 
 //SJA:FIXED:added to make gcc4.3 compliant
 #include <cstdlib>
+#include <cstdio>
 
 MarlinCED* MarlinCED::_me = 0 ;
 
