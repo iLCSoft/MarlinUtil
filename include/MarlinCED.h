@@ -27,12 +27,151 @@
 #include <MarlinDrawUtil.h>
 #include <Trajectory.h>
 
+#include <ctime> //hauke
+
 
 using namespace marlin ;
+
+/*class ObjectIDHandler {
+  public:
+    static int getIDfromIndex(LCCollection* col, int index){
+      i++;
+      std::cout<<"Registration" << "col.getTypeName(): " << col->getTypeName() << " id: " << index << " test i:" << i << std::endl;
+      return(1);
+    } 
+  private:
+    static int i;
+}; */
+
+
+/*
+//hauke hoelbe
+struct particleObject {char *message; };
+
+class idMap{
+   private:
+       static std::vector<particleObject> map;
+   public:
+       static long int add(char *);
+       static char * get(long int);
+}; 
+
+*/
+//struct CEDMapParticleObject{const LCObject *obj; std::string type;};
+struct CEDMapParticleObject{const LCObject *obj;  void (*function)(const LCObject *);};
+//struct CEDMapDoNotFound{void (*function)(const LCObject *); char *col; char *type;};
+
+typedef std::map<const int, CEDMapParticleObject> CEDPickingMap;
+typedef std::map<std::string, void (*)(const LCObject *)> CEDFunctionMap;
+//void (*func)(LCObject *)};
+
+
+template <class T>
+    void printDefault(const LCObject *raw){const T* obj = (T*) raw; std::cout << obj;}
+
+/** Bring the feature to print a LCIO-Objekt given by his ID. 
+ *  To Provide this behavior it is required to register all ids first. 
+ *  This is an Singelton Class, use it with getInstance(). 
+ *  @author Hauke Hoelbe (DESY)
+ *  @version May 2010 
+ */
+
+class CEDPickingHandler{
+    private:
+        /** The pointer to the CEDPickingHandler Objekt 
+         */
+        static CEDPickingHandler *instance;
+
+        /** In this map the id and the CEDMapParticleObject is stored. CEDMapParticleObject contains a pointer to the LCIO-Object and a function pointer 
+         * to print the LCIO-Object 
+         */
+        static CEDPickingMap map;
+
+        /** This map contains the name of the collection or typeName and the function pointer of the function with should be called for this 
+          * collection/type. The Update method looks first for the collection name. This means when the collection name overwrite the typeName.
+         */
+        static CEDFunctionMap funcMap;
+
+        //CEDPickingHandler(); //is not allow to instance this
+        //CEDPickingHandler(const CEDPickingHandler& cc); //not allows to make copies
+        //~CEDPickingHandler();
+
+
+    public:
+        //class
+        /** Returns a pointer to the CEDPickingHandler object 
+         */
+        static CEDPickingHandler& getInstance();
+
+        /** The default print method for MCParticle objects 
+         */
+        static void printMCParticle(const LCObject *);
+
+        /** The default print method for TrackerHit objects 
+         */
+        static void printTrackerHit(const LCObject *);
+
+        /** The default print method for SimTrackerHit objects 
+         */
+        static void printSimTrackerHit(const LCObject *);
+
+        /** The default print method for SimTrackerHit objects 
+         */
+        static void printCalorimeterHit(const LCObject *);
+
+        /** The default print method for SimCalorimeterHit objects 
+         */
+        static void printSimCalorimeterHit(const LCObject *);
+
+        /** The default print method for Vertex objects 
+         */
+        static void printVertex(const LCObject *);
+
+        /** The default print method for ReconstructedParticle objects 
+         */
+        static void printReconstructedParticle(const LCObject *);
+
+        /** The default print method for Track objects 
+         */
+        static void printTrack(const LCObject *);
+
+        /** The default print method for Cluster objects 
+         */
+        static void printCluster(const LCObject *);
+
+        /** Returns 1 if a key was been pressed, otherwise 0. 
+          * (Should be not part of CEDPickingHandler)
+        */
+        static int kbhit(void);
+
+        /** Register all LCIO-objects of the given LCEvent in the CEDPickingHandler map.
+          * This method iterate over all objects how are part of the LCEvent. <br>
+          * For each object, the collection name will searched in the funcMap. If this 
+          * collection name not found in the funcMap the typeName will be searched. 
+          * Now the object pointer, the object id and the given print function from the funcMap 
+          * will be stored in the the CEDPickingHandler map.<br> 
+          * If either the collection name and the typeName not found in the funcMap, this function is not 
+          * able to register the id of the object. The result is that print this object with his id is not possible. 
+         */
+        void update(LCEvent *);
+        
+        /** Print the LCIO-object given by his ID.
+         */
+        void printID(int);
+        
+        /** This method provides to register a (user defined) print function. 
+          * The first argument is the collection- or type-Name of the LCIO Object, the second a pointer of the print function.<br>
+          * Example: pHandler.registerFunction(LCIO::TRACKERHIT, &yourPrintFunction);
+         */
+        void registerFunction(std::string, void (*)(const LCObject *));
+};
+//end hauke hoelbe
+
 
 /** Singleton class to manage access to CED from several processors. All processors using CED
  *  have to use the methods init(), newEvent() and draw().
  */
+
 class MarlinCED {
   
  public:
@@ -61,7 +200,10 @@ class MarlinCED {
    */
   static void draw( Processor* proc , int waitForKeyboard=1 ) ;
   
-  static MCParticle * getMCParticleFromID(int, LCEvent*);
+  //hauke hoelbe: 08.02.2010
+  //static MCParticle * getMCParticleFromID(int, LCEvent*);
+  static void getParticleFromID(int, LCEvent*);
+
   static void printMCParticle(MCParticle* mcp, int daughterIndent=0, int motherIndent=0);
   void printMCFamily(MCParticle* part, unsigned int daughterBranches, unsigned int motherBranches, 
                      unsigned int daughterIndent=0, unsigned int motherIndent=0);
@@ -74,9 +216,20 @@ class MarlinCED {
    *  as template argument.
    */
   template <class In>
-  static void drawObjectsWithPosition(In first, In last, int marker, int size ,unsigned int color, unsigned int layer=0) {
+  static void drawObjectsWithPosition(In first, In last, int marker, int size ,unsigned int color, unsigned int layer=0, char * PickingMessage = "") {
+    //hauke hoelbe
+    //char * pickingMessage = new char[200];
+    
+
+    //std::cout<<"drawObjectsWithPosition register a map id"<< std::endl;
+    //int id;
     while( first != last ) {
-         int id = (*first)->id(); 
+
+         //sprintf(pickingMessage, "Position: %f, %f", (*first)->getPosition()[1], (*first)->getPosition()[2]);
+
+         //id = idMap::add(pickingMessage);
+
+         int id = (*first)->id();
       ced_hit_ID( (*first)->getPosition()[0],
 	       (*first)->getPosition()[1],
 	       (*first)->getPosition()[2],
@@ -84,7 +237,43 @@ class MarlinCED {
       ++first ;
     }  
   }
-  
+
+
+//hauke hoelbe
+  template <class In>
+  static void drawObjectsWithPositionID(LCCollection* col,In first, In last, int marker, int size ,unsigned int color, unsigned int layer=0) {
+    int i=0;
+    while( first != last ) {
+      int id = (*first)->id(); 
+      std::cout << "test!!! " << std::endl;
+      //int id = getIDfromIndex(col,i);
+      ced_hit_ID( (*first)->getPosition()[0],
+	       (*first)->getPosition()[1],
+	       (*first)->getPosition()[2],
+	       marker | ( layer << CED_LAYER_SHIFT ) , size , color, id ) ;
+      ++first ;
+      i++;
+    }  
+  }
+
+ 
+  /********************************
+  * hauke hoelbe: 08.02.2010      *
+  * a print method for testing    *
+  ********************************/
+
+/*
+  template <class In>
+  static void haukePrint(In first, In last, unsigned int id) {
+    while( first != last ) {
+         if(id == (*first)->id()) {
+            std::cout<<"found id: " << id << std::endl;
+            std::cout<<"Position: " << (*first)->getPosition()[1] << " , " << (*first)->getPosition()[2]<< std::endl;
+         }
+      ++first ;
+    }
+  }
+*/ 
 
   /** Draws a helix from the given point(x,y,z) for momentum(px,py,pz) in a B-field b (in Tesla) 
    */
@@ -99,11 +288,11 @@ class MarlinCED {
   static void drawTrajectory(const Trajectory* t, const int marker, 
 			     const int size, const unsigned int col,
 			     const float rmin=10.0, const float rmax=3000.0, 
-			     const float zmax=4500.0) ;
+			     const float zmax=4500.0, unsigned int id=0) ;
 
   /** Draws a 'spike', i.e. a bold arrow, from (x0,y0,z0) to (x1,y1,z1) with color on layer e.g. to display jet thrust axes
    */
-  static void drawSpike(float x0, float y0, float z0, float x1, float y1, float z1, unsigned int color, unsigned int layer);
+  static void drawSpike(float x0, float y0, float z0, float x1, float y1, float z1, unsigned int color, unsigned int layer, unsigned int id=0);
 
   /** Draws the detector using the geometry parameters from GEAR */
   static void drawGEARDetector() ;
@@ -252,9 +441,22 @@ class MarlinCED {
    */
   static void drawRecoParticle(ReconstructedParticle* reco, int marker, int size, unsigned int color, unsigned int layer=0);
 
+
+/*************************/
+  static int getIDfromIndex(LCCollection* col, int index);
+//{
+//      _int_count++;
+//      std::cout<<"Registration" << "col.getTypeName(): " << col->getTypeName() << " id: " << index << " test i:" << _int_count << std::endl;
+//      return(1);
+//}
+private:
+    static int _int_count;
+
+
 protected:
 
-  MarlinCED() : _first(0) , _last(0) {}
+  //hauke hoelbe: 08.02.2010
+  MarlinCED() : _first(0) , _last(0){ _currEvent=0; }
   
   static MarlinCED* _me ;
   
@@ -372,8 +574,14 @@ protected:
     }
   }
 
+
+  
 } ;
+
+
+
 #endif
+
 
 
 
