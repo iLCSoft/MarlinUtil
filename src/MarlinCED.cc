@@ -126,6 +126,12 @@ CEDPickingHandler& CEDPickingHandler::getInstance() {
     return *instance;
 }
 
+//FG: use a template here 
+template <class T>
+void printLCObject( const LCObject* o){
+  streamlog_out( MESSAGE) << (T*) o  << std::endl ;
+}
+
 void CEDPickingHandler::update(LCEvent *evt){
    const std::vector<std::string> *collNames = evt->getCollectionNames();
    const LCCollection *coll;
@@ -137,15 +143,18 @@ void CEDPickingHandler::update(LCEvent *evt){
 
 
     //default print functions
-    printDefaultMap.insert(std::make_pair(LCIO::MCPARTICLE,&printMCParticle));
-    printDefaultMap.insert(std::make_pair(LCIO::TRACKERHIT, &printTrackerHit));
-    printDefaultMap.insert(std::make_pair(LCIO::SIMTRACKERHIT, &printSimTrackerHit));
-    printDefaultMap.insert(std::make_pair(LCIO::CALORIMETERHIT, &printCalorimeterHit));
-    printDefaultMap.insert(std::make_pair(LCIO::SIMCALORIMETERHIT, &printSimCalorimeterHit));
-    printDefaultMap.insert(std::make_pair(LCIO::VERTEX, &printVertex));
-    printDefaultMap.insert(std::make_pair(LCIO::RECONSTRUCTEDPARTICLE, &printReconstructedParticle));
-    printDefaultMap.insert(std::make_pair(LCIO::TRACK, &printTrack));
-    printDefaultMap.insert(std::make_pair(LCIO::CLUSTER, &printCluster));
+
+   //   printDefaultMap.insert(std::make_pair(LCIO::MCPARTICLE,&printMCParticle));
+   printDefaultMap.insert(std::make_pair( LCIO::MCPARTICLE, &printLCObject<MCParticle> ) );
+
+    printDefaultMap.insert(std::make_pair(LCIO::TRACKERHIT, &printLCObject<TrackerHit> ) ) ;
+    printDefaultMap.insert(std::make_pair(LCIO::SIMTRACKERHIT, &printLCObject<SimTrackerHit> ) ) ;
+    printDefaultMap.insert(std::make_pair(LCIO::CALORIMETERHIT, &printLCObject<CalorimeterHit> ) ) ;
+    printDefaultMap.insert(std::make_pair(LCIO::SIMCALORIMETERHIT, &printLCObject<SimCalorimeterHit> ) ) ;
+    printDefaultMap.insert(std::make_pair(LCIO::VERTEX, &printLCObject<Vertex> ) ) ;
+    printDefaultMap.insert(std::make_pair(LCIO::RECONSTRUCTEDPARTICLE, &printLCObject<ReconstructedParticle> ) ) ;
+    printDefaultMap.insert(std::make_pair(LCIO::TRACK, &printLCObject<Track> ) ) ;
+    printDefaultMap.insert(std::make_pair(LCIO::CLUSTER, &printLCObject<Cluster> ) ) ;
 
    //add default print functions. Set it only if the user dont have set his own functions
     for( printDefaultIter = printDefaultMap.begin(); printDefaultIter != printDefaultMap.end(); printDefaultIter++ ) {
@@ -215,89 +224,90 @@ void CEDPickingHandler::printID(int id){
 
 }
 //------------------------------------------------------------------------------------
-void CEDPickingHandler::printVertex(const LCObject *rawObj){
-    Vertex *vertex = (Vertex *) rawObj;
-    streamlog_out(MESSAGE) << vertex;
-    //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header<EVENT::Vertex>() << tail(vertex) <<  lcshort(vertex)  << tail(vertex) << std::endl;
+// //------------------------------------------------------------------------------------
+// void CEDPickingHandler::printVertex(const LCObject *rawObj){
+//     Vertex *vertex = (Vertex *) rawObj;
+//     streamlog_out(MESSAGE) << vertex;
+//     //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header<EVENT::Vertex>() << tail(vertex) <<  lcshort(vertex)  << tail(vertex) << std::endl;
 
-}
+// }
 
-void CEDPickingHandler::printMCParticle(const LCObject *rawObj){
-    MCParticle *mcp = (MCParticle *) rawObj;
-    streamlog_out(MESSAGE) << mcp;
-    //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header<EVENT::MCParticle>() << tail(mcp) << lcshort(mcp)  << tail(mcp) << std::endl;
-}
-void CEDPickingHandler::printTrackerHit(const LCObject *rawObj){
-    TrackerHit *obj = (TrackerHit *) rawObj;
-    streamlog_out(MESSAGE) << obj;
-    //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header(obj) << tail(obj) << lcshort(obj)  << tail(obj) << std::endl;
-}
+// void CEDPickingHandler::printMCParticle(const LCObject *rawObj){
+//     MCParticle *mcp = (MCParticle *) rawObj;
+//     streamlog_out(MESSAGE) << mcp;
+//     //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header<EVENT::MCParticle>() << tail(mcp) << lcshort(mcp)  << tail(mcp) << std::endl;
+// }
+// void CEDPickingHandler::printTrackerHit(const LCObject *rawObj){
+//     TrackerHit *obj = (TrackerHit *) rawObj;
+//     streamlog_out(MESSAGE) << obj;
+//     //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header(obj) << tail(obj) << lcshort(obj)  << tail(obj) << std::endl;
+// }
 
-void CEDPickingHandler::printSimTrackerHit(const LCObject *rawObj){
-    SimTrackerHit *obj = (SimTrackerHit *) rawObj;
-    streamlog_out(MESSAGE) << obj;
-    //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header(obj) << tail(obj) << lcshort(obj)  << tail(obj) << std::endl;
+// void CEDPickingHandler::printSimTrackerHit(const LCObject *rawObj){
+//     SimTrackerHit *obj = (SimTrackerHit *) rawObj;
+//     streamlog_out(MESSAGE) << obj;
+//     //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header(obj) << tail(obj) << lcshort(obj)  << tail(obj) << std::endl;
 
-    /* 
-    streamlog_out(MESSAGE) << "SimTrackerHit:\n" 
-        << "\t\tCellID: " << obj->getCellID() << "\n" 
-        << "\t\tPosition: " << obj->getPosition()[0] << ", " << obj->getPosition()[1] << ", " << obj->getPosition()[2]  << "\n" 
-        << "\t\tdEdx:"<< obj->getdEdx() << "\n" 
-        << "\t\tTime:"<< obj->getTime() << "\n" 
-        << "\t\tMomentum:"<< obj->getMomentum()[0]<<", "<<obj->getMomentum()[1] << ", "<<obj->getMomentum()[2]<<"\n" 
-        << "\t\tPathLength:"<< obj->getPathLength() <<"\n"
-        << std::endl;
-    */
-}
+//     /* 
+//     streamlog_out(MESSAGE) << "SimTrackerHit:\n" 
+//         << "\t\tCellID: " << obj->getCellID() << "\n" 
+//         << "\t\tPosition: " << obj->getPosition()[0] << ", " << obj->getPosition()[1] << ", " << obj->getPosition()[2]  << "\n" 
+//         << "\t\tdEdx:"<< obj->getdEdx() << "\n" 
+//         << "\t\tTime:"<< obj->getTime() << "\n" 
+//         << "\t\tMomentum:"<< obj->getMomentum()[0]<<", "<<obj->getMomentum()[1] << ", "<<obj->getMomentum()[2]<<"\n" 
+//         << "\t\tPathLength:"<< obj->getPathLength() <<"\n"
+//         << std::endl;
+//     */
+// }
 
-void CEDPickingHandler::printCalorimeterHit(const LCObject *rawObj){
-    CalorimeterHit *obj = (CalorimeterHit*) rawObj;
-    streamlog_out(MESSAGE) << obj;
-    //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header(obj) << tail(obj) << lcshort(obj)  << tail(obj) << std::endl;
+// void CEDPickingHandler::printCalorimeterHit(const LCObject *rawObj){
+//     CalorimeterHit *obj = (CalorimeterHit*) rawObj;
+//     streamlog_out(MESSAGE) << obj;
+//     //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header(obj) << tail(obj) << lcshort(obj)  << tail(obj) << std::endl;
 
-}
+// }
 
-void CEDPickingHandler::printSimCalorimeterHit(const LCObject *rawObj){
-    SimCalorimeterHit *obj = (SimCalorimeterHit *) rawObj;
-    streamlog_out(MESSAGE) << obj;
-    //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header(obj) << tail(obj) << lcshort(obj)  << tail(obj) << std::endl;
-    /*
-    //std::cout << "-------------------------" << std::endl;
+// void CEDPickingHandler::printSimCalorimeterHit(const LCObject *rawObj){
+//     SimCalorimeterHit *obj = (SimCalorimeterHit *) rawObj;
+//     streamlog_out(MESSAGE) << obj;
+//     //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header(obj) << tail(obj) << lcshort(obj)  << tail(obj) << std::endl;
+//     /*
+//     //std::cout << "-------------------------" << std::endl;
 
-    streamlog_out(MESSAGE) << "SimCalorimeterHit:\n"
-        << "\t\tCellID0: " << obj->getCellID0() << "\n"
-        << "\t\tCellID1: " << obj->getCellID1() << "\n"
-        << "\t\tEnergy: " << obj->getEnergy() << "\n"
-        << "\t\tPosition: " << obj->getPosition()[0] << ", " << obj->getPosition()[1] << ", " << obj->getPosition()[2]  << "\n"
-        << "\t\tNMCContributions:"<< obj->getNMCContributions() << "\n"
-        //<< "\t\tEnergyCont:"<< obj->getEnergyCont() << "\n"
-        //<< "\t\tTimeCont:"<< obj->getTimeCont() << "\n"
-        //<< "\t\tPDGCont:"<< obj->getPDGCont() 
-        << std::endl;
-    */
-}
-void CEDPickingHandler::printReconstructedParticle(const LCObject *rawObj){
-    ReconstructedParticle *part = (ReconstructedParticle *) rawObj;
-    streamlog_out(MESSAGE) << part;
-    //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header<EVENT::ReconstructedParticle>() << tail(part) << lcshort(part)  << tail<ReconstructedParticle>() << std::endl;
-}
-
-
-void CEDPickingHandler::printTrack(const LCObject *rawObj){
-    Track *part = (Track *) rawObj;
-    streamlog_out(MESSAGE) << part;
-    //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header(part) << tail(part) << lcshort(part)  << tail(part) << std::endl;
-}
-
-void CEDPickingHandler::printCluster(const LCObject *rawObj){
-    Cluster *cluster = (Cluster *) rawObj;
-    streamlog_out(MESSAGE) << cluster;
-    //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header(cluster) << tail(cluster) << lcshort(cluster)  << tail(cluster) << std::endl;
-}
+//     streamlog_out(MESSAGE) << "SimCalorimeterHit:\n"
+//         << "\t\tCellID0: " << obj->getCellID0() << "\n"
+//         << "\t\tCellID1: " << obj->getCellID1() << "\n"
+//         << "\t\tEnergy: " << obj->getEnergy() << "\n"
+//         << "\t\tPosition: " << obj->getPosition()[0] << ", " << obj->getPosition()[1] << ", " << obj->getPosition()[2]  << "\n"
+//         << "\t\tNMCContributions:"<< obj->getNMCContributions() << "\n"
+//         //<< "\t\tEnergyCont:"<< obj->getEnergyCont() << "\n"
+//         //<< "\t\tTimeCont:"<< obj->getTimeCont() << "\n"
+//         //<< "\t\tPDGCont:"<< obj->getPDGCont() 
+//         << std::endl;
+//     */
+// }
+// void CEDPickingHandler::printReconstructedParticle(const LCObject *rawObj){
+//     ReconstructedParticle *part = (ReconstructedParticle *) rawObj;
+//     streamlog_out(MESSAGE) << part;
+//     //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header<EVENT::ReconstructedParticle>() << tail(part) << lcshort(part)  << tail<ReconstructedParticle>() << std::endl;
+// }
 
 
+// void CEDPickingHandler::printTrack(const LCObject *rawObj){
+//     Track *part = (Track *) rawObj;
+//     streamlog_out(MESSAGE) << part;
+//     //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header(part) << tail(part) << lcshort(part)  << tail(part) << std::endl;
+// }
 
-//--------------------------------------------------------------------------------------------------------
+// void CEDPickingHandler::printCluster(const LCObject *rawObj){
+//     Cluster *cluster = (Cluster *) rawObj;
+//     streamlog_out(MESSAGE) << cluster;
+//     //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header(cluster) << tail(cluster) << lcshort(cluster)  << tail(cluster) << std::endl;
+// }
+
+
+
+ //--------------------------------------------------------------------------------------------------------
 
 void CEDPickingHandler::registerFunction(std::string type, void (*printFunction)(const LCObject *)){   
     funcMap.insert(std::make_pair(type,printFunction));
