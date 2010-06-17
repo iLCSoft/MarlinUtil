@@ -56,6 +56,7 @@ public:
   virtual  double getIntersectionWithCylinder(const LCCylinder & cylinder, 
 					      bool & pointExists) const = 0;
 
+  virtual ~Trajectory(){ ; } ;
 }; // class 
 
 
@@ -72,6 +73,8 @@ class PhysicalTrajectory : public Trajectory{
    *  about the particle type, B-field and material.
    */
   virtual LCLorentzVector get4Momentum( double s ) const = 0;
+
+  virtual ~PhysicalTrajectory(){ ; } ;
 };
 
 
