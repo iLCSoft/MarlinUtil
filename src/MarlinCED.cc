@@ -23,7 +23,7 @@
 #include "EVENT/CalorimeterHit.h"
 #include "EVENT/RawCalorimeterHit.h"
 #include "EVENT/SimTrackerHit.h"
-//--test
+
 #include "UTIL/LCTOOLS.h"
 #include "UTIL/Operators.h"
 
@@ -57,10 +57,6 @@
 #include "UTIL/LCTime.h"
 #include "UTIL/CellIDDecoder.h"
 #include "UTIL/PIDHandler.h"
-/*#include <map>
-#include <set>
-#include <cstdio>
-*/
 
 /*
 using namespace std ;
@@ -70,15 +66,12 @@ using namespace IMPL ;
 using namespace UTIL;
 
 
-//--test ende
-
 
 //SJA:FIXED:added to make gcc4.3 compliant
 #include <cstdlib>
 #include <cstdio>
 
 //hauke
-
 #include <ctime>
 #include <time.h>
 #include <termios.h>
@@ -87,33 +80,9 @@ using namespace UTIL;
 #include <sys/select.h>
 #include <termios.h>
 
-//#include <iostream>
-//namespace std{ #include <sys/time.h>}
-
 MarlinCED* MarlinCED::_me = 0;
 
 //hauke hoelbe
-/*
-std::vector<particleObject> idMap::map;
-
-long int idMap::add(char *message){
-   particleObject particle;
-   particle.message=message;
-   map.push_back(particle);
-   //cout << "map.capacity(): " << map.capacity() <<endl;
-   return(map.size()-1);
-}
-
-char * idMap::get(long int id){
-   if(id < map.size()){
-       return(map.at(id).message);
-   }else{
-       return("");
-   }
-} 
-*/
-
-//std::map<const int, CEDMapParticleObject> CEDPickingHandler::map;
 CEDPickingMap CEDPickingHandler::map;
 CEDFunctionMap CEDPickingHandler::funcMap;
 CEDPickingHandler *CEDPickingHandler::instance = NULL;
@@ -126,37 +95,29 @@ CEDPickingHandler& CEDPickingHandler::getInstance() {
     return *instance;
 }
 
-//FG: use a template here 
-template <class T>
-void printLCObject( const LCObject* o){
-  streamlog_out( MESSAGE) << (T*) o  << std::endl ;
-}
-
 void CEDPickingHandler::update(LCEvent *evt){
-   const std::vector<std::string> *collNames = evt->getCollectionNames();
-   const LCCollection *coll;
-   const LCObject *obj;
-   CEDFunctionMap::iterator iter;
-   std::map<std::string, void (*)(const LCObject *)> printDefaultMap;
-   std::map<std::string, void (*)(const LCObject *)>::iterator printDefaultIter;   
-   clock_t start =  clock(); 
-
+    const std::vector<std::string> *collNames = evt->getCollectionNames();
+    const LCCollection *coll;
+    const LCObject *obj;
+    CEDFunctionMap::iterator iter;
+    std::map<std::string, void (*)(const LCObject *)> printDefaultMap;
+    std::map<std::string, void (*)(const LCObject *)>::iterator printDefaultIter;   
+    clock_t start =  clock(); 
 
     //default print functions
+    printDefaultMap.insert(std::make_pair(LCIO::MCPARTICLE,&defaultOutputFunction<MCParticle>));
+    printDefaultMap.insert(std::make_pair(LCIO::TRACKERHIT, &defaultOutputFunction<TrackerHit>));
+    printDefaultMap.insert(std::make_pair(LCIO::SIMTRACKERHIT, &defaultOutputFunction<SimTrackerHit>));
+    printDefaultMap.insert(std::make_pair(LCIO::CALORIMETERHIT, &defaultOutputFunction<CalorimeterHit>));
+    printDefaultMap.insert(std::make_pair(LCIO::SIMCALORIMETERHIT, &defaultOutputFunction<SimCalorimeterHit>));
+    printDefaultMap.insert(std::make_pair(LCIO::VERTEX, &defaultOutputFunction<Vertex>));
+    printDefaultMap.insert(std::make_pair(LCIO::RECONSTRUCTEDPARTICLE, &defaultOutputFunction<ReconstructedParticle>));
+    printDefaultMap.insert(std::make_pair(LCIO::TRACK, &defaultOutputFunction<Track>));
+    printDefaultMap.insert(std::make_pair(LCIO::CLUSTER, &defaultOutputFunction<Cluster>));
+    printDefaultMap.insert(std::make_pair(LCIO::LCRELATION, &defaultOutputFunction<LCRelation>));
+    printDefaultMap.insert(std::make_pair(LCIO::LCFLOATVEC, &defaultOutputFunction<LCFloatVec>));
 
-   //   printDefaultMap.insert(std::make_pair(LCIO::MCPARTICLE,&printMCParticle));
-   printDefaultMap.insert(std::make_pair( LCIO::MCPARTICLE, &printLCObject<MCParticle> ) );
-
-    printDefaultMap.insert(std::make_pair(LCIO::TRACKERHIT, &printLCObject<TrackerHit> ) ) ;
-    printDefaultMap.insert(std::make_pair(LCIO::SIMTRACKERHIT, &printLCObject<SimTrackerHit> ) ) ;
-    printDefaultMap.insert(std::make_pair(LCIO::CALORIMETERHIT, &printLCObject<CalorimeterHit> ) ) ;
-    printDefaultMap.insert(std::make_pair(LCIO::SIMCALORIMETERHIT, &printLCObject<SimCalorimeterHit> ) ) ;
-    printDefaultMap.insert(std::make_pair(LCIO::VERTEX, &printLCObject<Vertex> ) ) ;
-    printDefaultMap.insert(std::make_pair(LCIO::RECONSTRUCTEDPARTICLE, &printLCObject<ReconstructedParticle> ) ) ;
-    printDefaultMap.insert(std::make_pair(LCIO::TRACK, &printLCObject<Track> ) ) ;
-    printDefaultMap.insert(std::make_pair(LCIO::CLUSTER, &printLCObject<Cluster> ) ) ;
-
-   //add default print functions. Set it only if the user dont have set his own functions
+    //add default print functions. Set it only if the user dont have set his own functions
     for( printDefaultIter = printDefaultMap.begin(); printDefaultIter != printDefaultMap.end(); printDefaultIter++ ) {
         iter=funcMap.find(printDefaultIter->first);
         if(iter == funcMap.end()){ //user dont have registered a function for this collection name
@@ -164,16 +125,24 @@ void CEDPickingHandler::update(LCEvent *evt){
         }
     } 
 
-   std::string typeName;
-   std::string collName;
-   CEDMapParticleObject particleObj;
-   for(unsigned int i=0;i<collNames->size()-1;i++){
-   //     std::cout << "Coll name: " << collNames->at(i); // << std::endl;
+    std::string typeName;
+    std::string collName;
+    CEDMapParticleObject particleObj;
+    for(unsigned int i=0;i<collNames->size()-1;i++){
         collName=collNames->at(i);
         coll =  evt->getCollection(collName);
         typeName=coll->getTypeName();
         for (int j=0;j<coll->getNumberOfElements()-1;j++){
             obj=coll->getElementAt(j);
+            /*
+            //debug
+            if(true){ //collName == LCIO::MCPARTICLE){
+                streamlog_out(DEBUG) << "------------------ TEST -----------------------" << std::endl;
+                streamlog_out(DEBUG) << lcio_long(* (EVENT::TrackerHit *) obj,coll);
+                streamlog_out(DEBUG) << "-----------------------------------------------" << std::endl;
+            }
+            //debug end
+            */
             particleObj.obj=obj;
 
             iter =  funcMap.find(collName);
@@ -183,16 +152,10 @@ void CEDPickingHandler::update(LCEvent *evt){
                 iter=funcMap.find(typeName);
                 if(iter != funcMap.end()){ //user have a registered a function for this _typeName_ 
                     particleObj.function=iter->second;
-                }else{ //use default print function, or dont register this element
-                    //CEDMapDoNotFound notFound;
-                    //notFound.function=&PickingMap::printDefault;
-                    //notFound.coll=collName;
-                    //notFound.typeName=typeName;
-
-                    streamlog_out(DEBUG) << "CEDPickingHandler: cant register " << collName << "/" << typeName << " (no function given)" << std::endl;
-
+                }else{ 
+                    streamlog_out(DEBUG) << "CEDPickingHandler: cant register " << collName << "/" << typeName 
+                                         << " (no function given)" << std::endl;
                     continue;
-                    //particleObj.function=&defaultPrintFunc;
                 }
             }
             /*test output at startup (debug)
@@ -207,7 +170,6 @@ void CEDPickingHandler::update(LCEvent *evt){
 }
 
 void CEDPickingHandler::printID(int id){
-//    CEDPickingMap::iterator iter1;
     CEDPickingMap::iterator iter;
     CEDMapParticleObject obj;
     void (*printFunction)(const LCObject *); 
@@ -223,115 +185,13 @@ void CEDPickingHandler::printID(int id){
     }
 
 }
-//------------------------------------------------------------------------------------
-// //------------------------------------------------------------------------------------
-// void CEDPickingHandler::printVertex(const LCObject *rawObj){
-//     Vertex *vertex = (Vertex *) rawObj;
-//     streamlog_out(MESSAGE) << vertex;
-//     //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header<EVENT::Vertex>() << tail(vertex) <<  lcshort(vertex)  << tail(vertex) << std::endl;
 
-// }
-
-// void CEDPickingHandler::printMCParticle(const LCObject *rawObj){
-//     MCParticle *mcp = (MCParticle *) rawObj;
-//     streamlog_out(MESSAGE) << mcp;
-//     //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header<EVENT::MCParticle>() << tail(mcp) << lcshort(mcp)  << tail(mcp) << std::endl;
-// }
-// void CEDPickingHandler::printTrackerHit(const LCObject *rawObj){
-//     TrackerHit *obj = (TrackerHit *) rawObj;
-//     streamlog_out(MESSAGE) << obj;
-//     //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header(obj) << tail(obj) << lcshort(obj)  << tail(obj) << std::endl;
-// }
-
-// void CEDPickingHandler::printSimTrackerHit(const LCObject *rawObj){
-//     SimTrackerHit *obj = (SimTrackerHit *) rawObj;
-//     streamlog_out(MESSAGE) << obj;
-//     //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header(obj) << tail(obj) << lcshort(obj)  << tail(obj) << std::endl;
-
-//     /* 
-//     streamlog_out(MESSAGE) << "SimTrackerHit:\n" 
-//         << "\t\tCellID: " << obj->getCellID() << "\n" 
-//         << "\t\tPosition: " << obj->getPosition()[0] << ", " << obj->getPosition()[1] << ", " << obj->getPosition()[2]  << "\n" 
-//         << "\t\tdEdx:"<< obj->getdEdx() << "\n" 
-//         << "\t\tTime:"<< obj->getTime() << "\n" 
-//         << "\t\tMomentum:"<< obj->getMomentum()[0]<<", "<<obj->getMomentum()[1] << ", "<<obj->getMomentum()[2]<<"\n" 
-//         << "\t\tPathLength:"<< obj->getPathLength() <<"\n"
-//         << std::endl;
-//     */
-// }
-
-// void CEDPickingHandler::printCalorimeterHit(const LCObject *rawObj){
-//     CalorimeterHit *obj = (CalorimeterHit*) rawObj;
-//     streamlog_out(MESSAGE) << obj;
-//     //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header(obj) << tail(obj) << lcshort(obj)  << tail(obj) << std::endl;
-
-// }
-
-// void CEDPickingHandler::printSimCalorimeterHit(const LCObject *rawObj){
-//     SimCalorimeterHit *obj = (SimCalorimeterHit *) rawObj;
-//     streamlog_out(MESSAGE) << obj;
-//     //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header(obj) << tail(obj) << lcshort(obj)  << tail(obj) << std::endl;
-//     /*
-//     //std::cout << "-------------------------" << std::endl;
-
-//     streamlog_out(MESSAGE) << "SimCalorimeterHit:\n"
-//         << "\t\tCellID0: " << obj->getCellID0() << "\n"
-//         << "\t\tCellID1: " << obj->getCellID1() << "\n"
-//         << "\t\tEnergy: " << obj->getEnergy() << "\n"
-//         << "\t\tPosition: " << obj->getPosition()[0] << ", " << obj->getPosition()[1] << ", " << obj->getPosition()[2]  << "\n"
-//         << "\t\tNMCContributions:"<< obj->getNMCContributions() << "\n"
-//         //<< "\t\tEnergyCont:"<< obj->getEnergyCont() << "\n"
-//         //<< "\t\tTimeCont:"<< obj->getTimeCont() << "\n"
-//         //<< "\t\tPDGCont:"<< obj->getPDGCont() 
-//         << std::endl;
-//     */
-// }
-// void CEDPickingHandler::printReconstructedParticle(const LCObject *rawObj){
-//     ReconstructedParticle *part = (ReconstructedParticle *) rawObj;
-//     streamlog_out(MESSAGE) << part;
-//     //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header<EVENT::ReconstructedParticle>() << tail(part) << lcshort(part)  << tail<ReconstructedParticle>() << std::endl;
-// }
-
-
-// void CEDPickingHandler::printTrack(const LCObject *rawObj){
-//     Track *part = (Track *) rawObj;
-//     streamlog_out(MESSAGE) << part;
-//     //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header(part) << tail(part) << lcshort(part)  << tail(part) << std::endl;
-// }
-
-// void CEDPickingHandler::printCluster(const LCObject *rawObj){
-//     Cluster *cluster = (Cluster *) rawObj;
-//     streamlog_out(MESSAGE) << cluster;
-//     //streamlog_out(MESSAGE) << std::endl << "DEBUG: " << std::endl << header(cluster) << tail(cluster) << lcshort(cluster)  << tail(cluster) << std::endl;
-// }
-
-
-
- //--------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------
 
 void CEDPickingHandler::registerFunction(std::string type, void (*printFunction)(const LCObject *)){   
     funcMap.insert(std::make_pair(type,printFunction));
 }
 
-/*
-int CEDPickingHandler::kbhit(void) {
-    //from: http://www.undertec.de/blog/2009/05/kbhit_und_getch_fur_linux.html
-    struct termios term, oterm;
-    int fd = 0;
-    int c = 0;
-    tcgetattr(fd, &oterm);
-    memcpy(&term, &oterm, sizeof(term));
-    term.c_lflag = term.c_lflag & (!ICANON);
-    term.c_cc[VMIN] = 0;
-    term.c_cc[VTIME] = 1;
-    tcsetattr(fd, TCSANOW, &term);
-    c = getchar();
-    tcsetattr(fd, TCSANOW, &oterm);
-    if (c != -1)
-    ungetc(c, stdin);
-    return ((c != -1) ? 1 : 0);
-}
-*/
 int CEDPickingHandler::kbhit(void) {
     //http://stackoverflow.com/questions/448944/c-non-blocking-keyboard-input#448982
     struct timeval tv = { 0L, 0L };
@@ -339,7 +199,6 @@ int CEDPickingHandler::kbhit(void) {
     FD_SET(0, &fds);
     return select(1, &fds, NULL, NULL, &tv);
 }
-
 //end hauke hoelbe
 
 MarlinCED* MarlinCED::instance() {
@@ -390,57 +249,6 @@ void MarlinCED::newEvent( Processor* proc , int modelID, LCEvent* evt) {
     
   }
 }
-
-/* //hauke hoelbe: only mcparticle, deprecated
-MCParticle* MarlinCED::getMCParticleFromID(int partID, LCEvent* evt) {
-    //SM-H This could probably be improved...
-    LCCollection * mcpcol ;
-    if(partID>0) {
-        if(evt!=0) {
-            try {
-                mcpcol = evt->getCollection("MCParticle");
-                int nelem = mcpcol->getNumberOfElements();
-                for (int ielem(0); ielem < nelem; ++ielem) {
-                    MCParticle * mcp = 
-                    dynamic_cast<MCParticle*>(mcpcol->getElementAt(ielem));
-                    if(mcp->id()==partID) {
-                     //Found particle with appropriate ID
-                         return mcp;
-                    }
-                }             
-            }
-            catch(DataNotAvailableException &e) {
-                 std::cout << "Data not available" << std::endl;
-            }
-        }
-    }
-    //If particle is not in collection, return a null pointer
-    return NULL;
-}
-*/
-
-
-/**********************************************************
-* hauke hoelbe 08.02.2010                                 *
-* experimental function to get informations about the     *
-* clicked particle                                        *
-**********************************************************/
-/*
-void MarlinCED::getParticleFromID(int id, LCEvent* evt) {
-    LCCollection *col1, *col2;
-    std::cout << "CED say: id=" << id << std::endl;
-    if(id>0) {
-        if(evt!=0) {
-              col1 = evt->getCollection("EcalBarrelCollection");
-              col2 = evt->getCollection("HcalBarrelRegCollection");
-              LCTypedVector<SimCalorimeterHit> v1(col1) ;
-              haukePrint(v1.begin(), v1.end(),id);
-              LCTypedVector<SimCalorimeterHit> v2(col2) ;
-              haukePrint(v2.begin(), v2.end(),id);
-        }
-    }
-}
-*/
 
 void MarlinCED::printMCParticle(MCParticle* part, int daughterIndent, int motherIndent) {
     //Define width of numbers, and decimal precision 
@@ -565,73 +373,32 @@ void MarlinCED::printAndDrawMCFamily(MCParticle* part, LCEvent* evt, unsigned in
 
 //hauke hoelbe modify 08.02.2010
 void MarlinCED::draw( Processor* proc , int waitForKeyboard ) {
-  //char message[200];
-  CEDPickingHandler &pHandler=CEDPickingHandler::getInstance();
-  //ced_writeText("hallo welt");
-  if( proc == instance()->_last ) {
+    //char message[200];
+    CEDPickingHandler &pHandler=CEDPickingHandler::getInstance();
+    //ced_writeText("hello world"); //write text to ced (like the picked hit), but performance is bad
+    if( proc == instance()->_last ) {
     //    ced_draw_event();
-    ced_send_event();
-    if ( waitForKeyboard == 1 ) {
-      //std::cout << "[ Press 'p' for picking mode, or any key for next event ]" << std::endl ; 
-      //std::cout << "Double click for picking. Press \"q\" for quit or press any key for next event" << std::endl;
-        //EVENT::Vertex *a;
-        //std::cout << a;
-        streamlog_out(MESSAGE) << "Double click for picking. Press <ENTER> for the next event" << std::endl;
-
-      //SM-H: TODO: Experimental picking code 
-      //std::cout << "[ Press 'p' to enter picking mode, or any key for next event ]" << std::endl ; 
-/*      while(1){
-        std::cout << CEDPickingHandler::kbhit() << std::endl;
-      } */
-      while(!CEDPickingHandler::kbhit()){
-        //std::cout << "."<<std::endl;
-        //usleep(500);
-        int id = ced_selected_id_noblock();
-        if(id>=0) {
-              streamlog_out(DEBUG) << "DEBUG: got id: " << id <<std::endl;
-              if(id == 0){
-                streamlog_out(WARNING) << "Picking nothing, or an object with ID 0!" << std::endl;
-              }else{
-                pHandler.printID(id);
-              }
-
-              //char message[100];
-              //sprintf(message,"Test output\nID: %d\n",id);
-	          //ced_writeText(message);
-	          //ced_send_event();
-         }
-      }
-      char c = getchar();
-        //std::cout << "\"" << c << "(" << (int) c<<  ")\"" << std::endl;
-      if(c=='q'||c=='Q'||c==3){ //3 = strg +c
-        exit(0);
-      }
-      streamlog_out(MESSAGE) << "--------- END ---------------\n";
-      //sleep(1);
-/*
-      if(c=='p' || c=='P') {
-        std::cout << "Entered picking mode" << std::endl;
-        for(;;) {
-          usleep(500);
-          int id = ced_selected_id();
-          if(id>=0) {
-              std::cout << id << std::endl;
-            //std::cout<<"ID: "<< id << std::endl;
-            //Need to get MCParticle from ID -> require knowledge of event
-              CEDPickingHandler::printID(id);
-              //MarlinCED::getParticleFromID(id, instance()->_currEvent);
-
-              //Processor* proc = instance()->_first;
-              //proc->printParticle(id, instance()->_currEvent);
-
-            } else { 
-              std::cout << ".";
-              //std::cout << "No particle selected" << std::endl;
-           }
+        ced_send_event();
+        if ( waitForKeyboard == 1 ) {
+            streamlog_out(MESSAGE) << "Double click for picking. Press <ENTER> for the next event" << std::endl;
+            while(!CEDPickingHandler::kbhit()){
+                int id = ced_selected_id_noblock();
+                if(id>=0) {
+                    streamlog_out(DEBUG) << "DEBUG: got id: " << id <<std::endl;
+                    if(id == 0){
+                        streamlog_out(WARNING) << "Picking nothing, or an object with ID 0!" << std::endl;
+                    }else{
+                        pHandler.printID(id);
+                    }
+                }
+            }
+            char c = getchar();
+            if(c=='q'||c=='Q'||c==3){ //quit if the user pressed q or strg+c (3 = strg+c)
+                exit(0);
+            }
+            streamlog_out(MESSAGE) << "--------- END ---------------\n";
         }
-      } */
     }
-  }
 }
 
 /**
@@ -680,8 +447,8 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
 	//std::cout << step << std::endl;
     
     //int nSteps = 1000000;
-    int nSteps = int(100/step);
-    streamlog_out(DEBUG) << "draw helix (nsteps: " << nSteps << ") id= " << id<<std::endl; //hauke
+    int nSteps = int(100/step); //hauke
+    streamlog_out(DEBUG) << "draw helix (nsteps: " << nSteps << ") id= " << id<<std::endl; 
 
     
     int count_lines=0;
@@ -937,16 +704,6 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
   else std::cout << "This MC Particle has not been displayed : id = " << MCP->id() << "  " << "PDG Code : " << MCP->getPDG() << std::endl;
   
 }
-
-/*
-//hauke
-   int MarlinCED::getIDfromIndex(LCCollection* col, int index){
-      //MarlinCED::_int_count++;
-      std::cout<<"Registration" << "col.getTypeName(): " << col->getTypeName() << " id: " << index << " test i:" << std::endl;
-      return(1);
-    }
-*/
-
 
 void MarlinCED::drawMCParticleTree(LCEvent* event, std::string colNameMC, double energyCut,  double bField, double rIn, double zIn, double rOut, double zOut) {
 

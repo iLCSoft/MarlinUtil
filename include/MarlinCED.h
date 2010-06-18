@@ -32,38 +32,10 @@
 
 using namespace marlin ;
 
-/*class ObjectIDHandler {
-  public:
-    static int getIDfromIndex(LCCollection* col, int index){
-      i++;
-      std::cout<<"Registration" << "col.getTypeName(): " << col->getTypeName() << " id: " << index << " test i:" << i << std::endl;
-      return(1);
-    } 
-  private:
-    static int i;
-}; */
-
-
-/*
-//hauke hoelbe
-struct particleObject {char *message; };
-
-class idMap{
-   private:
-       static std::vector<particleObject> map;
-   public:
-       static long int add(char *);
-       static char * get(long int);
-}; 
-
-*/
-//struct CEDMapParticleObject{const LCObject *obj; std::string type;};
 struct CEDMapParticleObject{const LCObject *obj;  void (*function)(const LCObject *);};
-//struct CEDMapDoNotFound{void (*function)(const LCObject *); char *col; char *type;};
 
 typedef std::map<const int, CEDMapParticleObject> CEDPickingMap;
 typedef std::map<std::string, void (*)(const LCObject *)> CEDFunctionMap;
-//void (*func)(LCObject *)};
 
 
 template <class T>
@@ -75,7 +47,6 @@ template <class T>
  *  @author Hauke Hoelbe (DESY)
  *  @version May 2010 
  */
-
 class CEDPickingHandler{
     private:
         /** The pointer to the CEDPickingHandler Objekt 
@@ -103,41 +74,13 @@ class CEDPickingHandler{
          */
         static CEDPickingHandler& getInstance();
 
-        /** The default print method for MCParticle objects 
+        /** The default print method for all LCIO objects 
          */
-        static void printMCParticle(const LCObject *);
 
-        /** The default print method for TrackerHit objects 
-         */
-        static void printTrackerHit(const LCObject *);
-
-        /** The default print method for SimTrackerHit objects 
-         */
-        static void printSimTrackerHit(const LCObject *);
-
-        /** The default print method for SimTrackerHit objects 
-         */
-        static void printCalorimeterHit(const LCObject *);
-
-        /** The default print method for SimCalorimeterHit objects 
-         */
-        static void printSimCalorimeterHit(const LCObject *);
-
-        /** The default print method for Vertex objects 
-         */
-        static void printVertex(const LCObject *);
-
-        /** The default print method for ReconstructedParticle objects 
-         */
-        static void printReconstructedParticle(const LCObject *);
-
-        /** The default print method for Track objects 
-         */
-        static void printTrack(const LCObject *);
-
-        /** The default print method for Cluster objects 
-         */
-        static void printCluster(const LCObject *);
+        template <class T>
+        static void defaultOutputFunction(const LCObject *obj){
+            streamlog_out(MESSAGE) << *(T*)obj;
+        }
 
         /** Returns 1 if a key was been pressed, otherwise 0. 
           * (Should be not part of CEDPickingHandler)
@@ -200,8 +143,6 @@ class MarlinCED {
    */
   static void draw( Processor* proc , int waitForKeyboard=1 ) ;
   
-  //hauke hoelbe: 08.02.2010
-  //static MCParticle * getMCParticleFromID(int, LCEvent*);
   static void getParticleFromID(int, LCEvent*);
 
   static void printMCParticle(MCParticle* mcp, int daughterIndent=0, int motherIndent=0);
@@ -217,10 +158,6 @@ class MarlinCED {
    */
   template <class In>
   static void drawObjectsWithPosition(In first, In last, int marker, int size ,unsigned int color, unsigned int layer=0, char * PickingMessage = "") {
-    //hauke hoelbe
-    //char * pickingMessage = new char[200];
-    
-
     //std::cout<<"drawObjectsWithPosition register a map id"<< std::endl;
     //int id;
     while( first != last ) {
@@ -257,24 +194,6 @@ class MarlinCED {
   }
 
  
-  /********************************
-  * hauke hoelbe: 08.02.2010      *
-  * a print method for testing    *
-  ********************************/
-
-/*
-  template <class In>
-  static void haukePrint(In first, In last, unsigned int id) {
-    while( first != last ) {
-         if(id == (*first)->id()) {
-            std::cout<<"found id: " << id << std::endl;
-            std::cout<<"Position: " << (*first)->getPosition()[1] << " , " << (*first)->getPosition()[2]<< std::endl;
-         }
-      ++first ;
-    }
-  }
-*/ 
-
   /** Draws a helix from the given point(x,y,z) for momentum(px,py,pz) in a B-field b (in Tesla) 
    */
   static void drawHelix(float b, float charge, float x, float y, float z,
