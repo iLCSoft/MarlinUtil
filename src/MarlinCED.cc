@@ -75,6 +75,7 @@ using namespace UTIL;
 #include <ctime>
 #include <time.h>
 #include <termios.h>
+#include <poll.h>
 
 //for kbhit
 #include <sys/select.h>
@@ -381,7 +382,14 @@ void MarlinCED::draw( Processor* proc , int waitForKeyboard ) {
         ced_send_event();
         if ( waitForKeyboard == 1 ) {
             streamlog_out(MESSAGE) << "Double click for picking. Press <ENTER> for the next event" << std::endl;
-            while(!CEDPickingHandler::kbhit()){
+
+            struct pollfd pfd[1];
+            pfd[0].fd = 1;
+            pfd[0].events=POLLIN;
+
+            //while(!CEDPickingHandler::kbhit()){
+            while(!poll(pfd,1,0)){
+
                 int id = ced_selected_id_noblock();
                 if(id>=0) {
                     streamlog_out(DEBUG) << "DEBUG: got id: " << id <<std::endl;
