@@ -200,6 +200,42 @@ int CEDPickingHandler::kbhit(void) {
     FD_SET(0, &fds);
     return select(1, &fds, NULL, NULL, &tv);
 }
+/*
+struct termios CEDPickingHandler::orig_termios;
+
+void CEDPickingHandler::reset_terminal_mode()
+{
+    //http://stackoverflow.com/questions/448944/c-non-blocking-keyboard-input#448982
+    tcsetattr(0, TCSANOW, &orig_termios);
+}
+
+int CEDPickingHandler::getch(void)
+{
+    int r;
+    unsigned char c;
+    if ((r = read(0, &c, sizeof(c))) < 0) {
+        return r;
+    } else {
+        return c;
+    }
+}
+
+void CEDPickingHandler::set_conio_terminal_mode()
+{
+    //http://stackoverflow.com/questions/448944/c-non-blocking-keyboard-input#448982
+    struct termios new_termios;
+
+    // take two copies - one for now, one for later 
+    tcgetattr(0, &CEDPickingHandler::orig_termios);
+    memcpy(&new_termios, &orig_termios, sizeof(new_termios));
+
+    // register cleanup handler, and set the new terminal mode 
+    atexit(CEDPickingHandler::reset_terminal_mode);
+    cfmakeraw(&new_termios);
+    tcsetattr(0, TCSANOW, &new_termios);
+}
+
+*/
 //end hauke hoelbe
 
 MarlinCED* MarlinCED::instance() {
@@ -381,14 +417,16 @@ void MarlinCED::draw( Processor* proc , int waitForKeyboard ) {
     //    ced_draw_event();
         ced_send_event();
         if ( waitForKeyboard == 1 ) {
-            streamlog_out(MESSAGE) << "Double click for picking. Press <ENTER> for the next event" << std::endl;
+            streamlog_out(MESSAGE) << "Double click for picking. Press <ENTER> for the next event." << std::endl << "(Please do not resize this terminal window!)" << std::endl;
 
+/*
             struct pollfd pfd[1];
             pfd[0].fd = 1;
             pfd[0].events=POLLIN;
 
-            //while(!CEDPickingHandler::kbhit()){
-            while(!poll(pfd,1,0)){
+*/
+            while(!CEDPickingHandler::kbhit()){
+//            while(!poll(pfd,1,0)){
 
                 int id = ced_selected_id_noblock();
                 if(id>=0) {
@@ -400,7 +438,10 @@ void MarlinCED::draw( Processor* proc , int waitForKeyboard ) {
                     }
                 }
             }
+            
+            streamlog_out(DEBUG) << "try to getchar()" <<std::endl;
             char c = getchar();
+            //char c = CEDPickingHandler::getch();
             if(c=='q'||c=='Q'||c==3){ //quit if the user pressed q or strg+c (3 = strg+c)
                 exit(0);
             }

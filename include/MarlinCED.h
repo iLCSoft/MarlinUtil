@@ -62,6 +62,7 @@ class CEDPickingHandler{
           * collection/type. The Update method looks first for the collection name. This means when the collection name overwrite the typeName.
          */
         static CEDFunctionMap funcMap;
+        //static struct termios orig_termios;
 
         //CEDPickingHandler(); //is not allow to instance this
         //CEDPickingHandler(const CEDPickingHandler& cc); //not allows to make copies
@@ -86,6 +87,12 @@ class CEDPickingHandler{
           * (Should be not part of CEDPickingHandler)
         */
         static int kbhit(void);
+        /*
+        static void set_conio_terminal_mode(void);
+        static void reset_terminal_mode(void);
+        static int getch(void);
+        */
+
 
         /** Register all LCIO-objects of the given LCEvent in the CEDPickingHandler map.
           * This method iterate over all objects how are part of the LCEvent. <br>
