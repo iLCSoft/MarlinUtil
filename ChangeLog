@@ -1,3 +1,62 @@
+2010-06-23 16:55  hhoelbe
+
+	* include/MarlinCED.h, src/MarlinCED.cc: rollback of the kbhit
+	  function
+
+2010-06-23 15:33  /O=GermanGrid/OU=DESY/CN=Jan Engels
+
+	* CMakeLists.txt: added exclude pattern for .svn dirs
+
+2010-06-23 14:41  hhoelbe
+
+	* src/MarlinCED.cc: fixed resize bug
+
+2010-06-23 10:01  engels
+
+	* CMakeLists.txt: changed version to v01-00-00
+
+2010-06-18 15:35  hhoelbe
+
+	* include/MarlinCED.h, src/MarlinCED.cc: Enable picking (hauke)
+
+2010-06-17 14:20  aplin
+
+	* CMakeLists.txt: added ctest
+
+2010-06-17 07:14  /O=GermanGrid/OU=DESY/CN=Jan Engels
+
+	* include/Trajectory.h: added virtual destructors
+
+2010-06-14 12:24  gaede
+
+	* CMakeLists.txt, doc/release.notes, src/MarlinCED.cc: cleanup of
+	  picking code in MarlinCED
+
+2010-05-27 13:50  engels
+
+	* include/MarlinCED.h, src/MarlinCED.cc, src/TrackwiseClusters.cc:
+	  merged branch: hauke_dev (TODO: change this log msg)
+
+2010-05-07 07:42  engels
+
+	* src/MarlinCED.cc: bug fix for gcc 4.4.3
+
+2010-04-06 09:39  gaede
+
+	* CMakeLists.txt: made APPLE compliant (added streamlog dependency)
+
+2010-02-09 14:48  engels
+
+	* CMakeLists.txt, doc/release.notes: -------- v00-14-01 ----------
+
+2009-11-18 15:27  /C=DE/O=GermanGrid/OU=DESY/CN=Steven Aplin
+
+	* ChangeLog: updated for version v00-14
+
+2009-11-18 15:25  /C=DE/O=GermanGrid/OU=DESY/CN=Steven Aplin
+
+	* doc/release.notes: updated for version v00-14
+
 2009-09-08 13:18  stewartm
 
 	* include/MarlinCED.h, src/MarlinCED.cc: SM-H: New helper functions
