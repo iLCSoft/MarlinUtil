@@ -9,7 +9,10 @@
  -------- 
 
      - added support for picking to MarlinCED 
-
+  
+     - made compliant w/ gcc 4.4.3 
+     
+     - made compliant w/ MacOSX
 
 
  -----------
