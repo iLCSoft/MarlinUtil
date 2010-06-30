@@ -49,6 +49,7 @@
 
 #include "EVENT/LCRelation.h"
 #include "LCIOSTLTypes.h"
+#include <signal.h>
 
 // #ifdef USE_CLHEP
 // #include "UTIL/LCFourVector.h"
@@ -417,7 +418,8 @@ void MarlinCED::draw( Processor* proc , int waitForKeyboard ) {
     //    ced_draw_event();
         ced_send_event();
         if ( waitForKeyboard == 1 ) {
-            streamlog_out(MESSAGE) << "Double click for picking. Press <ENTER> for the next event." << std::endl << "(Please do not resize this terminal window!)" << std::endl;
+            streamlog_out(MESSAGE) << "Double click for picking. Press <ENTER> for the next event." << std::endl;
+            //streamlog_out(MESSAGE)  << "(Please do not resize this terminal window!)" << std::endl;
 
 /*
             struct pollfd pfd[1];
@@ -425,8 +427,12 @@ void MarlinCED::draw( Processor* proc , int waitForKeyboard ) {
             pfd[0].events=POLLIN;
 
 */
+            signal(SIGWINCH,SIG_IGN);
+            //streamlog_out(DEBUG) << "sigwinch ign" << std::endl;
+
             while(!CEDPickingHandler::kbhit()){
 //            while(!poll(pfd,1,0)){
+
 
                 int id = ced_selected_id_noblock();
                 if(id>=0) {
@@ -439,7 +445,8 @@ void MarlinCED::draw( Processor* proc , int waitForKeyboard ) {
                 }
             }
             
-            streamlog_out(DEBUG) << "try to getchar()" <<std::endl;
+            //streamlog_out(DEBUG) << "try to getchar()" <<std::endl;
+            signal(SIGWINCH,SIG_IGN);
             char c = getchar();
             //char c = CEDPickingHandler::getch();
             if(c=='q'||c=='Q'||c==3){ //quit if the user pressed q or strg+c (3 = strg+c)
