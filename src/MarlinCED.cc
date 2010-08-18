@@ -387,6 +387,8 @@ void MarlinCED::printAndDrawMCFamily(MCParticle* part, LCEvent* evt, unsigned in
         MarlinCED::drawMCParticle(part, false, evt, 1, 1, colour, layer, bField, 0, 0,endpoint_r, 
                 endpoint_z, false);
         printMCParticle(part, daughterIndent, motherIndent);
+
+
         //MarlinCED::draw( this, _waitForKeyboard ) ;
 
     }
@@ -413,12 +415,17 @@ void MarlinCED::printAndDrawMCFamily(MCParticle* part, LCEvent* evt, unsigned in
 void MarlinCED::draw( Processor* proc , int waitForKeyboard ) {
     //char message[200];
     CEDPickingHandler &pHandler=CEDPickingHandler::getInstance();
-    //ced_writeText("hello world"); //write text to ced (like the picked hit), but performance is bad
+
+
+
     if( proc == instance()->_last ) {
     //    ced_draw_event();
         ced_send_event();
         if ( waitForKeyboard == 1 ) {
             streamlog_out(MESSAGE) << "Double click for picking. Press <ENTER> for the next event." << std::endl;
+            //test:
+
+            
             //streamlog_out(MESSAGE)  << "(Please do not resize this terminal window!)" << std::endl;
 
 /*
@@ -636,6 +643,7 @@ void MarlinCED::drawTrajectory(const Trajectory* t, const int marker,
 }
 
 void MarlinCED::drawSpike( float x0, float y0, float z0,float x1, float y1, float z1, unsigned int color, unsigned int layer, unsigned int id) {
+
 //hauke: added optional argument id
   //    const float s0 = 0.;
   const float s1 = .92;
@@ -667,6 +675,7 @@ void MarlinCED::drawSpike( float x0, float y0, float z0,float x1, float y1, floa
 
 void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event, int marker, int size, unsigned int color, unsigned int layer, double bField,
 			       double rmin, double zmin, double rmax, double zmax, bool drawOnDifferentLayers) {
+
 
   std::cout<<"Hauke: draw mcparticle, id="<<MCP->id() << std::endl;
 
@@ -715,14 +724,20 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
   // neutral MC Particles are displayed on (layer+1) and their SimHits optionally on (layer + 11)
   else if (!isCharged && !isNeutrino && !isBackscattered) {
 
-    if (drawOnDifferentLayers) l = layer+1;
-    else l = layer;
+    if (drawOnDifferentLayers){ 
+        l = layer+1;
+    } else{ l = layer;}
 
     ced_line_ID(x1,y1,z1,x2,y2,z2, marker | ( l << CED_LAYER_SHIFT ), size, color, MCP->id());
 
     if (drawSimHits) {
-      if (drawOnDifferentLayers) l = layer+11;
-      else l = layer+10;
+        if (drawOnDifferentLayers){ 
+            l = layer+11;
+        }
+      else{ 
+            l = layer+10;
+      }
+
       drawHitCollectionsByMCContribution(event,MCP,marker,size+2,color,l);
     }
 
@@ -730,14 +745,21 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
   // backscattered charged particles and neutrinos are displayed on (layer+2) and their SimHits optionally on (layer + 12)
   else if (isCharged && !isNeutrino && isBackscattered) {
 
-    if (drawOnDifferentLayers) l = layer+2;
+    if (drawOnDifferentLayers) {
+        l = layer+2;
+    }
     else l = layer;
 
     drawHelix(bField,charge,x1,y1,z1,p1,p2,p3, marker | ( l << CED_LAYER_SHIFT ), size, color, (float)rmin, (float)rmax, (float)zmax, MCP->id());
 
     if (drawSimHits) {
-      if (drawOnDifferentLayers) l = layer+12;
-      else l = layer+10;
+      if (drawOnDifferentLayers) {
+            l = layer+12;
+      }
+      else{ 
+            l = layer+10;
+
+      }
       drawHitCollectionsByMCContribution(event,MCP,marker,size+2,color,l);
     }
 
@@ -745,13 +767,17 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
   // backscattered charged particles and neutrinos are displayed on (layer+2) and their SimHits optionally on (layer + 12)
   else if (!isCharged && isNeutrino || isBackscattered) {
   
-    if (drawOnDifferentLayers) l = layer+2;
+    if (drawOnDifferentLayers){ 
+            l = layer+2;
+    }
     else l = layer;
 
     ced_line_ID(x1,y1,z1,x2,y2,z2, marker | ( l << CED_LAYER_SHIFT ), size, color, MCP->id());
 
     if (drawSimHits) {
-      if (drawOnDifferentLayers) l = layer+12;
+      if (drawOnDifferentLayers){ 
+            l = layer+12;
+       }
       else l = layer+10;
       drawHitCollectionsByMCContribution(event,MCP,marker,size+2,color,l);
     }
@@ -838,6 +864,7 @@ void MarlinCED::drawSimCalorimeterHits(LCEvent* event, int marker, int size, uns
 
   drawHitCollectionsByType(event,LCIO::SIMCALORIMETERHIT,marker,size,color,layer);
 
+
 }
 
 
@@ -846,7 +873,6 @@ void MarlinCED::drawSimHits(LCEvent* event, int marker, int size, unsigned int c
 
   drawHitCollectionsByType(event,LCIO::SIMTRACKERHIT,marker,size,color,layer);
   drawHitCollectionsByType(event,LCIO::SIMCALORIMETERHIT,marker,size,color,layer);
-
 }
 
 
@@ -854,7 +880,6 @@ void MarlinCED::drawSimHits(LCEvent* event, int marker, int size, unsigned int c
 void MarlinCED::drawTrackerHits(LCEvent* event, int marker, int size, unsigned int color, unsigned int layer) {
 
   drawHitCollectionsByType(event,LCIO::TRACKERHIT,marker,size,color,layer);
-
 }
 
 
