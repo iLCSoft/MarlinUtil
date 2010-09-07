@@ -1,5 +1,7 @@
 #include "TrackwiseClusters.h"
 
+#include <cfloat>
+
 
 using namespace lcio;
 
