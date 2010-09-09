@@ -130,11 +130,11 @@ void CEDPickingHandler::update(LCEvent *evt){
     std::string typeName;
     std::string collName;
     CEDMapParticleObject particleObj;
-    for(unsigned int i=0;i<collNames->size()-1;i++){
+    for(unsigned int i=0;i<collNames->size();i++){
         collName=collNames->at(i);
         coll =  evt->getCollection(collName);
         typeName=coll->getTypeName();
-        for (int j=0;j<coll->getNumberOfElements()-1;j++){
+        for (int j=0;j<coll->getNumberOfElements();j++){
             obj=coll->getElementAt(j);
             /*
             //debug
@@ -164,7 +164,9 @@ void CEDPickingHandler::update(LCEvent *evt){
             print ALL objects while filling the map*/
             //particleObj.function(particleObj.obj);
 
-            map.insert(std::pair<const int, CEDMapParticleObject>(obj->id(),particleObj));
+	    // streamlog_out( DEBUG ) << "  registering object of type : " <<  typeName << "  with ID= " << obj->id() << std::endl ;
+
+	    map.insert(std::pair<const int, CEDMapParticleObject>(obj->id(),particleObj));
         }
    }
    clock_t end = clock() ; 
@@ -485,7 +487,9 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
   if ( (pt >= 0.01) && (pt <= high_pt && charge!=0) ) {
     double r =  pt / ( cFactor * b * std::abs( charge )  ) ;
     double sign =  charge > 0 ? 1 : -1 ;
+
     sign = - sign  ; // FIXME: need to check the convention - but this works !?
+
     double phi = std::atan2( py , px ) + ( 2. + sign ) * M_PI / 2. ;
     //center of helix
     double cx = x - ( sign * py * r / pt ) ;
@@ -535,7 +539,7 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
      	 x2 = cx + r * cos( phi + sign * alpha ) ;
       	 y2 = cy + r * sin( phi + sign * alpha ) ;
       	 z2 = cz + r * alpha * pz / pt ;
-      	//std::cout 	<< "Number of steps = " << j << std::endl;
+      	// streamlog_out(DEBUG) 	<< "Number of steps = " << j << std::endl;
 		break ;
       }
       
@@ -549,12 +553,12 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
     z1 = z2;
 
     }
-    //std::cout<<"added " <<count_lines <<"ced_line_ID to CED"<<std::endl;
+    // streamlog_out(DEBUG)<<"added " <<count_lines <<"ced_line_ID to CED"<<std::endl;
 
   }
   //For high momentum tracks, just draw straight line 
   else if (pt > high_pt) { 
-        std::cout << "pt = " << pt << std::endl;
+         streamlog_out(DEBUG) << "pt = " << pt << std::endl;
         float absP =sqrt(px*px + py*py + pz*pz);
         float k = 0.0;
         float kr = 0.0;
@@ -567,7 +571,7 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
         radicant = summand*summand - ( (pow(absP,2)*(pow(x,2)+pow(y,2)-pow(rmax,2)))/(pow(px,2) + pow(py,2)) );
         
         if (radicant < 0) {
-          std::cout << "Error in 'MarlinCED::drawHelix()': Startpoint beyond (rmax,zmax)" << std::endl;
+           streamlog_out(ERROR) << "Error in 'MarlinCED::drawHelix()': Startpoint beyond (rmax,zmax)" << std::endl;
           return;
         }
         
@@ -582,7 +586,7 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
         else k = kr;
         
         if (k < 0.0 && k!=kz) {
-          std::cout << "Error in 'MarlinCED::drawHelix()': No intersection point with the outer cylinder shell (rmax,zmax) found" << std::endl;
+           streamlog_out(DEBUG) << "Error in 'MarlinCED::drawHelix()': No intersection point with the outer cylinder shell (rmax,zmax) found" << std::endl;
           return;
         }
         
@@ -591,7 +595,7 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
         float zEnd = z + (k*pz)/absP;
         
         if (rmin != 0){
-        	std::cout << "FIX ME: Inner cylinder not taken into account!" << std::endl;
+        	 streamlog_out(DEBUG) << "FIX ME: Inner cylinder not taken into account!" << std::endl;
         	return;
         }
         
@@ -599,7 +603,7 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
     
   	}
     else {
-        std::cout << "Low momentum particle given point instead of helix" << std::endl;
+         streamlog_out(DEBUG) << "Low momentum particle given point instead of helix" << std::endl;
         const double delta = 0.0001;
         ced_line_ID(x, y, z, x+delta, y+delta, z+delta, marker , size, col, id);
 
@@ -677,7 +681,7 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
 			       double rmin, double zmin, double rmax, double zmax, bool drawOnDifferentLayers) {
 
 
-  std::cout<<"Hauke: draw mcparticle, id="<<MCP->id() << std::endl;
+   streamlog_out(DEBUG)<<"Hauke: draw mcparticle, id="<<MCP->id() << std::endl;
 
 
   //SM-H: Calls drawHelix with MCP->Iid(), which allows for implementation of picking
@@ -703,7 +707,7 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
   charge = MCP->getCharge();
 
   // debug
-  std::cout << bField << "  " << charge << "  " << x1 << "  " << y1 << "  " << z1 << "  " << x2 << "  " << y2 << "  " << z2 << "  " << color << " " 
+   streamlog_out(DEBUG) << bField << "  " << charge << "  " << x1 << "  " << y1 << "  " << z1 << "  " << x2 << "  " << y2 << "  " << z2 << "  " << color << " " 
             << p1 << "  " << p2 << "  " << p3 << "  " << std::endl;
 
 
@@ -711,7 +715,7 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
   bool isNeutrino      = (abs(MCP->getPDG())==12) || (abs(MCP->getPDG())==14) || (abs(MCP->getPDG())==16);
   bool isBackscattered = MCP->isBackscatter();
     
-  //std::cout << "isCharged = " << isCharged << " isNeutrino = " << isNeutrino << " isBackscattered " << isBackscattered << std::endl;
+  // streamlog_out(DEBUG) << "isCharged = " << isCharged << " isNeutrino = " << isNeutrino << " isBackscattered " << isBackscattered << std::endl;
 
   // charged MC Particles are displayed on layer and their SimHits optionally on (layer + 10)
   if (isCharged && !isNeutrino && !isBackscattered) {
@@ -783,7 +787,7 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
     }
 
   }
-  else std::cout << "This MC Particle has not been displayed : id = " << MCP->id() << "  " << "PDG Code : " << MCP->getPDG() << std::endl;
+  else  streamlog_out(DEBUG) << "This MC Particle has not been displayed : id = " << MCP->id() << "  " << "PDG Code : " << MCP->getPDG() << std::endl;
   
 }
 
@@ -844,7 +848,7 @@ void MarlinCED::drawMCParticleTree(LCEvent* event, std::string colNameMC, double
   }
   catch(DataNotAvailableException &e){
 
-    std::cout << "no valid MC collection in event." << std::endl ;
+     streamlog_out(WARNING) << "no valid MC collection in event." << std::endl ;
 
   };
 
