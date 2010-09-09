@@ -375,8 +375,14 @@ class MarlinCED {
 //      std::cout<<"Registration" << "col.getTypeName(): " << col->getTypeName() << " id: " << index << " test i:" << _int_count << std::endl;
 //      return(1);
 //}
+
+    static void set_layer_description(const std::string& desc, int layerID);
+    static void add_layer_description(const std::string& desc, int layerID);
+    static void write_layer_description(void);
+
 private:
     static int _int_count;
+    static std::vector<std::string> _descs;
 
 
 protected:

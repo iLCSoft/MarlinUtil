@@ -89,6 +89,8 @@ CEDPickingMap CEDPickingHandler::map;
 CEDFunctionMap CEDPickingHandler::funcMap;
 CEDPickingHandler *CEDPickingHandler::instance = NULL;
 
+std::vector<std::string> MarlinCED::_descs(25, ""); //layer descriptions
+
 CEDPickingHandler& CEDPickingHandler::getInstance() {
     if( !instance){
         std::cout<<"new instance"<<std::endl;
@@ -239,6 +241,42 @@ void CEDPickingHandler::set_conio_terminal_mode()
 }
 
 */
+
+void MarlinCED::add_layer_description(const std::string &desc, int layerID){
+    std::string tmp;
+    //std::cout<<"LAYER: add: " << desc << std::endl;
+    //std::cout << "LAYER: search " << desc << " into " << _descs.at(layerID);
+    if(layerID > 24 || layerID < 0){return;}
+    if( _descs.at(layerID).find(desc.c_str()) == std::string::npos){      
+        //std::cout << " found " << std::endl;
+        tmp=_descs.at(layerID);
+        if(! tmp.empty()){
+            tmp.append(", ");
+        }
+        tmp.append(desc);
+        _descs.at(layerID)=tmp;
+    }else{
+        //std::cout << " NOT found " << std::endl;
+    }
+}
+
+void MarlinCED::set_layer_description(const std::string &desc, int layerID){
+    if(layerID > 24 || layerID < 0){return;}
+    //std::cout<<"LAYER: set: " << desc <<  std::endl;
+    _descs.at(layerID)=desc;
+
+}
+
+void MarlinCED::write_layer_description(void){
+    //std::cout<<"LAYER: write all layer in ced" << std::endl;
+    unsigned int i;
+    //for(i=0;i<25;i++){
+    for(i=0; i<_descs.size(); i++){
+        //std::cout<<"LAYER " << i << ": "<< _descs.at(i) << std::endl;
+        ced_describe_layer(_descs.at(i).c_str(), i);
+    }
+}
+
 //end hauke hoelbe
 
 MarlinCED* MarlinCED::instance() {
@@ -419,9 +457,9 @@ void MarlinCED::draw( Processor* proc , int waitForKeyboard ) {
     CEDPickingHandler &pHandler=CEDPickingHandler::getInstance();
 
 
-
     if( proc == instance()->_last ) {
     //    ced_draw_event();
+        MarlinCED::write_layer_description();
         ced_send_event();
         if ( waitForKeyboard == 1 ) {
             streamlog_out(MESSAGE) << "Double click for picking. Press <ENTER> for the next event." << std::endl;
