@@ -1114,13 +1114,17 @@ void MarlinCED::drawGEARDetector(){
       unsigned int layer = 11<<CED_LAYER_SHIFT;
       
       double *rotate = new double[3];
+
+      rotate[0] = 0.0;
+      rotate[1] = 0.0;
       rotate[2] = currPhi*rad2deg;
+
 
       ced_geobox_r( sizes, center, rotate, color, layer);
 
       delete [] center;
       delete [] sizes;
-
+      delete [] rotate;
 
 
     }
