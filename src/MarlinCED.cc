@@ -480,6 +480,11 @@ void MarlinCED::draw( Processor* proc , int waitForKeyboard ) {
             while(!CEDPickingHandler::kbhit()){
 //            while(!poll(pfd,1,0)){
 
+                usleep(100000); //micro seconds
+                //timeval Timeout;
+                //Timeout.tv_sec = 5;
+                //Timeout.tv_usec = 0;
+                //select( 0, (fd_set *)0, (fd_set *)0, (fd_set *)0, &Timeout );
 
                 int id = ced_selected_id_noblock();
                 if(id>=0) {
@@ -553,7 +558,7 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
     
     //int nSteps = 1000000;
     int nSteps = int(100/step); //hauke
-    streamlog_out(DEBUG) << "draw helix (nsteps: " << nSteps << ") id= " << id<<std::endl; 
+    //streamlog_out(DEBUG) << "draw helix (nsteps: " << nSteps << ") id= " << id<<std::endl; 
 
     
     int count_lines=0;
