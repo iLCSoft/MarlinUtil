@@ -5,6 +5,17 @@
 ================================
 
  --------
+| head   |
+ -------- 
+    Changes (H. Hoelbe, DESY):
+    -  New methods: MarlinCED::set_layer_description and
+       MarlinCED::add_layer_description which stores the 
+       layer descriptions and call ced_describe_layer only 
+       one time per layer.
+    -  Add usleep to the mainloop to avoid busy waiting
+
+
+ --------
 | v01-00 |
  -------- 
 

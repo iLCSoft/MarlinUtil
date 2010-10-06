@@ -1,3 +1,13 @@
+2010-10-06 13:21  hhoelbe
+
+	* ChangeLog, src/MarlinCED.cc: add usleep to the mainloop to avoid
+	  busy waiting
+
+2010-09-22 15:03  aplin
+
+	* src/MarlinCED.cc: fixed rotation of vxd, initialisation was not
+	  done for x and y
+
 2010-09-09 13:07  hhoelbe
 
 	* include/MarlinCED.h, src/MarlinCED.cc: - new methods:
