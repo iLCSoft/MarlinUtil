@@ -295,12 +295,12 @@ void MarlinCED::init( Processor* proc ) {
     char *port, *host;
     port = getenv("CED_PORT");
     host = getenv("CED_HOST");
-    if(port == NULL && host == NULL){
+    if((port == NULL || port[0] == 0) && (host == NULL || host[0] == 0)){
       ced_client_init("localhost",7286);
-    }else if(port == NULL){
+    }else if(port == NULL || port[0] == 0){
       streamlog_out(MESSAGE)<< "Use user defined host " << host << std::endl;
       ced_client_init(host,7286);
-    }else if(host == NULL){
+    }else if(host == NULL|| host[0] == 0){
       streamlog_out(MESSAGE)<< "Use user defined port " << port << std::endl;
       ced_client_init("localhost",atoi(port));
     }else{
