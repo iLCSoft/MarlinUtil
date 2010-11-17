@@ -292,7 +292,22 @@ void MarlinCED::init( Processor* proc ) {
     
     instance()->_first = proc ;
     
-    ced_client_init("localhost",7286);
+    char *port, *host;
+    port = getenv("CED_PORT");
+    host = getenv("CED_HOST");
+    if(port == NULL && host == NULL){
+      ced_client_init("localhost",7286);
+    }else if(port == NULL){
+      streamlog_out(MESSAGE)<< "Use user defined host " << host << std::endl;
+      ced_client_init(host,7286);
+    }else if(host == NULL){
+      streamlog_out(MESSAGE)<< "Use user defined port " << port << std::endl;
+      ced_client_init("localhost",atoi(port));
+    }else{
+      streamlog_out(MESSAGE)<< "Use user defined host " << host << ", port " <<  port << std::endl;
+      ced_client_init(host,atoi(port));
+    }
+    
     ced_register_elements();
   }
 
