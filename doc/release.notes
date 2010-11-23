@@ -15,6 +15,10 @@
        one time per layer.
     -  Add usleep to the mainloop to avoid busy waiting
        (speed up CED)
+    - CalorimeterHitType - added functions:
+         CHT::Layout layoutFromString(const std::string& name) ;
+         CHT::CaloID caloIDFromString(const std::string& name) ;
+      (moved from MarlinReco/LDCCaloDigi/src/CHT_helper)
 
  --------
 | v01-00 |
