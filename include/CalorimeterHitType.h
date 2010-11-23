@@ -136,6 +136,16 @@ protected:
 std::ostream& operator<<(std::ostream& os, const CHT& cht) ; 
 
 
+/** Return Layout based on the collection name, e.g. if name contains tolower("endcap") CHT::endcap is returned. In case no known layout
+    is found, CHT::any is returned.*/
+CHT::Layout layoutFromString(const std::string& name) ;
+
+/** Return caloID based on the collection name, e.g. if name contains tolower("HCal") CHT::hcal is returned. In case no known type
+    is found, CHT::unknown is returned.*/
+CHT::CaloID caloIDFromString(const std::string& name) ;
+
+
+
 #endif
 
 
