@@ -1,5 +1,7 @@
 #include "CalorimeterHitType.h"
 
+#include <algorithm>
+
 
 /** detailed string for calo type */
 std::ostream& operator<<(std::ostream& os, const CHT& cht){
