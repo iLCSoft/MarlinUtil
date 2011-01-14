@@ -48,14 +48,6 @@ CHECK_PACKAGE_LIBS( MarlinUtil MarlinUtil )
 
 
 
-# ---------- final checking ---------------------------------------------------
-INCLUDE( FindPackageHandleStandardArgs )
-# set MARLINUTIL_FOUND to TRUE if all listed variables are TRUE and not empty
-# MarlinUtil_COMPONENT_VARIABLES will be set if FIND_PACKAGE is called with REQUIRED argument
-FIND_PACKAGE_HANDLE_STANDARD_ARGS( MarlinUtil DEFAULT_MSG MarlinUtil_ROOT MarlinUtil_INCLUDE_DIRS MarlinUtil_LIBRARIES )
-
-
-
 # ---------- dependencies -----------------------------------------------------
 INCLUDE( ${MarlinUtil_ROOT}/cmake/MacroExportPackageDeps.cmake ) # FIXME full path ?!
 # exports following package dependencies (if set)
@@ -64,4 +56,14 @@ SET( MarlinUtil_DEPENDS_INCLUDE_DIRS  @MarlinUtil_DEPENDS_INCLUDE_DIRS@ )
 SET( MarlinUtil_DEPENDS_LIBRARIES  @MarlinUtil_DEPENDS_LIBRARIES@ )
 SET( MarlinUtil_DEPENDS_LIBRARY_DIRS  @MarlinUtil_DEPENDS_LIBRARY_DIRS@ )
 EXPORT_PACKAGE_DEPENDENCIES( MarlinUtil )
+
+
+
+# ---------- final checking ---------------------------------------------------
+INCLUDE( FindPackageHandleStandardArgs )
+# set MARLINUTIL_FOUND to TRUE if all listed variables are TRUE and not empty
+# MarlinUtil_COMPONENT_VARIABLES will be set if FIND_PACKAGE is called with REQUIRED argument
+FIND_PACKAGE_HANDLE_STANDARD_ARGS( MarlinUtil DEFAULT_MSG MarlinUtil_ROOT MarlinUtil_INCLUDE_DIRS MarlinUtil_LIBRARIES )
+
+SET( MarlinUtil_FOUND ${MARLINUTIL_FOUND} )
 
