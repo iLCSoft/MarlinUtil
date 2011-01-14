@@ -1,0 +1,67 @@
+##############################################################################
+# cmake configuration file for MarlinUtil
+#
+# requires:
+#   MacroCheckPackageLibs.cmake for checking package libraries
+#   MacroExportPackageDeps.cmake for exporting package dependencies
+#
+# returns following variables:
+#
+#   MarlinUtil_FOUND      : set to TRUE if MarlinUtil found
+#       if FIND_PACKAGE called with REQUIRED and COMPONENTS arguments
+#       MarlinUtil_FOUND is only set to TRUE if ALL components are also found
+#       if REQUIRED is NOT set components may or may not be available
+#
+#   MarlinUtil_ROOT       : path to this MarlinUtil installation
+#   MarlinUtil_LIBRARIES  : list of MarlinUtil libraries (NOT including COMPONENTS)
+#   MarlinUtil_INCLUDE_DIRS  : list of paths to be used with INCLUDE_DIRECTORIES
+#   MarlinUtil_LIBRARY_DIRS  : list of paths to be used with LINK_DIRECTORIES
+#   MarlinUtil_COMPONENT_LIBRARIES      : list of MarlinUtil component libraries
+#   MarlinUtil_${COMPONENT}_FOUND       : set to TRUE or FALSE for each library
+#   MarlinUtil_${COMPONENT}_LIBRARY     : path to individual libraries
+#   MarlinUtil_${COMPONENT}_LIB_DEPENDS : individual library dependencies
+#
+# @author Jan Engels, Desy
+##############################################################################
+
+SET( MarlinUtil_ROOT "/scratch/engels/nbuilds/2011-01-14/nb-debug-64bit/MarlinUtil/HEAD" )
+
+
+# ---------- include dirs -----------------------------------------------------
+# do not store find results in cache
+SET( MarlinUtil_INCLUDE_DIRS MarlinUtil_INCLUDE_DIRS-NOTFOUND )
+MARK_AS_ADVANCED( MarlinUtil_INCLUDE_DIRS )
+
+FIND_PATH( MarlinUtil_INCLUDE_DIRS
+	NAMES MarlinUtil.h
+	PATHS ${MarlinUtil_ROOT}/include
+	NO_DEFAULT_PATH
+)
+
+# ---------- libraries --------------------------------------------------------
+INCLUDE( ${MarlinUtil_ROOT}/cmake/MacroCheckPackageLibs.cmake ) # FIXME full path ?!
+
+# only standard libraries should be passed as arguments to CHECK_PACKAGE_LIBS
+# additional components are set by cmake in variable PKG_FIND_COMPONENTS
+# first argument should be the package name
+CHECK_PACKAGE_LIBS( MarlinUtil MarlinUtil )
+
+
+
+# ---------- final checking ---------------------------------------------------
+INCLUDE( FindPackageHandleStandardArgs )
+# set MARLINUTIL_FOUND to TRUE if all listed variables are TRUE and not empty
+# MarlinUtil_COMPONENT_VARIABLES will be set if FIND_PACKAGE is called with REQUIRED argument
+FIND_PACKAGE_HANDLE_STANDARD_ARGS( MarlinUtil DEFAULT_MSG MarlinUtil_ROOT MarlinUtil_INCLUDE_DIRS MarlinUtil_LIBRARIES )
+
+
+
+# ---------- dependencies -----------------------------------------------------
+INCLUDE( ${MarlinUtil_ROOT}/cmake/MacroExportPackageDeps.cmake ) # FIXME full path ?!
+# exports following package dependencies (if set)
+# first argument of macro should be the package name
+SET( MarlinUtil_DEPENDS_INCLUDE_DIRS  @MarlinUtil_DEPENDS_INCLUDE_DIRS@ )
+SET( MarlinUtil_DEPENDS_LIBRARIES  @MarlinUtil_DEPENDS_LIBRARIES@ )
+SET( MarlinUtil_DEPENDS_LIBRARY_DIRS  @MarlinUtil_DEPENDS_LIBRARY_DIRS@ )
+EXPORT_PACKAGE_DEPENDENCIES( MarlinUtil )
+
