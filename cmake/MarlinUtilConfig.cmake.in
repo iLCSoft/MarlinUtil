@@ -24,7 +24,7 @@
 # @author Jan Engels, Desy
 ##############################################################################
 
-SET( MarlinUtil_ROOT "/scratch/engels/nbuilds/2011-01-14/nb-debug-64bit/MarlinUtil/HEAD" )
+SET( MarlinUtil_ROOT "@CMAKE_INSTALL_PREFIX@" )
 
 
 # ---------- include dirs -----------------------------------------------------
