@@ -77,17 +77,21 @@ AUX_SOURCE_DIRECTORY( ./source/src/mille library_sources )
 
 SET_SOURCE_FILES_PROPERTIES( "./source/src/ann/kd_pr_search.cpp" PROPERTIES COMPILE_FLAGS "-fno-strict-aliasing" )
 
-# filter out testmarlinutil from the library sources
-LIST( REMOVE_ITEM library_sources "./source/src/testmarlinutil.cc" )
-
-
 ADD_SHARED_LIBRARY( ${PROJECT_NAME} ${library_sources} )
 INSTALL( TARGETS ${PROJECT_NAME} DESTINATION lib )
 
+# helper macro for adding new tests
+# build with 'make tests'
+ADD_CUSTOM_TARGET( tests )
+MACRO( ADD_MARLINUTIL_TEST _name )
+    # MarlinUtil test
+    ADD_EXECUTABLE( ${_name} EXCLUDE_FROM_ALL "./source/tests/${_name}.cc" )
+    ADD_DEPENDENCIES( tests ${_name} )
+    TARGET_LINK_LIBRARIES( ${_name} ${PROJECT_NAME} )
+    #INSTALL( TARGETS ${_name} DESTINATION bin )
+ENDMACRO()
 
-# MarlinUtil test
-ADD_EXECUTABLE( testmarlinutil EXCLUDE_FROM_ALL "./source/src/testmarlinutil.cc" )
-TARGET_LINK_LIBRARIES( testmarlinutil ${PROJECT_NAME} )
+ADD_MARLINUTIL_TEST( testmarlinutil )
 
 
 # display some variables and write them to cache
