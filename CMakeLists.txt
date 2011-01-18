@@ -66,19 +66,19 @@ ADD_DEFINITIONS( "-Wall -ansi" ) # FIXME -pedantic
 ADD_DEFINITIONS( "-Wno-long-long" )
 
 # include directories
-INCLUDE_DIRECTORIES( ./include )
-INSTALL_DIRECTORY( ./include DESTINATION . FILES_MATCHING PATTERN "*.h" )
+INCLUDE_DIRECTORIES( ./source/include )
+INSTALL_DIRECTORY( ./source/include DESTINATION . FILES_MATCHING PATTERN "*.h" )
 
 
 # get list of all source files
-AUX_SOURCE_DIRECTORY( ./src library_sources )
-AUX_SOURCE_DIRECTORY( ./src/ann library_sources )
-AUX_SOURCE_DIRECTORY( ./src/mille library_sources )
+AUX_SOURCE_DIRECTORY( ./source/src library_sources )
+AUX_SOURCE_DIRECTORY( ./source/src/ann library_sources )
+AUX_SOURCE_DIRECTORY( ./source/src/mille library_sources )
 
-SET_SOURCE_FILES_PROPERTIES( "./src/ann/kd_pr_search.cpp" PROPERTIES COMPILE_FLAGS "-fno-strict-aliasing" )
+SET_SOURCE_FILES_PROPERTIES( "./source/src/ann/kd_pr_search.cpp" PROPERTIES COMPILE_FLAGS "-fno-strict-aliasing" )
 
 # filter out testmarlinutil from the library sources
-LIST( REMOVE_ITEM library_sources "./src/testmarlinutil.cc" )
+LIST( REMOVE_ITEM library_sources "./source/src/testmarlinutil.cc" )
 
 
 ADD_SHARED_LIBRARY( ${PROJECT_NAME} ${library_sources} )
@@ -86,7 +86,7 @@ INSTALL( TARGETS ${PROJECT_NAME} DESTINATION lib )
 
 
 # MarlinUtil test
-ADD_EXECUTABLE( testmarlinutil EXCLUDE_FROM_ALL "./src/testmarlinutil.cc" )
+ADD_EXECUTABLE( testmarlinutil EXCLUDE_FROM_ALL "./source/src/testmarlinutil.cc" )
 TARGET_LINK_LIBRARIES( testmarlinutil ${PROJECT_NAME} )
 
 
