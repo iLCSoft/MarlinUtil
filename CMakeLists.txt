@@ -47,15 +47,21 @@ SET( MarlinUtil_DEPENDS_LIBRARIES ${CED_LIBRARIES} ${CLHEP_LIBRARIES} )
 
 ### DOCUMENTATION ###########################################################
 
-OPTION( INSTALL_DOC "Set to OFF to skip build/install Documentation" ON )
+OPTION( INSTALL_DOC "Set to OFF to skip build/install Documentation" OFF )
 
-IF( INSTALL_DOC AND EXISTS "${PROJECT_SOURCE_DIR}/doc/CMakeLists.txt" )
-    ADD_SUBDIRECTORY( ./doc )
-ELSE()
-    MESSAGE( STATUS "INSTALL_DOC set to OFF" )
-    SET( INSTALL_DOC OFF )
+IF( INSTALL_DOC )
+
+    FIND_PACKAGE( Doxygen )
+
+    IF( DOXYGEN_EXECUTABLE )
+        ADD_SUBDIRECTORY( ./doc )
+    ELSE()
+        MESSAGE( SEND_ERROR "Could not find doxygen required to build documentation" )
+        MESSAGE( "Please install doxygen or set INSTALL_DOC to OFF" )
+        MESSAGE( "" )
+    ENDIF()
+
 ENDIF()
-
 
 
 ### LIBRARY #################################################################
