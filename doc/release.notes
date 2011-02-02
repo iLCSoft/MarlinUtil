@@ -7,10 +7,27 @@
  --------
 | v01-02 |
  -------- 
-
     - improved dependencies in cmake
 
     !!!!! TODO !!!!!!!
+
+
+
+
+Changes (H. Hoelbe, DESY):
+    - Implement remote access to CED:
+
+        * Now you are able to connect to an user defined host and portnumber.
+
+        * Example: To run CED on host "foo" port 7777 and Marlin on host "bar":
+                      ssh foo
+                      export CED_PORT="7777"
+                      glced
+
+                      ssh bar
+                      export CED_HOST="foo"
+                      export CED_PORT="7777"
+                      Marlin example.xml
 
  --------
 | v01-01 |
