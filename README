@@ -16,19 +16,20 @@ until we have the geometry for reconstruction package (GEAR).
 This package is needed in praticular for MarlinReco but can also be included in other 
 Marlin based programs.
 
+MarlinUtil depends on ILCUTIL, Marlin (1.0 or higher), CED (1.2 or higher), CLHEP and GSL
 
-Build Instructions (cmake):
+
+Build Instructions:
 ---------------------------------------------------------
 
-1st: edit the file BuildSetup.cmake
-     according to your system setup.
+    . path_to_ilcsoft_installation/v01-XX/init_ilcsoft.sh
 
-2nd: type the following commands:
+    mkdir build
+    cd build
 
-   $ mkdir build
-   $ cd build
-   $ cmake -C ../BuildSetup.cmake ..
-   $ make install
+    cmake -C $ILCSOFT/ILCSoft.cmake ..
+
+    make install
 
 For more information on CMake for the ILCSoftware check:
 http://ilcsoft.desy.de/portal/general_documentation/index_eng.html
