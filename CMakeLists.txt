@@ -25,7 +25,7 @@ INCLUDE( ilcsoft_default_settings )
 
 
 FIND_PACKAGE( Marlin 1.0 REQUIRED ) # minimum required Marlin version
-FIND_PACKAGE( CED REQUIRED )
+FIND_PACKAGE( CED 1.2 REQUIRED )
 FIND_PACKAGE( CLHEP REQUIRED )
 FIND_PACKAGE( GSL REQUIRED )
 
