@@ -45,8 +45,7 @@
 #include "EVENT/Cluster.h"
 #include "EVENT/ReconstructedParticle.h"
 #include "EVENT/Vertex.h"
-#include "EVENT/LCGenericObject.h"
-
+#include "EVENT/LCGenericObject.h" 
 #include "EVENT/LCRelation.h"
 #include "LCIOSTLTypes.h"
 #include <signal.h>
@@ -1070,7 +1069,7 @@ void MarlinCED::drawGEARDetector(){
    float z_max_hcal_bar = pHCAL_B.getExtent()[3];
    const gear::CalorimeterParameters& pHCAL_R = 
              Global::GEAR->getHcalRingParameters();
-// float r_min_hcal_ring = pHCAL_R.getExtent()[0];
+ float r_min_hcal_ring = pHCAL_R.getExtent()[0];
     float r_max_hcal_ring = pHCAL_R.getExtent()[1];
     float z_min_hcal_ring = pHCAL_R.getExtent()[2];
     float z_max_hcal_ring = pHCAL_R.getExtent()[3];
@@ -1153,7 +1152,7 @@ void MarlinCED::drawGEARDetector(){
    
 // =======================================================================
 //To convert inner radius of polygone to its outer radius
-// float Cos4  = cos(M_PI/4.0);
+   float Cos4  = cos(M_PI/4.0);
    float Cos8  = cos(M_PI/8.0);
    float Cos16 = cos(M_PI/16.);
 // convertion of  inner radius of polygone to its outer radius
@@ -1166,7 +1165,7 @@ void MarlinCED::drawGEARDetector(){
    float shift_ecal_z_minus = z_min_ecal_ecap + 2.0*thick_ecal_ecap;
    float r_inn_hcal_bar     = r_min_hcal_bar/Cos8;
    float r_out_hcal_bar     = r_max_hcal_bar/Cos16;
-//   float r_inn_hcal_ring    = r_min_hcal_ring/Cos4;
+   float r_inn_hcal_ring    = r_min_hcal_ring/Cos4;
    float r_out_hcal_ring    = r_max_hcal_ring/Cos8;
    float thick_hcal_ring    = 0.5*(z_max_hcal_ring - 
 		 z_min_hcal_ring + 20.0); // +20 by hand to see hits inside
@@ -1179,7 +1178,9 @@ void MarlinCED::drawGEARDetector(){
    float shift_hcal_z_plus  = z_min_hcal_ecap;
    float shift_hcal_z_minus = z_min_hcal_ecap + 2.0*thick_hcal_ecap;
 // ========================================================================
+/*
     static CED_GeoCylinder geoCylindersANY[] = {       // for ANY Detector Geometry
+      //
       { r_min_tpc,        40, 0.0, z_max_tpc,       -z_max_tpc,          0xff      }, // inner TPC  40 also temporary
       { r_max_tpc,        40, 0.0, z_max_tpc,       -z_max_tpc,          0xff      }, // outer TPC  temporary
       { r_inn_ecal_bar ,  8, 22.5, z_max_ecal_bar,  -z_max_ecal_bar,     0x7f7f1f  }, // inner ECAL Barrel
@@ -1194,8 +1195,27 @@ void MarlinCED::drawGEARDetector(){
       { r_out_hcal_ecap,  8,  0.0, thick_hcal_ecap, -shift_hcal_z_minus, 0x00cf00  }  // outer endcap HCAL -Z      
     };
 // ========================================================================
-      ced_geocylinders(sizeof(geoCylindersANY)/sizeof(CED_GeoCylinder),
-		       geoCylindersANY);
+      ced_geocylinders(sizeof(geoCylindersANY)/sizeof(CED_GeoCylinder), geoCylindersANY);
+
+*/
+
+    static CED_GeoTube geoTubesANY[] = {       // for ANY Detector Geometry
+      //         radius, inner_radius, outer_edges, inner_edges,        phi0,           z_max,               z_min,    color
+         
+      { r_max_tpc,            r_min_tpc,       40,           40,         0.0, z_max_tpc,       -z_max_tpc,          0xff      }, // outer TPC  
+      { r_out_ecal_bar,  r_inn_ecal_bar,        8,            8,        22.5, z_max_ecal_bar,  -z_max_ecal_bar,     0x7f7f1f  }, // outer ECAL Barrel
+      { r_out_ecal_ecap,              0,        8,            8,        22.5, thick_ecal_ecap,  shift_ecal_z_plus,  0x7f7f1f  }, // outer endcap ECAL +Z
+      { r_out_ecal_ecap,              0,        8,            8,        22.5, thick_ecal_ecap, -shift_ecal_z_minus, 0x7f7f1f  }, // outer endcap ECAL -Z
+      { r_out_hcal_bar,  r_inn_hcal_bar,       16,           16,         0.0, z_max_hcal_bar,  -z_max_hcal_bar,     0x00cf00  }, // outer HCAL Barrel
+      { r_out_hcal_ring,r_inn_hcal_ring,/*??*/  8,            8,         0.0, thick_hcal_ring,  shift_hcalr_z_plus,  0x00cf00  }, // outer ring HCAL +Z
+      { r_out_hcal_ring,r_inn_hcal_ring,/*??*/  8,            8,         0.0, thick_hcal_ring, -shift_hcalr_z_minus, 0x00cf00 } , // outer ring HCAL -Z 
+      { r_out_hcal_ecap,              0,        8,            8,         0.0, thick_hcal_ecap,  shift_hcal_z_plus,  0x00cf00  }, // outer endcap HCAL +Z
+      { r_out_hcal_ecap,              0,        8,            8,         0.0, thick_hcal_ecap, -shift_hcal_z_minus, 0x00cf00  }  // outer endcap HCAL -Z      
+
+    };
+// ========================================================================
+      ced_geotubes(sizeof(geoTubesANY)/sizeof(CED_GeoTube), geoTubesANY);
+
 } // End of class DrawGeometry
 
 
