@@ -1048,6 +1048,7 @@ void MarlinCED::drawGEARDetector(){
    float r_min_tpc = planeExt[0];
    float r_max_tpc = planeExt[1];
    float z_max_tpc = pTPC.getMaxDriftLength();
+
    const gear::CalorimeterParameters& pECAL_B = 
             Global::GEAR->getEcalBarrelParameters();
    float r_min_ecal_bar = pECAL_B.getExtent()[0];
@@ -1056,10 +1057,11 @@ void MarlinCED::drawGEARDetector(){
    float z_max_ecal_bar = pECAL_B.getExtent()[3];
    const gear::CalorimeterParameters& pECAL_E = 
             Global::GEAR->getEcalEndcapParameters();
-// float r_min_ecal_ecap = pECAL_E.getExtent()[0];
+   float r_min_ecal_ecap = pECAL_E.getExtent()[0];
    float r_max_ecal_ecap = pECAL_E.getExtent()[1];
    float z_min_ecal_ecap = pECAL_E.getExtent()[2];
    float z_max_ecal_ecap = pECAL_E.getExtent()[3];
+
    const gear::CalorimeterParameters& pHCAL_B = 
             Global::GEAR->getHcalBarrelParameters();
    //  _innerHcalRadius = float(pHcalBarrel.getExtent()[0]);
@@ -1075,14 +1077,70 @@ void MarlinCED::drawGEARDetector(){
     float z_max_hcal_ring = pHCAL_R.getExtent()[3];
    const gear::CalorimeterParameters& pHCAL_E = 
             Global::GEAR->getHcalEndcapParameters();
-// float r_min_hcal_ecap = pHCAL_E.getExtent()[0];
+   float r_min_hcal_ecap = pHCAL_E.getExtent()[0];
    float r_max_hcal_ecap = pHCAL_E.getExtent()[1];
    float z_min_hcal_ecap = pHCAL_E.getExtent()[2];
    float z_max_hcal_ecap = pHCAL_E.getExtent()[3];
    
-     // **************************************** //
-  // ** Building VTX Detector ** //
-  // **************************************** //
+   const gear::CalorimeterParameters& pLHCal = 
+            Global::GEAR->getLHcalParameters();
+   float r_min_lhcal = pLHCal.getExtent()[0];
+   float r_max_lhcal = pLHCal.getExtent()[1];
+   float z_min_lhcal = pLHCal.getExtent()[2];
+   float z_max_lhcal = pLHCal.getExtent()[3];
+
+   const gear::CalorimeterParameters& pLCal = 
+            Global::GEAR->getLcalParameters();
+   float r_min_lcal = pLCal.getExtent()[0];
+   float r_max_lcal = pLCal.getExtent()[1];
+   float z_min_lcal = pLCal.getExtent()[2];
+   float z_max_lcal = pLCal.getExtent()[3];
+
+   const gear::CalorimeterParameters& pBeamcal = 
+            Global::GEAR->getBeamCalParameters();
+   float r_min_beamcal = pBeamcal.getExtent()[0];
+   float r_max_beamcal = pBeamcal.getExtent()[1];
+   float z_min_beamcal = pBeamcal.getExtent()[2];
+   float z_max_beamcal = pBeamcal.getExtent()[3];
+
+
+   const gear::CalorimeterParameters& pYOKE_B = 
+     Global::GEAR->getYokeBarrelParameters();
+   //  _innerYokeRadius = float(pYokeBarrel.getExtent()[0]);
+   float r_min_yoke_bar = pYOKE_B.getExtent()[0];
+   float r_max_yoke_bar = pYOKE_B.getExtent()[1];
+   float z_min_yoke_bar = pYOKE_B.getExtent()[2];
+   float z_max_yoke_bar = pYOKE_B.getExtent()[3];
+   const gear::CalorimeterParameters& pYOKE_R = 
+             Global::GEAR->getYokePlugParameters();
+   float r_min_yoke_plug = pYOKE_R.getExtent()[0];
+   float r_max_yoke_plug = pYOKE_R.getExtent()[1];
+   float z_min_yoke_plug = pYOKE_R.getExtent()[2];
+   float z_max_yoke_plug = pYOKE_R.getExtent()[3];
+   const gear::CalorimeterParameters& pYOKE_E = 
+     Global::GEAR->getYokeEndcapParameters();
+   float r_min_yoke_ecap = pYOKE_E.getExtent()[0];
+   float r_max_yoke_ecap = pYOKE_E.getExtent()[1];
+   float z_min_yoke_ecap = pYOKE_E.getExtent()[2];
+   float z_max_yoke_ecap = pYOKE_E.getExtent()[3];
+   
+ 
+   const gear::GearParameters&  pCoil      = Global::GEAR->getGearParameters("CoilParameters");
+   float coil_half_z         =  pCoil.getDoubleVal("Coil_cryostat_half_z" ) ;
+   float coil_inner_radius  =   pCoil.getDoubleVal("Coil_cryostat_inner_radius" ) ;
+   float coil_outer_radius  =   pCoil.getDoubleVal("Coil_cryostat_outer_radius" ) ;
+
+   const gear::GearParameters&  pFTD      = Global::GEAR->getGearParameters("FTD");
+   //   DoubleVec& ftd_thick  =  pFTD.getDoubleVal("FTDDiskSiThickness" ) ;
+   const DoubleVec& ftd_d   =  pFTD.getDoubleVals("FTDDiskSupportThickness" )  ;
+   const DoubleVec& ftd_ri  =  pFTD.getDoubleVals("FTDInnerRadius" )  ;
+   const DoubleVec& ftd_ro  =  pFTD.getDoubleVals("FTDOuterRadius" )  ;
+   const DoubleVec& ftd_z   =  pFTD.getDoubleVals("FTDZCoordinate" )  ;
+   
+
+   // **************************************** //
+   // ** Building VTX Detector ** //
+   // **************************************** //
 
   //--Get GEAR Parameters--
   const gear::VXDParameters& pVXDDetMain = Global::GEAR->getVXDParameters();
@@ -1154,6 +1212,7 @@ void MarlinCED::drawGEARDetector(){
 //To convert inner radius of polygone to its outer radius
    float Cos4  = cos(M_PI/4.0);
    float Cos8  = cos(M_PI/8.0);
+   float Cos12  = cos(M_PI/12.0);
    float Cos16 = cos(M_PI/16.);
 // convertion of  inner radius of polygone to its outer radius
    float r_inn_ecal_bar     = r_min_ecal_bar/Cos8;  
@@ -1163,9 +1222,11 @@ void MarlinCED::drawGEARDetector(){
    float thick_ecal_ecap    = 0.5*(z_max_ecal_ecap - z_min_ecal_ecap);
    float shift_ecal_z_plus  = z_min_ecal_ecap;
    float shift_ecal_z_minus = z_min_ecal_ecap + 2.0*thick_ecal_ecap;
+
    float r_inn_hcal_bar     = r_min_hcal_bar/Cos8;
    float r_out_hcal_bar     = r_max_hcal_bar/Cos16;
-   float r_inn_hcal_ring    = r_min_hcal_ring/Cos4;
+
+   float r_inn_hcal_ring    = r_min_hcal_ring/Cos8; //fg: was cos4
    float r_out_hcal_ring    = r_max_hcal_ring/Cos8;
    float thick_hcal_ring    = 0.5*(z_max_hcal_ring - 
 		 z_min_hcal_ring + 20.0); // +20 by hand to see hits inside
@@ -1177,6 +1238,35 @@ void MarlinCED::drawGEARDetector(){
 		 z_min_hcal_ecap + 20.0); // +20 by hand to see hits inside
    float shift_hcal_z_plus  = z_min_hcal_ecap;
    float shift_hcal_z_minus = z_min_hcal_ecap + 2.0*thick_hcal_ecap;
+   
+   float thick_lhcal         = 0.5 * ( z_max_lhcal -  z_min_lhcal ) ; 
+   float shift_lhcal_z_plus  = z_min_lhcal;
+   float shift_lhcal_z_minus = z_min_lhcal +  2.0 * thick_lhcal ;
+
+   float thick_lcal         = 0.5 * ( z_max_lcal -  z_min_lcal ) ; 
+   float shift_lcal_z_plus  = z_min_lcal;
+   float shift_lcal_z_minus = z_min_lcal +  2.0 * thick_lcal ;
+
+   float thick_beamcal         = 0.5 * ( z_max_beamcal -  z_min_beamcal ) ; 
+   float shift_beamcal_z_plus  = z_min_beamcal;
+   float shift_beamcal_z_minus = z_min_beamcal +  2.0 * thick_beamcal ;
+
+
+   float r_inn_yoke_bar     = r_min_yoke_bar/Cos12;
+   float r_out_yoke_bar     = r_max_yoke_bar/Cos12;
+
+   float r_inn_yoke_plug    = r_min_yoke_plug/Cos12; //fg: was cos4
+   float r_out_yoke_plug    = r_max_yoke_plug/Cos12;
+   float thick_yoke_plug    = 0.5*(z_max_yoke_plug - 
+		 z_min_yoke_plug + 20.0); // +20 by hand to see hits inside
+   float shift_yoker_z_plus  = z_min_yoke_plug;
+   float shift_yoker_z_minus = z_min_yoke_plug + 2.0*thick_yoke_plug;
+   float r_inn_yoke_ecap    = r_min_yoke_ecap/Cos12;
+   float r_out_yoke_ecap    = r_max_yoke_ecap/Cos12;
+   float thick_yoke_ecap    = 0.5*(z_max_yoke_ecap - 
+		 z_min_yoke_ecap + 20.0); // +20 by hand to see hits inside
+   float shift_yoke_z_plus  = z_min_yoke_ecap;
+   float shift_yoke_z_minus = z_min_yoke_ecap + 2.0*thick_yoke_ecap;
 // ========================================================================
 /*
     static CED_GeoCylinder geoCylindersANY[] = {       // for ANY Detector Geometry
@@ -1198,21 +1288,70 @@ void MarlinCED::drawGEARDetector(){
       ced_geocylinders(sizeof(geoCylindersANY)/sizeof(CED_GeoCylinder), geoCylindersANY);
 
 */
+   
+//   static const unsigned hcalCol = 0xDAA520 ;
+  static const unsigned tpcCol =  0xffff00 ;
+  static const unsigned ecalCol = 0x00ff00 ;
+  static const unsigned hcalCol = 0xff0000 ;
+  static const unsigned yokeCol = 0x000011 ;
+  static const unsigned coilCol = 0xffffff ;
+  static const unsigned ftdCol  = 0xff00ff ;
 
     static CED_GeoTube geoTubesANY[] = {       // for ANY Detector Geometry
       //         radius, inner_radius, outer_edges, inner_edges,        phi0,           z_max,               z_min,    color
          
-      { r_max_tpc,            r_min_tpc,       40,           40,         0.0, z_max_tpc,       -z_max_tpc,          0xff      }, // outer TPC  
-      { r_out_ecal_bar,  r_inn_ecal_bar,        8,            8,        22.5, z_max_ecal_bar,  -z_max_ecal_bar,     0x7f7f1f  }, // outer ECAL Barrel
-      { r_out_ecal_ecap,              0,        8,            8,        22.5, thick_ecal_ecap,  shift_ecal_z_plus,  0x7f7f1f  }, // outer endcap ECAL +Z
-      { r_out_ecal_ecap,              0,        8,            8,        22.5, thick_ecal_ecap, -shift_ecal_z_minus, 0x7f7f1f  }, // outer endcap ECAL -Z
-      { r_out_hcal_bar,  r_inn_hcal_bar,       16,           16,         0.0, z_max_hcal_bar,  -z_max_hcal_bar,     0x00cf00  }, // outer HCAL Barrel
-      { r_out_hcal_ring,r_inn_hcal_ring,/*??*/  8,            8,         0.0, thick_hcal_ring,  shift_hcalr_z_plus,  0x00cf00  }, // outer ring HCAL +Z
-      { r_out_hcal_ring,r_inn_hcal_ring,/*??*/  8,            8,         0.0, thick_hcal_ring, -shift_hcalr_z_minus, 0x00cf00 } , // outer ring HCAL -Z 
-      { r_out_hcal_ecap,              0,        8,            8,         0.0, thick_hcal_ecap,  shift_hcal_z_plus,  0x00cf00  }, // outer endcap HCAL +Z
-      { r_out_hcal_ecap,              0,        8,            8,         0.0, thick_hcal_ecap, -shift_hcal_z_minus, 0x00cf00  }  // outer endcap HCAL -Z      
+      { r_max_tpc,            r_min_tpc,       40,           40,         0.0,    z_max_tpc,        -z_max_tpc,            tpcCol   }, //  TPC  
+
+      { r_out_ecal_bar,  r_inn_ecal_bar,        8,            8,        22.5,    z_max_ecal_bar,   -z_max_ecal_bar,       ecalCol  }, //  ECAL Barrel
+
+      { r_out_ecal_ecap,  0.5*(r_max_lhcal+r_max_lcal),    8,           40,        22.5,    thick_ecal_ecap,   shift_ecal_z_plus,    ecalCol  }, //  endcap ECAL +Z
+      { r_out_ecal_ecap,  0.5*(r_max_lhcal+r_max_lcal),    8,           40,        22.5,    thick_ecal_ecap,  -shift_ecal_z_minus,   ecalCol  }, //  endcap ECAL -Z
+      // { r_out_ecal_ecap,    r_min_ecal_ecap,    8,           40,        22.5,    thick_ecal_ecap,   shift_ecal_z_plus,    ecalCol  }, //  endcap ECAL +Z
+      // { r_out_ecal_ecap,   r_min_ecal_ecap,     8,           40,        22.5,    thick_ecal_ecap,  -shift_ecal_z_minus,   ecalCol  }, //  endcap ECAL -Z
+
+      { r_out_hcal_bar,  r_inn_hcal_bar,       16,            8,         11.25,  z_max_hcal_bar, - z_max_hcal_bar,      hcalCol  }, //  HCAL Barrel
+      { r_out_hcal_ring,r_inn_hcal_ring,        8,            8,         22.5,   thick_hcal_ring,  shift_hcalr_z_plus,  hcalCol  }, //  ring HCAL +Z
+      { r_out_hcal_ring,r_inn_hcal_ring,        8,            8,         22.5,   thick_hcal_ring, -shift_hcalr_z_minus, hcalCol } , //  ring HCAL -Z 
+      { r_out_hcal_ecap, r_min_hcal_ecap,       8,           40,         22.5,   thick_hcal_ecap,  shift_hcal_z_plus,   hcalCol  }, //  endcap HCAL +Z
+      { r_out_hcal_ecap, r_min_hcal_ecap,       8,           40,         22.5,   thick_hcal_ecap, -shift_hcal_z_minus,  hcalCol  },  //  endcap HCAL -Z      
+      
+      { r_max_lhcal, r_min_lhcal,     40,          40,         0.,   thick_lhcal,  shift_lhcal_z_plus,   yokeCol  }, //    LHCAL +Z
+      { r_max_lhcal, r_min_lhcal,     40,          40,         0.,   thick_lhcal, -shift_lhcal_z_minus,  yokeCol  },  //   LHCAL -Z      
+ 
+      { r_max_lcal, r_min_lcal,     40,          40,         0.,   thick_lcal,  shift_lcal_z_plus,   yokeCol  }, //    LCAL +Z
+      { r_max_lcal, r_min_lcal,     40,          40,         0.,   thick_lcal, -shift_lcal_z_minus,  yokeCol  },  //   LCAL -Z      
+ 
+      { r_max_beamcal, r_min_beamcal,     40,          40,         0.,   thick_beamcal,  shift_beamcal_z_plus,   yokeCol  }, //    BEAMCAL +Z
+      { r_max_beamcal, r_min_beamcal,     40,          40,         0.,   thick_beamcal, -shift_beamcal_z_minus,  yokeCol  },  //   BEAMCAL -Z      
+ 
+      { r_out_yoke_bar,  r_inn_yoke_bar,       12,          12,        15.0,  z_max_yoke_bar, - z_max_yoke_bar,      yokeCol  }, //  YOKE Barrel
+      { r_out_yoke_plug,r_inn_yoke_plug,       12,          12,        15.0,   thick_yoke_plug,  shift_yoker_z_plus,  yokeCol  }, //  plug YOKE +Z
+      { r_out_yoke_plug,r_inn_yoke_plug,       12,          12,        15.0,   thick_yoke_plug, -shift_yoker_z_minus, yokeCol } , //  plug YOKE -Z 
+      { r_out_yoke_ecap, r_min_yoke_ecap,      12,          12,        15.0,   thick_yoke_ecap,  shift_yoke_z_plus,   yokeCol  }, //  endcap YOKE +Z
+      { r_out_yoke_ecap, r_min_yoke_ecap,      12,          12,        15.0,   thick_yoke_ecap, -shift_yoke_z_minus,  yokeCol  },  //  endcap YOKE -Z      
+
+      { coil_outer_radius, coil_inner_radius,  40,          40,        0.0,   coil_half_z, -coil_half_z,  coilCol  },  //  coil     
+
+      { ftd_ri[0], ftd_ro[0],  40,  40,   0.0   , ftd_d[0]  ,   ftd_z[0] ,  ftdCol  },  //  FTD    
+      { ftd_ri[1], ftd_ro[1],  40,  40,   0.0   , ftd_d[1]  ,   ftd_z[1] ,  ftdCol  },  //  FTD    
+      { ftd_ri[2], ftd_ro[2],  40,  40,   0.0   , ftd_d[2]  ,   ftd_z[2] ,  ftdCol  },  //  FTD    
+      { ftd_ri[3], ftd_ro[3],  40,  40,   0.0   , ftd_d[3]  ,   ftd_z[3] ,  ftdCol  },  //  FTD    
+      { ftd_ri[4], ftd_ro[4],  40,  40,   0.0   , ftd_d[4]  ,   ftd_z[4] ,  ftdCol  },  //  FTD    
+      { ftd_ri[5], ftd_ro[5],  40,  40,   0.0   , ftd_d[5]  ,   ftd_z[5] ,  ftdCol  },  //  FTD    
+      { ftd_ri[6], ftd_ro[6],  40,  40,   0.0   , ftd_d[6]  ,   ftd_z[6] ,  ftdCol  },  //  FTD    
+      { ftd_ri[0], ftd_ro[0],  40,  40,   0.0   , ftd_d[0]  ,  - ftd_z[0] ,  ftdCol  },  //  FTD    
+      { ftd_ri[1], ftd_ro[1],  40,  40,   0.0   , ftd_d[1]  ,  - ftd_z[1] ,  ftdCol  },  //  FTD    
+      { ftd_ri[2], ftd_ro[2],  40,  40,   0.0   , ftd_d[2]  ,  - ftd_z[2] ,  ftdCol  },  //  FTD    
+      { ftd_ri[3], ftd_ro[3],  40,  40,   0.0   , ftd_d[3]  ,  - ftd_z[3] ,  ftdCol  },  //  FTD    
+      { ftd_ri[4], ftd_ro[4],  40,  40,   0.0   , ftd_d[4]  ,  - ftd_z[4] ,  ftdCol  },  //  FTD    
+      { ftd_ri[5], ftd_ro[5],  40,  40,   0.0   , ftd_d[5]  ,  - ftd_z[5] ,  ftdCol  },  //  FTD    
+      { ftd_ri[6], ftd_ro[6],  40,  40,   0.0   , ftd_d[6]  ,  - ftd_z[6] ,  ftdCol  }  //  FTD    
 
     };
+   // const DoubleVec& ftd_d   =  pFTD.getDoubleVals("FTDDiskSupportThickness" )  ;
+   // const DoubleVec& ftd_ri  =  pFTD.getDoubleVals("FTDInnerRadius" )  ;
+   // const DoubleVec& ftd_ro  =  pFTD.getDoubleVals("FTDOuterRadius" )  ;
+   // const DoubleVec& ftd_z   =  pFTD.getDoubleVals("FTDZCoordinate" )  ;
 // ========================================================================
       ced_geotubes(sizeof(geoTubesANY)/sizeof(CED_GeoTube), geoTubesANY);
 
