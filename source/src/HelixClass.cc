@@ -506,7 +506,9 @@ float HelixClass::getDistanceToPoint(float * xPoint, float * Distance) {
 
 }
 
-//When we are only interested in the distance, we can check if we are already far enough away in XY, before we start calculating in Z
+//When we are not interested in the exact distance, we can check if we are
+//already far enough away in XY, before we start calculating in Z as the
+//distance will only increase
 float HelixClass::getDistanceToPoint(float * xPoint, float * Distance, float distanceCut1) {
   float zOnHelix;
   //calculate distance to XYprojected centre of Helix, comparing this with distance to radius around centre gives DistXY
