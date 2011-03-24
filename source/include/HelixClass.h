@@ -193,6 +193,7 @@ class HelixClass {
      * Distance[2] - 3D distance <br> 
      */
     float getDistanceToPoint(float * xPoint, float * Distance);
+    float getDistanceToPoint(float * xPoint, float * Distance, float distanceCut1);
 
     /**
      * This method calculates coordinates of helix intersection <br>
