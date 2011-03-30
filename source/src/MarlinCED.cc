@@ -465,12 +465,15 @@ void MarlinCED::printAndDrawMCFamily(MCParticle* part, LCEvent* evt, unsigned in
 //hauke hoelbe modify 08.02.2010
 void MarlinCED::draw( Processor* proc , int waitForKeyboard ) {
     //char message[200];
+    int i=0;
     CEDPickingHandler &pHandler=CEDPickingHandler::getInstance();
 
 
     if( proc == instance()->_last ) {
     //    ced_draw_event();
         MarlinCED::write_layer_description();
+//ced_picking_text("test1 test2 test3");
+
         ced_send_event();
         if ( waitForKeyboard == 1 ) {
             streamlog_out(MESSAGE) << "Double click for picking. Press <ENTER> for the next event." << std::endl;
@@ -504,6 +507,8 @@ void MarlinCED::draw( Processor* proc , int waitForKeyboard ) {
                         streamlog_out(WARNING) << "Picking nothing, or an object with ID 0!" << std::endl;
                     }else{
                         pHandler.printID(id);
+                        ced_picking_text("test1 test2 test3",i++);
+                        ced_send_event();
                     }
                 }
             }
@@ -1298,54 +1303,54 @@ void MarlinCED::drawGEARDetector(){
   static const unsigned ftdCol  = 0xff00ff ;
 
     static CED_GeoTube geoTubesANY[] = {       // for ANY Detector Geometry
-      //         radius, inner_radius, outer_edges, inner_edges,        phi0,           z_max,               z_min,    color
+      //         radius, inner_radius, outer_edges, inner_edges,        o_phi0, i_phi0-o_phi0,           z_max,               z_min,    color
          
-      { r_max_tpc,            r_min_tpc,       40,           40,         0.0,    z_max_tpc,        -z_max_tpc,            tpcCol   }, //  TPC  
+      { r_max_tpc,            r_min_tpc,       40,           40,         0.0,    0, z_max_tpc,        -z_max_tpc,            tpcCol   }, //  TPC  
 
-      { r_out_ecal_bar,  r_inn_ecal_bar,        8,            8,        22.5,    z_max_ecal_bar,   -z_max_ecal_bar,       ecalCol  }, //  ECAL Barrel
+      { r_out_ecal_bar,  r_inn_ecal_bar,        8,            8,        22.5,    0, z_max_ecal_bar,   -z_max_ecal_bar,       ecalCol  }, //  ECAL Barrel
 
-      { r_out_ecal_ecap,  0.5*(r_max_lhcal+r_max_lcal),    8,           40,        22.5,    thick_ecal_ecap,   shift_ecal_z_plus,    ecalCol  }, //  endcap ECAL +Z
-      { r_out_ecal_ecap,  0.5*(r_max_lhcal+r_max_lcal),    8,           40,        22.5,    thick_ecal_ecap,  -shift_ecal_z_minus,   ecalCol  }, //  endcap ECAL -Z
-      // { r_out_ecal_ecap,    r_min_ecal_ecap,    8,           40,        22.5,    thick_ecal_ecap,   shift_ecal_z_plus,    ecalCol  }, //  endcap ECAL +Z
-      // { r_out_ecal_ecap,   r_min_ecal_ecap,     8,           40,        22.5,    thick_ecal_ecap,  -shift_ecal_z_minus,   ecalCol  }, //  endcap ECAL -Z
+      { r_out_ecal_ecap,  0.5*(r_max_lhcal+r_max_lcal),    8,           40,        22.5, 0,    thick_ecal_ecap,   shift_ecal_z_plus,    ecalCol  }, //  endcap ECAL +Z
+      { r_out_ecal_ecap,  0.5*(r_max_lhcal+r_max_lcal),    8,           40,        22.5,  0,  thick_ecal_ecap,  -shift_ecal_z_minus,   ecalCol  }, //  endcap ECAL -Z
+       { r_out_ecal_ecap,    r_min_ecal_ecap,    8,           40,        22.5,    0, thick_ecal_ecap,   shift_ecal_z_plus,    ecalCol  }, //  endcap ECAL +Z
+       { r_out_ecal_ecap,   r_min_ecal_ecap,     8,           40,        22.5,    0, thick_ecal_ecap,  -shift_ecal_z_minus,   ecalCol  }, //  endcap ECAL -Z
 
-      { r_out_hcal_bar,  r_inn_hcal_bar,       16,            8,         11.25,  z_max_hcal_bar, - z_max_hcal_bar,      hcalCol  }, //  HCAL Barrel
-      { r_out_hcal_ring,r_inn_hcal_ring,        8,            8,         22.5,   thick_hcal_ring,  shift_hcalr_z_plus,  hcalCol  }, //  ring HCAL +Z
-      { r_out_hcal_ring,r_inn_hcal_ring,        8,            8,         22.5,   thick_hcal_ring, -shift_hcalr_z_minus, hcalCol } , //  ring HCAL -Z 
-      { r_out_hcal_ecap, r_min_hcal_ecap,       8,           40,         22.5,   thick_hcal_ecap,  shift_hcal_z_plus,   hcalCol  }, //  endcap HCAL +Z
-      { r_out_hcal_ecap, r_min_hcal_ecap,       8,           40,         22.5,   thick_hcal_ecap, -shift_hcal_z_minus,  hcalCol  },  //  endcap HCAL -Z      
+      { r_out_hcal_bar,  r_inn_hcal_bar,       16,            8,         11.25,  0, z_max_hcal_bar, - z_max_hcal_bar,      hcalCol  }, //  HCAL Barrel
+      { r_out_hcal_ring,r_inn_hcal_ring,        8,            8,         22.5,  0,  thick_hcal_ring,  shift_hcalr_z_plus,  hcalCol  }, //  ring HCAL +Z
+      { r_out_hcal_ring,r_inn_hcal_ring,        8,            8,         22.5,  0,  thick_hcal_ring, -shift_hcalr_z_minus, hcalCol } , //  ring HCAL -Z 
+      { r_out_hcal_ecap, r_min_hcal_ecap,       8,           40,         22.5,  0,  thick_hcal_ecap,  shift_hcal_z_plus,   hcalCol  }, //  endcap HCAL +Z
+      { r_out_hcal_ecap, r_min_hcal_ecap,       8,           40,         22.5,  0, thick_hcal_ecap, -shift_hcal_z_minus,  hcalCol  },  //  endcap HCAL -Z      
       
-      { r_max_lhcal, r_min_lhcal,     40,          40,         0.,   thick_lhcal,  shift_lhcal_z_plus,   yokeCol  }, //    LHCAL +Z
-      { r_max_lhcal, r_min_lhcal,     40,          40,         0.,   thick_lhcal, -shift_lhcal_z_minus,  yokeCol  },  //   LHCAL -Z      
+      { r_max_lhcal, r_min_lhcal,     40,          40,         0.,   0, thick_lhcal,  shift_lhcal_z_plus,   yokeCol  }, //    LHCAL +Z
+      { r_max_lhcal, r_min_lhcal,     40,          40,         0.,   0, thick_lhcal, -shift_lhcal_z_minus,  yokeCol  },  //   LHCAL -Z      
  
-      { r_max_lcal, r_min_lcal,     40,          40,         0.,   thick_lcal,  shift_lcal_z_plus,   yokeCol  }, //    LCAL +Z
-      { r_max_lcal, r_min_lcal,     40,          40,         0.,   thick_lcal, -shift_lcal_z_minus,  yokeCol  },  //   LCAL -Z      
+      { r_max_lcal, r_min_lcal,     40,          40,         0.,   0, thick_lcal,  shift_lcal_z_plus,   yokeCol  }, //    LCAL +Z
+      { r_max_lcal, r_min_lcal,     40,          40,         0.,   0, thick_lcal, -shift_lcal_z_minus,  yokeCol  },  //   LCAL -Z      
  
-      { r_max_beamcal, r_min_beamcal,     40,          40,         0.,   thick_beamcal,  shift_beamcal_z_plus,   yokeCol  }, //    BEAMCAL +Z
-      { r_max_beamcal, r_min_beamcal,     40,          40,         0.,   thick_beamcal, -shift_beamcal_z_minus,  yokeCol  },  //   BEAMCAL -Z      
+      { r_max_beamcal, r_min_beamcal,     40,          40,         0.,   0, thick_beamcal,  shift_beamcal_z_plus,   yokeCol  }, //    BEAMCAL +Z
+      { r_max_beamcal, r_min_beamcal,     40,          40,         0.,   0, thick_beamcal, -shift_beamcal_z_minus,  yokeCol  },  //   BEAMCAL -Z      
  
-      { r_out_yoke_bar,  r_inn_yoke_bar,       12,          12,        15.0,  z_max_yoke_bar, - z_max_yoke_bar,      yokeCol  }, //  YOKE Barrel
-      { r_out_yoke_plug,r_inn_yoke_plug,       12,          12,        15.0,   thick_yoke_plug,  shift_yoker_z_plus,  yokeCol  }, //  plug YOKE +Z
-      { r_out_yoke_plug,r_inn_yoke_plug,       12,          12,        15.0,   thick_yoke_plug, -shift_yoker_z_minus, yokeCol } , //  plug YOKE -Z 
-      { r_out_yoke_ecap, r_min_yoke_ecap,      12,          12,        15.0,   thick_yoke_ecap,  shift_yoke_z_plus,   yokeCol  }, //  endcap YOKE +Z
-      { r_out_yoke_ecap, r_min_yoke_ecap,      12,          12,        15.0,   thick_yoke_ecap, -shift_yoke_z_minus,  yokeCol  },  //  endcap YOKE -Z      
+      { r_out_yoke_bar,  r_inn_yoke_bar,       12,          12,        15.0,  0, z_max_yoke_bar, - z_max_yoke_bar,      yokeCol  }, //  YOKE Barrel
+      { r_out_yoke_plug,r_inn_yoke_plug,       12,          12,        15.0,   0, thick_yoke_plug,  shift_yoker_z_plus,  yokeCol  }, //  plug YOKE +Z
+      { r_out_yoke_plug,r_inn_yoke_plug,       12,          12,        15.0,   0, thick_yoke_plug, -shift_yoker_z_minus, yokeCol } , //  plug YOKE -Z 
+      { r_out_yoke_ecap, r_min_yoke_ecap,      12,          12,        15.0,   0, thick_yoke_ecap,  shift_yoke_z_plus,   yokeCol  }, //  endcap YOKE +Z
+      { r_out_yoke_ecap, r_min_yoke_ecap,      12,          12,        15.0,   0, thick_yoke_ecap, -shift_yoke_z_minus,  yokeCol  },  //  endcap YOKE -Z      
 
-      { coil_outer_radius, coil_inner_radius,  40,          40,        0.0,   coil_half_z, -coil_half_z,  coilCol  },  //  coil     
+      { coil_outer_radius, coil_inner_radius,  40,          40,        0.0,   0, coil_half_z, -coil_half_z,  coilCol  },  //  coil     
 
-      { ftd_ri[0], ftd_ro[0],  40,  40,   0.0   , ftd_d[0]  ,   ftd_z[0] ,  ftdCol  },  //  FTD    
-      { ftd_ri[1], ftd_ro[1],  40,  40,   0.0   , ftd_d[1]  ,   ftd_z[1] ,  ftdCol  },  //  FTD    
-      { ftd_ri[2], ftd_ro[2],  40,  40,   0.0   , ftd_d[2]  ,   ftd_z[2] ,  ftdCol  },  //  FTD    
-      { ftd_ri[3], ftd_ro[3],  40,  40,   0.0   , ftd_d[3]  ,   ftd_z[3] ,  ftdCol  },  //  FTD    
-      { ftd_ri[4], ftd_ro[4],  40,  40,   0.0   , ftd_d[4]  ,   ftd_z[4] ,  ftdCol  },  //  FTD    
-      { ftd_ri[5], ftd_ro[5],  40,  40,   0.0   , ftd_d[5]  ,   ftd_z[5] ,  ftdCol  },  //  FTD    
-      { ftd_ri[6], ftd_ro[6],  40,  40,   0.0   , ftd_d[6]  ,   ftd_z[6] ,  ftdCol  },  //  FTD    
-      { ftd_ri[0], ftd_ro[0],  40,  40,   0.0   , ftd_d[0]  ,  - ftd_z[0] ,  ftdCol  },  //  FTD    
-      { ftd_ri[1], ftd_ro[1],  40,  40,   0.0   , ftd_d[1]  ,  - ftd_z[1] ,  ftdCol  },  //  FTD    
-      { ftd_ri[2], ftd_ro[2],  40,  40,   0.0   , ftd_d[2]  ,  - ftd_z[2] ,  ftdCol  },  //  FTD    
-      { ftd_ri[3], ftd_ro[3],  40,  40,   0.0   , ftd_d[3]  ,  - ftd_z[3] ,  ftdCol  },  //  FTD    
-      { ftd_ri[4], ftd_ro[4],  40,  40,   0.0   , ftd_d[4]  ,  - ftd_z[4] ,  ftdCol  },  //  FTD    
-      { ftd_ri[5], ftd_ro[5],  40,  40,   0.0   , ftd_d[5]  ,  - ftd_z[5] ,  ftdCol  },  //  FTD    
-      { ftd_ri[6], ftd_ro[6],  40,  40,   0.0   , ftd_d[6]  ,  - ftd_z[6] ,  ftdCol  }  //  FTD    
+      { ftd_ri[0], ftd_ro[0],  40,  40,   0.0   , 0, ftd_d[0]  ,   ftd_z[0] ,  ftdCol  },  //  FTD    
+      { ftd_ri[1], ftd_ro[1],  40,  40,   0.0   , 0, ftd_d[1]  ,   ftd_z[1] ,  ftdCol  },  //  FTD    
+      { ftd_ri[2], ftd_ro[2],  40,  40,   0.0   , 0, ftd_d[2]  ,   ftd_z[2] ,  ftdCol  },  //  FTD    
+      { ftd_ri[3], ftd_ro[3],  40,  40,   0.0   , 0, ftd_d[3]  ,   ftd_z[3] ,  ftdCol  },  //  FTD    
+      { ftd_ri[4], ftd_ro[4],  40,  40,   0.0   , 0, ftd_d[4]  ,   ftd_z[4] ,  ftdCol  },  //  FTD    
+      { ftd_ri[5], ftd_ro[5],  40,  40,   0.0   , 0, ftd_d[5]  ,   ftd_z[5] ,  ftdCol  },  //  FTD    
+      { ftd_ri[6], ftd_ro[6],  40,  40,   0.0   , 0, ftd_d[6]  ,   ftd_z[6] ,  ftdCol  },  //  FTD    
+      { ftd_ri[0], ftd_ro[0],  40,  40,   0.0   , 0, ftd_d[0]  ,  - ftd_z[0] ,  ftdCol  },  //  FTD    
+      { ftd_ri[1], ftd_ro[1],  40,  40,   0.0   , 0, ftd_d[1]  ,  - ftd_z[1] ,  ftdCol  },  //  FTD    
+      { ftd_ri[2], ftd_ro[2],  40,  40,   0.0   , 0, ftd_d[2]  ,  - ftd_z[2] ,  ftdCol  },  //  FTD    
+      { ftd_ri[3], ftd_ro[3],  40,  40,   0.0   , 0, ftd_d[3]  ,  - ftd_z[3] ,  ftdCol  },  //  FTD    
+      { ftd_ri[4], ftd_ro[4],  40,  40,   0.0   , 0, ftd_d[4]  ,  - ftd_z[4] ,  ftdCol  },  //  FTD    
+      { ftd_ri[5], ftd_ro[5],  40,  40,   0.0   , 0, ftd_d[5]  ,  - ftd_z[5] ,  ftdCol  },  //  FTD    
+      { ftd_ri[6], ftd_ro[6],  40,  40,   0.0   , 0, ftd_d[6]  ,  - ftd_z[6] ,  ftdCol  }  //  FTD    
 
     };
    // const DoubleVec& ftd_d   =  pFTD.getDoubleVals("FTDDiskSupportThickness" )  ;
