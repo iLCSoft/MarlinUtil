@@ -1,6 +1,6 @@
 #ifndef HELIXAR_H
 #define HELIXAR_H 1
-
+#include <vector>
 /**
  *    Utility class to manipulate with different parameterisations <br>
  *    of helix. Helix can be initialized in a three different <br>
@@ -193,7 +193,18 @@ class HelixClass {
      * Distance[2] - 3D distance <br> 
      */
     float getDistanceToPoint(float * xPoint, float * Distance);
-    float getDistanceToPoint(float * xPoint, float * Distance, float distanceCut1);
+
+    /**
+     * Return distance of the closest approach of the helix to <br>
+     * arbitrary 3D point in space. xPoint[3] - coordinates of <br>
+     * space point. distCut - limit on the distance between helix <br> 
+     * and the point to reduce calculation time <br>
+     * If R-Phi is found to be greater than distCut, rPhi distance is returned <br>
+     * If the R-Phi distance is not too big, than the exact 3D distance is returned <br>
+     * This function can be used, if the exact distance is not always needed <br>
+     */
+    float getDistanceToPoint(const float* xPoint, float distCut);
+    float getDistanceToPoint(const std::vector<float>& xPoint, float distCut);
 
     /**
      * This method calculates coordinates of helix intersection <br>

@@ -509,25 +509,26 @@ float HelixClass::getDistanceToPoint(float * xPoint, float * Distance) {
 //When we are not interested in the exact distance, we can check if we are
 //already far enough away in XY, before we start calculating in Z as the
 //distance will only increase
-float HelixClass::getDistanceToPoint(float * xPoint, float * Distance, float distanceCut1) {
-  float zOnHelix;
+float HelixClass::getDistanceToPoint(const std::vector<float>& xPoint, float distCut) {
   //calculate distance to XYprojected centre of Helix, comparing this with distance to radius around centre gives DistXY
-  float DistXY = (_xCentre-xPoint[0])*(_xCentre-xPoint[0]) + (_yCentre-xPoint[1])*(_yCentre-xPoint[1]);
-  DistXY = sqrt(DistXY);
-  DistXY = fabs(DistXY - _radius);
-  if( DistXY > distanceCut1 ) {
-    Distance[0] = DistXY;
-    Distance[1] = DistXY;
-    Distance[2] = DistXY;
-    return -1;
+  float tempx = xPoint[0]-_xCentre;
+  float tempy = xPoint[1]-_yCentre;
+  float tempsq = sqrt(tempx*tempx + tempy*tempy);
+  float tempdf = tempsq - _radius;
+  float DistXY = fabs( tempdf );
+  //If this is bigger than distCut, we dont have to know how much bigger this is
+  if( DistXY > distCut) {
+    return DistXY;
   }
 
   int nCircles = 0;
-  float phi = atan2(xPoint[1]-_yCentre,xPoint[0]-_xCentre);
+  float phi = atan2(tempy,tempx);
   float phi0 = atan2(_referencePoint[1]-_yCentre,_referencePoint[0]-_xCentre);
-  if (fabs(_tanLambda*_radius)>1.0e-20) {
-    float xCircles = phi0 - phi -_charge*(xPoint[2]-_referencePoint[2])/(_tanLambda*_radius);
-    xCircles = xCircles/_const_2pi;
+  float phidiff = phi0-phi;
+  float  tempz = xPoint[2] - _referencePoint[2];//Yes referencePoint
+  float tanradius = _tanLambda*_radius;
+  if (fabs(tanradius)>1.0e-20) {
+    float xCircles = (phidiff -_charge*tempz/tanradius)/_const_2pi;
     int n1,n2;
     if (xCircles >= 0.) {
 	n1 = int(xCircles);
@@ -544,22 +545,16 @@ float HelixClass::getDistanceToPoint(float * xPoint, float * Distance, float dis
 	nCircles = n2;
     }
   }
-  
-  float DPhi = _const_2pi*((float)nCircles) + phi - phi0;
-  zOnHelix = _referencePoint[2] - _charge*_radius*_tanLambda*DPhi;
-  float DistZ = fabs(zOnHelix - xPoint[2]);
-  float Time;
-  if (fabs(_momentum[2]) > 1.0e-20) {
-    Time = (zOnHelix - _referencePoint[2])/_momentum[2];
-  }
-  else {
-    Time = _charge*_radius*DPhi/_pxy;
-  }
-  Distance[0] = DistXY;
-  Distance[1] = DistZ;
-  Distance[2] = sqrt(DistXY*DistXY+DistZ*DistZ);
-  return Time;
-}//getDistanceToPoint
+  float DistZ = - tempz - _charge*tanradius*(_const_2pi*((float)nCircles) - phidiff);
+  return sqrt(DistXY*DistXY+DistZ*DistZ);
+}//getDistanceToPoint(vector,float)
+
+float HelixClass::getDistanceToPoint(const float* xPoint, float distCut) {
+  std::vector<float> xPosition(xPoint, xPoint + 3 );//We are expecting three coordinates, must be +3, last element is excluded!
+  return getDistanceToPoint(xPosition, distCut);
+}//getDistanceToPoint(float*,float)
+
+
 
 void HelixClass::setHelixEdges(float * xStart, float * xEnd) {
   for (int i=0; i<3; ++i) {
