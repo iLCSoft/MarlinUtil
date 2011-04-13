@@ -1298,14 +1298,16 @@ void MarlinCED::drawGEARDetector(){
   static const unsigned tpcCol =  0xffff00 ;
   static const unsigned ecalCol = 0x00ff00 ;
   static const unsigned hcalCol = 0xff0000 ;
-  static const unsigned yokeCol = 0x000011 ;
+  //static const unsigned yokeCol = 0x000011 ;
+  static const unsigned yokeCol = 0x00CED1; //baby blue (only a test)
+
   static const unsigned coilCol = 0xffffff ;
   static const unsigned ftdCol  = 0xff00ff ;
 
     static CED_GeoTube geoTubesANY[] = {       // for ANY Detector Geometry
       //ATTENTION: Please order the items from the inner to the outer
 
-      //radius, inner_radius, outer_edges, inner_edges,        o_phi0, i_phi0-o_phi0,           z_max,               z_min,    color
+      //   radius,       inner_radius, outer_edges, inner_edges,        o_phi0, i_phi0-o_phi0,           z_max,               z_min,    color
 
       { ftd_ri[0],          ftd_ro[0],  40,  40,   0.0   , 0, ftd_d[0]  ,   ftd_z[0] ,  ftdCol  },  //  FTD    
       { ftd_ri[1],          ftd_ro[1],  40,  40,   0.0   , 0, ftd_d[1]  ,   ftd_z[1] ,  ftdCol  },  //  FTD    
@@ -1333,15 +1335,25 @@ void MarlinCED::drawGEARDetector(){
 
       { r_out_ecal_ecap,    0.5*(r_max_lhcal+r_max_lcal),    8, 40, 22.5, 0,    thick_ecal_ecap,   shift_ecal_z_plus,    ecalCol  }, //  endcap ECAL +Z
       { r_out_ecal_ecap,    0.5*(r_max_lhcal+r_max_lcal),    8, 40, 22.5, 0,  thick_ecal_ecap,  -shift_ecal_z_minus,   ecalCol  }, //  endcap ECAL -Z
-      { r_out_ecal_ecap,    r_min_ecal_ecap,                 8, 40, 22.5, 0, thick_ecal_ecap,   shift_ecal_z_plus,    ecalCol  }, //  endcap ECAL +Z
-      { r_out_ecal_ecap,    r_min_ecal_ecap,                 8, 40, 22.5, 0, thick_ecal_ecap,  -shift_ecal_z_minus,   ecalCol  }, //  endcap ECAL -Z
+      //hauke: the ecal above and below overlaps(??)
+      //{ r_out_ecal_ecap,    r_min_ecal_ecap,                 8, 40, 22.5, 0, thick_ecal_ecap,   shift_ecal_z_plus,    ecalCol  }, //  endcap ECAL +Z
+      //{ r_out_ecal_ecap,    r_min_ecal_ecap,                 8, 40, 22.5, 0, thick_ecal_ecap,  -shift_ecal_z_minus,   ecalCol  }, //  endcap ECAL -Z
 
-      { r_out_hcal_bar,     r_inn_hcal_bar,                 16,  8, 11.25, 0, z_max_hcal_bar, - z_max_hcal_bar,      hcalCol  }, //  HCAL Barrel
+      { r_out_hcal_bar,     r_inn_hcal_bar,                 16,  8, 11.25, 11.25, z_max_hcal_bar, - z_max_hcal_bar,      hcalCol  }, //  HCAL Barrel
       { r_out_hcal_ring,    r_inn_hcal_ring,                 8,  8,  22.5, 0,  thick_hcal_ring,  shift_hcalr_z_plus,  hcalCol  }, //  ring HCAL +Z
       { r_out_hcal_ring,    r_inn_hcal_ring,                 8,  8,  22.5, 0,  thick_hcal_ring, -shift_hcalr_z_minus, hcalCol } , //  ring HCAL -Z 
       { r_out_hcal_ecap,    r_min_hcal_ecap,                 8, 40,  22.5, 0,  thick_hcal_ecap,  shift_hcal_z_plus,   hcalCol  }, //  endcap HCAL +Z
       { r_out_hcal_ecap,    r_min_hcal_ecap,                 8, 40,  22.5, 0, thick_hcal_ecap, -shift_hcal_z_minus,  hcalCol  },  //  endcap HCAL -Z      
       
+
+      //{ coil_outer_radius,  coil_inner_radius,              40, 40,        0.0,   0, coil_half_z, -coil_half_z,  coilCol  },  //  coil     
+      { coil_outer_radius,  coil_inner_radius,              200, 200,        0.0,   0, coil_half_z, -coil_half_z,  coilCol  },  //  coil     
+
+      { r_out_yoke_plug,    r_inn_yoke_plug,                12, 12,        15.0,   0, thick_yoke_plug,  shift_yoker_z_plus,  yokeCol  }, //  plug YOKE +Z
+      { r_out_yoke_plug,    r_inn_yoke_plug,                12, 12,        15.0,   0, thick_yoke_plug, -shift_yoker_z_minus, yokeCol } , //  plug YOKE -Z 
+
+
+
       { r_max_lhcal,        r_min_lhcal,                    40, 40,    0., 0, thick_lhcal,  shift_lhcal_z_plus,   yokeCol  }, //    LHCAL +Z
       { r_max_lhcal,        r_min_lhcal,                    40, 40,    0., 0, thick_lhcal, -shift_lhcal_z_minus,  yokeCol  },  //   LHCAL -Z      
 
@@ -1349,11 +1361,8 @@ void MarlinCED::drawGEARDetector(){
       { r_max_lcal,         r_min_lcal,                     40, 40,    0., 0, thick_lcal, -shift_lcal_z_minus,  yokeCol  },  //   LCAL -Z      
  
        
-      { coil_outer_radius,  coil_inner_radius,              40, 40,        0.0,   0, coil_half_z, -coil_half_z,  coilCol  },  //  coil     
 
       { r_out_yoke_bar,     r_inn_yoke_bar,                 12, 12,        15.0,  0, z_max_yoke_bar, - z_max_yoke_bar,      yokeCol  }, //  YOKE Barrel
-      { r_out_yoke_plug,    r_inn_yoke_plug,                12, 12,        15.0,   0, thick_yoke_plug,  shift_yoker_z_plus,  yokeCol  }, //  plug YOKE +Z
-      { r_out_yoke_plug,    r_inn_yoke_plug,                12, 12,        15.0,   0, thick_yoke_plug, -shift_yoker_z_minus, yokeCol } , //  plug YOKE -Z 
       { r_out_yoke_ecap,    r_min_yoke_ecap,                12, 12,        15.0,   0, thick_yoke_ecap,  shift_yoke_z_plus,   yokeCol  }, //  endcap YOKE +Z
       { r_out_yoke_ecap,    r_min_yoke_ecap,                12, 12,        15.0,   0, thick_yoke_ecap, -shift_yoke_z_minus,  yokeCol  }  //  endcap YOKE -Z      
 
