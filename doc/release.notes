@@ -8,6 +8,18 @@
 |  HEAD  |
  -------- 
 
+ --------
+| v01-03 |
+ -------- 
+
+    - Changes (A. Sailer):
+        
+        - Rewrote the fast HelixClass::getDistanceToPoint
+
+        - Remove unnecessary code from HelixClass:getDistanceToPoint,
+            add second getDistanceToPoint function, that stops if distXY is
+            larger than given distance, keeps cpu intensive functions from being run.
+
 
  --------
 | v01-02 |
