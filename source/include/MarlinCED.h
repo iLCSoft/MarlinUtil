@@ -177,7 +177,9 @@ class MarlinCED {
       ced_hit_ID( (*first)->getPosition()[0],
 	       (*first)->getPosition()[1],
 	       (*first)->getPosition()[2],
-	       marker | ( layer << CED_LAYER_SHIFT ) , size , color, id ) ;
+	       //marker | ( layer << CED_LAYER_SHIFT ) , size , color, id ) ;
+            marker,layer, size , color, id ) ;
+
       ++first ;
     }  
   }
@@ -194,7 +196,9 @@ class MarlinCED {
       ced_hit_ID( (*first)->getPosition()[0],
 	       (*first)->getPosition()[1],
 	       (*first)->getPosition()[2],
-	       marker | ( layer << CED_LAYER_SHIFT ) , size , color, id ) ;
+	       //marker | ( layer << CED_LAYER_SHIFT ) , size , color, id ) ;
+            marker, layer, size , color, id ) ;
+
       ++first ;
       i++;
     }  
@@ -465,11 +469,12 @@ protected:
     	  SimTrackerHit* hit = dynamic_cast<SimTrackerHit*>(col->getElementAt(i));
 	  
     	  if (hit->getMCParticle() == MCP) {
-	    
     	    double x = hit->getPosition()[0];
     	    double y = hit->getPosition()[1];
     	    double z = hit->getPosition()[2];
-    	    ced_hit_ID(x,y,z,marker | ( layer << CED_LAYER_SHIFT ),size,color, MCP->id());
+    	    //ced_hit_ID(x,y,z,marker | ( layer << CED_LAYER_SHIFT ),size,color, MCP->id());
+            ced_hit_ID(x,y,z,marker, layer,size,color, MCP->id());
+
 
     	  }
     	}
@@ -498,7 +503,9 @@ protected:
     	    double x = hit->getPosition()[0];
     	    double y = hit->getPosition()[1];
     	    double z = hit->getPosition()[2];
-    	    ced_hit_ID(x,y,z,marker | ( layer << CED_LAYER_SHIFT ),size,color, MCP->id());
+    	    //ced_hit_ID(x,y,z,marker | ( layer << CED_LAYER_SHIFT ),size,color, MCP->id());
+            ced_hit_ID(x,y,z,marker,layer,size,color, MCP->id());
+
     
     	  }
     	}
