@@ -722,7 +722,7 @@ void MarlinCED::drawSpike( float x0, float y0, float z0,float x1, float y1, floa
   float p4[3]= { (1-s4)*x0 + s4*x1 , (1-s4)*y0 + s4*y1 , (1-s4)*z0 + s4*z1 };
   float p5[3]= { x1, y1, z1 };
   
-  unsigned int layty = layer; //layer << CED_LAYER_SHIFT ;
+  unsigned int layty = layer << CED_LAYER_SHIFT ;
   
   ced_line_ID( p0[0],p0[1],p0[2], p1[0],p1[1],p1[2], layty ,6 , color, id ); //hauke: added id
   ced_line_ID( p1[0],p1[1],p1[2], p2[0],p2[1],p2[2], layty ,5 , color, id ); //hauke ...
@@ -732,8 +732,8 @@ void MarlinCED::drawSpike( float x0, float y0, float z0,float x1, float y1, floa
   
   //ced_hit_ID ( p0[0],p0[1],p0[2], CED_HIT_POINT | layer << CED_LAYER_SHIFT, 0, color, id );
   //ced_hit_ID ( p5[0],p5[1],p5[2], CED_HIT_POINT | layer << CED_LAYER_SHIFT, 0, color, id );
-  ced_hit_ID ( p0[0],p0[1],p0[2], CED_HIT_POINT, layty, 0, color, id );
-  ced_hit_ID ( p5[0],p5[1],p5[2], CED_HIT_POINT, layty, 0, color, id );
+  ced_hit_ID ( p0[0],p0[1],p0[2], CED_HIT_POINT, layer, 0, color, id );
+  ced_hit_ID ( p5[0],p5[1],p5[2], CED_HIT_POINT, layer, 0, color, id );
 
   
 }
@@ -782,8 +782,8 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
   // charged MC Particles are displayed on layer and their SimHits optionally on (layer + 10)
   if (isCharged && !isNeutrino && !isBackscattered) {
 
-    //drawHelix(bField,charge,x1,y1,z1,p1,p2,p3, marker | ( layer << CED_LAYER_SHIFT ), size, color, (float)rmin, (float)rmax, (float)zmax, MCP->id());
-    drawHelix(bField,charge,x1,y1,z1,p1,p2,p3, marker | ( layer), size, color, (float)rmin, (float)rmax, (float)zmax, MCP->id());
+    drawHelix(bField,charge,x1,y1,z1,p1,p2,p3, marker | ( layer << CED_LAYER_SHIFT ), size, color, (float)rmin, (float)rmax, (float)zmax, MCP->id());
+    //drawHelix(bField,charge,x1,y1,z1,p1,p2,p3, marker | ( layer), size, color, (float)rmin, (float)rmax, (float)zmax, MCP->id());
 
     if (drawSimHits) drawHitCollectionsByMCContribution(event,MCP,marker,size+2,color,layer+10);
 
@@ -796,8 +796,8 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
         l = layer+1;
     } else{ l = layer;}
 
-    //ced_line_ID(x1,y1,z1,x2,y2,z2, marker | ( l << CED_LAYER_SHIFT ), size, color, MCP->id());
-    ced_line_ID(x1,y1,z1,x2,y2,z2, marker | ( l ), size, color, MCP->id());
+    ced_line_ID(x1,y1,z1,x2,y2,z2, marker | ( l << CED_LAYER_SHIFT ), size, color, MCP->id());
+    //ced_line_ID(x1,y1,z1,x2,y2,z2, marker | ( l ), size, color, MCP->id());
 
 
     if (drawSimHits) {
@@ -820,8 +820,8 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
     }
     else l = layer;
 
-    //drawHelix(bField,charge,x1,y1,z1,p1,p2,p3, marker | ( l << CED_LAYER_SHIFT ), size, color, (float)rmin, (float)rmax, (float)zmax, MCP->id());
-    drawHelix(bField,charge,x1,y1,z1,p1,p2,p3, marker | ( l), size, color, (float)rmin, (float)rmax, (float)zmax, MCP->id());
+    drawHelix(bField,charge,x1,y1,z1,p1,p2,p3, marker | ( l << CED_LAYER_SHIFT ), size, color, (float)rmin, (float)rmax, (float)zmax, MCP->id());
+    //drawHelix(bField,charge,x1,y1,z1,p1,p2,p3, marker | ( l), size, color, (float)rmin, (float)rmax, (float)zmax, MCP->id());
 
 
     if (drawSimHits) {
@@ -844,8 +844,8 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
     }
     else l = layer;
 
-    //ced_line_ID(x1,y1,z1,x2,y2,z2, marker | ( l << CED_LAYER_SHIFT ), size, color, MCP->id());
-    ced_line_ID(x1,y1,z1,x2,y2,z2, marker | ( l), size, color, MCP->id());
+    ced_line_ID(x1,y1,z1,x2,y2,z2, marker | ( l << CED_LAYER_SHIFT ), size, color, MCP->id());
+    //ced_line_ID(x1,y1,z1,x2,y2,z2, marker | ( l), size, color, MCP->id());
 
 
     if (drawSimHits) {
@@ -1201,8 +1201,8 @@ void MarlinCED::drawGEARDetector(){
       sizes[1]  = _sensitive_width;
       sizes[2]  = _sensitive_length;
 
-      //unsigned int layer = 11<<CED_LAYER_SHIFT;
-      unsigned int layer = 11;
+      unsigned int layer = 11<<CED_LAYER_SHIFT;
+      //unsigned int layer = 11;
 
       
       double *rotate = new double[3];
@@ -1322,7 +1322,7 @@ int fl=NUMBER_DATA_LAYER;
     static CED_GeoTube geoTubesANY[] = {       // for ANY Detector Geometry
       //ATTENTION: Please order the items from the inner to the outer
 
-      //   radius,       inner_radius, outer_edges, inner_edges,        o_phi0, i_phi0-o_phi0,           z_max,            0   z_min,    color
+      //   radius,       inner_radius,outer_edges,inner_edges,o_phi0, i_phi0-o_phi0, z_max, z_min,    color, inner_detector_shape visiable in classic view, outer detector shape visiable in classic view
 
       { ftd_ri[0],          ftd_ro[0],  40,  40,   0.0   , 0, ftd_d[0]  ,   ftd_z[0] ,  ftdCol,fl+0 },  //  FTD    
       { ftd_ri[1],          ftd_ro[1],  40,  40,   0.0   , 0, ftd_d[1]  ,   ftd_z[1] ,  ftdCol,fl+0 },  //  FTD    
@@ -1345,9 +1345,9 @@ int fl=NUMBER_DATA_LAYER;
 
 
          
-      { r_max_tpc,          r_min_tpc,                  40, 40,  0.0, 0, z_max_tpc,        -z_max_tpc,            tpcCol,fl+2}, //  TPC
+      { r_max_tpc,          r_min_tpc,                  40, 40,  0.0, 0, z_max_tpc,        -z_max_tpc,            tpcCol,fl+2,0,1}, //  TPC
 
-      { r_out_ecal_bar,     r_inn_ecal_bar,              8,  8, 22.5, 0, z_max_ecal_bar,   -z_max_ecal_bar,       ecalCol,fl+3}, //  ECAL Barrel
+      { r_out_ecal_bar,     r_inn_ecal_bar,              8,  8, 22.5, 0, z_max_ecal_bar,   -z_max_ecal_bar,       ecalCol,fl+3,0,1}, //  ECAL Barrel
 
       { r_out_ecal_ecap,    0.5*(r_max_lhcal+r_max_lcal),8, 40, 22.5, 0,    thick_ecal_ecap,   shift_ecal_z_plus,    ecalCol,fl+3}, //  endcap ECAL +Z
       { r_out_ecal_ecap,    0.5*(r_max_lhcal+r_max_lcal),8, 40, 22.5, 0,  thick_ecal_ecap,  -shift_ecal_z_minus,   ecalCol,fl+3}, //  endcap ECAL -Z
@@ -1355,32 +1355,32 @@ int fl=NUMBER_DATA_LAYER;
       //{ r_out_ecal_ecap,    r_min_ecal_ecap,             8, 40, 22.5, 0, thick_ecal_ecap,   shift_ecal_z_plus,    ecalCol  }, //  endcap ECAL +Z
       //{ r_out_ecal_ecap,    r_min_ecal_ecap,             8, 40, 22.5, 0, thick_ecal_ecap,  -shift_ecal_z_minus,   ecalCol  }, //  endcap ECAL -Z
 
-      { r_out_hcal_bar,     r_inn_hcal_bar,             16,  8, 11.25, 11.25, z_max_hcal_bar, - z_max_hcal_bar,      hcalCol,fl+4}, //  HCAL Barrel
-      { r_out_hcal_ring,    r_inn_hcal_ring,             8,  8,  22.5, 0,  thick_hcal_ring,  shift_hcalr_z_plus,  hcalCol,fl+4}, //  ring HCAL +Z
-      { r_out_hcal_ring,    r_inn_hcal_ring,             8,  8,  22.5, 0,  thick_hcal_ring, -shift_hcalr_z_minus, hcalCol,fl+4} , //  ring HCAL -Z 
-      { r_out_hcal_ecap,    r_min_hcal_ecap,             8, 40,  22.5, 0,  thick_hcal_ecap,  shift_hcal_z_plus,   hcalCol,fl+4}, //  endcap HCAL +Z
-      { r_out_hcal_ecap,    r_min_hcal_ecap,             8, 40,  22.5, 0, thick_hcal_ecap, -shift_hcal_z_minus,  hcalCol,fl+4},  //  endcap HCAL -Z      
+      { r_out_hcal_bar,     r_inn_hcal_bar,             16,  8, 11.25, 11.25, z_max_hcal_bar, - z_max_hcal_bar,      hcalCol,fl+4,0,1}, //  HCAL Barrel
+      { r_out_hcal_ring,    r_inn_hcal_ring,             8,  8,  22.5, 0,  thick_hcal_ring,  shift_hcalr_z_plus,  hcalCol,fl+4,0,1}, //  ring HCAL +Z
+      { r_out_hcal_ring,    r_inn_hcal_ring,             8,  8,  22.5, 0,  thick_hcal_ring, -shift_hcalr_z_minus, hcalCol,fl+4,0,1} , //  ring HCAL -Z 
+      { r_out_hcal_ecap,    r_min_hcal_ecap,             8, 40,  22.5, 0,  thick_hcal_ecap,  shift_hcal_z_plus,   hcalCol,fl+4,0,1}, //  endcap HCAL +Z
+      { r_out_hcal_ecap,    r_min_hcal_ecap,             8, 40,  22.5, 0, thick_hcal_ecap, -shift_hcal_z_minus,  hcalCol,fl+4,0,1},  //  endcap HCAL -Z      
       
 
       //{ coil_outer_radius,  coil_inner_radius,          40, 40,        0.0,   0, coil_half_z, -coil_half_z,  coilCol  },  //  coil     
       { coil_outer_radius,  coil_inner_radius,          200, 200,        0.0,   0, coil_half_z, -coil_half_z,  coilCol,fl+5},  //  coil     
 
-      { r_out_yoke_plug,    r_inn_yoke_plug,            12, 12,        15.0,   0, thick_yoke_plug,  shift_yoker_z_plus,  yokeCol,fl+5}, //  plug YOKE +Z
-      { r_out_yoke_plug,    r_inn_yoke_plug,            12, 12,        15.0,   0, thick_yoke_plug, -shift_yoker_z_minus, yokeCol,fl+5} , //  plug YOKE -Z 
+      { r_out_yoke_plug,    r_inn_yoke_plug,            12, 12,        15.0,   0, thick_yoke_plug,  shift_yoker_z_plus,  yokeCol,fl+5,0,0}, //  plug YOKE +Z
+      { r_out_yoke_plug,    r_inn_yoke_plug,            12, 12,        15.0,   0, thick_yoke_plug, -shift_yoker_z_minus, yokeCol,fl+5,0,0} , //  plug YOKE -Z 
 
 
 
-      { r_max_lhcal,        r_min_lhcal,                40, 40,    0., 0, thick_lhcal,  shift_lhcal_z_plus,   yokeCol,fl+6}, //    LHCAL +Z
-      { r_max_lhcal,        r_min_lhcal,                40, 40,    0., 0, thick_lhcal, -shift_lhcal_z_minus,  yokeCol ,fl+6},  //   LHCAL -Z      
+      { r_max_lhcal,        r_min_lhcal,                40, 40,    0., 0, thick_lhcal,  shift_lhcal_z_plus,   yokeCol,fl+6,0,0}, //    LHCAL +Z
+      { r_max_lhcal,        r_min_lhcal,                40, 40,    0., 0, thick_lhcal, -shift_lhcal_z_minus,  yokeCol ,fl+6,0,0},  //   LHCAL -Z      
 
-      { r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal,  shift_lcal_z_plus,   yokeCol,fl+6}, //    LCAL +Z
-      { r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal, -shift_lcal_z_minus,  yokeCol,fl+6},  //   LCAL -Z      
+      { r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal,  shift_lcal_z_plus,   yokeCol,fl+6,0,0}, //    LCAL +Z
+      { r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal, -shift_lcal_z_minus,  yokeCol,fl+6,0,0},  //   LCAL -Z      
  
        
 
-      { r_out_yoke_bar,     r_inn_yoke_bar,             12, 12,        15.0,  0, z_max_yoke_bar, - z_max_yoke_bar,      yokeCol,    fl+7}, //  YOKE Barrel
-      { r_out_yoke_ecap,    r_min_yoke_ecap,            12, 12,        15.0,   0, thick_yoke_ecap,  shift_yoke_z_plus,   yokeCol,   fl+7}, //  endcap YOKE +Z
-      { r_out_yoke_ecap,    r_min_yoke_ecap,            12, 12,        15.0,   0, thick_yoke_ecap, -shift_yoke_z_minus,  yokeCol,   fl+7}  //  endcap YOKE -Z      
+      { r_out_yoke_bar,     r_inn_yoke_bar,             12, 12,        15.0,  0, z_max_yoke_bar, - z_max_yoke_bar,      yokeCol,    fl+7,0,0}, //  YOKE Barrel
+      { r_out_yoke_ecap,    r_min_yoke_ecap,            12, 12,        15.0,   0, thick_yoke_ecap,  shift_yoke_z_plus,   yokeCol,   fl+7,0,0}, //  endcap YOKE +Z
+      { r_out_yoke_ecap,    r_min_yoke_ecap,            12, 12,        15.0,   0, thick_yoke_ecap, -shift_yoke_z_minus,  yokeCol,   fl+7,0,0}  //  endcap YOKE -Z      
 
 
 
