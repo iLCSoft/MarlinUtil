@@ -45,8 +45,7 @@
 #include "EVENT/Cluster.h"
 #include "EVENT/ReconstructedParticle.h"
 #include "EVENT/Vertex.h"
-#include "EVENT/LCGenericObject.h"
-
+#include "EVENT/LCGenericObject.h" 
 #include "EVENT/LCRelation.h"
 #include "LCIOSTLTypes.h"
 #include <signal.h>
@@ -86,7 +85,7 @@ CEDPickingMap CEDPickingHandler::map;
 CEDFunctionMap CEDPickingHandler::funcMap;
 CEDPickingHandler *CEDPickingHandler::instance = NULL;
 
-std::vector<std::string> MarlinCED::_descs(25, ""); //layer descriptions
+std::vector<std::string> MarlinCED::_descs(MAX_LAYER, ""); //layer descriptions
 
 CEDPickingHandler& CEDPickingHandler::getInstance() {
     if( !instance){
@@ -243,7 +242,7 @@ void MarlinCED::add_layer_description(const std::string &desc, int layerID){
     std::string tmp;
     //std::cout<<"LAYER: add: " << desc << std::endl;
     //std::cout << "LAYER: search " << desc << " into " << _descs.at(layerID);
-    if(layerID > 24 || layerID < 0){return;}
+    if(layerID > MAX_LAYER || layerID < 0){return;}
     if( _descs.at(layerID).find(desc.c_str()) == std::string::npos){      
         //std::cout << " found " << std::endl;
         tmp=_descs.at(layerID);
@@ -258,7 +257,7 @@ void MarlinCED::add_layer_description(const std::string &desc, int layerID){
 }
 
 void MarlinCED::set_layer_description(const std::string &desc, int layerID){
-    if(layerID > 24 || layerID < 0){return;}
+    if(layerID > MAX_LAYER || layerID < 0){return;}
     //std::cout<<"LAYER: set: " << desc <<  std::endl;
     _descs.at(layerID)=desc;
 
@@ -466,12 +465,15 @@ void MarlinCED::printAndDrawMCFamily(MCParticle* part, LCEvent* evt, unsigned in
 //hauke hoelbe modify 08.02.2010
 void MarlinCED::draw( Processor* proc , int waitForKeyboard ) {
     //char message[200];
+    int i=0;
     CEDPickingHandler &pHandler=CEDPickingHandler::getInstance();
 
 
     if( proc == instance()->_last ) {
     //    ced_draw_event();
         MarlinCED::write_layer_description();
+//ced_picking_text("test1 test2 test3");
+
         ced_send_event();
         if ( waitForKeyboard == 1 ) {
             streamlog_out(MESSAGE) << "Double click for picking. Press <ENTER> for the next event." << std::endl;
@@ -505,6 +507,8 @@ void MarlinCED::draw( Processor* proc , int waitForKeyboard ) {
                         streamlog_out(WARNING) << "Picking nothing, or an object with ID 0!" << std::endl;
                     }else{
                         pHandler.printID(id);
+                        ced_picking_text("test1 test2 test3",i++);
+                        ced_send_event();
                     }
                 }
             }
@@ -718,7 +722,7 @@ void MarlinCED::drawSpike( float x0, float y0, float z0,float x1, float y1, floa
   float p4[3]= { (1-s4)*x0 + s4*x1 , (1-s4)*y0 + s4*y1 , (1-s4)*z0 + s4*z1 };
   float p5[3]= { x1, y1, z1 };
   
-  unsigned int layty = layer << CED_LAYER_SHIFT ;
+  unsigned int layty = layer; //layer << CED_LAYER_SHIFT ;
   
   ced_line_ID( p0[0],p0[1],p0[2], p1[0],p1[1],p1[2], layty ,6 , color, id ); //hauke: added id
   ced_line_ID( p1[0],p1[1],p1[2], p2[0],p2[1],p2[2], layty ,5 , color, id ); //hauke ...
@@ -726,8 +730,11 @@ void MarlinCED::drawSpike( float x0, float y0, float z0,float x1, float y1, floa
   ced_line_ID( p3[0],p3[1],p3[2], p4[0],p4[1],p4[2], layty ,3 , color, id );
   ced_line_ID( p4[0],p4[1],p4[2], p5[0],p5[1],p5[2], layty ,2 , color, id );
   
-  ced_hit_ID ( p0[0],p0[1],p0[2], CED_HIT_POINT | layer << CED_LAYER_SHIFT, 0, color, id );
-  ced_hit_ID ( p5[0],p5[1],p5[2], CED_HIT_POINT | layer << CED_LAYER_SHIFT, 0, color, id );
+  //ced_hit_ID ( p0[0],p0[1],p0[2], CED_HIT_POINT | layer << CED_LAYER_SHIFT, 0, color, id );
+  //ced_hit_ID ( p5[0],p5[1],p5[2], CED_HIT_POINT | layer << CED_LAYER_SHIFT, 0, color, id );
+  ced_hit_ID ( p0[0],p0[1],p0[2], CED_HIT_POINT, layty, 0, color, id );
+  ced_hit_ID ( p5[0],p5[1],p5[2], CED_HIT_POINT, layty, 0, color, id );
+
   
 }
 
@@ -775,7 +782,9 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
   // charged MC Particles are displayed on layer and their SimHits optionally on (layer + 10)
   if (isCharged && !isNeutrino && !isBackscattered) {
 
-    drawHelix(bField,charge,x1,y1,z1,p1,p2,p3, marker | ( layer << CED_LAYER_SHIFT ), size, color, (float)rmin, (float)rmax, (float)zmax, MCP->id());
+    //drawHelix(bField,charge,x1,y1,z1,p1,p2,p3, marker | ( layer << CED_LAYER_SHIFT ), size, color, (float)rmin, (float)rmax, (float)zmax, MCP->id());
+    drawHelix(bField,charge,x1,y1,z1,p1,p2,p3, marker | ( layer), size, color, (float)rmin, (float)rmax, (float)zmax, MCP->id());
+
     if (drawSimHits) drawHitCollectionsByMCContribution(event,MCP,marker,size+2,color,layer+10);
 
   }
@@ -787,7 +796,9 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
         l = layer+1;
     } else{ l = layer;}
 
-    ced_line_ID(x1,y1,z1,x2,y2,z2, marker | ( l << CED_LAYER_SHIFT ), size, color, MCP->id());
+    //ced_line_ID(x1,y1,z1,x2,y2,z2, marker | ( l << CED_LAYER_SHIFT ), size, color, MCP->id());
+    ced_line_ID(x1,y1,z1,x2,y2,z2, marker | ( l ), size, color, MCP->id());
+
 
     if (drawSimHits) {
         if (drawOnDifferentLayers){ 
@@ -809,7 +820,9 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
     }
     else l = layer;
 
-    drawHelix(bField,charge,x1,y1,z1,p1,p2,p3, marker | ( l << CED_LAYER_SHIFT ), size, color, (float)rmin, (float)rmax, (float)zmax, MCP->id());
+    //drawHelix(bField,charge,x1,y1,z1,p1,p2,p3, marker | ( l << CED_LAYER_SHIFT ), size, color, (float)rmin, (float)rmax, (float)zmax, MCP->id());
+    drawHelix(bField,charge,x1,y1,z1,p1,p2,p3, marker | ( l), size, color, (float)rmin, (float)rmax, (float)zmax, MCP->id());
+
 
     if (drawSimHits) {
       if (drawOnDifferentLayers) {
@@ -831,7 +844,9 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
     }
     else l = layer;
 
-    ced_line_ID(x1,y1,z1,x2,y2,z2, marker | ( l << CED_LAYER_SHIFT ), size, color, MCP->id());
+    //ced_line_ID(x1,y1,z1,x2,y2,z2, marker | ( l << CED_LAYER_SHIFT ), size, color, MCP->id());
+    ced_line_ID(x1,y1,z1,x2,y2,z2, marker | ( l), size, color, MCP->id());
+
 
     if (drawSimHits) {
       if (drawOnDifferentLayers){ 
@@ -1049,6 +1064,7 @@ void MarlinCED::drawGEARDetector(){
    float r_min_tpc = planeExt[0];
    float r_max_tpc = planeExt[1];
    float z_max_tpc = pTPC.getMaxDriftLength();
+
    const gear::CalorimeterParameters& pECAL_B = 
             Global::GEAR->getEcalBarrelParameters();
    float r_min_ecal_bar = pECAL_B.getExtent()[0];
@@ -1057,10 +1073,11 @@ void MarlinCED::drawGEARDetector(){
    float z_max_ecal_bar = pECAL_B.getExtent()[3];
    const gear::CalorimeterParameters& pECAL_E = 
             Global::GEAR->getEcalEndcapParameters();
-// float r_min_ecal_ecap = pECAL_E.getExtent()[0];
+   float r_min_ecal_ecap = pECAL_E.getExtent()[0];
    float r_max_ecal_ecap = pECAL_E.getExtent()[1];
    float z_min_ecal_ecap = pECAL_E.getExtent()[2];
    float z_max_ecal_ecap = pECAL_E.getExtent()[3];
+
    const gear::CalorimeterParameters& pHCAL_B = 
             Global::GEAR->getHcalBarrelParameters();
    //  _innerHcalRadius = float(pHcalBarrel.getExtent()[0]);
@@ -1070,20 +1087,76 @@ void MarlinCED::drawGEARDetector(){
    float z_max_hcal_bar = pHCAL_B.getExtent()[3];
    const gear::CalorimeterParameters& pHCAL_R = 
              Global::GEAR->getHcalRingParameters();
-// float r_min_hcal_ring = pHCAL_R.getExtent()[0];
+ float r_min_hcal_ring = pHCAL_R.getExtent()[0];
     float r_max_hcal_ring = pHCAL_R.getExtent()[1];
     float z_min_hcal_ring = pHCAL_R.getExtent()[2];
     float z_max_hcal_ring = pHCAL_R.getExtent()[3];
    const gear::CalorimeterParameters& pHCAL_E = 
             Global::GEAR->getHcalEndcapParameters();
-// float r_min_hcal_ecap = pHCAL_E.getExtent()[0];
+   float r_min_hcal_ecap = pHCAL_E.getExtent()[0];
    float r_max_hcal_ecap = pHCAL_E.getExtent()[1];
    float z_min_hcal_ecap = pHCAL_E.getExtent()[2];
    float z_max_hcal_ecap = pHCAL_E.getExtent()[3];
    
-     // **************************************** //
-  // ** Building VTX Detector ** //
-  // **************************************** //
+   const gear::CalorimeterParameters& pLHCal = 
+            Global::GEAR->getLHcalParameters();
+   float r_min_lhcal = pLHCal.getExtent()[0];
+   float r_max_lhcal = pLHCal.getExtent()[1];
+   float z_min_lhcal = pLHCal.getExtent()[2];
+   float z_max_lhcal = pLHCal.getExtent()[3];
+
+   const gear::CalorimeterParameters& pLCal = 
+            Global::GEAR->getLcalParameters();
+   float r_min_lcal = pLCal.getExtent()[0];
+   float r_max_lcal = pLCal.getExtent()[1];
+   float z_min_lcal = pLCal.getExtent()[2];
+   float z_max_lcal = pLCal.getExtent()[3];
+
+   const gear::CalorimeterParameters& pBeamcal = 
+            Global::GEAR->getBeamCalParameters();
+   float r_min_beamcal = pBeamcal.getExtent()[0];
+   float r_max_beamcal = pBeamcal.getExtent()[1];
+   float z_min_beamcal = pBeamcal.getExtent()[2];
+   float z_max_beamcal = pBeamcal.getExtent()[3];
+
+
+   const gear::CalorimeterParameters& pYOKE_B = 
+     Global::GEAR->getYokeBarrelParameters();
+   //  _innerYokeRadius = float(pYokeBarrel.getExtent()[0]);
+   float r_min_yoke_bar = pYOKE_B.getExtent()[0];
+   float r_max_yoke_bar = pYOKE_B.getExtent()[1];
+   float z_min_yoke_bar = pYOKE_B.getExtent()[2];
+   float z_max_yoke_bar = pYOKE_B.getExtent()[3];
+   const gear::CalorimeterParameters& pYOKE_R = 
+             Global::GEAR->getYokePlugParameters();
+   float r_min_yoke_plug = pYOKE_R.getExtent()[0];
+   float r_max_yoke_plug = pYOKE_R.getExtent()[1];
+   float z_min_yoke_plug = pYOKE_R.getExtent()[2];
+   float z_max_yoke_plug = pYOKE_R.getExtent()[3];
+   const gear::CalorimeterParameters& pYOKE_E = 
+     Global::GEAR->getYokeEndcapParameters();
+   float r_min_yoke_ecap = pYOKE_E.getExtent()[0];
+   float r_max_yoke_ecap = pYOKE_E.getExtent()[1];
+   float z_min_yoke_ecap = pYOKE_E.getExtent()[2];
+   float z_max_yoke_ecap = pYOKE_E.getExtent()[3];
+   
+ 
+   const gear::GearParameters&  pCoil      = Global::GEAR->getGearParameters("CoilParameters");
+   float coil_half_z         =  pCoil.getDoubleVal("Coil_cryostat_half_z" ) ;
+   float coil_inner_radius  =   pCoil.getDoubleVal("Coil_cryostat_inner_radius" ) ;
+   float coil_outer_radius  =   pCoil.getDoubleVal("Coil_cryostat_outer_radius" ) ;
+
+   const gear::GearParameters&  pFTD      = Global::GEAR->getGearParameters("FTD");
+   //   DoubleVec& ftd_thick  =  pFTD.getDoubleVal("FTDDiskSiThickness" ) ;
+   const DoubleVec& ftd_d   =  pFTD.getDoubleVals("FTDDiskSupportThickness" )  ;
+   const DoubleVec& ftd_ri  =  pFTD.getDoubleVals("FTDInnerRadius" )  ;
+   const DoubleVec& ftd_ro  =  pFTD.getDoubleVals("FTDOuterRadius" )  ;
+   const DoubleVec& ftd_z   =  pFTD.getDoubleVals("FTDZCoordinate" )  ;
+   
+
+   // **************************************** //
+   // ** Building VTX Detector ** //
+   // **************************************** //
 
   //--Get GEAR Parameters--
   const gear::VXDParameters& pVXDDetMain = Global::GEAR->getVXDParameters();
@@ -1128,7 +1201,9 @@ void MarlinCED::drawGEARDetector(){
       sizes[1]  = _sensitive_width;
       sizes[2]  = _sensitive_length;
 
-      unsigned int layer = 11<<CED_LAYER_SHIFT;
+      //unsigned int layer = 11<<CED_LAYER_SHIFT;
+      unsigned int layer = 11;
+
       
       double *rotate = new double[3];
 
@@ -1153,8 +1228,9 @@ void MarlinCED::drawGEARDetector(){
    
 // =======================================================================
 //To convert inner radius of polygone to its outer radius
-// float Cos4  = cos(M_PI/4.0);
+   float Cos4  = cos(M_PI/4.0);
    float Cos8  = cos(M_PI/8.0);
+   float Cos12  = cos(M_PI/12.0);
    float Cos16 = cos(M_PI/16.);
 // convertion of  inner radius of polygone to its outer radius
    float r_inn_ecal_bar     = r_min_ecal_bar/Cos8;  
@@ -1164,9 +1240,11 @@ void MarlinCED::drawGEARDetector(){
    float thick_ecal_ecap    = 0.5*(z_max_ecal_ecap - z_min_ecal_ecap);
    float shift_ecal_z_plus  = z_min_ecal_ecap;
    float shift_ecal_z_minus = z_min_ecal_ecap + 2.0*thick_ecal_ecap;
+
    float r_inn_hcal_bar     = r_min_hcal_bar/Cos8;
    float r_out_hcal_bar     = r_max_hcal_bar/Cos16;
-//   float r_inn_hcal_ring    = r_min_hcal_ring/Cos4;
+
+   float r_inn_hcal_ring    = r_min_hcal_ring/Cos8; //fg: was cos4
    float r_out_hcal_ring    = r_max_hcal_ring/Cos8;
    float thick_hcal_ring    = 0.5*(z_max_hcal_ring - 
 		 z_min_hcal_ring + 20.0); // +20 by hand to see hits inside
@@ -1178,8 +1256,39 @@ void MarlinCED::drawGEARDetector(){
 		 z_min_hcal_ecap + 20.0); // +20 by hand to see hits inside
    float shift_hcal_z_plus  = z_min_hcal_ecap;
    float shift_hcal_z_minus = z_min_hcal_ecap + 2.0*thick_hcal_ecap;
+   
+   float thick_lhcal         = 0.5 * ( z_max_lhcal -  z_min_lhcal ) ; 
+   float shift_lhcal_z_plus  = z_min_lhcal;
+   float shift_lhcal_z_minus = z_min_lhcal +  2.0 * thick_lhcal ;
+
+   float thick_lcal         = 0.5 * ( z_max_lcal -  z_min_lcal ) ; 
+   float shift_lcal_z_plus  = z_min_lcal;
+   float shift_lcal_z_minus = z_min_lcal +  2.0 * thick_lcal ;
+
+   float thick_beamcal         = 0.5 * ( z_max_beamcal -  z_min_beamcal ) ; 
+   float shift_beamcal_z_plus  = z_min_beamcal;
+   float shift_beamcal_z_minus = z_min_beamcal +  2.0 * thick_beamcal ;
+
+
+   float r_inn_yoke_bar     = r_min_yoke_bar/Cos12;
+   float r_out_yoke_bar     = r_max_yoke_bar/Cos12;
+
+   float r_inn_yoke_plug    = r_min_yoke_plug/Cos12; //fg: was cos4
+   float r_out_yoke_plug    = r_max_yoke_plug/Cos12;
+   float thick_yoke_plug    = 0.5*(z_max_yoke_plug - 
+		 z_min_yoke_plug + 20.0); // +20 by hand to see hits inside
+   float shift_yoker_z_plus  = z_min_yoke_plug;
+   float shift_yoker_z_minus = z_min_yoke_plug + 2.0*thick_yoke_plug;
+   float r_inn_yoke_ecap    = r_min_yoke_ecap/Cos12;
+   float r_out_yoke_ecap    = r_max_yoke_ecap/Cos12;
+   float thick_yoke_ecap    = 0.5*(z_max_yoke_ecap - 
+		 z_min_yoke_ecap + 20.0); // +20 by hand to see hits inside
+   float shift_yoke_z_plus  = z_min_yoke_ecap;
+   float shift_yoke_z_minus = z_min_yoke_ecap + 2.0*thick_yoke_ecap;
 // ========================================================================
+/*
     static CED_GeoCylinder geoCylindersANY[] = {       // for ANY Detector Geometry
+      //
       { r_min_tpc,        40, 0.0, z_max_tpc,       -z_max_tpc,          0xff      }, // inner TPC  40 also temporary
       { r_max_tpc,        40, 0.0, z_max_tpc,       -z_max_tpc,          0xff      }, // outer TPC  temporary
       { r_inn_ecal_bar ,  8, 22.5, z_max_ecal_bar,  -z_max_ecal_bar,     0x7f7f1f  }, // inner ECAL Barrel
@@ -1194,8 +1303,110 @@ void MarlinCED::drawGEARDetector(){
       { r_out_hcal_ecap,  8,  0.0, thick_hcal_ecap, -shift_hcal_z_minus, 0x00cf00  }  // outer endcap HCAL -Z      
     };
 // ========================================================================
-      ced_geocylinders(sizeof(geoCylindersANY)/sizeof(CED_GeoCylinder),
-		       geoCylindersANY);
+      ced_geocylinders(sizeof(geoCylindersANY)/sizeof(CED_GeoCylinder), geoCylindersANY);
+
+*/
+   
+//   static const unsigned hcalCol = 0xDAA520 ;
+  static const unsigned tpcCol =  0xffff00 ;
+  static const unsigned ecalCol = 0x00ff00 ;
+  static const unsigned hcalCol = 0xff0000 ;
+  //static const unsigned yokeCol = 0x000011 ;
+  static const unsigned yokeCol = 0x00CED1; //baby blue (only a test)
+
+  static const unsigned coilCol = 0xffffff ;
+  static const unsigned ftdCol  = 0xff00ff ;
+
+
+int fl=NUMBER_DATA_LAYER;
+    static CED_GeoTube geoTubesANY[] = {       // for ANY Detector Geometry
+      //ATTENTION: Please order the items from the inner to the outer
+
+      //   radius,       inner_radius, outer_edges, inner_edges,        o_phi0, i_phi0-o_phi0,           z_max,            0   z_min,    color
+
+      { ftd_ri[0],          ftd_ro[0],  40,  40,   0.0   , 0, ftd_d[0]  ,   ftd_z[0] ,  ftdCol,fl+0 },  //  FTD    
+      { ftd_ri[1],          ftd_ro[1],  40,  40,   0.0   , 0, ftd_d[1]  ,   ftd_z[1] ,  ftdCol,fl+0 },  //  FTD    
+      { ftd_ri[2],          ftd_ro[2],  40,  40,   0.0   , 0, ftd_d[2]  ,   ftd_z[2] ,  ftdCol,fl+0 },  //  FTD    
+      { ftd_ri[3],          ftd_ro[3],  40,  40,   0.0   , 0, ftd_d[3]  ,   ftd_z[3] ,  ftdCol,fl+0},  //  FTD    
+      { ftd_ri[4],          ftd_ro[4],  40,  40,   0.0   , 0, ftd_d[4]  ,   ftd_z[4] ,  ftdCol,fl+0},  //  FTD    
+      { ftd_ri[5],          ftd_ro[5],  40,  40,   0.0   , 0, ftd_d[5]  ,   ftd_z[5] ,  ftdCol,fl+0},  //  FTD    
+      { ftd_ri[6],          ftd_ro[6],  40,  40,   0.0   , 0, ftd_d[6]  ,   ftd_z[6] ,  ftdCol,fl+0 },  //  FTD    
+      { ftd_ri[0],          ftd_ro[0],  40,  40,   0.0   , 0, ftd_d[0]  ,  - ftd_z[0] ,  ftdCol,fl+0},  //  FTD    
+      { ftd_ri[1],          ftd_ro[1],  40,  40,   0.0   , 0, ftd_d[1]  ,  - ftd_z[1] ,  ftdCol,fl+0},  //  FTD    
+      { ftd_ri[2],          ftd_ro[2],  40,  40,   0.0   , 0, ftd_d[2]  ,  - ftd_z[2] ,  ftdCol,fl+0},  //  FTD    
+      { ftd_ri[3],          ftd_ro[3],  40,  40,   0.0   , 0, ftd_d[3]  ,  - ftd_z[3] ,  ftdCol,fl+0},  //  FTD    
+      { ftd_ri[4],          ftd_ro[4],  40,  40,   0.0   , 0, ftd_d[4]  ,  - ftd_z[4] ,  ftdCol,fl+0},  //  FTD    
+      { ftd_ri[5],          ftd_ro[5],  40,  40,   0.0   , 0, ftd_d[5]  ,  - ftd_z[5] ,  ftdCol,fl+0},  //  FTD    
+      { ftd_ri[6],          ftd_ro[6],  40,  40,   0.0   , 0, ftd_d[6]  ,  - ftd_z[6] ,  ftdCol,fl+0},  //  FTD    
+
+      { r_max_beamcal,      r_min_beamcal,              40, 40,    0., 0, thick_beamcal,  shift_beamcal_z_plus,   yokeCol,fl+1}, //    BEAMCAL +Z
+
+      { r_max_beamcal,      r_min_beamcal,              40, 40, 0.,    0, thick_beamcal, -shift_beamcal_z_minus,  yokeCol,fl+1},  //   BEAMCAL -Z      
+
+
+         
+      { r_max_tpc,          r_min_tpc,                  40, 40,  0.0, 0, z_max_tpc,        -z_max_tpc,            tpcCol,fl+2}, //  TPC
+
+      { r_out_ecal_bar,     r_inn_ecal_bar,              8,  8, 22.5, 0, z_max_ecal_bar,   -z_max_ecal_bar,       ecalCol,fl+3}, //  ECAL Barrel
+
+      { r_out_ecal_ecap,    0.5*(r_max_lhcal+r_max_lcal),8, 40, 22.5, 0,    thick_ecal_ecap,   shift_ecal_z_plus,    ecalCol,fl+3}, //  endcap ECAL +Z
+      { r_out_ecal_ecap,    0.5*(r_max_lhcal+r_max_lcal),8, 40, 22.5, 0,  thick_ecal_ecap,  -shift_ecal_z_minus,   ecalCol,fl+3}, //  endcap ECAL -Z
+      //hauke: the ecal above and below overlaps(??)
+      //{ r_out_ecal_ecap,    r_min_ecal_ecap,             8, 40, 22.5, 0, thick_ecal_ecap,   shift_ecal_z_plus,    ecalCol  }, //  endcap ECAL +Z
+      //{ r_out_ecal_ecap,    r_min_ecal_ecap,             8, 40, 22.5, 0, thick_ecal_ecap,  -shift_ecal_z_minus,   ecalCol  }, //  endcap ECAL -Z
+
+      { r_out_hcal_bar,     r_inn_hcal_bar,             16,  8, 11.25, 11.25, z_max_hcal_bar, - z_max_hcal_bar,      hcalCol,fl+4}, //  HCAL Barrel
+      { r_out_hcal_ring,    r_inn_hcal_ring,             8,  8,  22.5, 0,  thick_hcal_ring,  shift_hcalr_z_plus,  hcalCol,fl+4}, //  ring HCAL +Z
+      { r_out_hcal_ring,    r_inn_hcal_ring,             8,  8,  22.5, 0,  thick_hcal_ring, -shift_hcalr_z_minus, hcalCol,fl+4} , //  ring HCAL -Z 
+      { r_out_hcal_ecap,    r_min_hcal_ecap,             8, 40,  22.5, 0,  thick_hcal_ecap,  shift_hcal_z_plus,   hcalCol,fl+4}, //  endcap HCAL +Z
+      { r_out_hcal_ecap,    r_min_hcal_ecap,             8, 40,  22.5, 0, thick_hcal_ecap, -shift_hcal_z_minus,  hcalCol,fl+4},  //  endcap HCAL -Z      
+      
+
+      //{ coil_outer_radius,  coil_inner_radius,          40, 40,        0.0,   0, coil_half_z, -coil_half_z,  coilCol  },  //  coil     
+      { coil_outer_radius,  coil_inner_radius,          200, 200,        0.0,   0, coil_half_z, -coil_half_z,  coilCol,fl+5},  //  coil     
+
+      { r_out_yoke_plug,    r_inn_yoke_plug,            12, 12,        15.0,   0, thick_yoke_plug,  shift_yoker_z_plus,  yokeCol,fl+5}, //  plug YOKE +Z
+      { r_out_yoke_plug,    r_inn_yoke_plug,            12, 12,        15.0,   0, thick_yoke_plug, -shift_yoker_z_minus, yokeCol,fl+5} , //  plug YOKE -Z 
+
+
+
+      { r_max_lhcal,        r_min_lhcal,                40, 40,    0., 0, thick_lhcal,  shift_lhcal_z_plus,   yokeCol,fl+6}, //    LHCAL +Z
+      { r_max_lhcal,        r_min_lhcal,                40, 40,    0., 0, thick_lhcal, -shift_lhcal_z_minus,  yokeCol ,fl+6},  //   LHCAL -Z      
+
+      { r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal,  shift_lcal_z_plus,   yokeCol,fl+6}, //    LCAL +Z
+      { r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal, -shift_lcal_z_minus,  yokeCol,fl+6},  //   LCAL -Z      
+ 
+       
+
+      { r_out_yoke_bar,     r_inn_yoke_bar,             12, 12,        15.0,  0, z_max_yoke_bar, - z_max_yoke_bar,      yokeCol,    fl+7}, //  YOKE Barrel
+      { r_out_yoke_ecap,    r_min_yoke_ecap,            12, 12,        15.0,   0, thick_yoke_ecap,  shift_yoke_z_plus,   yokeCol,   fl+7}, //  endcap YOKE +Z
+      { r_out_yoke_ecap,    r_min_yoke_ecap,            12, 12,        15.0,   0, thick_yoke_ecap, -shift_yoke_z_minus,  yokeCol,   fl+7}  //  endcap YOKE -Z      
+
+
+
+    };
+   // const DoubleVec& ftd_d   =  pFTD.getDoubleVals("FTDDiskSupportThickness" )  ;
+   // const DoubleVec& ftd_ri  =  pFTD.getDoubleVals("FTDInnerRadius" )  ;
+   // const DoubleVec& ftd_ro  =  pFTD.getDoubleVals("FTDOuterRadius" )  ;
+   // const DoubleVec& ftd_z   =  pFTD.getDoubleVals("FTDZCoordinate" )  ;
+// ========================================================================
+      ced_geotubes(sizeof(geoTubesANY)/sizeof(CED_GeoTube), geoTubesANY);
+      set_layer_description("FTD",fl+0);
+      set_layer_description("Beamcal",fl+1);
+      set_layer_description("TPC",fl+2);
+      set_layer_description("ECAL",fl+3);
+      set_layer_description("HCAL",fl+4);
+      set_layer_description("Coil",fl+5);
+      set_layer_description("LHCAL",fl+6);
+      set_layer_description("Yoke",fl+7);
+/*
+      set_layer_description(" ",fl+8);
+      set_layer_description(" ",fl+9);
+      set_layer_description(" ",fl+10);
+      set_layer_description(" ",fl+11);
+*/
+
+      write_layer_description();
 } // End of class DrawGeometry
 
 
