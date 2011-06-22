@@ -1285,6 +1285,14 @@ void MarlinCED::drawGEARDetector(){
 		 z_min_yoke_ecap + 20.0); // +20 by hand to see hits inside
    float shift_yoke_z_plus  = z_min_yoke_ecap;
    float shift_yoke_z_minus = z_min_yoke_ecap + 2.0*thick_yoke_ecap;
+
+
+   //SIT
+   const gear::GearParameters& pSITDet = Global::GEAR->getGearParameters("SIT");
+   
+   const DoubleVec& rSIT = pSITDet.getDoubleVals("SITLayerRadius")  ;
+   const DoubleVec& lSIT = pSITDet.getDoubleVals("SITLayerHalfLength") ;
+
 // ========================================================================
 /*
     static CED_GeoCylinder geoCylindersANY[] = {       // for ANY Detector Geometry
@@ -1307,20 +1315,20 @@ void MarlinCED::drawGEARDetector(){
 
 */
    
-//   static const unsigned hcalCol = 0xDAA520 ;
-  static const unsigned tpcCol =  0xffff00 ;
-  static const unsigned ecalCol = 0x00ff00 ;
-  static const unsigned hcalCol = 0xff0000 ;
-  //static const unsigned yokeCol = 0x000011 ;
-  static const unsigned yokeCol = 0x00CED1; //baby blue (only a test)
+   // colors used in Mokka ILD_00
+   static const unsigned tpcCol  = 0xf5f300 ;
+   static const unsigned ecalCol = 0x7bf300 ;
+   static const unsigned hcalCol = 0xc4c231 ;
+   static const unsigned yokeCol = 0x18c2c4 ;
+   static const unsigned coilCol = 0x4949dd ;
+   static const unsigned ftdCol  = 0x651c93 ;
+   static const unsigned fcalCol = 0xabaaab ;
 
-  static const unsigned coilCol = 0xffffff ;
-  static const unsigned ftdCol  = 0xff00ff ;
-
-
-int fl=NUMBER_DATA_LAYER;
-    static CED_GeoTube geoTubesANY[] = {       // for ANY Detector Geometry
-      //ATTENTION: Please order the items from the inner to the outer
+   static const unsigned sitCol = 0xdddddd ; // light grey
+   
+   int fl=NUMBER_DATA_LAYER;
+   static CED_GeoTube geoTubesANY[] = {       // for ANY Detector Geometry
+     //ATTENTION: Please order the items from the inner to the outer
 
       //   radius,       inner_radius,outer_edges,inner_edges,o_phi0, i_phi0-o_phi0, z_max, z_min,    color, inner_detector_shape visiable in classic view, outer detector shape visiable in classic view
 
@@ -1339,11 +1347,8 @@ int fl=NUMBER_DATA_LAYER;
       { ftd_ri[5],          ftd_ro[5],  40,  40,   0.0   , 0, ftd_d[5]  ,  - ftd_z[5] ,  ftdCol,fl+0},  //  FTD    
       { ftd_ri[6],          ftd_ro[6],  40,  40,   0.0   , 0, ftd_d[6]  ,  - ftd_z[6] ,  ftdCol,fl+0},  //  FTD    
 
-      { r_max_beamcal,      r_min_beamcal,              40, 40,    0., 0, thick_beamcal,  shift_beamcal_z_plus,   yokeCol,fl+1}, //    BEAMCAL +Z
-
-      { r_max_beamcal,      r_min_beamcal,              40, 40, 0.,    0, thick_beamcal, -shift_beamcal_z_minus,  yokeCol,fl+1},  //   BEAMCAL -Z      
-
-
+      { r_max_beamcal,      r_min_beamcal,              40, 40,    0., 0, thick_beamcal,  shift_beamcal_z_plus,   fcalCol,fl+1}, //    BEAMCAL +Z
+      { r_max_beamcal,      r_min_beamcal,              40, 40, 0.,    0, thick_beamcal, -shift_beamcal_z_minus,  fcalCol,fl+1},  //   BEAMCAL -Z      
          
       { r_max_tpc,          r_min_tpc,                  40, 40,  0.0, 0, z_max_tpc,        -z_max_tpc,            tpcCol,fl+2,0,1}, //  TPC
 
@@ -1370,20 +1375,22 @@ int fl=NUMBER_DATA_LAYER;
 
 
 
-      { r_max_lhcal,        r_min_lhcal,                40, 40,    0., 0, thick_lhcal,  shift_lhcal_z_plus,   yokeCol,fl+6,0,0}, //    LHCAL +Z
-      { r_max_lhcal,        r_min_lhcal,                40, 40,    0., 0, thick_lhcal, -shift_lhcal_z_minus,  yokeCol ,fl+6,0,0},  //   LHCAL -Z      
+      { r_max_lhcal,        r_min_lhcal,                40, 40,    0., 0, thick_lhcal,  shift_lhcal_z_plus,   fcalCol,fl+6,0,0}, //    LHCAL +Z
+      { r_max_lhcal,        r_min_lhcal,                40, 40,    0., 0, thick_lhcal, -shift_lhcal_z_minus,  fcalCol ,fl+6,0,0},  //   LHCAL -Z      
 
-      { r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal,  shift_lcal_z_plus,   yokeCol,fl+6,0,0}, //    LCAL +Z
-      { r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal, -shift_lcal_z_minus,  yokeCol,fl+6,0,0},  //   LCAL -Z      
+      { r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal,  shift_lcal_z_plus,   fcalCol,fl+6,0,0}, //    LCAL +Z
+      { r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal, -shift_lcal_z_minus,  fcalCol,fl+6,0,0},  //   LCAL -Z      
  
        
 
       { r_out_yoke_bar,     r_inn_yoke_bar,             12, 12,        15.0,  0, z_max_yoke_bar, - z_max_yoke_bar,      yokeCol,    fl+7,0,0}, //  YOKE Barrel
       { r_out_yoke_ecap,    r_min_yoke_ecap,            12, 12,        15.0,   0, thick_yoke_ecap,  shift_yoke_z_plus,   yokeCol,   fl+7,0,0}, //  endcap YOKE +Z
-      { r_out_yoke_ecap,    r_min_yoke_ecap,            12, 12,        15.0,   0, thick_yoke_ecap, -shift_yoke_z_minus,  yokeCol,   fl+7,0,0}  //  endcap YOKE -Z      
+      { r_out_yoke_ecap,    r_min_yoke_ecap,            12, 12,        15.0,   0, thick_yoke_ecap, -shift_yoke_z_minus,  yokeCol,   fl+7,0,0},  //  endcap YOKE -Z      
 
 
-
+      { rSIT[0],          rSIT[0]-0.1 ,                 40, 40,  0.0, 0, lSIT[0],        -lSIT[0],            sitCol,fl+8,0,1}, //  SIT
+      { rSIT[1],          rSIT[1]-0.1 ,                 40, 40,  0.0, 0, lSIT[1],        -lSIT[1],            sitCol,fl+8,0,1}  //  SIT
+      
     };
    // const DoubleVec& ftd_d   =  pFTD.getDoubleVals("FTDDiskSupportThickness" )  ;
    // const DoubleVec& ftd_ri  =  pFTD.getDoubleVals("FTDInnerRadius" )  ;
@@ -1399,8 +1406,8 @@ int fl=NUMBER_DATA_LAYER;
       set_layer_description("Coil",fl+5);
       set_layer_description("LHCAL",fl+6);
       set_layer_description("Yoke",fl+7);
+      set_layer_description("SIT", fl+8);
 /*
-      set_layer_description(" ",fl+8);
       set_layer_description(" ",fl+9);
       set_layer_description(" ",fl+10);
       set_layer_description(" ",fl+11);
