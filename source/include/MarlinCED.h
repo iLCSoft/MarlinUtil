@@ -164,7 +164,7 @@ class MarlinCED {
    *  as template argument.
    */
   template <class In>
-  static void drawObjectsWithPosition(In first, In last, int marker, int size ,unsigned int color, unsigned int layer=0, char * PickingMessage = "") {
+  static void drawObjectsWithPosition(In first, In last, int marker, int size ,unsigned int color, unsigned int layer=0, const char * PickingMessage="") {
     //std::cout<<"drawObjectsWithPosition register a map id"<< std::endl;
     //int id;
     while( first != last ) {

@@ -1073,7 +1073,7 @@ void MarlinCED::drawGEARDetector(){
    float z_max_ecal_bar = pECAL_B.getExtent()[3];
    const gear::CalorimeterParameters& pECAL_E = 
             Global::GEAR->getEcalEndcapParameters();
-   float r_min_ecal_ecap = pECAL_E.getExtent()[0];
+   //   float r_min_ecal_ecap = pECAL_E.getExtent()[0];
    float r_max_ecal_ecap = pECAL_E.getExtent()[1];
    float z_min_ecal_ecap = pECAL_E.getExtent()[2];
    float z_max_ecal_ecap = pECAL_E.getExtent()[3];
@@ -1125,7 +1125,7 @@ void MarlinCED::drawGEARDetector(){
    //  _innerYokeRadius = float(pYokeBarrel.getExtent()[0]);
    float r_min_yoke_bar = pYOKE_B.getExtent()[0];
    float r_max_yoke_bar = pYOKE_B.getExtent()[1];
-   float z_min_yoke_bar = pYOKE_B.getExtent()[2];
+   //float z_min_yoke_bar = pYOKE_B.getExtent()[2];
    float z_max_yoke_bar = pYOKE_B.getExtent()[3];
    const gear::CalorimeterParameters& pYOKE_R = 
              Global::GEAR->getYokePlugParameters();
@@ -1228,7 +1228,7 @@ void MarlinCED::drawGEARDetector(){
    
 // =======================================================================
 //To convert inner radius of polygone to its outer radius
-   float Cos4  = cos(M_PI/4.0);
+//   float Cos4  = cos(M_PI/4.0);
    float Cos8  = cos(M_PI/8.0);
    float Cos12  = cos(M_PI/12.0);
    float Cos16 = cos(M_PI/16.);
@@ -1279,7 +1279,7 @@ void MarlinCED::drawGEARDetector(){
 		 z_min_yoke_plug + 20.0); // +20 by hand to see hits inside
    float shift_yoker_z_plus  = z_min_yoke_plug;
    float shift_yoker_z_minus = z_min_yoke_plug + 2.0*thick_yoke_plug;
-   float r_inn_yoke_ecap    = r_min_yoke_ecap/Cos12;
+   //   float r_inn_yoke_ecap    = r_min_yoke_ecap/Cos12;
    float r_out_yoke_ecap    = r_max_yoke_ecap/Cos12;
    float thick_yoke_ecap    = 0.5*(z_max_yoke_ecap - 
 		 z_min_yoke_ecap + 20.0); // +20 by hand to see hits inside
