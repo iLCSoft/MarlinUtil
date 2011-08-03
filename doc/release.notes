@@ -5,11 +5,32 @@
 ================================
 
  --------
-|  HEAD  |
+| v01-04 |
  -------- 
 
+    New features:
 
- --------
+        - added more subdetectors: FTD, LHCal, LCal, Coil, Yoke, SIT
+
+        - changed detector colors to match the default colors used in Mokka
+     
+        - added ILDCellIDEncoding which is needed for development of new tracking
+          system, could be removed at a later stage of development
+       
+        - detector components have now layers and layer description
+            - Cylinder: inner edges can be different from outeredges, and the inner
+                cylinder can be rotated with an other angle as the outer cylinder shape
+
+        To use the new CED features use CED_GeoTube instead of CED_GeoCylinder.
+
+
+    Fixes:
+    
+        - old ced_hit_id is now deprecated (the old ced_hit_id used one int to store type and layer number).
+            The new one have one argument more, (layer and type are now 2 fields)
+
+
+--------
 | v01-03 |
  -------- 
 
