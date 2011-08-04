@@ -837,7 +837,7 @@ void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event
 
   }
   // backscattered charged particles and neutrinos are displayed on (layer+2) and their SimHits optionally on (layer + 12)
-  else if (!isCharged && isNeutrino || isBackscattered) {
+  else if( (!isCharged && isNeutrino) || isBackscattered ){
   
     if (drawOnDifferentLayers){ 
             l = layer+2;
