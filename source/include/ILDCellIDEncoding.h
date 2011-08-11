@@ -8,19 +8,20 @@ namespace ILDCellIDEncoding{
   namespace Fields{
     static const std::string subdet   = "subdet" ;
     static const std::string subdet_nbits = "5" ;
+    static const std::string side     = "side" ;
+    static const std::string side_nbits   = "1" ;
     static const std::string layer    = "layer" ;
     static const std::string layer_nbits  = "10" ;
     static const std::string module   = "module" ;
     static const std::string module_nbits = "8" ;
-    static const std::string side     = "side" ;
-    static const std::string side_nbits   = "1" ;
   }
 
   static const std::string encoder_string = 
     Fields::subdet + ":" + Fields::subdet_nbits 
+    + "," + Fields::side   + ":" + Fields::side_nbits 
     + "," + Fields::layer  + ":" + Fields::layer_nbits  
-    + "," + Fields::module + ":" + Fields::module_nbits 
-    + "," + Fields::side   + ":" + Fields::side_nbits ;
+    + "," + Fields::module + ":" + Fields::module_nbits ; 
+
   
   namespace DetID{
 
