@@ -1055,7 +1055,7 @@ void MarlinCED::drawGEARTelescope() {
 
 void MarlinCED::drawGEARDetector(){
 //
-// code from V.Morgunov, MPI
+// based on original code from V.Morgunov, MPI
 //
 
    const gear::TPCParameters&  pTPC      = Global::GEAR->getTPCParameters();
@@ -1098,12 +1098,26 @@ void MarlinCED::drawGEARDetector(){
    float z_min_hcal_ecap = pHCAL_E.getExtent()[2];
    float z_max_hcal_ecap = pHCAL_E.getExtent()[3];
    
-   const gear::CalorimeterParameters& pLHCal = 
-            Global::GEAR->getLHcalParameters();
-   float r_min_lhcal = pLHCal.getExtent()[0];
-   float r_max_lhcal = pLHCal.getExtent()[1];
-   float z_min_lhcal = pLHCal.getExtent()[2];
-   float z_max_lhcal = pLHCal.getExtent()[3];
+
+   float r_min_lhcal = 0.0 ;
+   float r_max_lhcal = 0.0 ;
+   float z_min_lhcal = 0.0 ;
+
+   float z_max_lhcal = 0.0 ;
+   // make this optional = as CLIC does not have an LHCal
+   try{
+     
+     const gear::CalorimeterParameters& pLHCal = 
+       Global::GEAR->getLHcalParameters();
+     r_min_lhcal = pLHCal.getExtent()[0];
+     r_max_lhcal = pLHCal.getExtent()[1];
+     z_min_lhcal = pLHCal.getExtent()[2];
+     z_max_lhcal = pLHCal.getExtent()[3];
+     
+   }
+   catch( gear::UnknownParameterException& e){   
+   }
+     
 
    const gear::CalorimeterParameters& pLCal = 
             Global::GEAR->getLcalParameters();
@@ -1223,9 +1237,6 @@ void MarlinCED::drawGEARDetector(){
 
   }
 
-
-   
-   
 // =======================================================================
 //To convert inner radius of polygone to its outer radius
 //   float Cos4  = cos(M_PI/4.0);
@@ -1326,94 +1337,175 @@ void MarlinCED::drawGEARDetector(){
 
    static const unsigned sitCol = 0xdddddd ; // light grey
    
+
+   for( unsigned i=0, N = ftd_z.size(); i<N ; ++i) {
+     streamlog_out( DEBUG4 ) <<  "    ftd disk " << i << " at  z= " << ftd_z[i] 
+ 			     << "  ftd_ri " << ftd_ri[i] 
+ 			     << "  ftd_ro " << ftd_ro[i] 
+			     << std::endl ;
+   }
+
    int fl=NUMBER_DATA_LAYER;
-   static CED_GeoTube geoTubesANY[] = {       // for ANY Detector Geometry
-     //ATTENTION: Please order the items from the inner to the outer
-
-      //   radius,       inner_radius,outer_edges,inner_edges,o_phi0, i_phi0-o_phi0, z_max, z_min,    color, inner_detector_shape visiable in classic view, outer detector shape visiable in classic view
-
-      { ftd_ri[0],          ftd_ro[0],  40,  40,   0.0   , 0, ftd_d[0]  ,   ftd_z[0] ,  ftdCol,fl+0 },  //  FTD    
-      { ftd_ri[1],          ftd_ro[1],  40,  40,   0.0   , 0, ftd_d[1]  ,   ftd_z[1] ,  ftdCol,fl+0 },  //  FTD    
-      { ftd_ri[2],          ftd_ro[2],  40,  40,   0.0   , 0, ftd_d[2]  ,   ftd_z[2] ,  ftdCol,fl+0 },  //  FTD    
-      { ftd_ri[3],          ftd_ro[3],  40,  40,   0.0   , 0, ftd_d[3]  ,   ftd_z[3] ,  ftdCol,fl+0},  //  FTD    
-      { ftd_ri[4],          ftd_ro[4],  40,  40,   0.0   , 0, ftd_d[4]  ,   ftd_z[4] ,  ftdCol,fl+0},  //  FTD    
-      { ftd_ri[5],          ftd_ro[5],  40,  40,   0.0   , 0, ftd_d[5]  ,   ftd_z[5] ,  ftdCol,fl+0},  //  FTD    
-      { ftd_ri[6],          ftd_ro[6],  40,  40,   0.0   , 0, ftd_d[6]  ,   ftd_z[6] ,  ftdCol,fl+0 },  //  FTD    
-      { ftd_ri[0],          ftd_ro[0],  40,  40,   0.0   , 0, ftd_d[0]  ,  - ftd_z[0] ,  ftdCol,fl+0},  //  FTD    
-      { ftd_ri[1],          ftd_ro[1],  40,  40,   0.0   , 0, ftd_d[1]  ,  - ftd_z[1] ,  ftdCol,fl+0},  //  FTD    
-      { ftd_ri[2],          ftd_ro[2],  40,  40,   0.0   , 0, ftd_d[2]  ,  - ftd_z[2] ,  ftdCol,fl+0},  //  FTD    
-      { ftd_ri[3],          ftd_ro[3],  40,  40,   0.0   , 0, ftd_d[3]  ,  - ftd_z[3] ,  ftdCol,fl+0},  //  FTD    
-      { ftd_ri[4],          ftd_ro[4],  40,  40,   0.0   , 0, ftd_d[4]  ,  - ftd_z[4] ,  ftdCol,fl+0},  //  FTD    
-      { ftd_ri[5],          ftd_ro[5],  40,  40,   0.0   , 0, ftd_d[5]  ,  - ftd_z[5] ,  ftdCol,fl+0},  //  FTD    
-      { ftd_ri[6],          ftd_ro[6],  40,  40,   0.0   , 0, ftd_d[6]  ,  - ftd_z[6] ,  ftdCol,fl+0},  //  FTD    
-
-      { r_max_beamcal,      r_min_beamcal,              40, 40,    0., 0, thick_beamcal,  shift_beamcal_z_plus,   fcalCol,fl+1}, //    BEAMCAL +Z
-      { r_max_beamcal,      r_min_beamcal,              40, 40, 0.,    0, thick_beamcal, -shift_beamcal_z_minus,  fcalCol,fl+1},  //   BEAMCAL -Z      
-         
-      { r_max_tpc,          r_min_tpc,                  40, 40,  0.0, 0, z_max_tpc,        -z_max_tpc,            tpcCol,fl+2,0,1}, //  TPC
-
-      { r_out_ecal_bar,     r_inn_ecal_bar,              8,  8, 22.5, 0, z_max_ecal_bar,   -z_max_ecal_bar,       ecalCol,fl+3,0,1}, //  ECAL Barrel
-
-      { r_out_ecal_ecap,    0.5*(r_max_lhcal+r_max_lcal),8, 40, 22.5, 0,    thick_ecal_ecap,   shift_ecal_z_plus,    ecalCol,fl+3}, //  endcap ECAL +Z
-      { r_out_ecal_ecap,    0.5*(r_max_lhcal+r_max_lcal),8, 40, 22.5, 0,  thick_ecal_ecap,  -shift_ecal_z_minus,   ecalCol,fl+3}, //  endcap ECAL -Z
-      //hauke: the ecal above and below overlaps(??)
-      //{ r_out_ecal_ecap,    r_min_ecal_ecap,             8, 40, 22.5, 0, thick_ecal_ecap,   shift_ecal_z_plus,    ecalCol  }, //  endcap ECAL +Z
-      //{ r_out_ecal_ecap,    r_min_ecal_ecap,             8, 40, 22.5, 0, thick_ecal_ecap,  -shift_ecal_z_minus,   ecalCol  }, //  endcap ECAL -Z
-
-      { r_out_hcal_bar,     r_inn_hcal_bar,             16,  8, 11.25, 11.25, z_max_hcal_bar, - z_max_hcal_bar,      hcalCol,fl+4,0,1}, //  HCAL Barrel
-      { r_out_hcal_ring,    r_inn_hcal_ring,             8,  8,  22.5, 0,  thick_hcal_ring,  shift_hcalr_z_plus,  hcalCol,fl+4,0,1}, //  ring HCAL +Z
-      { r_out_hcal_ring,    r_inn_hcal_ring,             8,  8,  22.5, 0,  thick_hcal_ring, -shift_hcalr_z_minus, hcalCol,fl+4,0,1} , //  ring HCAL -Z 
-      { r_out_hcal_ecap,    r_min_hcal_ecap,             8, 40,  22.5, 0,  thick_hcal_ecap,  shift_hcal_z_plus,   hcalCol,fl+4,0,1}, //  endcap HCAL +Z
-      { r_out_hcal_ecap,    r_min_hcal_ecap,             8, 40,  22.5, 0, thick_hcal_ecap, -shift_hcal_z_minus,  hcalCol,fl+4,0,1},  //  endcap HCAL -Z      
-      
-
-      //{ coil_outer_radius,  coil_inner_radius,          40, 40,        0.0,   0, coil_half_z, -coil_half_z,  coilCol  },  //  coil     
-      { coil_outer_radius,  coil_inner_radius,          200, 200,        0.0,   0, coil_half_z, -coil_half_z,  coilCol,fl+5},  //  coil     
-
-      { r_out_yoke_plug,    r_inn_yoke_plug,            12, 12,        15.0,   0, thick_yoke_plug,  shift_yoker_z_plus,  yokeCol,fl+5,0,0}, //  plug YOKE +Z
-      { r_out_yoke_plug,    r_inn_yoke_plug,            12, 12,        15.0,   0, thick_yoke_plug, -shift_yoker_z_minus, yokeCol,fl+5,0,0} , //  plug YOKE -Z 
 
 
+   // static CED_GeoTube geoTubesANY[] = {       // for ANY Detector Geometry
+   //   //ATTENTION: Please order the items from the inner to the outer
+     
+   //   //   radius,       inner_radius,outer_edges,inner_edges,o_phi0, i_phi0-o_phi0, z_max, z_min,    color, inner_detector_shape visiable in classic view, outer detector shape visiable in classic view
+     
+   //   { ftd_ri[0],          ftd_ro[0],  40,  40,   0.0   , 0, ftd_d[0]  ,   ftd_z[0] ,  ftdCol,fl+0 },  //  FTD    
+   //   { ftd_ri[1],          ftd_ro[1],  40,  40,   0.0   , 0, ftd_d[1]  ,   ftd_z[1] ,  ftdCol,fl+0 },  //  FTD    
+   //   { ftd_ri[2],          ftd_ro[2],  40,  40,   0.0   , 0, ftd_d[2]  ,   ftd_z[2] ,  ftdCol,fl+0 },  //  FTD    
+   //   { ftd_ri[3],          ftd_ro[3],  40,  40,   0.0   , 0, ftd_d[3]  ,   ftd_z[3] ,  ftdCol,fl+0},  //  FTD    
+   //   { ftd_ri[4],          ftd_ro[4],  40,  40,   0.0   , 0, ftd_d[4]  ,   ftd_z[4] ,  ftdCol,fl+0},  //  FTD    
+   //   { ftd_ri[5],          ftd_ro[5],  40,  40,   0.0   , 0, ftd_d[5]  ,   ftd_z[5] ,  ftdCol,fl+0},  //  FTD    
+   //   { ftd_ri[6],          ftd_ro[6],  40,  40,   0.0   , 0, ftd_d[6]  ,   ftd_z[6] ,  ftdCol,fl+0 },  //  FTD    
+   //   { ftd_ri[0],          ftd_ro[0],  40,  40,   0.0   , 0, ftd_d[0]  ,  - ftd_z[0] ,  ftdCol,fl+0},  //  FTD    
+   //   { ftd_ri[1],          ftd_ro[1],  40,  40,   0.0   , 0, ftd_d[1]  ,  - ftd_z[1] ,  ftdCol,fl+0},  //  FTD    
+   //   { ftd_ri[2],          ftd_ro[2],  40,  40,   0.0   , 0, ftd_d[2]  ,  - ftd_z[2] ,  ftdCol,fl+0},  //  FTD    
+   //   { ftd_ri[3],          ftd_ro[3],  40,  40,   0.0   , 0, ftd_d[3]  ,  - ftd_z[3] ,  ftdCol,fl+0},  //  FTD    
+   //   { ftd_ri[4],          ftd_ro[4],  40,  40,   0.0   , 0, ftd_d[4]  ,  - ftd_z[4] ,  ftdCol,fl+0},  //  FTD    
+   //   { ftd_ri[5],          ftd_ro[5],  40,  40,   0.0   , 0, ftd_d[5]  ,  - ftd_z[5] ,  ftdCol,fl+0},  //  FTD    
+   //   { ftd_ri[6],          ftd_ro[6],  40,  40,   0.0   , 0, ftd_d[6]  ,  - ftd_z[6] ,  ftdCol,fl+0},  //  FTD    
+     
+   //   { r_max_beamcal,      r_min_beamcal,              40, 40,    0., 0, thick_beamcal,  shift_beamcal_z_plus,   fcalCol,fl+1}, //    BEAMCAL +Z
+   //   { r_max_beamcal,      r_min_beamcal,              40, 40, 0.,    0, thick_beamcal, -shift_beamcal_z_minus,  fcalCol,fl+1},  //   BEAMCAL -Z      
+     
+   //   { r_max_tpc,          r_min_tpc,                  40, 40,  0.0, 0, z_max_tpc,        -z_max_tpc,            tpcCol,fl+2,0,1}, //  TPC
+     
+   //   { r_out_ecal_bar,     r_inn_ecal_bar,              8,  8, 22.5, 0, z_max_ecal_bar,   -z_max_ecal_bar,       ecalCol,fl+3,0,1}, //  ECAL Barrel
+     
+   //   { r_out_ecal_ecap,    0.5*(r_max_lhcal+r_max_lcal),8, 40, 22.5, 0,    thick_ecal_ecap,   shift_ecal_z_plus,    ecalCol,fl+3}, //  endcap ECAL +Z
+   //   { r_out_ecal_ecap,    0.5*(r_max_lhcal+r_max_lcal),8, 40, 22.5, 0,  thick_ecal_ecap,  -shift_ecal_z_minus,   ecalCol,fl+3}, //  endcap ECAL -Z
+   //   //hauke: the ecal above and below overlaps(??)
+   //   //{ r_out_ecal_ecap,    r_min_ecal_ecap,             8, 40, 22.5, 0, thick_ecal_ecap,   shift_ecal_z_plus,    ecalCol  }, //  endcap ECAL +Z
+   //   //{ r_out_ecal_ecap,    r_min_ecal_ecap,             8, 40, 22.5, 0, thick_ecal_ecap,  -shift_ecal_z_minus,   ecalCol  }, //  endcap ECAL -Z
+     
+   //   { r_out_hcal_bar,     r_inn_hcal_bar,             16,  8, 11.25, 11.25, z_max_hcal_bar, - z_max_hcal_bar,      hcalCol,fl+4,0,1}, //  HCAL Barrel
+   //   { r_out_hcal_ring,    r_inn_hcal_ring,             8,  8,  22.5, 0,  thick_hcal_ring,  shift_hcalr_z_plus,  hcalCol,fl+4,0,1}, //  ring HCAL +Z
+   //   { r_out_hcal_ring,    r_inn_hcal_ring,             8,  8,  22.5, 0,  thick_hcal_ring, -shift_hcalr_z_minus, hcalCol,fl+4,0,1} , //  ring HCAL -Z 
+   //   { r_out_hcal_ecap,    r_min_hcal_ecap,             8, 40,  22.5, 0,  thick_hcal_ecap,  shift_hcal_z_plus,   hcalCol,fl+4,0,1}, //  endcap HCAL +Z
+   //   { r_out_hcal_ecap,    r_min_hcal_ecap,             8, 40,  22.5, 0, thick_hcal_ecap, -shift_hcal_z_minus,  hcalCol,fl+4,0,1},  //  endcap HCAL -Z      
+     
+     
+   //   //{ coil_outer_radius,  coil_inner_radius,          40, 40,        0.0,   0, coil_half_z, -coil_half_z,  coilCol  },  //  coil     
+   //   { coil_outer_radius,  coil_inner_radius,          200, 200,        0.0,   0, coil_half_z, -coil_half_z,  coilCol,fl+5},  //  coil     
+     
+   //   { r_out_yoke_plug,    r_inn_yoke_plug,            12, 12,        15.0,   0, thick_yoke_plug,  shift_yoker_z_plus,  yokeCol,fl+5,0,0}, //  plug YOKE +Z
+   //   { r_out_yoke_plug,    r_inn_yoke_plug,            12, 12,        15.0,   0, thick_yoke_plug, -shift_yoker_z_minus, yokeCol,fl+5,0,0} , //  plug YOKE -Z 
+     
+     
+     
+   //   { r_max_lhcal,        r_min_lhcal,                40, 40,    0., 0, thick_lhcal,  shift_lhcal_z_plus,   fcalCol,fl+6,0,0}, //    LHCAL +Z
+   //   { r_max_lhcal,        r_min_lhcal,                40, 40,    0., 0, thick_lhcal, -shift_lhcal_z_minus,  fcalCol ,fl+6,0,0},  //   LHCAL -Z      
+     
+   //   { r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal,  shift_lcal_z_plus,   fcalCol,fl+6,0,0}, //    LCAL +Z
+   //   { r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal, -shift_lcal_z_minus,  fcalCol,fl+6,0,0},  //   LCAL -Z      
+     
+     
+     
+   //   { r_out_yoke_bar,     r_inn_yoke_bar,             12, 12,        15.0,  0, z_max_yoke_bar, - z_max_yoke_bar,      yokeCol,    fl+7,0,0}, //  YOKE Barrel
+   //   { r_out_yoke_ecap,    r_min_yoke_ecap,            12, 12,        15.0,   0, thick_yoke_ecap,  shift_yoke_z_plus,   yokeCol,   fl+7,0,0}, //  endcap YOKE +Z
+   //   { r_out_yoke_ecap,    r_min_yoke_ecap,            12, 12,        15.0,   0, thick_yoke_ecap, -shift_yoke_z_minus,  yokeCol,   fl+7,0,0},  //  endcap YOKE -Z      
+     
+     
+   //   { rSIT[0],          rSIT[0]-0.1 ,                 40, 40,  0.0, 0, lSIT[0],        -lSIT[0],            sitCol,fl+8,0,1}, //  SIT
+   //   { rSIT[1],          rSIT[1]-0.1 ,                 40, 40,  0.0, 0, lSIT[1],        -lSIT[1],            sitCol,fl+8,0,1}  //  SIT
+     
+   // };
+   // ========================================================================
+   //   ced_geotubes(sizeof(geoTubesANY)/sizeof(CED_GeoTube), geoTubesANY);
+   
+   
+   std::vector<CEDGeoTube> gTV ; 
+   
+   for( unsigned i=0, N = ftd_z.size(); i<N ; ++i) {
+     streamlog_out( DEBUG1 ) << "    ftd disk " << i << " at  z= " << ftd_z[i] 
+ 			     << "  ftd_ri " << ftd_ri[i] 
+ 			     << "  ftd_ro " << ftd_ro[i] 
+			     << std::endl ;
 
-      { r_max_lhcal,        r_min_lhcal,                40, 40,    0., 0, thick_lhcal,  shift_lhcal_z_plus,   fcalCol,fl+6,0,0}, //    LHCAL +Z
-      { r_max_lhcal,        r_min_lhcal,                40, 40,    0., 0, thick_lhcal, -shift_lhcal_z_minus,  fcalCol ,fl+6,0,0},  //   LHCAL -Z      
+     gTV.push_back( CEDGeoTube( ftd_ri[i],          ftd_ro[i],  40,  40,   0.0   , 0, ftd_d[i]  ,    ftd_z[i] ,   ftdCol,  fl+0, 0,0 ) ) ;  //  FTD    
+     gTV.push_back( CEDGeoTube( ftd_ri[i],          ftd_ro[i],  40,  40,   0.0   , 0, ftd_d[i]  ,  - ftd_z[i] ,   ftdCol,  fl+0, 0,0 ) ) ;  //  FTD    
+   }
 
-      { r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal,  shift_lcal_z_plus,   fcalCol,fl+6,0,0}, //    LCAL +Z
-      { r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal, -shift_lcal_z_minus,  fcalCol,fl+6,0,0},  //   LCAL -Z      
- 
-       
-
-      { r_out_yoke_bar,     r_inn_yoke_bar,             12, 12,        15.0,  0, z_max_yoke_bar, - z_max_yoke_bar,      yokeCol,    fl+7,0,0}, //  YOKE Barrel
-      { r_out_yoke_ecap,    r_min_yoke_ecap,            12, 12,        15.0,   0, thick_yoke_ecap,  shift_yoke_z_plus,   yokeCol,   fl+7,0,0}, //  endcap YOKE +Z
-      { r_out_yoke_ecap,    r_min_yoke_ecap,            12, 12,        15.0,   0, thick_yoke_ecap, -shift_yoke_z_minus,  yokeCol,   fl+7,0,0},  //  endcap YOKE -Z      
-
-
-      { rSIT[0],          rSIT[0]-0.1 ,                 40, 40,  0.0, 0, lSIT[0],        -lSIT[0],            sitCol,fl+8,0,1}, //  SIT
-      { rSIT[1],          rSIT[1]-0.1 ,                 40, 40,  0.0, 0, lSIT[1],        -lSIT[1],            sitCol,fl+8,0,1}  //  SIT
-      
-    };
-   // const DoubleVec& ftd_d   =  pFTD.getDoubleVals("FTDDiskSupportThickness" )  ;
-   // const DoubleVec& ftd_ri  =  pFTD.getDoubleVals("FTDInnerRadius" )  ;
-   // const DoubleVec& ftd_ro  =  pFTD.getDoubleVals("FTDOuterRadius" )  ;
-   // const DoubleVec& ftd_z   =  pFTD.getDoubleVals("FTDZCoordinate" )  ;
-// ========================================================================
-      ced_geotubes(sizeof(geoTubesANY)/sizeof(CED_GeoTube), geoTubesANY);
-      set_layer_description("FTD",fl+0);
-      set_layer_description("Beamcal",fl+1);
-      set_layer_description("TPC",fl+2);
-      set_layer_description("ECAL",fl+3);
-      set_layer_description("HCAL",fl+4);
-      set_layer_description("Coil",fl+5);
-      set_layer_description("LHCAL",fl+6);
-      set_layer_description("Yoke",fl+7);
-      set_layer_description("SIT", fl+8);
-/*
-      set_layer_description(" ",fl+9);
-      set_layer_description(" ",fl+10);
-      set_layer_description(" ",fl+11);
-*/
-
-      write_layer_description();
+   // gTV.push_back( CEDGeoTube( ftd_ri[0],          ftd_ro[0],  40,  40,   0.0   , 0, ftd_d[0]  ,    ftd_z[0] ,   ftdCol,  fl+0, 0,0 ) ) ;  //  FTD    
+   // gTV.push_back( CEDGeoTube( ftd_ri[1],          ftd_ro[1],  40,  40,   0.0   , 0, ftd_d[1]  ,    ftd_z[1] ,   ftdCol,  fl+0, 0,0 ) ) ;  //  FTD    
+   // gTV.push_back( CEDGeoTube( ftd_ri[2],          ftd_ro[2],  40,  40,   0.0   , 0, ftd_d[2]  ,    ftd_z[2] ,   ftdCol,  fl+0, 0,0 ) ) ;  //  FTD    
+   // gTV.push_back( CEDGeoTube( ftd_ri[3],          ftd_ro[3],  40,  40,   0.0   , 0, ftd_d[3]  ,    ftd_z[3] ,   ftdCol,  fl+0, 0,0 ) ) ;  //  FTD    
+   // gTV.push_back( CEDGeoTube( ftd_ri[4],          ftd_ro[4],  40,  40,   0.0   , 0, ftd_d[4]  ,    ftd_z[4] ,   ftdCol,  fl+0, 0,0 ) ) ;  //  FTD    
+   // gTV.push_back( CEDGeoTube( ftd_ri[5],          ftd_ro[5],  40,  40,   0.0   , 0, ftd_d[5]  ,    ftd_z[5] ,   ftdCol,  fl+0, 0,0 ) ) ;  //  FTD    
+   // gTV.push_back( CEDGeoTube( ftd_ri[6],          ftd_ro[6],  40,  40,   0.0   , 0, ftd_d[6]  ,    ftd_z[6] ,   ftdCol,  fl+0, 0,0 ) ) ;  //  FTD    
+   // gTV.push_back( CEDGeoTube( ftd_ri[0],          ftd_ro[0],  40,  40,   0.0   , 0, ftd_d[0]  ,  - ftd_z[0] ,   ftdCol,  fl+0, 0,0 ) ) ;  //  FTD    
+   // gTV.push_back( CEDGeoTube( ftd_ri[1],          ftd_ro[1],  40,  40,   0.0   , 0, ftd_d[1]  ,  - ftd_z[1] ,   ftdCol,  fl+0, 0,0 ) ) ;  //  FTD    
+   // gTV.push_back( CEDGeoTube( ftd_ri[2],          ftd_ro[2],  40,  40,   0.0   , 0, ftd_d[2]  ,  - ftd_z[2] ,   ftdCol,  fl+0, 0,0 ) ) ;  //  FTD    
+   // gTV.push_back( CEDGeoTube( ftd_ri[3],          ftd_ro[3],  40,  40,   0.0   , 0, ftd_d[3]  ,  - ftd_z[3] ,   ftdCol,  fl+0, 0,0 ) ) ;  //  FTD    
+   // gTV.push_back( CEDGeoTube( ftd_ri[4],          ftd_ro[4],  40,  40,   0.0   , 0, ftd_d[4]  ,  - ftd_z[4] ,   ftdCol,  fl+0, 0,0 ) ) ;  //  FTD    
+   // gTV.push_back( CEDGeoTube( ftd_ri[5],          ftd_ro[5],  40,  40,   0.0   , 0, ftd_d[5]  ,  - ftd_z[5] ,   ftdCol,  fl+0, 0,0 ) ) ;  //  FTD    
+   // gTV.push_back( CEDGeoTube( ftd_ri[6],          ftd_ro[6],  40,  40,   0.0   , 0, ftd_d[6]  ,  - ftd_z[6] ,   ftdCol,  fl+0, 0,0 ) ) ;  //  FTD    
+   
+   gTV.push_back( CEDGeoTube( r_max_beamcal,      r_min_beamcal,              40, 40,    0., 0, thick_beamcal,  shift_beamcal_z_plus,   fcalCol,fl+1,0,0) ) ; //    BEAMCAL +Z
+   gTV.push_back( CEDGeoTube( r_max_beamcal,      r_min_beamcal,              40, 40, 0.,    0, thick_beamcal, -shift_beamcal_z_minus,  fcalCol,fl+1,0,0) ) ;  //   BEAMCAL -Z      
+   
+   gTV.push_back( CEDGeoTube( r_max_tpc,          r_min_tpc,                  40, 40,  0.0, 0, z_max_tpc,        -z_max_tpc,            tpcCol,fl+2,0,1) ) ; //  TPC
+   
+   gTV.push_back( CEDGeoTube( r_out_ecal_bar,     r_inn_ecal_bar,              8,  8, 22.5, 0, z_max_ecal_bar,   -z_max_ecal_bar,       ecalCol,fl+3,0,1) ) ; //  ECAL Barrel
+   
+   gTV.push_back( CEDGeoTube( r_out_ecal_ecap,    0.5*(r_max_lhcal+r_max_lcal),8, 40, 22.5, 0,    thick_ecal_ecap,   shift_ecal_z_plus,    ecalCol,fl+3,0,0) ) ; //  endcap ECAL +Z
+   gTV.push_back( CEDGeoTube( r_out_ecal_ecap,    0.5*(r_max_lhcal+r_max_lcal),8, 40, 22.5, 0,  thick_ecal_ecap,  -shift_ecal_z_minus,   ecalCol,fl+3,0,0) ) ; //  endcap ECAL -Z
+   //hauke: the ecal above and below overlaps(??)
+   //gTV.push_back( CEDGeoTube( r_out_ecal_ecap,    r_min_ecal_ecap,             8, 40, 22.5, 0, thick_ecal_ecap,   shift_ecal_z_plus,    ecalCol  ) ) ; //  endcap ECAL +Z
+   //gTV.push_back( CEDGeoTube( r_out_ecal_ecap,    r_min_ecal_ecap,             8, 40, 22.5, 0, thick_ecal_ecap,  -shift_ecal_z_minus,   ecalCol  ) ) ; //  endcap ECAL -Z
+   
+   gTV.push_back( CEDGeoTube( r_out_hcal_bar,     r_inn_hcal_bar,             16,  8, 11.25, 11.25, z_max_hcal_bar, - z_max_hcal_bar,      hcalCol,fl+4,0,1) ) ; //  HCAL Barrel
+   gTV.push_back( CEDGeoTube( r_out_hcal_ring,    r_inn_hcal_ring,             8,  8,  22.5, 0,  thick_hcal_ring,  shift_hcalr_z_plus,  hcalCol,fl+4,0,1) ) ; //  ring HCAL +Z
+   gTV.push_back( CEDGeoTube( r_out_hcal_ring,    r_inn_hcal_ring,             8,  8,  22.5, 0,  thick_hcal_ring, -shift_hcalr_z_minus, hcalCol,fl+4,0,1) ) ; //  ring HCAL -Z 
+   gTV.push_back( CEDGeoTube( r_out_hcal_ecap,    r_min_hcal_ecap,             8, 40,  22.5, 0,  thick_hcal_ecap,  shift_hcal_z_plus,   hcalCol,fl+4,0,1) ) ; //  endcap HCAL +Z
+   gTV.push_back( CEDGeoTube( r_out_hcal_ecap,    r_min_hcal_ecap,             8, 40,  22.5, 0, thick_hcal_ecap, -shift_hcal_z_minus,  hcalCol,fl+4,0,1) ) ;  //  endcap HCAL -Z      
+   
+   
+   //gTV.push_back( CEDGeoTube( coil_outer_radius,  coil_inner_radius,          40, 40,        0.0,   0, coil_half_z, -coil_half_z,  coilCol  ) ) ;  //  coil     
+   gTV.push_back( CEDGeoTube( coil_outer_radius,  coil_inner_radius,          200, 200,        0.0,   0, coil_half_z, -coil_half_z,  coilCol,fl+5,0,0) ) ;  //  coil     
+   
+   gTV.push_back( CEDGeoTube( r_out_yoke_plug,    r_inn_yoke_plug,            12, 12,        15.0,   0, thick_yoke_plug,  shift_yoker_z_plus,  yokeCol,fl+5,0,0) ) ; //  plug YOKE +Z
+   gTV.push_back( CEDGeoTube( r_out_yoke_plug,    r_inn_yoke_plug,            12, 12,        15.0,   0, thick_yoke_plug, -shift_yoker_z_minus, yokeCol,fl+5,0,0) ) ; //  plug YOKE -Z 
+   
+   
+   
+   gTV.push_back( CEDGeoTube( r_max_lhcal,        r_min_lhcal,                40, 40,    0., 0, thick_lhcal,  shift_lhcal_z_plus,   fcalCol,fl+6,0,0) ) ; //    LHCAL +Z
+   gTV.push_back( CEDGeoTube( r_max_lhcal,        r_min_lhcal,                40, 40,    0., 0, thick_lhcal, -shift_lhcal_z_minus,  fcalCol ,fl+6,0,0) ) ;  //   LHCAL -Z      
+   
+   gTV.push_back( CEDGeoTube( r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal,  shift_lcal_z_plus,   fcalCol,fl+6,0,0) ) ; //    LCAL +Z
+   gTV.push_back( CEDGeoTube( r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal, -shift_lcal_z_minus,  fcalCol,fl+6,0,0) ) ;  //   LCAL -Z      
+   
+   
+   
+   gTV.push_back( CEDGeoTube( r_out_yoke_bar,     r_inn_yoke_bar,             12, 12,        15.0,   0, z_max_yoke_bar,  - z_max_yoke_bar,     yokeCol,   fl+7, 0, 0) ) ; //  YOKE Barrel
+   gTV.push_back( CEDGeoTube( r_out_yoke_ecap,    r_min_yoke_ecap,            12, 12,        15.0,   0, thick_yoke_ecap,  shift_yoke_z_plus,   yokeCol,   fl+7, 0, 0) ) ; //  endcap YOKE +Z
+   gTV.push_back( CEDGeoTube( r_out_yoke_ecap,    r_min_yoke_ecap,            12, 12,        15.0,   0, thick_yoke_ecap, -shift_yoke_z_minus,  yokeCol,   fl+7, 0, 0) ) ;  //  endcap YOKE -Z      
+   
+   
+   gTV.push_back( CEDGeoTube( rSIT[0],          rSIT[0]-0.1 ,                 40, 40,  0.0, 0, lSIT[0],        -lSIT[0],            sitCol,fl+8,0,1) ) ;  //  SIT
+   gTV.push_back( CEDGeoTube( rSIT[1],          rSIT[1]-0.1 ,                 40, 40,  0.0, 0, lSIT[1],        -lSIT[1],            sitCol,fl+8,0,1) ) ;  //  SIT
+   
+   
+   // ========================================================================
+   ced_geotubes( gTV.size() ,  (CED_GeoTube*) &gTV[0] );
+   
+   set_layer_description("FTD",fl+0);
+   set_layer_description("Beamcal",fl+1);
+   set_layer_description("TPC",fl+2);
+   set_layer_description("ECAL",fl+3);
+   set_layer_description("HCAL",fl+4);
+   set_layer_description("Coil",fl+5);
+   set_layer_description("LHCAL",fl+6);
+   set_layer_description("Yoke",fl+7);
+   set_layer_description("SIT", fl+8);
+   // set_layer_description(" ",fl+9);
+   // set_layer_description(" ",fl+10);
+   // set_layer_description(" ",fl+11);
+   
+   write_layer_description();
 } // End of class DrawGeometry
 
 
