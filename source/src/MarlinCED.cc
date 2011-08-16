@@ -1241,80 +1241,29 @@ void MarlinCED::drawGEARDetector(){
    
    //note: if both try blocks fail, the ftd vectors simply will be empty and no disks will be drawn
    //============================================================================================================
+   
+   //-- VXD Parameters--
+   const gear::VXDParameters& pVXDDetMain = Global::GEAR->getVXDParameters();
+   const gear::VXDLayerLayout& pVXDLayerLayout = pVXDDetMain.getVXDLayerLayout();
+   
+   int nLayersVTX = pVXDLayerLayout.getNLayers();
+   
+   float rad2deg = 180.0 / M_PI;
+   
+   //SIT
+   const gear::GearParameters& pSITDet = Global::GEAR->getGearParameters("SIT");
+   
+   const DoubleVec& rSIT  = pSITDet.getDoubleVals("SITLayerRadius")  ;
+   const DoubleVec& lSIT  = pSITDet.getDoubleVals("SITLayerHalfLength") ;
+   // only in ILD_01  
+   //   const DoubleVec& thSIT = pSITDet.getDoubleVals("SITLayerThickness") ; // SITSupportLayerThickness ?
 
 
-   // **************************************** //
-   // ** Building VTX Detector ** //
-   // **************************************** //
+   
+   // ======= ================================================================
+   //To convert inner radius of polygone to its outer radius
+   //   float Cos4  = cos(M_PI/4.0);
 
-  //--Get GEAR Parameters--
-  const gear::VXDParameters& pVXDDetMain = Global::GEAR->getVXDParameters();
-  const gear::VXDLayerLayout& pVXDLayerLayout = pVXDDetMain.getVXDLayerLayout();
-
-  int nLayersVTX = pVXDLayerLayout.getNLayers();
-  
-  float rad2deg = 180.0 / M_PI;
-
-  // for (int i=0; i<nLayersVTX; ++i) {
-
-  //   int nLadders = pVXDLayerLayout.getNLadders(i);
-
-  //   float _ladder_phi0 = float(pVXDLayerLayout.getPhi0(i));
-
-  //   float _sensitive_distance = float(pVXDLayerLayout.getSensitiveDistance(i));
-  //   float _sensitive_thickness = float(pVXDLayerLayout.getSensitiveThickness(i));
-  //   float _sensitive_width = float(pVXDLayerLayout.getSensitiveWidth(i));
-  //   float _sensitive_length = float(pVXDLayerLayout.getSensitiveLength(i));
-  //   float _sensitive_offset = float (pVXDLayerLayout.getSensitiveOffset(i));
-
-  //   float currPhi;
-  //   float angleLadders = 2*M_PI / nLadders;
-  //   float cosphi, sinphi;
-
-  //   _sensitive_distance +=0.5* _sensitive_thickness;
-
-  //   for (int j=0; j<nLadders; ++j) {
-
-  //     currPhi = _ladder_phi0 + (angleLadders * j);
-  //     cosphi = cos(currPhi);
-  //     sinphi = sin(currPhi);
-
-  //     double * sizes  = new double[3];
-  //     double * center = new double[3];
-  //     unsigned int color = 0xFFFFFF;
-
-  //     center[0] = (_sensitive_distance*cosphi - _sensitive_offset*sinphi);
-  //     center[1] = (_sensitive_distance*sinphi + _sensitive_offset*cosphi);
-  //     center[2] = 0.0;
-  //     sizes[0]  = _sensitive_thickness;
-  //     sizes[1]  = _sensitive_width;
-  //     sizes[2]  = _sensitive_length;
-
-  //     unsigned int layer = 11<<CED_LAYER_SHIFT;
-  //     //unsigned int layer = 11;
-
-      
-  //     double *rotate = new double[3];
-
-  //     rotate[0] = 0.0;
-  //     rotate[1] = 0.0;
-  //     rotate[2] = currPhi*rad2deg;
-
-
-  //     ced_geobox_r( sizes, center, rotate, color, layer);
-
-  //     delete [] center;
-  //     delete [] sizes;
-  //     delete [] rotate;
-
-
-  //   }
-
-  // }
-
-// =======================================================================
-//To convert inner radius of polygone to its outer radius
-//   float Cos4  = cos(M_PI/4.0);
    float Cos8  = cos(M_PI/8.0);
    float Cos12  = cos(M_PI/12.0);
    float Cos16 = cos(M_PI/16.);
@@ -1373,14 +1322,6 @@ void MarlinCED::drawGEARDetector(){
    float shift_yoke_z_minus = z_min_yoke_ecap + 2.0*thick_yoke_ecap;
 
 
-   //SIT
-   const gear::GearParameters& pSITDet = Global::GEAR->getGearParameters("SIT");
-   
-   const DoubleVec& rSIT  = pSITDet.getDoubleVals("SITLayerRadius")  ;
-   const DoubleVec& lSIT  = pSITDet.getDoubleVals("SITLayerHalfLength") ;
-   // only in ILD_01  
-   //   const DoubleVec& thSIT = pSITDet.getDoubleVals("SITLayerThickness") ; // SITSupportLayerThickness ?
-
 // ========================================================================
 
    
@@ -1394,8 +1335,8 @@ void MarlinCED::drawGEARDetector(){
    static const unsigned ftdCol  = 0x651c93 ;
    static const unsigned fcalCol = 0xabaaab ;
 
-   static const int fDL = NUMBER_DATA_LAYER;
-
+   // define layers for sub detectors
+   static const int fDL = NUMBER_DATA_LAYER; //  first non data layer 
    static const unsigned  vxdLayer = fDL + 0 ;
    static const unsigned  sitLayer = fDL + 1 ; // light grey
    static const unsigned  ftdLayer = fDL + 2 ;
