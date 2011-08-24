@@ -71,7 +71,7 @@ ADD_DEFINITIONS( "-Wno-long-long" )
 
 # include directories
 INCLUDE_DIRECTORIES( ./source/include )
-INSTALL_DIRECTORY( ./source/include DESTINATION . FILES_MATCHING PATTERN "*.h" )
+INSTALL_DIRECTORY( ./source/include/ DESTINATION ./include/marlinutil FILES_MATCHING PATTERN "*.h" )
 
 
 # get list of all source files

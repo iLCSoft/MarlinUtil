@@ -35,10 +35,16 @@ SET( MarlinUtil_INCLUDE_DIRS MarlinUtil_INCLUDE_DIRS-NOTFOUND )
 MARK_AS_ADVANCED( MarlinUtil_INCLUDE_DIRS )
 
 FIND_PATH( MarlinUtil_INCLUDE_DIRS
-	NAMES MarlinUtil.h
+	NAMES marlinutil/MarlinUtil.h
 	PATHS ${MarlinUtil_ROOT}/include
 	NO_DEFAULT_PATH
 )
+
+# fix for backwards compatibility
+IF( MarlinUtil_INCLUDE_DIRS )
+    LIST( APPEND MarlinUtil_INCLUDE_DIRS ${MarlinUtil_INCLUDE_DIRS}/marlinutil )
+ENDIF( MarlinUtil_INCLUDE_DIRS )
+
 
 # ---------- libraries --------------------------------------------------------
 INCLUDE( "@ILCSOFT_CMAKE_MODULES_ROOT@/MacroCheckPackageLibs.cmake" )
