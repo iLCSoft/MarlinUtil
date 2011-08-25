@@ -1064,45 +1064,95 @@ void MarlinCED::drawGEARDetector(){
 // based on original code from V.Morgunov, MPI
 //
 
-   const gear::TPCParameters&  pTPC      = Global::GEAR->getTPCParameters();
-   const gear::PadRowLayout2D& padLayout = pTPC.getPadLayout();
-   const gear::DoubleVec&      planeExt  = padLayout.getPlaneExtent();
-   float r_min_tpc = planeExt[0];
-   float r_max_tpc = planeExt[1];
-   float z_max_tpc = pTPC.getMaxDriftLength();
+   //############ TPC #########################
+   bool showTPC=true;
 
-   const gear::CalorimeterParameters& pECAL_B = 
-            Global::GEAR->getEcalBarrelParameters();
-   float r_min_ecal_bar = pECAL_B.getExtent()[0];
-   float r_max_ecal_bar = pECAL_B.getExtent()[1];
-// float z_min_ecal_bar = pECAL_B.getExtent()[2];
-   float z_max_ecal_bar = pECAL_B.getExtent()[3];
-   const gear::CalorimeterParameters& pECAL_E = 
-            Global::GEAR->getEcalEndcapParameters();
-   //   float r_min_ecal_ecap = pECAL_E.getExtent()[0];
-   float r_max_ecal_ecap = pECAL_E.getExtent()[1];
-   float z_min_ecal_ecap = pECAL_E.getExtent()[2];
-   float z_max_ecal_ecap = pECAL_E.getExtent()[3];
+   float r_min_tpc = 0;
+   float r_max_tpc = 0; 
+   float z_max_tpc = 0;
 
-   const gear::CalorimeterParameters& pHCAL_B = 
-            Global::GEAR->getHcalBarrelParameters();
-   //  _innerHcalRadius = float(pHcalBarrel.getExtent()[0]);
-   float r_min_hcal_bar = pHCAL_B.getExtent()[0];
-   float r_max_hcal_bar = pHCAL_B.getExtent()[1];
-// float z_min_hcal_bar = pHCAL_B.getExtent()[2];
-   float z_max_hcal_bar = pHCAL_B.getExtent()[3];
-   const gear::CalorimeterParameters& pHCAL_R = 
-             Global::GEAR->getHcalRingParameters();
- float r_min_hcal_ring = pHCAL_R.getExtent()[0];
-    float r_max_hcal_ring = pHCAL_R.getExtent()[1];
-    float z_min_hcal_ring = pHCAL_R.getExtent()[2];
-    float z_max_hcal_ring = pHCAL_R.getExtent()[3];
-   const gear::CalorimeterParameters& pHCAL_E = 
-            Global::GEAR->getHcalEndcapParameters();
-   float r_min_hcal_ecap = pHCAL_E.getExtent()[0];
-   float r_max_hcal_ecap = pHCAL_E.getExtent()[1];
-   float z_min_hcal_ecap = pHCAL_E.getExtent()[2];
-   float z_max_hcal_ecap = pHCAL_E.getExtent()[3];
+   try{
+        const gear::TPCParameters&  pTPC      = Global::GEAR->getTPCParameters();
+        const gear::PadRowLayout2D& padLayout = pTPC.getPadLayout();
+        const gear::DoubleVec&      planeExt  = padLayout.getPlaneExtent();
+        r_min_tpc = planeExt[0];
+        r_max_tpc = planeExt[1];
+        z_max_tpc = pTPC.getMaxDriftLength();
+   }catch(gear::UnknownParameterException& e){
+        showTPC=false;
+   }
+
+
+   // ########## ECAL #####################
+   bool showECAL = true;
+   float r_min_ecal_bar = 0;
+   float r_max_ecal_bar = 0;
+   float z_min_ecal_bar = 0; 
+   float z_max_ecal_bar = 0;
+   float r_max_ecal_ecap = 0;
+   float z_min_ecal_ecap = 0;
+   float z_max_ecal_ecap = 0;
+
+   try{
+        const gear::CalorimeterParameters& pECAL_B = 
+                 Global::GEAR->getEcalBarrelParameters();
+        r_min_ecal_bar = pECAL_B.getExtent()[0];
+        r_max_ecal_bar = pECAL_B.getExtent()[1];
+        // float z_min_ecal_bar = pECAL_B.getExtent()[2];
+        z_max_ecal_bar = pECAL_B.getExtent()[3];
+        const gear::CalorimeterParameters& pECAL_E = 
+                 Global::GEAR->getEcalEndcapParameters();
+        //   float r_min_ecal_ecap = pECAL_E.getExtent()[0];
+        r_max_ecal_ecap = pECAL_E.getExtent()[1];
+        z_min_ecal_ecap = pECAL_E.getExtent()[2];
+        z_max_ecal_ecap = pECAL_E.getExtent()[3];
+   }catch(gear::UnknownParameterException& e){
+        showECAL=false;
+   }
+
+
+
+
+
+   //############# HCAL ##########################
+    bool showHCAL=true;
+    float r_min_hcal_bar =0;
+    float r_max_hcal_bar =0;
+    float z_min_hcal_bar =0;
+    float z_max_hcal_bar =0;
+    float r_min_hcal_ring=0;
+    float r_max_hcal_ring=0;
+    float z_min_hcal_ring=0;
+    float z_max_hcal_ring=0;
+    float r_min_hcal_ecap=0;
+    float r_max_hcal_ecap=0;
+    float z_min_hcal_ecap=0;
+    float z_max_hcal_ecap=0;
+
+   try{
+        const gear::CalorimeterParameters& pHCAL_B = 
+                 Global::GEAR->getHcalBarrelParameters();
+        //  _innerHcalRadius = float(pHcalBarrel.getExtent()[0]);
+        r_min_hcal_bar = pHCAL_B.getExtent()[0];
+        r_max_hcal_bar = pHCAL_B.getExtent()[1];
+        //float z_min_hcal_bar = pHCAL_B.getExtent()[2];
+        z_max_hcal_bar = pHCAL_B.getExtent()[3];
+        const gear::CalorimeterParameters& pHCAL_R = 
+                  Global::GEAR->getHcalRingParameters();
+        r_min_hcal_ring = pHCAL_R.getExtent()[0];
+        r_max_hcal_ring = pHCAL_R.getExtent()[1];
+        z_min_hcal_ring = pHCAL_R.getExtent()[2];
+        z_max_hcal_ring = pHCAL_R.getExtent()[3];
+        const gear::CalorimeterParameters& pHCAL_E = 
+                 Global::GEAR->getHcalEndcapParameters();
+        r_min_hcal_ecap = pHCAL_E.getExtent()[0];
+        r_max_hcal_ecap = pHCAL_E.getExtent()[1];
+        z_min_hcal_ecap = pHCAL_E.getExtent()[2];
+        z_max_hcal_ecap = pHCAL_E.getExtent()[3];
+   }catch(gear::UnknownParameterException& e){
+        showHCAL=false;
+   }
+
    
 
    float r_min_lhcal = 0.0 ;
@@ -1136,57 +1186,96 @@ void MarlinCED::drawGEARDetector(){
    float z_min_lcal = pLCal.getExtent()[2];
    float z_max_lcal = pLCal.getExtent()[3];
    
-   const gear::CalorimeterParameters& pBeamcal = 
-     Global::GEAR->getBeamCalParameters();
-   float r_min_beamcal = pBeamcal.getExtent()[0];
-   float r_max_beamcal = pBeamcal.getExtent()[1];
-   float z_min_beamcal = pBeamcal.getExtent()[2];
-   float z_max_beamcal = pBeamcal.getExtent()[3];
+
+
+   //######## Beamcal ##############################
+   bool showBeamcal=true;
+   float r_min_beamcal=0;
+   float r_max_beamcal=0;
+   float z_min_beamcal=0;
+   float z_max_beamcal=0;
+
+   try{
+        const gear::CalorimeterParameters& pBeamcal = 
+          Global::GEAR->getBeamCalParameters();
+        r_min_beamcal = pBeamcal.getExtent()[0];
+        r_max_beamcal = pBeamcal.getExtent()[1];
+        z_min_beamcal = pBeamcal.getExtent()[2];
+        z_max_beamcal = pBeamcal.getExtent()[3];
+    }catch( gear::UnknownParameterException& e){
+        showBeamcal=false;
+   }
+
    
-   
-   const gear::CalorimeterParameters& pYOKE_B = 
-     Global::GEAR->getYokeBarrelParameters();
-   //  _innerYokeRadius = float(pYokeBarrel.getExtent()[0]);
-   float r_min_yoke_bar = pYOKE_B.getExtent()[0];
-   float r_max_yoke_bar = pYOKE_B.getExtent()[1];
-   //float z_min_yoke_bar = pYOKE_B.getExtent()[2];
-   float z_max_yoke_bar = pYOKE_B.getExtent()[3];
-   const gear::CalorimeterParameters& pYOKE_R = 
-             Global::GEAR->getYokePlugParameters();
-   float r_min_yoke_plug = pYOKE_R.getExtent()[0];
-   float r_max_yoke_plug = pYOKE_R.getExtent()[1];
-   float z_min_yoke_plug = pYOKE_R.getExtent()[2];
-   float z_max_yoke_plug = pYOKE_R.getExtent()[3];
-   const gear::CalorimeterParameters& pYOKE_E = 
-     Global::GEAR->getYokeEndcapParameters();
-   float r_min_yoke_ecap = pYOKE_E.getExtent()[0];
-   float r_max_yoke_ecap = pYOKE_E.getExtent()[1];
-   float z_min_yoke_ecap = pYOKE_E.getExtent()[2];
-   float z_max_yoke_ecap = pYOKE_E.getExtent()[3];
+   //############## Yoke ############################ 
+   bool showYoke = true;
+
+   float r_min_yoke_bar=0; 
+   float r_max_yoke_bar=0;
+   float z_max_yoke_bar=0;
+   float r_min_yoke_plug=0; 
+   float r_max_yoke_plug=0; 
+   float z_min_yoke_plug=0; 
+   float z_max_yoke_plug=0; 
+   float r_min_yoke_ecap=0; 
+   float r_max_yoke_ecap=0; 
+   float z_min_yoke_ecap=0; 
+   float z_max_yoke_ecap=0; 
+
+   try{
+        const gear::CalorimeterParameters& pYOKE_B = 
+          Global::GEAR->getYokeBarrelParameters();
+        //  _innerYokeRadius = float(pYokeBarrel.getExtent()[0]);
+        r_min_yoke_bar = pYOKE_B.getExtent()[0];
+        r_max_yoke_bar = pYOKE_B.getExtent()[1];
+        //float z_min_yoke_bar = pYOKE_B.getExtent()[2];
+        z_max_yoke_bar = pYOKE_B.getExtent()[3];
+        const gear::CalorimeterParameters& pYOKE_R = 
+                  Global::GEAR->getYokePlugParameters();
+        r_min_yoke_plug = pYOKE_R.getExtent()[0];
+        r_max_yoke_plug = pYOKE_R.getExtent()[1];
+        z_min_yoke_plug = pYOKE_R.getExtent()[2];
+        z_max_yoke_plug = pYOKE_R.getExtent()[3];
+        const gear::CalorimeterParameters& pYOKE_E = 
+          Global::GEAR->getYokeEndcapParameters();
+        r_min_yoke_ecap = pYOKE_E.getExtent()[0];
+        r_max_yoke_ecap = pYOKE_E.getExtent()[1];
+        z_min_yoke_ecap = pYOKE_E.getExtent()[2];
+        z_max_yoke_ecap = pYOKE_E.getExtent()[3];
+    }catch( gear::UnknownParameterException& e){
+        showYoke=false;
+   }
+
    
  
 
    // ------- coil parameters have changed in ILD_01
+   bool showCoil = true;
+
    float coil_half_z        =  0 ;
    float coil_inner_radius  =  0 ;
    float coil_outer_radius  =  0 ;
 
-   const gear::GearParameters&  pCoil      = Global::GEAR->getGearParameters("CoilParameters");
 
-   try {
 
-     coil_half_z         =  pCoil.getDoubleVal("Coil_cryostat_half_z" ) ;
-     coil_inner_radius  =   pCoil.getDoubleVal("Coil_cryostat_inner_radius" ) ;
-     coil_outer_radius  =   pCoil.getDoubleVal("Coil_cryostat_outer_radius" ) ;
+   try{     
+        const gear::GearParameters&  pCoil      = Global::GEAR->getGearParameters("CoilParameters");
+        try {
 
-   }  catch( gear::UnknownParameterException& e){   
-     
-     // the parameters named _inner_cyl_ seem to be the ones that define the envelope (strangely enough)....
-     coil_half_z         =  pCoil.getDoubleVal("Coil_cryostat_inner_cyl_half_z" ) ;
-     coil_inner_radius  =   pCoil.getDoubleVal("Coil_cryostat_inner_cyl_inner_radius" ) ;
-     coil_outer_radius  =   pCoil.getDoubleVal("Coil_cryostat_inner_cyl_outer_radius" ) ;
-     
+           coil_half_z         =  pCoil.getDoubleVal("Coil_cryostat_half_z" ) ;
+           coil_inner_radius  =   pCoil.getDoubleVal("Coil_cryostat_inner_radius" ) ;
+           coil_outer_radius  =   pCoil.getDoubleVal("Coil_cryostat_outer_radius" ) ;
+
+         }  catch( gear::UnknownParameterException& e){   
+               // the parameters named _inner_cyl_ seem to be the ones that define the envelope (strangely enough)....
+               coil_half_z         =  pCoil.getDoubleVal("Coil_cryostat_inner_cyl_half_z" ) ;
+               coil_inner_radius  =   pCoil.getDoubleVal("Coil_cryostat_inner_cyl_inner_radius" ) ;
+               coil_outer_radius  =   pCoil.getDoubleVal("Coil_cryostat_inner_cyl_outer_radius" ) ;
+         }
+    }catch( gear::UnknownParameterException& e){
+        showCoil=false;
    }
+
    
    //============================================================================================================
    // here we might either have default GearParameters for the FTD or 
@@ -1407,27 +1496,41 @@ void MarlinCED::drawGEARDetector(){
      gTV.push_back( CEDGeoTube( ftd_ri[i],          ftd_ro[i],  40,  40,   0.0   , 0, ftd_d[i]  ,  - ftd_z[i] ,   ftdCol, ftdLayer, 0,0 ) ) ;  //  FTD    
    }
    
-   gTV.push_back( CEDGeoTube( r_max_beamcal,      r_min_beamcal,              40, 40,    0., 0, thick_beamcal,  shift_beamcal_z_plus,   fcalCol, fcalLayer ,0,0) ) ; //    BEAMCAL +Z
-   gTV.push_back( CEDGeoTube( r_max_beamcal,      r_min_beamcal,              40, 40, 0.,    0, thick_beamcal, -shift_beamcal_z_minus,  fcalCol, fcalLayer ,0,0) ) ;  //   BEAMCAL -Z      
+   if(showBeamcal){
+        gTV.push_back( CEDGeoTube( r_max_beamcal,      r_min_beamcal,              40, 40,    0., 0, thick_beamcal,  shift_beamcal_z_plus,   fcalCol, fcalLayer ,0,0) ) ; //    BEAMCAL +Z
+        gTV.push_back( CEDGeoTube( r_max_beamcal,      r_min_beamcal,              40, 40, 0.,    0, thick_beamcal, -shift_beamcal_z_minus,  fcalCol, fcalLayer ,0,0) ) ;  //   BEAMCAL -Z      
+   }
    
-   gTV.push_back( CEDGeoTube( r_max_tpc,          r_min_tpc,                  40, 40,  0.0, 0, z_max_tpc,        -z_max_tpc,            tpcCol, tpcLayer ,0,1) ) ; //  TPC
-   
-   gTV.push_back( CEDGeoTube( r_out_ecal_bar,     r_inn_ecal_bar,              8,  8, 22.5, 0,  z_max_ecal_bar,   -z_max_ecal_bar,       ecalCol, ecalLayer ,0,1) ) ; //  ECAL Barrel
-   gTV.push_back( CEDGeoTube( r_out_ecal_ecap,    0.5*(r_max_lhcal+r_max_lcal),8, 40, 22.5, 0,  thick_ecal_ecap,   shift_ecal_z_plus,    ecalCol, ecalLayer ,0,0) ) ; //  endcap ECAL +Z
-   gTV.push_back( CEDGeoTube( r_out_ecal_ecap,    0.5*(r_max_lhcal+r_max_lcal),8, 40, 22.5, 0,  thick_ecal_ecap,  -shift_ecal_z_minus,   ecalCol, ecalLayer ,0,0) ) ; //  endcap ECAL -Z
-   
-   gTV.push_back( CEDGeoTube( r_out_hcal_bar,     r_inn_hcal_bar,             16,  8, 11.25, 11.25, z_max_hcal_bar,  -z_max_hcal_bar,      hcalCol, hcalLayer ,0,1) ) ; //  HCAL Barrel
-   gTV.push_back( CEDGeoTube( r_out_hcal_ring,    r_inn_hcal_ring,             8,  8,  22.5,     0, thick_hcal_ring,  shift_hcalr_z_plus,  hcalCol, hcalLayer ,0,1) ) ; //  ring HCAL +Z
-   gTV.push_back( CEDGeoTube( r_out_hcal_ring,    r_inn_hcal_ring,             8,  8,  22.5,     0, thick_hcal_ring, -shift_hcalr_z_minus, hcalCol, hcalLayer ,0,1) ) ; //  ring HCAL -Z 
-   gTV.push_back( CEDGeoTube( r_out_hcal_ecap,    r_min_hcal_ecap,             8, 40,  22.5,     0, thick_hcal_ecap,  shift_hcal_z_plus,   hcalCol, hcalLayer ,0,1) ) ; //  endcap HCAL +Z
-   gTV.push_back( CEDGeoTube( r_out_hcal_ecap,    r_min_hcal_ecap,             8, 40,  22.5,     0, thick_hcal_ecap, -shift_hcal_z_minus,  hcalCol, hcalLayer ,0,1) ) ;  //  endcap HCAL -Z      
-   
-   gTV.push_back( CEDGeoTube( coil_outer_radius,  coil_inner_radius,          40, 40,        0.0,   0, coil_half_z, -coil_half_z,              coilCol, coilLayer ,0,0) ) ;  //  coil     
+  
+   if(showTPC){
+        gTV.push_back( CEDGeoTube( r_max_tpc,          r_min_tpc,                  40, 40,  0.0, 0, z_max_tpc,        -z_max_tpc,            tpcCol, tpcLayer ,0,1) ) ; //  TPC
+   }
 
-   gTV.push_back( CEDGeoTube( r_out_yoke_plug,    r_inn_yoke_plug,            12, 12,        15.0,   0, thick_yoke_plug,  shift_yoker_z_plus,  yokeCol, yokeLayer ,0,0) ) ; //  plug YOKE +Z
-   gTV.push_back( CEDGeoTube( r_out_yoke_plug,    r_inn_yoke_plug,            12, 12,        15.0,   0, thick_yoke_plug, -shift_yoker_z_minus, yokeCol, yokeLayer ,0,0) ) ; //  plug YOKE -Z 
+   if(showECAL){
+        gTV.push_back( CEDGeoTube( r_out_ecal_bar,     r_inn_ecal_bar,              8,  8, 22.5, 0,  z_max_ecal_bar,   -z_max_ecal_bar,       ecalCol, ecalLayer ,0,1) ) ; //  ECAL Barrel
+        gTV.push_back( CEDGeoTube( r_out_ecal_ecap,    0.5*(r_max_lhcal+r_max_lcal),8, 40, 22.5, 0,  thick_ecal_ecap,   shift_ecal_z_plus,    ecalCol, ecalLayer ,0,0) ) ; //  endcap ECAL +Z
+        gTV.push_back( CEDGeoTube( r_out_ecal_ecap,    0.5*(r_max_lhcal+r_max_lcal),8, 40, 22.5, 0,  thick_ecal_ecap,  -shift_ecal_z_minus,   ecalCol, ecalLayer ,0,0) ) ; //  endcap ECAL -Z
+   }
+   
+   if(showHCAL){
+        gTV.push_back( CEDGeoTube( r_out_hcal_bar,     r_inn_hcal_bar,             16,  8, 11.25, 11.25, z_max_hcal_bar,  -z_max_hcal_bar,      hcalCol, hcalLayer ,0,1) ) ; //  HCAL Barrel
+        gTV.push_back( CEDGeoTube( r_out_hcal_ring,    r_inn_hcal_ring,             8,  8,  22.5,     0, thick_hcal_ring,  shift_hcalr_z_plus,  hcalCol, hcalLayer ,0,1) ) ; //  ring HCAL +Z
+        gTV.push_back( CEDGeoTube( r_out_hcal_ring,    r_inn_hcal_ring,             8,  8,  22.5,     0, thick_hcal_ring, -shift_hcalr_z_minus, hcalCol, hcalLayer ,0,1) ) ; //  ring HCAL -Z 
+        gTV.push_back( CEDGeoTube( r_out_hcal_ecap,    r_min_hcal_ecap,             8, 40,  22.5,     0, thick_hcal_ecap,  shift_hcal_z_plus,   hcalCol, hcalLayer ,0,1) ) ; //  endcap HCAL +Z
+        gTV.push_back( CEDGeoTube( r_out_hcal_ecap,    r_min_hcal_ecap,             8, 40,  22.5,     0, thick_hcal_ecap, -shift_hcal_z_minus,  hcalCol, hcalLayer ,0,1) ) ;  //  endcap HCAL -Z      
+    }
+   
+   if(showCoil){
+        gTV.push_back( CEDGeoTube( coil_outer_radius,  coil_inner_radius,          40, 40,        0.0,   0, coil_half_z, -coil_half_z,              coilCol, coilLayer ,0,0) ) ;  //  coil     
+    }
+
+   if(showYoke){
+        gTV.push_back( CEDGeoTube( r_out_yoke_plug,    r_inn_yoke_plug,            12, 12,        15.0,   0, thick_yoke_plug,  shift_yoker_z_plus,  yokeCol, yokeLayer ,0,0) ) ; //  plug YOKE +Z
+        gTV.push_back( CEDGeoTube( r_out_yoke_plug,    r_inn_yoke_plug,            12, 12,        15.0,   0, thick_yoke_plug, -shift_yoker_z_minus, yokeCol, yokeLayer ,0,0) ) ; //  plug YOKE -Z 
+   }
    
    
+  
    if( showLHcal ){
      gTV.push_back( CEDGeoTube( r_max_lhcal,        r_min_lhcal,                40, 40,    0., 0, thick_lhcal,  shift_lhcal_z_plus,   fcalCol , fcalLayer ,0,0) ) ; //    LHCAL +Z
      gTV.push_back( CEDGeoTube( r_max_lhcal,        r_min_lhcal,                40, 40,    0., 0, thick_lhcal, -shift_lhcal_z_minus,  fcalCol , fcalLayer ,0,0) ) ;  //   LHCAL -Z      
@@ -1438,9 +1541,11 @@ void MarlinCED::drawGEARDetector(){
    
    
    
-   gTV.push_back( CEDGeoTube( r_out_yoke_bar,     r_inn_yoke_bar,             12, 12,        15.0,   0, z_max_yoke_bar,  - z_max_yoke_bar,     yokeCol,  yokeLayer, 0, 0) ) ; //  YOKE Barrel
-   gTV.push_back( CEDGeoTube( r_out_yoke_ecap,    r_min_yoke_ecap,            12, 12,        15.0,   0, thick_yoke_ecap,  shift_yoke_z_plus,   yokeCol,  yokeLayer, 0, 0) ) ; //  endcap YOKE +Z
-   gTV.push_back( CEDGeoTube( r_out_yoke_ecap,    r_min_yoke_ecap,            12, 12,        15.0,   0, thick_yoke_ecap, -shift_yoke_z_minus,  yokeCol,  yokeLayer, 0, 0) ) ;  //  endcap YOKE -Z      
+    if(showYoke){
+        gTV.push_back( CEDGeoTube( r_out_yoke_bar,     r_inn_yoke_bar,             12, 12,        15.0,   0, z_max_yoke_bar,  - z_max_yoke_bar,     yokeCol,  yokeLayer, 0, 0) ) ; //  YOKE Barrel
+        gTV.push_back( CEDGeoTube( r_out_yoke_ecap,    r_min_yoke_ecap,            12, 12,        15.0,   0, thick_yoke_ecap,  shift_yoke_z_plus,   yokeCol,  yokeLayer, 0, 0) ) ; //  endcap YOKE +Z
+        gTV.push_back( CEDGeoTube( r_out_yoke_ecap,    r_min_yoke_ecap,            12, 12,        15.0,   0, thick_yoke_ecap, -shift_yoke_z_minus,  yokeCol,  yokeLayer, 0, 0) ) ;  //  endcap YOKE -Z      
+    }
    
    
    for(unsigned i=0,N= rSIT.size() ; i<N ; ++i){
@@ -1457,16 +1562,32 @@ void MarlinCED::drawGEARDetector(){
    set_layer_description("VXD", vxdLayer );
    set_layer_description("SIT", sitLayer );
    
-   set_layer_description("TPC", tpcLayer );
-   set_layer_description("ECAL", ecalLayer );
-   set_layer_description("HCAL", hcalLayer );
-   set_layer_description("Coil", coilLayer );
-   set_layer_description("Yoke", yokeLayer );
+   if(showTPC){
+        set_layer_description("TPC", tpcLayer );
+   }
+   if(showECAL){
+        set_layer_description("ECAL", ecalLayer );
+   }
+   if(showHCAL){
+        set_layer_description("HCAL", hcalLayer );
+   }
+   if(showCoil){
+        set_layer_description("Coil", coilLayer );
+    }
+
+   if(showYoke){ 
+        set_layer_description("Yoke", yokeLayer );
+    }
    
-   if( showLHcal )
+   if( showLHcal  && showBeamcal){
      set_layer_description("LCAL, Beamcal, LHcal", fcalLayer );
-   else
+   }else if(showLHcal){
+     set_layer_description("LCAL, LHcal",fcalLayer );
+   }else if(showBeamcal){
      set_layer_description("LCAL, Beamcal",fcalLayer );
+   }else{
+     set_layer_description("LCAL",fcalLayer );
+   }
    
    write_layer_description();
 
