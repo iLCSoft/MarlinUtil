@@ -70,7 +70,7 @@ ADD_DEFINITIONS( "-Wall -ansi" ) # FIXME -pedantic
 ADD_DEFINITIONS( "-Wno-long-long" )
 
 # include directories
-INCLUDE_DIRECTORIES( ./source/include )
+INCLUDE_DIRECTORIES( BEFORE ./source/include )
 INSTALL_DIRECTORY( ./source/include/ DESTINATION ./include/marlinutil FILES_MATCHING PATTERN "*.h" )
 
 
