@@ -16,7 +16,7 @@ until we have the geometry for reconstruction package (GEAR).
 This package is needed in praticular for MarlinReco but can also be included in other 
 Marlin based programs.
 
-MarlinUtil depends on ILCUTIL, Marlin (1.0 or higher), CED (1.2 or higher), CLHEP and GSL
+MarlinUtil depends on ILCUTIL, Marlin (1.0 or higher), CED (1.3 or higher), CLHEP and GSL
 
 
 Build Instructions:

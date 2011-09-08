@@ -11,16 +11,16 @@
     New features:
 
         - MarlinCED: 
-	     - added more subdetectors: FTD, LHCal, LCal, Coil, Yoke, SIT
+	        - added more subdetectors: FTD, LHCal, LCal, Coil, Yoke, SIT
 
-	     - changed detector colors to match the default colors used in Mokka
+	        - changed detector colors to match the default colors used in Mokka
      
-             - detector components have now layers and layer description
+            - detector components have now layers and layer description
 
-             - Cylinder: inner edges can be different from outeredges, and the inner
+            - Cylinder: inner edges can be different from outeredges, and the inner
                 cylinder can be rotated with an other angle as the outer cylinder shape
 
-             - made compatible with CLIC (no LHCal and 11 FTD layers):
+            - made compatible with CLIC (no LHCal and 11 FTD layers):
                LHCal is now optional and the FTD is drawn dynamically from gear....
 
 
@@ -29,11 +29,24 @@
 
         - added ILDCellIDEncoding which is needed for development of new tracking
           system, could be removed at a later stage of development
+
+        - header files now installed into subdirectory (marlinutil) to avoid name clashes
+            still backwards compatible
  
     Fixes:
     
-        - MarlinCED: old ced_hit_id is now deprecated (the old ced_hit_id used one int to store type and layer number).
+        - MarlinCED:
+            - old ced_hit_id is now deprecated (the old ced_hit_id used one int to store type and layer number).
 	            The new one have one argument more, (layer and type are now 2 fields)
+            - Added try/catch blocks to prevent gear::UnknownParameterException, while accessing undefined detector components.
+            - fixed drawGEARDetector
+            - fixed length of VXD detector ( had used half size only !)
+            - allow to toggle visibility of VXD
+            - made compatible with new gear (used for ILD_01):
+            - use optionally FTDParameters
+            - use size of SIT arrays (will have to be changed to ZPlanarLayout)
+            - optionally use new coil parameter names
+
 
 
 --------
