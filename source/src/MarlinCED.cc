@@ -1300,7 +1300,7 @@ void MarlinCED::drawGEARDetector(){
        ftd_d .push_back( pFTD.getSupportThickness(i) ) ;
        ftd_ri.push_back( pFTD.getSupportRinner(i) ) ;
        ftd_ro.push_back( pFTD.getMaxRadius(i) ) ;
-       ftd_z .push_back( pFTD.getSupportZposition(i) ) ; // + pFTD.getZoffset(i) ) ; ??
+       ftd_z .push_back( pFTD.getSupportZposition(i, 0) ) ; // + pFTD.getZoffset(i) ) ; ?? // FIXME taken common z using the first petal
      }
      
      
