@@ -32,7 +32,10 @@
 
         - header files now installed into subdirectory (marlinutil) to avoid name clashes
             still backwards compatible
- 
+
+        - moved classes FPCCDData and FPCCDPixelHit from MarlinReco
+          to MarlinUtil to avoid dependency of Overlay on MarlinReco
+
     Fixes:
     
         - MarlinCED:
