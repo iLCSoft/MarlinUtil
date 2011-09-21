@@ -1087,7 +1087,7 @@ void MarlinCED::drawGEARDetector(){
    bool showECAL = true;
    float r_min_ecal_bar = 0;
    float r_max_ecal_bar = 0;
-   float z_min_ecal_bar = 0; 
+   //float z_min_ecal_bar = 0; 
    float z_max_ecal_bar = 0;
    float r_max_ecal_ecap = 0;
    float z_min_ecal_ecap = 0;
@@ -1118,7 +1118,7 @@ void MarlinCED::drawGEARDetector(){
     bool showHCAL=true;
     float r_min_hcal_bar =0;
     float r_max_hcal_bar =0;
-    float z_min_hcal_bar =0;
+//    float z_min_hcal_bar =0;
     float z_max_hcal_bar =0;
     float r_min_hcal_ring=0;
     float r_max_hcal_ring=0;
@@ -1503,7 +1503,7 @@ void MarlinCED::drawGEARDetector(){
    
   
    if(showTPC){
-        gTV.push_back( CEDGeoTube( r_max_tpc,          r_min_tpc,                  40, 40,  0.0, 0, z_max_tpc,        -z_max_tpc,            tpcCol, tpcLayer ,0,1) ) ; //  TPC
+        gTV.push_back( CEDGeoTube( r_max_tpc,          r_min_tpc,                  40, 40,  0.0, 0, z_max_tpc,        -z_max_tpc,            tpcCol, tpcLayer ,1,1) ) ; //  TPC
    }
 
    if(showECAL){
