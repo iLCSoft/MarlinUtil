@@ -16,6 +16,8 @@
 #include <gear/VXDParameters.h>
 #include <gear/FTDParameters.h>
 #include <gear/FTDLayerLayout.h>
+#include <gear/ZPlanarParameters.h>
+#include <gear/ZPlanarLayerLayout.h>
 
 
 #include <LCGeometryTypes.h>
@@ -1178,14 +1180,25 @@ void MarlinCED::drawGEARDetector(){
    catch( gear::UnknownParameterException& e){   
    }
    
+   bool showLCal = false ;
+
+
+   float r_min_lcal;
+   float r_max_lcal;
+   float z_min_lcal;
+   float z_max_lcal;
    
-   const gear::CalorimeterParameters& pLCal = 
-     Global::GEAR->getLcalParameters();
-   float r_min_lcal = pLCal.getExtent()[0];
-   float r_max_lcal = pLCal.getExtent()[1];
-   float z_min_lcal = pLCal.getExtent()[2];
-   float z_max_lcal = pLCal.getExtent()[3];
-   
+   try{
+     const gear::CalorimeterParameters& pLCal = 
+       Global::GEAR->getLcalParameters();
+     r_min_lcal = pLCal.getExtent()[0];
+     r_max_lcal = pLCal.getExtent()[1];
+     z_min_lcal = pLCal.getExtent()[2];
+     z_max_lcal = pLCal.getExtent()[3];
+     showLCal = true ;
+   }
+   catch( gear::UnknownParameterException& e){   
+   }   
 
 
    //######## Beamcal ##############################
@@ -1296,11 +1309,38 @@ void MarlinCED::drawGEARDetector(){
      streamlog_out( DEBUG2 ) << " filling FTD parameters from gear::FTDParameters - n layers : " <<  pFTD.getNLayers() << std::endl ;
      
      for( unsigned i=0, N = pFTD.getNLayers() ; i<N ; ++i ){
-       
-       ftd_d .push_back( pFTD.getSupportThickness(i) ) ;
-       ftd_ri.push_back( pFTD.getSupportRinner(i) ) ;
+
+       // this only really works for the staggered design
+       //create the even numbered petall
+       if( pFTD.getAlpha(i) != 0  ) {
+	 streamlog_out( ERROR ) << "MarlinCED: Cannot draw design for tilt angle (alpha) != 0.0 " << pFTD.getAlpha(i)  << " exit(1) called" << std::endl ;
+	 exit(1);
+       }
+
+       // create a disk to represent even number petals front side
+       ftd_d .push_back( pFTD.getSensitiveThickness(i) ) ;
+       ftd_ri.push_back( pFTD.getSensitiveRinner(i) ) ;
        ftd_ro.push_back( pFTD.getMaxRadius(i) ) ;
-       ftd_z .push_back( pFTD.getSupportZposition(i, 0) ) ; // + pFTD.getZoffset(i) ) ; ?? // FIXME taken common z using the first petal
+       ftd_z .push_back( pFTD.getSensitiveZposition(i, 0, 1) ) ; // + pFTD.getZoffset(i) ) ; ?? // FIXME taken common z using the first petal
+
+       // create a disk to represent even number petals rear side
+       ftd_d .push_back( pFTD.getSensitiveThickness(i) ) ;
+       ftd_ri.push_back( pFTD.getSensitiveRinner(i) ) ;
+       ftd_ro.push_back( pFTD.getMaxRadius(i) ) ;
+       ftd_z .push_back( pFTD.getSensitiveZposition(i, 0, 3) ) ; // + pFTD.getZoffset(i) ) ; ?? // FIXME taken common z using the first petal
+
+       // create a disk to represent odd number petals front side
+       ftd_d .push_back( pFTD.getSensitiveThickness(i) ) ;
+       ftd_ri.push_back( pFTD.getSensitiveRinner(i) ) ;
+       ftd_ro.push_back( pFTD.getMaxRadius(i) ) ;
+       ftd_z .push_back( pFTD.getSensitiveZposition(i, 1, 1) ) ; // + pFTD.getZoffset(i) ) ; ?? // FIXME taken common z using the first petal
+
+       // create a disk to represent odd number petals rear side
+       ftd_d .push_back( pFTD.getSensitiveThickness(i) ) ;
+       ftd_ri.push_back( pFTD.getSensitiveRinner(i) ) ;
+       ftd_ro.push_back( pFTD.getMaxRadius(i) ) ;
+       ftd_z .push_back( pFTD.getSensitiveZposition(i, 1, 3) ) ; // + pFTD.getZoffset(i) ) ; ?? // FIXME taken common z using the first petal
+
      }
      
      
@@ -1331,22 +1371,53 @@ void MarlinCED::drawGEARDetector(){
    //note: if both try blocks fail, the ftd vectors simply will be empty and no disks will be drawn
    //============================================================================================================
    
-   //-- VXD Parameters--
-   const gear::VXDParameters& pVXDDetMain = Global::GEAR->getVXDParameters();
-   const gear::VXDLayerLayout& pVXDLayerLayout = pVXDDetMain.getVXDLayerLayout();
-   
-   int nLayersVTX = pVXDLayerLayout.getNLayers();
-   
-   float rad2deg = 180.0 / M_PI;
-   
-   //SIT
-   const gear::GearParameters& pSITDet = Global::GEAR->getGearParameters("SIT");
-   
-   const DoubleVec& rSIT  = pSITDet.getDoubleVals("SITLayerRadius")  ;
-   const DoubleVec& lSIT  = pSITDet.getDoubleVals("SITLayerHalfLength") ;
-   // only in ILD_01  
-   //   const DoubleVec& thSIT = pSITDet.getDoubleVals("SITLayerThickness") ; // SITSupportLayerThickness ?
 
+   //-- VXD Parameters--
+   int nLayersVTX = 0 ;
+   const gear::VXDParameters* pVXDDetMain;
+   const gear::VXDLayerLayout* pVXDLayerLayout;
+
+   try{
+     pVXDDetMain = &Global::GEAR->getVXDParameters();
+     pVXDLayerLayout = &(pVXDDetMain->getVXDLayerLayout());
+     nLayersVTX = pVXDLayerLayout->getNLayers();
+   }
+   catch( gear::UnknownParameterException& e){
+   }
+   
+
+   //-- SIT Parameters--
+   int nLayersSIT = 0 ;
+   const gear::ZPlanarParameters* pSITDetMain;
+   const gear::ZPlanarLayerLayout* pSITLayerLayout;
+
+   try{
+     pSITDetMain = &Global::GEAR->getSITParameters();
+     pSITLayerLayout = &(pSITDetMain->getZPlanarLayerLayout());
+     nLayersSIT = pSITLayerLayout->getNLayers();
+   }
+   catch( gear::UnknownParameterException& e){
+   }
+      
+
+
+   float rad2deg = 180.0 / M_PI;
+   DoubleVec rSIT ;  
+   DoubleVec lSIT ;
+
+   //old SIT using cylinders   
+   try{
+     const gear::GearParameters& pSITDet = Global::GEAR->getGearParameters("SIT");
+     
+     const DoubleVec& rSIT_temp  = pSITDet.getDoubleVals("SITLayerRadius")  ;
+     const DoubleVec& lSIT_temp  = pSITDet.getDoubleVals("SITLayerHalfLength") ;
+     // only in ILD_01  
+     //   const DoubleVec& thSIT = pSITDet.getDoubleVals("SITLayerThickness") ; // SITSupportLayerThickness ?
+     std::copy( rSIT_temp.begin() , rSIT_temp.end() , std::back_inserter(  rSIT )  ) ;
+     std::copy( lSIT_temp.begin() , lSIT_temp.end() , std::back_inserter(  lSIT )  ) ;
+   }
+   catch( gear::UnknownParameterException& e){
+   }
 
    
    // ======= ================================================================
@@ -1442,17 +1513,17 @@ void MarlinCED::drawGEARDetector(){
    
    for (int i=0; i<nLayersVTX; ++i) {
      
-     int nLadders = pVXDLayerLayout.getNLadders(i);
+     int nLadders = pVXDLayerLayout->getNLadders(i);
      
-     float _ladder_phi0 = float(pVXDLayerLayout.getPhi0(i));
+     float _ladder_phi0 = float(pVXDLayerLayout->getPhi0(i));
      
-     float _sensitive_distance = float(pVXDLayerLayout.getSensitiveDistance(i));
-     float _sensitive_thickness = float(pVXDLayerLayout.getSensitiveThickness(i));
-     float _sensitive_width = float(pVXDLayerLayout.getSensitiveWidth(i));
+     float _sensitive_distance = float(pVXDLayerLayout->getSensitiveDistance(i));
+     float _sensitive_thickness = float(pVXDLayerLayout->getSensitiveThickness(i));
+     float _sensitive_width = float(pVXDLayerLayout->getSensitiveWidth(i));
 
-     float _sensitive_length = float(pVXDLayerLayout.getSensitiveLength(i)  * 2.  ); // lenght is half length really !!!
+     float _sensitive_length = float(pVXDLayerLayout->getSensitiveLength(i)  * 2.  ); // lenght is half length really !!!
 
-     float _sensitive_offset = float (pVXDLayerLayout.getSensitiveOffset(i));
+     float _sensitive_offset = float (pVXDLayerLayout->getSensitiveOffset(i));
      
      float currPhi;
      float angleLadders = 2*M_PI / nLadders;
@@ -1487,6 +1558,59 @@ void MarlinCED::drawGEARDetector(){
      }
    }
    
+
+   //------------------ draw SIT Planar -------------------------
+   
+   
+   for (int i=0; i<nLayersSIT; ++i) {
+     
+     int nLadders = pSITLayerLayout->getNLadders(i);
+     
+     float _ladder_phi0 = float(pSITLayerLayout->getPhi0(i));
+     
+     float _sensitive_distance = float(pSITLayerLayout->getSensitiveDistance(i));
+     float _sensitive_thickness = float(pSITLayerLayout->getSensitiveThickness(i));
+     float _sensitive_width = float(pSITLayerLayout->getSensitiveWidth(i));
+
+     float _sensitive_length = float(pSITLayerLayout->getSensitiveLength(i)  * 2.  ); // lenght is half length really !!!
+
+     float _sensitive_offset = float (pSITLayerLayout->getSensitiveOffset(i));
+     
+     float currPhi;
+     float angleLadders = 2*M_PI / nLadders;
+     float cosphi, sinphi;
+     
+     _sensitive_distance +=0.5* _sensitive_thickness;
+     
+     for (int j=0; j<nLadders; ++j) {
+       
+       currPhi = _ladder_phi0 + (angleLadders * j);
+       cosphi = cos(currPhi);
+       sinphi = sin(currPhi);
+       
+       double  sizes[3] ;
+       double  center[3] ;
+       unsigned int color = 0xFFFFFF;
+       
+       center[0] = (_sensitive_distance*cosphi - _sensitive_offset*sinphi);
+       center[1] = (_sensitive_distance*sinphi + _sensitive_offset*cosphi);
+       center[2] = 0.0;
+       sizes[0]  = _sensitive_thickness;
+       sizes[1]  = _sensitive_width;
+       sizes[2]  = _sensitive_length ;
+       
+       double rotate[3];
+       rotate[0] = 0.0;
+       rotate[1] = 0.0;
+       rotate[2] = currPhi*rad2deg;
+       
+       ced_geobox_r( sizes, center, rotate, color, sitLayer);
+
+     }
+   }
+   
+
+
    //-----------------------------------------------------------
 
    std::vector<CEDGeoTube> gTV ; 
@@ -1536,9 +1660,10 @@ void MarlinCED::drawGEARDetector(){
      gTV.push_back( CEDGeoTube( r_max_lhcal,        r_min_lhcal,                40, 40,    0., 0, thick_lhcal, -shift_lhcal_z_minus,  fcalCol , fcalLayer ,0,0) ) ;  //   LHCAL -Z      
    }
    
-   gTV.push_back( CEDGeoTube( r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal,  shift_lcal_z_plus,   fcalCol, fcalLayer ,0,0) ) ; //    LCAL +Z
-   gTV.push_back( CEDGeoTube( r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal, -shift_lcal_z_minus,  fcalCol, fcalLayer ,0,0) ) ;  //   LCAL -Z      
-   
+   if ( showLCal ){
+     gTV.push_back( CEDGeoTube( r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal,  shift_lcal_z_plus,   fcalCol, fcalLayer ,0,0) ) ; //    LCAL +Z
+     gTV.push_back( CEDGeoTube( r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal, -shift_lcal_z_minus,  fcalCol, fcalLayer ,0,0) ) ;  //   LCAL -Z      
+   }
    
    
     if(showYoke){
@@ -1585,7 +1710,7 @@ void MarlinCED::drawGEARDetector(){
      set_layer_description("LCAL, LHcal",fcalLayer );
    }else if(showBeamcal){
      set_layer_description("LCAL, Beamcal",fcalLayer );
-   }else{
+   }else if(showLCal){
      set_layer_description("LCAL",fcalLayer );
    }
    
