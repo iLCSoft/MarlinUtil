@@ -115,6 +115,8 @@ void CEDPickingHandler::update(LCEvent *evt){
   //default print functions
   printDefaultMap.insert(std::make_pair(LCIO::MCPARTICLE,&defaultOutputFunction<MCParticle>));
   printDefaultMap.insert(std::make_pair(LCIO::TRACKERHIT, &defaultOutputFunction<TrackerHit>));
+  printDefaultMap.insert(std::make_pair(LCIO::TRACKERHITPLANE, &defaultOutputFunction<TrackerHitPlane>));
+  printDefaultMap.insert(std::make_pair(LCIO::TRACKERHITZCYLINDER, &defaultOutputFunction<TrackerHitZCylinder>));
   printDefaultMap.insert(std::make_pair(LCIO::SIMTRACKERHIT, &defaultOutputFunction<SimTrackerHit>));
   printDefaultMap.insert(std::make_pair(LCIO::CALORIMETERHIT, &defaultOutputFunction<CalorimeterHit>));
   printDefaultMap.insert(std::make_pair(LCIO::SIMCALORIMETERHIT, &defaultOutputFunction<SimCalorimeterHit>));
@@ -1562,53 +1564,53 @@ void MarlinCED::drawGEARDetector(){
   //------------------ draw SIT Planar -------------------------
   
   
-  for (int i=0; i<nLayersSIT; ++i) {
+  // for (int i=0; i<nLayersSIT; ++i) {
     
-    int nLadders = pSITLayerLayout->getNLadders(i);
+  //   int nLadders = pSITLayerLayout->getNLadders(i);
     
-    float _ladder_phi0 = float(pSITLayerLayout->getPhi0(i));
+  //   float _ladder_phi0 = float(pSITLayerLayout->getPhi0(i));
     
-    float _sensitive_distance = float(pSITLayerLayout->getSensitiveDistance(i));
-    float _sensitive_thickness = float(pSITLayerLayout->getSensitiveThickness(i));
-    float _sensitive_width = float(pSITLayerLayout->getSensitiveWidth(i));
+  //   float _sensitive_distance = float(pSITLayerLayout->getSensitiveDistance(i));
+  //   float _sensitive_thickness = float(pSITLayerLayout->getSensitiveThickness(i));
+  //   float _sensitive_width = float(pSITLayerLayout->getSensitiveWidth(i));
     
-    float _sensitive_length = float(pSITLayerLayout->getSensitiveLength(i)  * 2.  ); // lenght is half length really !!!
+  //   float _sensitive_length = float(pSITLayerLayout->getSensitiveLength(i)  * 2.  ); // lenght is half length really !!!
     
-    float _sensitive_offset = float (pSITLayerLayout->getSensitiveOffset(i));
+  //   float _sensitive_offset = float (pSITLayerLayout->getSensitiveOffset(i));
     
-    float currPhi;
-    float angleLadders = 2*M_PI / nLadders;
-    float cosphi, sinphi;
+  //   float currPhi;
+  //   float angleLadders = 2*M_PI / nLadders;
+  //   float cosphi, sinphi;
     
-    _sensitive_distance +=0.5* _sensitive_thickness;
+  //   _sensitive_distance +=0.5* _sensitive_thickness;
     
-    for (int j=0; j<nLadders; ++j) {
+  //   for (int j=0; j<nLadders; ++j) {
       
-      currPhi = _ladder_phi0 + (angleLadders * j);
-      cosphi = cos(currPhi);
-      sinphi = sin(currPhi);
+  //     currPhi = _ladder_phi0 + (angleLadders * j);
+  //     cosphi = cos(currPhi);
+  //     sinphi = sin(currPhi);
       
-      double  sizes[3] ;
-      double  center[3] ;
-      unsigned int color = 0xFFFFFF;
+  //     double  sizes[3] ;
+  //     double  center[3] ;
+  //     unsigned int color = 0xFFFFFF;
       
-      center[0] = (_sensitive_distance*cosphi - _sensitive_offset*sinphi);
-      center[1] = (_sensitive_distance*sinphi + _sensitive_offset*cosphi);
-      center[2] = 0.0;
-      sizes[0]  = _sensitive_thickness;
-      sizes[1]  = _sensitive_width;
-      sizes[2]  = _sensitive_length ;
+  //     center[0] = (_sensitive_distance*cosphi - _sensitive_offset*sinphi);
+  //     center[1] = (_sensitive_distance*sinphi + _sensitive_offset*cosphi);
+  //     center[2] = 0.0;
+  //     sizes[0]  = _sensitive_thickness;
+  //     sizes[1]  = _sensitive_width;
+  //     sizes[2]  = _sensitive_length ;
       
-      double rotate[3];
-      rotate[0] = 0.0;
-      rotate[1] = 0.0;
-      rotate[2] = currPhi*rad2deg;
+  //     double rotate[3];
+  //     rotate[0] = 0.0;
+  //     rotate[1] = 0.0;
+  //     rotate[2] = currPhi*rad2deg;
       
-      ced_geobox_r( sizes, center, rotate, color, sitLayer);
-      //      ced_geobox_r_solid( sizes, center, rotate, color, sitLayer);
+  //     ced_geobox_r( sizes, center, rotate, color, sitLayer);
+  //     //      ced_geobox_r_solid( sizes, center, rotate, color, sitLayer);
       
-    }
-  }
+  //   }
+  // }
   
   
   
@@ -1621,6 +1623,24 @@ void MarlinCED::drawGEARDetector(){
     gTV.push_back( CEDGeoTube( ftd_ri[i],          ftd_ro[i],  40,  40,   0.0   , 0, ftd_d[i]  ,  - ftd_z[i] ,   ftdCol, ftdLayer, 0,0 ) ) ;  //  FTD    
   }
   
+  // new sit
+  for (int i=0; i<nLayersSIT; i+=2  ) {
+    
+   int nl_sit = pSITLayerLayout->getNLadders( i );
+   float phi0_sit = float( pSITLayerLayout->getPhi0( i ) );
+   float r_inn_sit = float( pSITLayerLayout->getSensitiveDistance( i  )  ) / cos( M_PI / nl_sit )  ;
+   float r_out_sit = float( pSITLayerLayout->getSensitiveDistance( i+1 ) ) / cos( M_PI / nl_sit )  ;
+   float z_sit = float( pSITLayerLayout->getSensitiveLength( i ) ) ; 
+
+   gTV.push_back( CEDGeoTube( r_out_sit,     r_inn_sit,    nl_sit , nl_sit , phi0_sit , phi0_sit,  z_sit,   -z_sit,          sitCol, sitLayer ,0,1) ) ;  //  SIT
+    
+ }
+ //old SIT
+ for(unsigned i=0,N= rSIT.size() ; i<N ; ++i){
+   gTV.push_back( CEDGeoTube( rSIT[i],          rSIT[i]-0.1 ,                 40, 40,  0.0, 0, lSIT[i],        -lSIT[i],            sitCol, sitLayer ,0,1) ) ;  //  SIT
+ }
+ 
+
   if(showBeamcal){
     gTV.push_back( CEDGeoTube( r_max_beamcal,      r_min_beamcal,              40, 40,    0., 0, thick_beamcal,  shift_beamcal_z_plus,   fcalCol, fcalLayer ,0,0) ) ; //    BEAMCAL +Z
     gTV.push_back( CEDGeoTube( r_max_beamcal,      r_min_beamcal,              40, 40, 0.,    0, thick_beamcal, -shift_beamcal_z_minus,  fcalCol, fcalLayer ,0,0) ) ;  //   BEAMCAL -Z      
@@ -1674,9 +1694,6 @@ void MarlinCED::drawGEARDetector(){
   }
   
   
-  for(unsigned i=0,N= rSIT.size() ; i<N ; ++i){
-    gTV.push_back( CEDGeoTube( rSIT[i],          rSIT[i]-0.1 ,                 40, 40,  0.0, 0, lSIT[i],        -lSIT[i],            sitCol, sitLayer ,0,1) ) ;  //  SIT
-  }
   
   // ========================================================================
   
