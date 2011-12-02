@@ -1388,6 +1388,19 @@ void MarlinCED::drawGEARDetector(){
   }
   
   
+  //-- SET Parameters--
+  int nLayersSET = 0 ;
+  const gear::ZPlanarParameters* pSETDetMain;
+  const gear::ZPlanarLayerLayout* pSETLayerLayout;
+  
+  try{
+    pSETDetMain = &Global::GEAR->getSETParameters();
+    pSETLayerLayout = &(pSETDetMain->getZPlanarLayerLayout());
+    nLayersSET = pSETLayerLayout->getNLayers();
+  }
+  catch( gear::UnknownParameterException& e){
+  }
+
   //-- SIT Parameters--
   int nLayersSIT = 0 ;
   const gear::ZPlanarParameters* pSITDetMain;
@@ -1489,6 +1502,7 @@ void MarlinCED::drawGEARDetector(){
   
   // colors used in Mokka ILD_00
   static const unsigned sitCol  = 0xdddddd ; // light grey
+  static const unsigned setCol  = 0xdddddd ; 
   static const unsigned tpcCol  = 0xf5f300 ;
   static const unsigned ecalCol = 0x7bf300 ;
   static const unsigned hcalCol = 0xc4c231 ;
@@ -1500,7 +1514,7 @@ void MarlinCED::drawGEARDetector(){
   // define layers for sub detectors
   static const int fDL = NUMBER_DATA_LAYER; //  first non data layer 
   static const unsigned  vxdLayer = fDL + 0 ;
-  static const unsigned  sitLayer = fDL + 1 ; // light grey
+  static const unsigned  sitLayer = fDL + 1 ; 
   static const unsigned  ftdLayer = fDL + 2 ;
   static const unsigned  tpcLayer = fDL + 3 ;
   static const unsigned ecalLayer = fDL + 4 ;
@@ -1508,6 +1522,7 @@ void MarlinCED::drawGEARDetector(){
   static const unsigned yokeLayer = fDL + 6 ;
   static const unsigned coilLayer = fDL + 7 ;
   static const unsigned fcalLayer = fDL + 8 ;
+  static const unsigned  setLayer = fDL + 9 ; 
   
   
   //------------------ draw VXD first -------------------------
@@ -1641,6 +1656,19 @@ void MarlinCED::drawGEARDetector(){
  }
  
 
+  // new set
+  for (int i=0; i<nLayersSET; i+=2  ) {
+    
+   int nl_set = pSETLayerLayout->getNLadders( i );
+   float phi0_set = float( pSETLayerLayout->getPhi0( i ) );
+   float r_inn_set = float( pSETLayerLayout->getSensitiveDistance( i  )  ) / cos( M_PI / nl_set )  ;
+   float r_out_set = float( pSETLayerLayout->getSensitiveDistance( i+1 ) ) / cos( M_PI / nl_set )  ;
+   float z_set = float( pSETLayerLayout->getSensitiveLength( i ) ) ; 
+
+   gTV.push_back( CEDGeoTube( r_out_set,     r_inn_set,    nl_set , nl_set , phi0_set , phi0_set,  z_set,   -z_set,          setCol, setLayer ,0,1) ) ;  //  SET
+    
+ }
+
   if(showBeamcal){
     gTV.push_back( CEDGeoTube( r_max_beamcal,      r_min_beamcal,              40, 40,    0., 0, thick_beamcal,  shift_beamcal_z_plus,   fcalCol, fcalLayer ,0,0) ) ; //    BEAMCAL +Z
     gTV.push_back( CEDGeoTube( r_max_beamcal,      r_min_beamcal,              40, 40, 0.,    0, thick_beamcal, -shift_beamcal_z_minus,  fcalCol, fcalLayer ,0,0) ) ;  //   BEAMCAL -Z      
@@ -1704,6 +1732,7 @@ void MarlinCED::drawGEARDetector(){
   set_layer_description("FTD", ftdLayer );
   set_layer_description("VXD", vxdLayer );
   set_layer_description("SIT", sitLayer );
+  set_layer_description("SET", setLayer );
   
   if(showTPC){
     set_layer_description("TPC", tpcLayer );
