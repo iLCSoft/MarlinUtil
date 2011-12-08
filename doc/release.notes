@@ -6,6 +6,17 @@
 
 
  --------
+| v01-05 |
+ -------- 
+
+    - added drawing of the SET
+    - added picking print funtions for TrackerHitPlane and TrackerHitZCylinder
+    - changed drawing of SIT to 3D shape with surface 
+    - modified to match change of MAX_LAYER to CED_MAX_LAYER in ced_cli.h (requires CED 1.4)
+    - added plannar SIT and protected against Gear exceptions for missing parameters
+
+
+ --------
 | v01-04 |
  -------- 
 
