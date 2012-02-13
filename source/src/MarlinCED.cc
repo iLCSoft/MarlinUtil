@@ -1319,32 +1319,40 @@ void MarlinCED::drawGEARDetector(){
         exit(1);
       }
       
+      int nsensors = pFTD.getNSensors(i) ;
+
       // create a disk to represent even number petals front side
       ftd_d .push_back( pFTD.getSensitiveThickness(i) ) ;
       ftd_ri.push_back( pFTD.getSensitiveRinner(i) ) ;
       ftd_ro.push_back( pFTD.getMaxRadius(i) ) ;
       ftd_z .push_back( pFTD.getSensitiveZposition(i, 0, 1) ) ; 
       
-      if(  pFTD.isDoubleSided(i) ) {
-	// create a disk to represent even number petals rear side
-	ftd_d .push_back( pFTD.getSensitiveThickness(i) ) ;
-	ftd_ri.push_back( pFTD.getSensitiveRinner(i) ) ;
-	ftd_ro.push_back( pFTD.getMaxRadius(i) ) ;
-	ftd_z .push_back( pFTD.getSensitiveZposition(i, 0, 2) ) ; 
-      }
       // create a disk to represent odd number petals front side
       ftd_d .push_back( pFTD.getSensitiveThickness(i) ) ;
       ftd_ri.push_back( pFTD.getSensitiveRinner(i) ) ;
       ftd_ro.push_back( pFTD.getMaxRadius(i) ) ;
       ftd_z .push_back( pFTD.getSensitiveZposition(i, 1, 1) ) ; 
+
       
-      if(  pFTD.isDoubleSided(i) ) {
-	// create a disk to represent odd number petals rear side
-	ftd_d .push_back( pFTD.getSensitiveThickness(i) ) ;
-	ftd_ri.push_back( pFTD.getSensitiveRinner(i) ) ;
-	ftd_ro.push_back( pFTD.getMaxRadius(i) ) ;
-	ftd_z .push_back( pFTD.getSensitiveZposition(i, 1, 2) ) ; 
+      if (pFTD.isDoubleSided(i)) {
+
+        // create a disk to represent even number petals rear side
+        ftd_d .push_back( pFTD.getSensitiveThickness(i) ) ;
+        ftd_ri.push_back( pFTD.getSensitiveRinner(i) ) ;
+        ftd_ro.push_back( pFTD.getMaxRadius(i) ) ;
+        ftd_z .push_back( pFTD.getSensitiveZposition(i, 0, (nsensors/2))+1 ) ; 
+        
+        
+        // create a disk to represent odd number petals rear side
+        ftd_d .push_back( pFTD.getSensitiveThickness(i) ) ;
+        ftd_ri.push_back( pFTD.getSensitiveRinner(i) ) ;
+        ftd_ro.push_back( pFTD.getMaxRadius(i) ) ;
+        ftd_z .push_back( pFTD.getSensitiveZposition(i, 1, (nsensors/2))+1 ) ; 
+
       }
+
+      
+      
     }
     
     
