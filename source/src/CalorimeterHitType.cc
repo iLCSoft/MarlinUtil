@@ -24,10 +24,10 @@ std::ostream& operator<<(std::ostream& os, const CHT& cht){
   }
   switch ( cht.layout() ) {
   case CHT::any    :  os << "any,    " ;    break ;
+  case CHT::ring   :  os << "ring,   " ;    break ;
   case CHT::endcap :  os << "endcap, " ;    break ;
   case CHT::barrel :  os << "barrel, " ;    break ;
   case CHT::plug   :  os << "plug,   " ;    break ;
-  case CHT::ring   :  os << "ring,   " ;    break ;
   default:  os << "  -  ," ;
   }
   os << " layer: " << cht.layer() ;
@@ -42,10 +42,10 @@ CHT::Layout layoutFromString(const std::string& name){
   std::string str( name ) ;
   std::transform( str.begin() , str.end() , str.begin(), ::tolower ) ;
 
+  if( str.find("ring" )   != std::string::npos )  return CHT::ring ;
+  if( str.find("plug" )   != std::string::npos )  return CHT::plug ;
   if( str.find("endcap" ) != std::string::npos )  return CHT::endcap ;
   if( str.find("barrel" ) != std::string::npos )  return CHT::barrel ;
-  if( str.find("plug" )   != std::string::npos )  return CHT::plug ;
-  if( str.find("ring" )   != std::string::npos )  return CHT::ring ;
 
   std::cout << " not found :" << str << " in " << name << std::endl;
   return CHT::any ;
