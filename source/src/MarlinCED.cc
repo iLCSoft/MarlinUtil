@@ -1580,7 +1580,10 @@ void MarlinCED::drawGEARDetector(){
       rotate[1] = 0.0;
       rotate[2] = currPhi*rad2deg;
       
-      ced_geobox_r( sizes, center, rotate, color, vxdLayer);
+      //ced_geobox_r( sizes, center, rotate, color, vxdLayer);
+
+      ced_geobox_r_ID( sizes, center, rotate, color, vxdLayer,0);
+      ced_geobox_r_solid( sizes, center, rotate, color, vxdLayer);
       
     }
   }
