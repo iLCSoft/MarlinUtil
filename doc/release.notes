@@ -5,6 +5,25 @@
 ================================
 
 
+ -----------
+| v01-05-01 |
+ -----------
+
+   bug fixes:
+
+       /MarlinUtil/trunk/source/src/MarlinCED.cc:
+
+            - updated for new GEAR attribute getNSensors
+            - updated for new definition of FDT sensors (max #2)
+
+            - changed vertex draw method from ced_gebox_r to ced_gebox_r_solid to ensure transparency
+       
+
+       /MarlinUtil/trunk/source/src/CalorimeterHitType.cc:
+
+            - changed order of ring and endcap in order to get HcalEndCapRingsCollection as ring layout (reported by G.Grenier)
+
+
  --------
 | v01-05 |
  -------- 
