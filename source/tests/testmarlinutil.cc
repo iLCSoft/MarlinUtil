@@ -135,7 +135,7 @@ int main(){
     LCPlane3D p1(1,1,1,-1);
     LCVector3D po1(0,0,0), ax1(1,1,1);
     LCLine3D l1(po1,ax1);
-    bool yesno;
+    bool yesno(false);
 
     std::cout << "s inter: " << l1.intersectionWithPlane(p1,yesno) << " " << yesno << std::endl;
     std::cout << "point: " << l1.position(l1.intersectionWithPlane(p1,yesno)) << std::endl;

@@ -14,13 +14,17 @@
 #include <lcio.h>
 #include <UTIL/LCTypedVector.h>
 #include <UTIL/LCTOOLS.h>
+#include <UTIL/Operators.h>
 #include <EVENT/LCCollection.h>
 #include <EVENT/MCParticle.h>
 #include <EVENT/Track.h>
 #include <EVENT/Cluster.h>
+#include <EVENT/Vertex.h>
 #include <EVENT/ReconstructedParticle.h>
 #include <EVENT/SimTrackerHit.h>
 #include <EVENT/SimCalorimeterHit.h>
+#include <EVENT/TrackerHit.h>
+#include <EVENT/CalorimeterHit.h>
 
 #include "IMPL/ClusterImpl.h"
 
