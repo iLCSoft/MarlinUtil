@@ -179,7 +179,7 @@ public :
   void addHit( GenericHit<T>* hit ) {
     
     hit->second = this ;
-    push_back( hit ) ;
+    this->push_back( hit ) ;
 
   }
 
