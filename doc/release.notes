@@ -8,7 +8,10 @@
 | v01-05-02 |
  -----------
 
-    fixed warnings and made compatible w/ clang++
+     - bug fix MarlinCED: high pt track straight line was sometimes
+                           drawn in wrong direction
+                           
+     - fixed warnings and made compatible w/ clang++
 
 
  -----------
