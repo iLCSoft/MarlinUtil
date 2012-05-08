@@ -654,9 +654,12 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
     }
     else k = kr;
     
-    if (k < 0.0 && k!=kz) {
-      streamlog_out(DEBUG) << "Error in 'MarlinCED::drawHelix()': No intersection point with the outer cylinder shell (rmax,zmax) found" << std::endl;
-      return;
+    if (k < 0.0 ) {
+      streamlog_out(DEBUG2) << "MarlinCED::drawHelix(): negative intersection parameter - will revert sign ... " 
+			    << std::endl;
+      //      return;
+      //fg: k cannot be negativ ( particle is moving along its 3-momentum ....)
+      k = -k ; 
     }
     
     float xEnd = x + (k*px)/absP;
@@ -668,6 +671,20 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
       return;
     }
     
+    
+    streamlog_out(DEBUG1) << "MarlinCED::drawHelix()' - pt : " << pt << " |p| = " << absP 
+			  << ", x " << x 
+			  << ", y " << y 
+			  << ", z " << z 
+			  << ", px " << px 
+			  << ", py " << py 
+			  << ", pz " << pz
+			  << ", xEnd " << xEnd 
+			  << ", yEnd " << yEnd 
+			  << ", zEnd " << zEnd
+			  << std::endl ;
+      
+
     ced_line_ID(x, y, z, xEnd, yEnd, zEnd , marker , size, col, id);
     
   }
