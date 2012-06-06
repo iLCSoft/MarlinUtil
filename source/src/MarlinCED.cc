@@ -1202,10 +1202,10 @@ void MarlinCED::drawGEARDetector(){
   bool showLCal = false ;
   
   
-  float r_min_lcal;
-  float r_max_lcal;
-  float z_min_lcal;
-  float z_max_lcal;
+  float r_min_lcal=0.0;
+  float r_max_lcal=0.0;
+  float z_min_lcal=0.0;
+  float z_max_lcal=0.0;
   
   try{
     const gear::CalorimeterParameters& pLCal = 
@@ -1403,8 +1403,8 @@ void MarlinCED::drawGEARDetector(){
   
   //-- VXD Parameters--
   int nLayersVTX = 0 ;
-  const gear::VXDParameters* pVXDDetMain;
-  const gear::VXDLayerLayout* pVXDLayerLayout;
+  const gear::VXDParameters* pVXDDetMain = 0;
+  const gear::VXDLayerLayout* pVXDLayerLayout = 0;
   
   try{
     pVXDDetMain = &Global::GEAR->getVXDParameters();
@@ -1417,8 +1417,8 @@ void MarlinCED::drawGEARDetector(){
   
   //-- SET Parameters--
   int nLayersSET = 0 ;
-  const gear::ZPlanarParameters* pSETDetMain;
-  const gear::ZPlanarLayerLayout* pSETLayerLayout;
+  const gear::ZPlanarParameters* pSETDetMain = 0;
+  const gear::ZPlanarLayerLayout* pSETLayerLayout =0;
   
   try{
     pSETDetMain = &Global::GEAR->getSETParameters();
@@ -1430,8 +1430,8 @@ void MarlinCED::drawGEARDetector(){
 
   //-- SIT Parameters--
   int nLayersSIT = 0 ;
-  const gear::ZPlanarParameters* pSITDetMain;
-  const gear::ZPlanarLayerLayout* pSITLayerLayout;
+  const gear::ZPlanarParameters* pSITDetMain = 0;
+  const gear::ZPlanarLayerLayout* pSITLayerLayout = 0;
   
   try{
     pSITDetMain = &Global::GEAR->getSITParameters();
