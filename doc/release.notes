@@ -5,6 +5,14 @@
 ================================
 
  -----------
+| v01-05-03 |
+ -----------
+
+    - fixed drawing of Hcal endcap (outer radius in gear file)
+    - fixed uninitialised variables
+
+
+ -----------
 | v01-05-02 |
  -----------
     
