@@ -1488,7 +1488,10 @@ void MarlinCED::drawGEARDetector(){
   float shift_hcalr_z_plus  = z_min_hcal_ring;
   float shift_hcalr_z_minus = z_min_hcal_ring + 2.0*thick_hcal_ring;
   //   float r_inn_hcal_ecap    = r_min_hcal_ecap/Cos4;
-  float r_out_hcal_ecap    = r_max_hcal_ecap/Cos8;
+
+  //  float r_out_hcal_ecap    = r_max_hcal_ecap/Cos8;
+  float r_out_hcal_ecap    = r_max_hcal_ecap  ; //fg: the encap driver writes out the outer radius...
+ 
   float thick_hcal_ecap    = 0.5*(z_max_hcal_ecap - 
                                   z_min_hcal_ecap + 20.0); // +20 by hand to see hits inside
   float shift_hcal_z_plus  = z_min_hcal_ecap;
