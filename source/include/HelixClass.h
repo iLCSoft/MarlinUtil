@@ -207,17 +207,17 @@ class HelixClass {
     float getDistanceToPoint(const std::vector<float>& xPoint, float distCut);
 
     /**
-     * This method calculates coordinates of helix intersection <br>
-     * with cyllinder. <br>
+     * This method calculates coordinates of both intersection <br>
+     * of the helix with a cylinder. <br>
      * Rotational symmetry with respect to z axis is assumed,  <br>
-     * meaning that cyllinder axis corresponds to the z axis <br>
+     * meaning that cylinder axis corresponds to the z axis <br>
      * of reference frame. <br>
      * Inputs : <br> 
-     * Radius - radius of cyllinder. <br>
-     * ref[3] - reference point on the helix. <br>
+     * Radius - radius of cylinder. <br>
+     * ref[3] - point of closest approach to the origin of the helix. <br>
      * Output : <br>
-     * point[3] - coordinates of intersection point. <br>
-     * Method returs also generic time, defined as the <br>
+     * point[6] - coordinates of intersection point. <br>
+     * Method returns also generic time, defined as the <br>
      * ratio of helix length from reference point to the intersection <br>
      * point to the particle momentum <br>
      */
