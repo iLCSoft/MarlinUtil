@@ -84,7 +84,10 @@ class CEDPickingHandler{
 
         template <class T>
         static void defaultOutputFunction(const LCObject *obj){
-            streamlog_out(MESSAGE) << *(T*)obj;
+
+          streamlog_out(MESSAGE) << " Picked object " << obj << " with id " << obj->id() << std::endl;
+          streamlog_out(MESSAGE) << *(T*)obj;
+
         }
 
         /** Returns 1 if a key was been pressed, otherwise 0. 
