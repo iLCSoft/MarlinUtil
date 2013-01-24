@@ -278,7 +278,7 @@ void MarlinCED::write_layer_description(void){
   unsigned int i;
   //for(i=0;i<25;i++){
   for(i=0; i<_descs.size(); i++){
-    //std::cout<<"LAYER " << i << ": "<< _descs.at(i) << std::endl;
+//    std::cout<<"LAYER " << i << ": "<< _descs.at(i) << std::endl;
     ced_describe_layer(_descs.at(i).c_str(), i);
   }
 }
@@ -1084,7 +1084,7 @@ void MarlinCED::drawGEARDetector(){
   //
   // based on original code from V.Morgunov, MPI
   //
-  
+
   //############ TPC #########################
   bool showTPC=true;
   
@@ -1106,6 +1106,7 @@ void MarlinCED::drawGEARDetector(){
   
   // ########## ECAL #####################
   bool showECAL = true;
+  bool showECALEndcap = true;
   float r_min_ecal_bar = 0;
   float r_max_ecal_bar = 0;
   //float z_min_ecal_bar = 0; 
@@ -1129,6 +1130,7 @@ void MarlinCED::drawGEARDetector(){
     z_max_ecal_ecap = pECAL_E.getExtent()[3];
   }catch(gear::UnknownParameterException& e){
     showECAL=false;
+    showECALEndcap=false;
   }
   
   
@@ -1137,6 +1139,8 @@ void MarlinCED::drawGEARDetector(){
   
   //############# HCAL ##########################
   bool showHCAL=true;
+  bool showHCALRing=true;
+  bool showHCALEndcap=true;
   float r_min_hcal_bar =0;
   float r_max_hcal_bar =0;
   //    float z_min_hcal_bar =0;
@@ -1172,6 +1176,8 @@ void MarlinCED::drawGEARDetector(){
     z_max_hcal_ecap = pHCAL_E.getExtent()[3];
   }catch(gear::UnknownParameterException& e){
     showHCAL=false;
+    showHCALRing=false;
+    showHCALEndcap=false;
   }
   
   
@@ -1548,11 +1554,14 @@ void MarlinCED::drawGEARDetector(){
   static const unsigned  ftdLayer = fDL + 2 ;
   static const unsigned  tpcLayer = fDL + 3 ;
   static const unsigned ecalLayer = fDL + 4 ;
-  static const unsigned hcalLayer = fDL + 5 ;
-  static const unsigned yokeLayer = fDL + 6 ;
-  static const unsigned coilLayer = fDL + 7 ;
-  static const unsigned fcalLayer = fDL + 8 ;
-  static const unsigned  setLayer = fDL + 9 ; 
+  static const unsigned ecalEndcapLayer = fDL + 5 ;
+  static const unsigned hcalLayer = fDL + 6 ;
+  static const unsigned hcalRingLayer = fDL + 7 ;
+  static const unsigned hcalEndcapLayer = fDL + 8 ;
+  static const unsigned yokeLayer = fDL + 9 ;
+  static const unsigned coilLayer = fDL + 10 ;
+  static const unsigned fcalLayer = fDL + 11 ;
+  static const unsigned  setLayer = fDL + 12 ; 
   
   
   //------------------ draw VXD first -------------------------
@@ -1714,16 +1723,22 @@ void MarlinCED::drawGEARDetector(){
   
   if(showECAL){
     gTV.push_back( CEDGeoTube( r_out_ecal_bar,     r_inn_ecal_bar,              8,  8, 22.5, 0,  z_max_ecal_bar,   -z_max_ecal_bar,       ecalCol, ecalLayer ,0,1) ) ; //  ECAL Barrel
-    gTV.push_back( CEDGeoTube( r_out_ecal_ecap,    0.5*(r_max_lhcal+r_max_lcal),8, 40, 22.5, 0,  thick_ecal_ecap,   shift_ecal_z_plus,    ecalCol, ecalLayer ,0,0) ) ; //  endcap ECAL +Z
-    gTV.push_back( CEDGeoTube( r_out_ecal_ecap,    0.5*(r_max_lhcal+r_max_lcal),8, 40, 22.5, 0,  thick_ecal_ecap,  -shift_ecal_z_minus,   ecalCol, ecalLayer ,0,0) ) ; //  endcap ECAL -Z
+  }
+  if(showECALEndcap) {
+    gTV.push_back( CEDGeoTube( r_out_ecal_ecap,    0.5*(r_max_lhcal+r_max_lcal),8, 40, 22.5, 0,  thick_ecal_ecap,   shift_ecal_z_plus,    ecalCol, ecalEndcapLayer ,0,0) ) ; //  endcap ECAL +Z
+    gTV.push_back( CEDGeoTube( r_out_ecal_ecap,    0.5*(r_max_lhcal+r_max_lcal),8, 40, 22.5, 0,  thick_ecal_ecap,  -shift_ecal_z_minus,   ecalCol, ecalEndcapLayer ,0,0) ) ; //  endcap ECAL -Z
   }
   
   if(showHCAL){
     gTV.push_back( CEDGeoTube( r_out_hcal_bar,     r_inn_hcal_bar,             16,  8, 11.25, 11.25, z_max_hcal_bar,  -z_max_hcal_bar,      hcalCol, hcalLayer ,0,1) ) ; //  HCAL Barrel
-    gTV.push_back( CEDGeoTube( r_out_hcal_ring,    r_inn_hcal_ring,             8,  8,  22.5,     0, thick_hcal_ring,  shift_hcalr_z_plus,  hcalCol, hcalLayer ,0,1) ) ; //  ring HCAL +Z
-    gTV.push_back( CEDGeoTube( r_out_hcal_ring,    r_inn_hcal_ring,             8,  8,  22.5,     0, thick_hcal_ring, -shift_hcalr_z_minus, hcalCol, hcalLayer ,0,1) ) ; //  ring HCAL -Z 
-    gTV.push_back( CEDGeoTube( r_out_hcal_ecap,    r_min_hcal_ecap,             8, 40,  22.5,     0, thick_hcal_ecap,  shift_hcal_z_plus,   hcalCol, hcalLayer ,0,1) ) ; //  endcap HCAL +Z
-    gTV.push_back( CEDGeoTube( r_out_hcal_ecap,    r_min_hcal_ecap,             8, 40,  22.5,     0, thick_hcal_ecap, -shift_hcal_z_minus,  hcalCol, hcalLayer ,0,1) ) ;  //  endcap HCAL -Z      
+  }
+  if(showHCALRing) {
+    gTV.push_back( CEDGeoTube( r_out_hcal_ring,    r_inn_hcal_ring,             8,  8,  22.5,     0, thick_hcal_ring,  shift_hcalr_z_plus,  hcalCol, hcalRingLayer ,0,1) ) ; //  ring HCAL +Z
+    gTV.push_back( CEDGeoTube( r_out_hcal_ring,    r_inn_hcal_ring,             8,  8,  22.5,     0, thick_hcal_ring, -shift_hcalr_z_minus, hcalCol, hcalRingLayer ,0,1) ) ; //  ring HCAL -Z 
+  }
+  if(showHCALEndcap) {
+    gTV.push_back( CEDGeoTube( r_out_hcal_ecap,    r_min_hcal_ecap,             8, 40,  22.5,     0, thick_hcal_ecap,  shift_hcal_z_plus,   hcalCol, hcalEndcapLayer ,0,1) ) ; //  endcap HCAL +Z
+    gTV.push_back( CEDGeoTube( r_out_hcal_ecap,    r_min_hcal_ecap,             8, 40,  22.5,     0, thick_hcal_ecap, -shift_hcal_z_minus,  hcalCol, hcalEndcapLayer ,0,1) ) ;  //  endcap HCAL -Z      
   }
   
   if(showCoil){
@@ -1773,8 +1788,17 @@ void MarlinCED::drawGEARDetector(){
   if(showECAL){
     set_layer_description("ECAL", ecalLayer );
   }
+  if(showECALEndcap){
+    set_layer_description("ECALEndcap", ecalEndcapLayer );
+  }
   if(showHCAL){
     set_layer_description("HCAL", hcalLayer );
+  }
+  if(showHCALRing){
+    set_layer_description("HCALRing", hcalRingLayer );
+  }
+  if(showHCALEndcap){
+    set_layer_description("HCALEndcap", hcalEndcapLayer );
   }
   if(showCoil){
     set_layer_description("Coil", coilLayer );
