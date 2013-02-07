@@ -2,6 +2,9 @@
 
 #include <cfloat>
 
+// make gcc > 4.7 compliant
+#include <unistd.h>
+
 
 using namespace lcio;
 

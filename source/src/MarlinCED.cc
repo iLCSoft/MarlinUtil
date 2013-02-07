@@ -1,6 +1,5 @@
 #include "MarlinCED.h"
 
-
 // --- GEAR ----
 #include <gear/GEAR.h>
 #include <gear/BField.h>
@@ -70,7 +69,8 @@
  */
 using namespace UTIL;
 
-
+// make gcc > 4.7 compliant
+#include <unistd.h>
 
 //SJA:FIXED:added to make gcc4.3 compliant
 #include <cstdlib>
