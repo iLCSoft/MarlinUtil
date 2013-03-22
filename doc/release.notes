@@ -3,6 +3,12 @@
  release notes for MarlinUtil
 
 ================================
+ ---------
+| v01-06  |
+ ---------
+		- Akiya Miyamoto:
+	   implemented flags to turn On and Off geometry of EcalBarrel, EcalEndcap, HcalBarrel, HcalRing, HcalEndcap individually.
+
 
  -----------
 | v01-05-03 |
