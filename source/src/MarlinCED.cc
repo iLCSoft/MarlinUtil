@@ -8,7 +8,6 @@
 #include <gear/TPCParameters.h>
 #include <gear/CalorimeterParameters.h>
 #include <gear/LayerLayout.h>
-#include <gear/PadRowLayout2D.h>
 #include <gear/SiPlanesParameters.h>
 #include <gear/SiPlanesLayerLayout.h>
 #include <gear/VXDLayerLayout.h>
@@ -434,10 +433,12 @@ void MarlinCED::printAndDrawMCFamily(MCParticle* part, LCEvent* evt, unsigned in
   
   //int colour = 0xff00ff;
   int colour = abs(0xff00ff-abs((daughterIndent-motherIndent)*128));
-  double endpoint_r = gearTPC.getPadLayout().getPlaneExtent()[1];
+
+  double endpoint_r = gearTPC.getPlaneExtent()[1];
   double endpoint_z = gearTPC.getMaxDriftLength();
-  if(gearTPC.getPadLayout().getPlaneExtent()[1] > sqrt(part->getEndpoint()[0]*part->getEndpoint()[0] + part->getEndpoint()[1]*part->getEndpoint()[1]))
-    endpoint_r = sqrt(part->getEndpoint()[0]*part->getEndpoint()[0] + part->getEndpoint()[1]*part->getEndpoint()[1]);
+  double part_endpoint = sqrt(part->getEndpoint()[0]*part->getEndpoint()[0] + part->getEndpoint()[1]*part->getEndpoint()[1]);
+  if(endpoint_r > part_endpoint)
+     endpoint_r = part_endpoint ;
   if(gearTPC.getMaxDriftLength() > part->getEndpoint()[2])
     endpoint_z = part->getEndpoint()[2];
   if(part->getPDG() < 81 || part->getPDG() > 100) {
@@ -1094,8 +1095,9 @@ void MarlinCED::drawGEARDetector(){
   
   try{
     const gear::TPCParameters&  pTPC      = Global::GEAR->getTPCParameters();
-    const gear::PadRowLayout2D& padLayout = pTPC.getPadLayout();
-    const gear::DoubleVec&      planeExt  = padLayout.getPlaneExtent();
+
+    // Multi-module support
+    const gear::DoubleVec&      planeExt  = pTPC.getPlaneExtent();
     r_min_tpc = planeExt[0];
     r_max_tpc = planeExt[1];
     z_max_tpc = pTPC.getMaxDriftLength();
