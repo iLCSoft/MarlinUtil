@@ -3,6 +3,12 @@
  release notes for MarlinUtil
 
 ================================
+ ------------
+| v01-06-01  |
+ ------------
+    - adopted for multi-module support in MarlinCED for the TPC detector
+
+
  ---------
 | v01-06  |
  ---------
