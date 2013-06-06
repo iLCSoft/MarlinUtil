@@ -233,6 +233,7 @@ class MarlinCED {
 
   /** Draws the detector using the geometry parameters from GEAR */
   static void drawGEARDetector() ;
+  static void drawDetectorFromGear( gear::GearMgr* gearMgr ) ;
 
   /** Draws the telescope using the geometry parameters from GEAR */
   static void drawGEARTelescope() ;
@@ -524,6 +525,13 @@ protected:
   
 } ;
 
+
+
+/** Simple helper function that allows to call drawing of the detector from a gear file
+ *  outside of a Marlin program.
+ */
+extern "C"
+void drawDetectorFromGearFile( const char* fname ) ;
 
 
 #endif

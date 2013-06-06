@@ -16,7 +16,9 @@
 #include <gear/FTDLayerLayout.h>
 #include <gear/ZPlanarParameters.h>
 #include <gear/ZPlanarLayerLayout.h>
-
+#include "gearxml/GearXML.h"
+//#include "gearxml/MergeXML.h"
+#include "gearimpl/GearMgrImpl.h"
 
 #include <LCGeometryTypes.h>
 #include "ced_cli.h"
@@ -1082,6 +1084,13 @@ void MarlinCED::drawGEARTelescope() {
 
 
 void MarlinCED::drawGEARDetector(){
+
+  drawDetectorFromGear( Global::GEAR ) ;
+}
+
+
+
+void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
   //
   // based on original code from V.Morgunov, MPI
   //
@@ -1094,7 +1103,7 @@ void MarlinCED::drawGEARDetector(){
   float z_max_tpc = 0;
   
   try{
-    const gear::TPCParameters&  pTPC      = Global::GEAR->getTPCParameters();
+    const gear::TPCParameters&  pTPC      = gearMgr->getTPCParameters();
 
     // Multi-module support
     const gear::DoubleVec&      planeExt  = pTPC.getPlaneExtent();
@@ -1119,13 +1128,13 @@ void MarlinCED::drawGEARDetector(){
   
   try{
     const gear::CalorimeterParameters& pECAL_B = 
-    Global::GEAR->getEcalBarrelParameters();
+    gearMgr->getEcalBarrelParameters();
     r_min_ecal_bar = pECAL_B.getExtent()[0];
     r_max_ecal_bar = pECAL_B.getExtent()[1];
     // float z_min_ecal_bar = pECAL_B.getExtent()[2];
     z_max_ecal_bar = pECAL_B.getExtent()[3];
     const gear::CalorimeterParameters& pECAL_E = 
-    Global::GEAR->getEcalEndcapParameters();
+    gearMgr->getEcalEndcapParameters();
     //   float r_min_ecal_ecap = pECAL_E.getExtent()[0];
     r_max_ecal_ecap = pECAL_E.getExtent()[1];
     z_min_ecal_ecap = pECAL_E.getExtent()[2];
@@ -1158,20 +1167,20 @@ void MarlinCED::drawGEARDetector(){
   
   try{
     const gear::CalorimeterParameters& pHCAL_B = 
-    Global::GEAR->getHcalBarrelParameters();
+    gearMgr->getHcalBarrelParameters();
     //  _innerHcalRadius = float(pHcalBarrel.getExtent()[0]);
     r_min_hcal_bar = pHCAL_B.getExtent()[0];
     r_max_hcal_bar = pHCAL_B.getExtent()[1];
     //float z_min_hcal_bar = pHCAL_B.getExtent()[2];
     z_max_hcal_bar = pHCAL_B.getExtent()[3];
     const gear::CalorimeterParameters& pHCAL_R = 
-    Global::GEAR->getHcalRingParameters();
+    gearMgr->getHcalRingParameters();
     r_min_hcal_ring = pHCAL_R.getExtent()[0];
     r_max_hcal_ring = pHCAL_R.getExtent()[1];
     z_min_hcal_ring = pHCAL_R.getExtent()[2];
     z_max_hcal_ring = pHCAL_R.getExtent()[3];
     const gear::CalorimeterParameters& pHCAL_E = 
-    Global::GEAR->getHcalEndcapParameters();
+    gearMgr->getHcalEndcapParameters();
     r_min_hcal_ecap = pHCAL_E.getExtent()[0];
     r_max_hcal_ecap = pHCAL_E.getExtent()[1];
     z_min_hcal_ecap = pHCAL_E.getExtent()[2];
@@ -1195,7 +1204,7 @@ void MarlinCED::drawGEARDetector(){
   try{
     
     const gear::CalorimeterParameters& pLHCal = 
-    Global::GEAR->getLHcalParameters();
+    gearMgr->getLHcalParameters();
     
     r_min_lhcal = pLHCal.getExtent()[0];
     r_max_lhcal = pLHCal.getExtent()[1];
@@ -1217,7 +1226,7 @@ void MarlinCED::drawGEARDetector(){
   
   try{
     const gear::CalorimeterParameters& pLCal = 
-    Global::GEAR->getLcalParameters();
+    gearMgr->getLcalParameters();
     r_min_lcal = pLCal.getExtent()[0];
     r_max_lcal = pLCal.getExtent()[1];
     z_min_lcal = pLCal.getExtent()[2];
@@ -1237,7 +1246,7 @@ void MarlinCED::drawGEARDetector(){
   
   try{
     const gear::CalorimeterParameters& pBeamcal = 
-    Global::GEAR->getBeamCalParameters();
+    gearMgr->getBeamCalParameters();
     r_min_beamcal = pBeamcal.getExtent()[0];
     r_max_beamcal = pBeamcal.getExtent()[1];
     z_min_beamcal = pBeamcal.getExtent()[2];
@@ -1264,20 +1273,20 @@ void MarlinCED::drawGEARDetector(){
   
   try{
     const gear::CalorimeterParameters& pYOKE_B = 
-    Global::GEAR->getYokeBarrelParameters();
+    gearMgr->getYokeBarrelParameters();
     //  _innerYokeRadius = float(pYokeBarrel.getExtent()[0]);
     r_min_yoke_bar = pYOKE_B.getExtent()[0];
     r_max_yoke_bar = pYOKE_B.getExtent()[1];
     //float z_min_yoke_bar = pYOKE_B.getExtent()[2];
     z_max_yoke_bar = pYOKE_B.getExtent()[3];
     const gear::CalorimeterParameters& pYOKE_R = 
-    Global::GEAR->getYokePlugParameters();
+    gearMgr->getYokePlugParameters();
     r_min_yoke_plug = pYOKE_R.getExtent()[0];
     r_max_yoke_plug = pYOKE_R.getExtent()[1];
     z_min_yoke_plug = pYOKE_R.getExtent()[2];
     z_max_yoke_plug = pYOKE_R.getExtent()[3];
     const gear::CalorimeterParameters& pYOKE_E = 
-    Global::GEAR->getYokeEndcapParameters();
+    gearMgr->getYokeEndcapParameters();
     r_min_yoke_ecap = pYOKE_E.getExtent()[0];
     r_max_yoke_ecap = pYOKE_E.getExtent()[1];
     z_min_yoke_ecap = pYOKE_E.getExtent()[2];
@@ -1299,7 +1308,7 @@ void MarlinCED::drawGEARDetector(){
   
   
   try{     
-    const gear::GearParameters&  pCoil      = Global::GEAR->getGearParameters("CoilParameters");
+    const gear::GearParameters&  pCoil      = gearMgr->getGearParameters("CoilParameters");
     try {
       
       coil_half_z         =  pCoil.getDoubleVal("Coil_cryostat_half_z" ) ;
@@ -1330,8 +1339,8 @@ void MarlinCED::drawGEARDetector(){
   
   try{
     
-    //     const gear::FTDParameters&  pFTD = Global::GEAR->getFTDParameters();
-    const gear::FTDLayerLayout&  pFTD = Global::GEAR->getFTDParameters().getFTDLayerLayout()  ;
+    //     const gear::FTDParameters&  pFTD = gearMgr->getFTDParameters();
+    const gear::FTDLayerLayout&  pFTD = gearMgr->getFTDParameters().getFTDLayerLayout()  ;
     
     streamlog_out( DEBUG2 ) << " filling FTD parameters from gear::FTDParameters - n layers : " <<  pFTD.getNLayers() << std::endl ;
     
@@ -1387,7 +1396,7 @@ void MarlinCED::drawGEARDetector(){
   
   try{
     
-    const gear::GearParameters& pFTD = Global::GEAR->getGearParameters("FTD");
+    const gear::GearParameters& pFTD = gearMgr->getGearParameters("FTD");
     
     streamlog_out( DEBUG2 ) << " filling FTD parameters from old gear::GearParameters " << std::endl ;
     
@@ -1415,7 +1424,7 @@ void MarlinCED::drawGEARDetector(){
   const gear::VXDLayerLayout* pVXDLayerLayout = 0;
   
   try{
-    pVXDDetMain = &Global::GEAR->getVXDParameters();
+    pVXDDetMain = &gearMgr->getVXDParameters();
     pVXDLayerLayout = &(pVXDDetMain->getVXDLayerLayout());
     nLayersVTX = pVXDLayerLayout->getNLayers();
   }
@@ -1429,7 +1438,7 @@ void MarlinCED::drawGEARDetector(){
   const gear::ZPlanarLayerLayout* pSETLayerLayout =0;
   
   try{
-    pSETDetMain = &Global::GEAR->getSETParameters();
+    pSETDetMain = &gearMgr->getSETParameters();
     pSETLayerLayout = &(pSETDetMain->getZPlanarLayerLayout());
     nLayersSET = pSETLayerLayout->getNLayers();
   }
@@ -1442,7 +1451,7 @@ void MarlinCED::drawGEARDetector(){
   const gear::ZPlanarLayerLayout* pSITLayerLayout = 0;
   
   try{
-    pSITDetMain = &Global::GEAR->getSITParameters();
+    pSITDetMain = &gearMgr->getSITParameters();
     pSITLayerLayout = &(pSITDetMain->getZPlanarLayerLayout());
     nLayersSIT = pSITLayerLayout->getNLayers();
   }
@@ -1457,7 +1466,7 @@ void MarlinCED::drawGEARDetector(){
   
   //old SIT using cylinders   
   try{
-    const gear::GearParameters& pSITDet = Global::GEAR->getGearParameters("SIT");
+    const gear::GearParameters& pSITDet = gearMgr->getGearParameters("SIT");
     
     const DoubleVec& rSIT_temp  = pSITDet.getDoubleVals("SITLayerRadius")  ;
     const DoubleVec& lSIT_temp  = pSITDet.getDoubleVals("SITLayerHalfLength") ;
@@ -1825,3 +1834,14 @@ void MarlinCED::drawGEARDetector(){
   
 } // drawGEARDetector
 
+
+
+void drawDetectorFromGearFile( const char* fname ){
+
+  gear::GearXML gearXML( fname ) ;
+
+  gear::GearMgr* gM = gearXML.createGearMgr() ;
+
+  MarlinCED::drawDetectorFromGear( gM ) ;
+  
+}
