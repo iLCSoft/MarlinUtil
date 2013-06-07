@@ -9,8 +9,6 @@
     - updated code for the ANN library to version 1.1.2 
       (see: http://www.cs.umd.edu/~mount/ANN/ )
 
-    - split up library into libMarlinUtil and libMarlinUtil_ann
-
     - added helper function to library (extern "C")
       void drawDetectorFromGearFile( const char* fname ) ;
 

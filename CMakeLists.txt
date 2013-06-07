@@ -76,16 +76,17 @@ INSTALL_DIRECTORY( ./source/include/ DESTINATION ./include/marlinutil FILES_MATC
 # get list of all source files
 AUX_SOURCE_DIRECTORY( ./source/src library_sources )
 AUX_SOURCE_DIRECTORY( ./source/src/mille library_sources )
+AUX_SOURCE_DIRECTORY( ./source/src/ann library_sources )
 
 
 ADD_SHARED_LIBRARY( ${PROJECT_NAME} ${library_sources} )
 INSTALL_SHARED_LIBRARY( ${PROJECT_NAME} DESTINATION lib )
 
-AUX_SOURCE_DIRECTORY( ./source/src/ann ann_library_sources )
+#AUX_SOURCE_DIRECTORY( ./source/src/ann ann_library_sources )
 SET_SOURCE_FILES_PROPERTIES( "./source/src/ann/kd_pr_search.cpp" PROPERTIES COMPILE_FLAGS "-fno-strict-aliasing" )
 
-ADD_SHARED_LIBRARY( ${PROJECT_NAME}_ann ${ann_library_sources} )
-INSTALL_SHARED_LIBRARY( ${PROJECT_NAME}_ann DESTINATION lib )
+#ADD_SHARED_LIBRARY( ${PROJECT_NAME}_ann ${ann_library_sources} )
+#INSTALL_SHARED_LIBRARY( ${PROJECT_NAME}_ann DESTINATION lib )
 
 
 # helper macro for adding new tests
