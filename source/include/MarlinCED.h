@@ -533,6 +533,14 @@ protected:
 extern "C"
 void drawDetectorFromGearFile( const char* fname ) ;
 
+extern "C"
+void draw_helix( float b, float charge, float x, float y, float z,
+		 float px, float py, float pz, 
+		 int marker, int size, unsigned int col, 
+		 float rmin=10.0, float rmax=3000.0, float zmax=4500.0, unsigned int id = 0) ;
+
+
+
 
 #endif
 

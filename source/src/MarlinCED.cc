@@ -1845,3 +1845,14 @@ void drawDetectorFromGearFile( const char* fname ){
   MarlinCED::drawDetectorFromGear( gM ) ;
   
 }
+
+
+void draw_helix( float b, float charge, float x, float y, float z,
+		 float px, float py, float pz, 
+		 int marker, int size, unsigned int col, 
+		 float rmin, float rmax, float zmax, unsigned int id){
+  
+  
+  MarlinCED::drawHelix( b,  charge,  x,  y,  z, px,  py,  pz,  marker,  size, col, rmin,  rmax,  zmax,  id) ;
+  
+}

@@ -3,6 +3,13 @@
  release notes for MarlinUtil
 
 ================================
+ ------------
+| v01-07-01  |
+ ------------
+    - added wrapper function (extern "C")
+      void draw_helix( ... ) to MarlinCED::drawHelix(...)
+       
+
  ---------
 | v01-07  |
  ---------
