@@ -48,7 +48,7 @@ namespace IMPL {  class LCCollectionVec; }
 namespace EVENT {  class LCCollection; }
 class FPCCDPixelHit;
 
-typedef std::map<unsigned int, FPCCDPixelHit*> PixelHitMap_t;
+typedef std::map<unsigned int, FPCCDPixelHit*> PixelHitMap_t; //key will be encorded cellID. 
 typedef std::vector< std::vector<PixelHitMap_t> > PixelDataBuf_t;
 
 
