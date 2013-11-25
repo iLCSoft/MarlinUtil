@@ -48,9 +48,10 @@ class FPCCDPixelHit
   unsigned short int _xiID;
   unsigned short int _zetaID;
   float              _edep;
+  std::vector<int> _orderID;//_orderID is the index to simthits. if element < 0, it shows background data.For now, -1 is it. 
+  //int _signalProperty; //1:Signal 0:Background
   HitQuality_t _quality;
   std::vector<EVENT::MCParticle*> _MCParticleVec;
-
  public:
   FPCCDPixelHit(unsigned short int layerID=0, unsigned short int ladderID=0,
 		unsigned short int xiID=0,    unsigned short int zetaID=0,
@@ -63,7 +64,9 @@ class FPCCDPixelHit
   void setZetaID(int zetaid) { _zetaID=zetaid; }
   void setEdep(float edep){ _edep=edep; }
   void setQuality(HitQuality_t quality){ _quality=quality; }
-  
+  void setOrderID(int orderID){ _orderID.push_back( orderID ); }
+  //void setSigProp(int oneOrZero){ _signalProperty = oneOrZero; }
+
   int getLayerID(){ return _layerID; }
   int getLadderID(){ return _ladderID; }
   int getXiID(){ return _xiID; }
@@ -73,7 +76,11 @@ class FPCCDPixelHit
   std::vector<EVENT::MCParticle*> getMCParticleVec(){ return _MCParticleVec; }
   EVENT::MCParticle *getMCParticle(int index){ return _MCParticleVec[index]; }
   int getNMCParticles(){ return _MCParticleVec.size(); }
-
+  int getOrderID(int nth){ return _orderID[nth]; }
+  unsigned int getSizeOfOrderID(){ return _orderID.size(); }
+  //int getSigProp(){ return _signalProperty; }
+  
+  
   // add pixel hit
   void addPixelHit(FPCCDPixelHit &aHit, HitQuality_t addedQuality);
   
