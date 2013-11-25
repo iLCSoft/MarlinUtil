@@ -3,6 +3,7 @@
 #include <iostream>
 #include <assert.h>
 #include <EVENT/MCParticle.h>
+#include <EVENT/SimTrackerHit.h>
 
 #define SHIFT_LADDER 0  // 5 bits
 #define SHIFT_LAYER  5  // 3 bits
@@ -27,7 +28,7 @@
 FPCCDPixelHit::FPCCDPixelHit(unsigned short int layerID, unsigned short int ladderID,
 		unsigned short int xiID,    unsigned short int zetaID,
 		float edep,     HitQuality_t quality,
-		EVENT::MCParticle *mc)
+		EVENT::MCParticle *mc )
 {
   // check validity of input variables
   assert( layerID < 8 );
@@ -40,10 +41,10 @@ FPCCDPixelHit::FPCCDPixelHit(unsigned short int layerID, unsigned short int ladd
   _zetaID=zetaID;
   _edep=edep;
   _quality=quality;
-
   if( mc != 0 ) { _MCParticleVec.push_back(mc); }
 
 }
+
 
 // =====================================================================
 void FPCCDPixelHit::print()
@@ -60,6 +61,15 @@ void FPCCDPixelHit::addPixelHit(FPCCDPixelHit &aHit, HitQuality_t addedQuality)
 {
 
   _edep += aHit.getEdep();
+ 
+ //********************Mori added 20121204*********************************// 
+  unsigned int hsize = aHit.getSizeOfOrderID();
+  if( hsize > 0){
+    for(unsigned int io = 0; io < hsize; io++){
+      this->setOrderID(aHit.getOrderID(io));
+    }
+  }
+ //****************************end*****************************************//
 
   if( _quality == kSingle || _quality == kSignalOverlap ){
     if( addedQuality == kSingle || addedQuality == kSignalOverlap ) { _quality=kSignalOverlap; }
@@ -74,16 +84,25 @@ void FPCCDPixelHit::addPixelHit(FPCCDPixelHit &aHit, HitQuality_t addedQuality)
 //       _MCParticleVec.push_back(aHit.getMCParticleVec()[i]);
 //     }
 //  }
+
 }
 
 // =====================================================================
 unsigned int FPCCDPixelHit::encodeCellWord()
 {
-  assert(_xiID < 8192);
+  assert(_xiID < 8192); // from <assert.h>. if assert recognizes the equation as false, Null, or 0, then program exits. 
+  //8192 is 2 to the power of 13. So _xiID is from 14th bit.
+  
   unsigned int ic=( ( ((unsigned int)_xiID)<<SHIFT_XI & MASK_XI ) |
                     ( ((unsigned int)_zetaID)<<SHIFT_ZETA & MASK_ZETA )  );
-  return ic;
+  /*By default, 
+     SHIFT_ZETA   0  // _zetaID has 16 bits
+     SHIFT_XI    16 --> namely shift of 4 digits. // _xiID has 13 bits 
+     MASK_ZETA    0x0000FFFF 
+     MASK_XI      0x1FFF0000
+  */
 
+  return ic;
 }
 
 // ====================================================================
