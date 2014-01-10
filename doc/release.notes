@@ -3,6 +3,14 @@
  release notes for MarlinUtil
 
 ================================
+
+ ---------
+| v01-08  |
+ ---------
+     - improved FPCCD classes (T.Mori)
+     - added HelixClass_double 
+
+
  ------------
 | v01-07-01  |
  ------------
