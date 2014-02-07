@@ -1692,12 +1692,12 @@ void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
   }
   
   // new sit
-  for (int i=0; i<nLayersSIT; i+=2  ) {
+  for (int i=0; i<nLayersSIT; i++   ) {
     
    int nl_sit = pSITLayerLayout->getNLadders( i );
    float phi0_sit = float( pSITLayerLayout->getPhi0( i ) );
    float r_inn_sit = float( pSITLayerLayout->getSensitiveDistance( i  )  ) / cos( M_PI / nl_sit )  ;
-   float r_out_sit = float( pSITLayerLayout->getSensitiveDistance( i+1 ) ) / cos( M_PI / nl_sit )  ;
+   float r_out_sit = r_inn_sit ; //float( pSITLayerLayout->getSensitiveDistance( i + 1   ) ) / cos( M_PI / nl_sit )  ;
    float z_sit = float( pSITLayerLayout->getSensitiveLength( i ) ) ; 
 
    gTV.push_back( CEDGeoTube( r_out_sit,     r_inn_sit,    nl_sit , nl_sit , phi0_sit , phi0_sit,  z_sit,   -z_sit,          sitCol, sitLayer ,0,1) ) ;  //  SIT
@@ -1710,12 +1710,12 @@ void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
  
 
   // new set
-  for (int i=0; i<nLayersSET; i+=2  ) {
+  for (int i=0; i<nLayersSET; i++   ) {
     
    int nl_set = pSETLayerLayout->getNLadders( i );
    float phi0_set = float( pSETLayerLayout->getPhi0( i ) );
    float r_inn_set = float( pSETLayerLayout->getSensitiveDistance( i  )  ) / cos( M_PI / nl_set )  ;
-   float r_out_set = float( pSETLayerLayout->getSensitiveDistance( i+1 ) ) / cos( M_PI / nl_set )  ;
+   float r_out_set = r_inn_set ; //float( pSETLayerLayout->getSensitiveDistance( i+1 ) ) / cos( M_PI / nl_set )  ;
    float z_set = float( pSETLayerLayout->getSensitiveLength( i ) ) ; 
 
    gTV.push_back( CEDGeoTube( r_out_set,     r_inn_set,    nl_set , nl_set , phi0_set , phi0_set,  z_set,   -z_set,          setCol, setLayer ,0,1) ) ;  //  SET
