@@ -1128,19 +1128,21 @@ void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
   
   try{
     const gear::CalorimeterParameters& pECAL_B = 
-    gearMgr->getEcalBarrelParameters();
+      gearMgr->getEcalBarrelParameters();
     r_min_ecal_bar = pECAL_B.getExtent()[0];
     r_max_ecal_bar = pECAL_B.getExtent()[1];
     // float z_min_ecal_bar = pECAL_B.getExtent()[2];
     z_max_ecal_bar = pECAL_B.getExtent()[3];
+  }catch(gear::UnknownParameterException& e){
+    showECAL=false;
+  } try {
     const gear::CalorimeterParameters& pECAL_E = 
-    gearMgr->getEcalEndcapParameters();
+      gearMgr->getEcalEndcapParameters();
     //   float r_min_ecal_ecap = pECAL_E.getExtent()[0];
     r_max_ecal_ecap = pECAL_E.getExtent()[1];
     z_min_ecal_ecap = pECAL_E.getExtent()[2];
     z_max_ecal_ecap = pECAL_E.getExtent()[3];
   }catch(gear::UnknownParameterException& e){
-    showECAL=false;
     showECALEndcap=false;
   }
   
@@ -1167,27 +1169,31 @@ void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
   
   try{
     const gear::CalorimeterParameters& pHCAL_B = 
-    gearMgr->getHcalBarrelParameters();
+      gearMgr->getHcalBarrelParameters();
     //  _innerHcalRadius = float(pHcalBarrel.getExtent()[0]);
     r_min_hcal_bar = pHCAL_B.getExtent()[0];
     r_max_hcal_bar = pHCAL_B.getExtent()[1];
     //float z_min_hcal_bar = pHCAL_B.getExtent()[2];
     z_max_hcal_bar = pHCAL_B.getExtent()[3];
+  }catch(gear::UnknownParameterException& e){
+    showHCAL=false;
+  } try {
     const gear::CalorimeterParameters& pHCAL_R = 
-    gearMgr->getHcalRingParameters();
+      gearMgr->getHcalRingParameters();
     r_min_hcal_ring = pHCAL_R.getExtent()[0];
     r_max_hcal_ring = pHCAL_R.getExtent()[1];
     z_min_hcal_ring = pHCAL_R.getExtent()[2];
     z_max_hcal_ring = pHCAL_R.getExtent()[3];
+  }catch(gear::UnknownParameterException& e){
+    showHCALRing=false;
+  } try {
     const gear::CalorimeterParameters& pHCAL_E = 
-    gearMgr->getHcalEndcapParameters();
+      gearMgr->getHcalEndcapParameters();
     r_min_hcal_ecap = pHCAL_E.getExtent()[0];
     r_max_hcal_ecap = pHCAL_E.getExtent()[1];
     z_min_hcal_ecap = pHCAL_E.getExtent()[2];
     z_max_hcal_ecap = pHCAL_E.getExtent()[3];
   }catch(gear::UnknownParameterException& e){
-    showHCAL=false;
-    showHCALRing=false;
     showHCALEndcap=false;
   }
   
