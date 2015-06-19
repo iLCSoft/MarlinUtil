@@ -1264,6 +1264,8 @@ void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
   
   //############## Yoke ############################ 
   bool showYoke = true;
+  bool showYokeEndcap = true;
+  bool showYokePlug = true;
   
   float r_min_yoke_bar=0; 
   float r_max_yoke_bar=0;
@@ -1279,26 +1281,32 @@ void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
   
   try{
     const gear::CalorimeterParameters& pYOKE_B = 
-    gearMgr->getYokeBarrelParameters();
+      gearMgr->getYokeBarrelParameters();
     //  _innerYokeRadius = float(pYokeBarrel.getExtent()[0]);
     r_min_yoke_bar = pYOKE_B.getExtent()[0];
     r_max_yoke_bar = pYOKE_B.getExtent()[1];
     //float z_min_yoke_bar = pYOKE_B.getExtent()[2];
     z_max_yoke_bar = pYOKE_B.getExtent()[3];
+  }catch( gear::UnknownParameterException& e){
+    showYoke=false;
+  } try {
     const gear::CalorimeterParameters& pYOKE_R = 
     gearMgr->getYokePlugParameters();
     r_min_yoke_plug = pYOKE_R.getExtent()[0];
     r_max_yoke_plug = pYOKE_R.getExtent()[1];
     z_min_yoke_plug = pYOKE_R.getExtent()[2];
     z_max_yoke_plug = pYOKE_R.getExtent()[3];
+  }catch( gear::UnknownParameterException& e){
+    showYokePlug=false;
+  } try {
     const gear::CalorimeterParameters& pYOKE_E = 
-    gearMgr->getYokeEndcapParameters();
+      gearMgr->getYokeEndcapParameters();
     r_min_yoke_ecap = pYOKE_E.getExtent()[0];
     r_max_yoke_ecap = pYOKE_E.getExtent()[1];
     z_min_yoke_ecap = pYOKE_E.getExtent()[2];
     z_max_yoke_ecap = pYOKE_E.getExtent()[3];
   }catch( gear::UnknownParameterException& e){
-    showYoke=false;
+    showYokeEndcap=false;
   }
   
   
@@ -1553,17 +1561,56 @@ void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
   // ========================================================================
   
   
+  //defnine the main symmetries for ILD
+  unsigned hcalSymI =  8 ;
+  unsigned hcalSymO = 16 ;
+  unsigned ecalSym  =  8 ;
+  unsigned yokeSym  = 12 ;
+
   // colors used in Mokka ILD_00
-  static const unsigned sitCol  = 0xdddddd ; // light grey
-  static const unsigned setCol  = 0xdddddd ; 
-  static const unsigned tpcCol  = 0xf5f300 ;
-  static const unsigned ecalCol = 0x7bf300 ;
-  static const unsigned hcalCol = 0xc4c231 ;
-  static const unsigned yokeCol = 0x18c2c4 ;
-  static const unsigned coilCol = 0x4949dd ;
-  static const unsigned ftdCol  = 0x651c93 ;
-  static const unsigned fcalCol = 0xabaaab ;
+  unsigned vxdCol  = 0xafafaf ;
+  unsigned sitCol  = 0xdddddd ; 
+  unsigned setCol  = 0xdddddd ; 
+  unsigned tpcCol  = 0xf5f300 ;
+  unsigned ecalCol = 0x7bf300 ;
+  unsigned hcalCol = 0xc4c231 ;
+  unsigned yokeCol = 0x18c2c4 ;
+  unsigned coilCol = 0x4949dd ;
+  unsigned ftdCol  = 0x651c93 ;
+  unsigned fcalCol = 0xabaaab ;
+  unsigned bcalCol = 0x5a0078 ;
+  unsigned lcalCol = 0x006666 ;
   
+
+  bool drawCLIC = false ;
+
+  std::string detName = gearMgr->getDetectorName() ; 
+
+  if( detName.find("CLIC") != std::string::npos ) drawCLIC = true ;
+
+  if( drawCLIC ) {
+
+    vxdCol  = 0xafafaf ;
+    sitCol  = 0x8c6e0a ; 
+    setCol  = 0xdddddd ;
+    tpcCol  = 0xf5f300 ;
+    ecalCol = 0x339900 ;
+    hcalCol = 0x141e96 ;
+    yokeCol = 0x990000 ;
+    coilCol = 0x333333 ;
+    ftdCol  = 0x8c6e0a ;
+    fcalCol = 0x5a0078 ;
+    bcalCol = 0x5a0078 ;
+    lcalCol = 0x006666 ;
+
+    hcalSymI = 12 ;
+    hcalSymO = 12 ;
+    ecalSym  = 12 ;
+    yokeSym  = 12 ;
+  }
+
+
+
   // define layers for sub detectors
   static const int fDL = NUMBER_DATA_LAYER; //  first non data layer 
   static const unsigned  vxdLayer = fDL + 0 ;
@@ -1739,32 +1786,33 @@ void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
   }
   
   if(showECAL){
-    gTV.push_back( CEDGeoTube( r_out_ecal_bar,     r_inn_ecal_bar,              8,  8, 22.5, 0,  z_max_ecal_bar,   -z_max_ecal_bar,       ecalCol, ecalLayer ,0,1) ) ; //  ECAL Barrel
+    gTV.push_back( CEDGeoTube( r_out_ecal_bar,     r_inn_ecal_bar,             ecalSym, ecalSym, 22.5, 0,  z_max_ecal_bar,   -z_max_ecal_bar,       ecalCol, ecalLayer ,0,1) ) ; //  ECAL Barrel
   }
   if(showECALEndcap) {
-    gTV.push_back( CEDGeoTube( r_out_ecal_ecap,    0.5*(r_max_lhcal+r_max_lcal),8, 40, 22.5, 0,  thick_ecal_ecap,   shift_ecal_z_plus,    ecalCol, ecalEndcapLayer ,0,0) ) ; //  endcap ECAL +Z
-    gTV.push_back( CEDGeoTube( r_out_ecal_ecap,    0.5*(r_max_lhcal+r_max_lcal),8, 40, 22.5, 0,  thick_ecal_ecap,  -shift_ecal_z_minus,   ecalCol, ecalEndcapLayer ,0,0) ) ; //  endcap ECAL -Z
+    gTV.push_back( CEDGeoTube( r_out_ecal_ecap,    0.5*(r_max_lhcal+r_max_lcal), ecalSym, 40, 22.5, 0,  thick_ecal_ecap,   shift_ecal_z_plus,    ecalCol, ecalEndcapLayer ,0,0) ) ; //  endcap ECAL +Z
+    gTV.push_back( CEDGeoTube( r_out_ecal_ecap,    0.5*(r_max_lhcal+r_max_lcal), ecalSym, 40, 22.5, 0,  thick_ecal_ecap,  -shift_ecal_z_minus,   ecalCol, ecalEndcapLayer ,0,0) ) ; //  endcap ECAL -Z
   }
   
   if(showHCAL){
-    gTV.push_back( CEDGeoTube( r_out_hcal_bar,     r_inn_hcal_bar,             16,  8, 11.25, 11.25, z_max_hcal_bar,  -z_max_hcal_bar,      hcalCol, hcalLayer ,0,1) ) ; //  HCAL Barrel
+    gTV.push_back( CEDGeoTube( r_out_hcal_bar,     r_inn_hcal_bar,            hcalSymO,  hcalSymI, 11.5, 11.5, z_max_hcal_bar,  -z_max_hcal_bar,      hcalCol, hcalLayer ,0,1) ) ; //  HCAL Barrel
+    
   }
   if(showHCALRing) {
-    gTV.push_back( CEDGeoTube( r_out_hcal_ring,    r_inn_hcal_ring,             8,  8,  22.5,     0, thick_hcal_ring,  shift_hcalr_z_plus,  hcalCol, hcalRingLayer ,0,1) ) ; //  ring HCAL +Z
-    gTV.push_back( CEDGeoTube( r_out_hcal_ring,    r_inn_hcal_ring,             8,  8,  22.5,     0, thick_hcal_ring, -shift_hcalr_z_minus, hcalCol, hcalRingLayer ,0,1) ) ; //  ring HCAL -Z 
+    gTV.push_back( CEDGeoTube( r_out_hcal_ring,    r_inn_hcal_ring,           hcalSymO, hcalSymI,  22.5,     0, thick_hcal_ring,  shift_hcalr_z_plus,  hcalCol, hcalRingLayer ,0,1) ) ; //  ring HCAL +Z
+    gTV.push_back( CEDGeoTube( r_out_hcal_ring,    r_inn_hcal_ring,           hcalSymO, hcalSymI,  22.5,     0, thick_hcal_ring, -shift_hcalr_z_minus, hcalCol, hcalRingLayer ,0,1) ) ; //  ring HCAL -Z 
   }
   if(showHCALEndcap) {
-    gTV.push_back( CEDGeoTube( r_out_hcal_ecap,    r_min_hcal_ecap,             8, 40,  22.5,     0, thick_hcal_ecap,  shift_hcal_z_plus,   hcalCol, hcalEndcapLayer ,0,1) ) ; //  endcap HCAL +Z
-    gTV.push_back( CEDGeoTube( r_out_hcal_ecap,    r_min_hcal_ecap,             8, 40,  22.5,     0, thick_hcal_ecap, -shift_hcal_z_minus,  hcalCol, hcalEndcapLayer ,0,1) ) ;  //  endcap HCAL -Z      
+    gTV.push_back( CEDGeoTube( r_out_hcal_ecap,    r_min_hcal_ecap,           ecalSym, 40,  22.5,     0, thick_hcal_ecap,  shift_hcal_z_plus,   hcalCol, hcalEndcapLayer ,0,1) ) ; //  endcap HCAL +Z
+    gTV.push_back( CEDGeoTube( r_out_hcal_ecap,    r_min_hcal_ecap,           ecalSym, 40,  22.5,     0, thick_hcal_ecap, -shift_hcal_z_minus,  hcalCol, hcalEndcapLayer ,0,1) ) ;  //  endcap HCAL -Z      
   }
   
   if(showCoil){
     gTV.push_back( CEDGeoTube( coil_outer_radius,  coil_inner_radius,          40, 40,        0.0,   0, coil_half_z, -coil_half_z,              coilCol, coilLayer ,0,0) ) ;  //  coil     
   }
   
-  if(showYoke){
-    gTV.push_back( CEDGeoTube( r_out_yoke_plug,    r_inn_yoke_plug,            12, 12,        15.0,   0, thick_yoke_plug,  shift_yoker_z_plus,  yokeCol, yokeLayer ,0,0) ) ; //  plug YOKE +Z
-    gTV.push_back( CEDGeoTube( r_out_yoke_plug,    r_inn_yoke_plug,            12, 12,        15.0,   0, thick_yoke_plug, -shift_yoker_z_minus, yokeCol, yokeLayer ,0,0) ) ; //  plug YOKE -Z 
+  if(showYokePlug){
+    gTV.push_back( CEDGeoTube( r_out_yoke_plug,    r_inn_yoke_plug,            yokeSym,yokeSym,        15.0,   0, thick_yoke_plug,  shift_yoker_z_plus,  yokeCol, yokeLayer ,0,0) ) ; //  plug YOKE +Z
+    gTV.push_back( CEDGeoTube( r_out_yoke_plug,    r_inn_yoke_plug,            yokeSym,yokeSym,        15.0,   0, thick_yoke_plug, -shift_yoker_z_minus, yokeCol, yokeLayer ,0,0) ) ; //  plug YOKE -Z 
   }
   
   
@@ -1781,9 +1829,12 @@ void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
   
   
   if(showYoke){
-    gTV.push_back( CEDGeoTube( r_out_yoke_bar,     r_inn_yoke_bar,             12, 12,        15.0,   0, z_max_yoke_bar,  - z_max_yoke_bar,     yokeCol,  yokeLayer, 0, 0) ) ; //  YOKE Barrel
-    gTV.push_back( CEDGeoTube( r_out_yoke_ecap,    r_min_yoke_ecap,            12, 12,        15.0,   0, thick_yoke_ecap,  shift_yoke_z_plus,   yokeCol,  yokeLayer, 0, 0) ) ; //  endcap YOKE +Z
-    gTV.push_back( CEDGeoTube( r_out_yoke_ecap,    r_min_yoke_ecap,            12, 12,        15.0,   0, thick_yoke_ecap, -shift_yoke_z_minus,  yokeCol,  yokeLayer, 0, 0) ) ;  //  endcap YOKE -Z      
+    gTV.push_back( CEDGeoTube( r_out_yoke_bar,     r_inn_yoke_bar,             yokeSym,yokeSym,        15.0,   0, z_max_yoke_bar,  - z_max_yoke_bar,     yokeCol,  yokeLayer, 0, 0) ) ; //  YOKE Barrel
+  }
+
+  if(showYokeEndcap){
+    gTV.push_back( CEDGeoTube( r_out_yoke_ecap,    r_min_yoke_ecap,            yokeSym,yokeSym,        15.0,   0, thick_yoke_ecap,  shift_yoke_z_plus,   yokeCol,  yokeLayer, 0, 0) ) ; //  endcap YOKE +Z
+    gTV.push_back( CEDGeoTube( r_out_yoke_ecap,    r_min_yoke_ecap,            yokeSym,yokeSym,        15.0,   0, thick_yoke_ecap, -shift_yoke_z_minus,  yokeCol,  yokeLayer, 0, 0) ) ;  //  endcap YOKE -Z      
   }
   
   
@@ -1821,7 +1872,7 @@ void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
     set_layer_description("Coil", coilLayer );
   }
   
-  if(showYoke){ 
+  if(showYoke || showYokeEndcap || showYokePlug ){ 
     set_layer_description("Yoke", yokeLayer );
   }
   
