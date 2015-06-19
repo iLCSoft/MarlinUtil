@@ -144,7 +144,7 @@ class ClusterShapes {
    *                       detector this is meant to be the 'mean' Moliere radius.
    */
   int fit3DProfile(float& chi2, float& a, float& b, float& c, float& d, float& xl0, 
-		   float * xStart, int& index_xStart, float X0, float Rm);
+		   float * xStart, int& index_xStart, float* X0, float* Rm);
 
   /**
    * returns the chi2 of the fit in the method Fit3DProfile (if simple
@@ -155,8 +155,8 @@ class ClusterShapes {
    * @param Rm           : Moliere radius of the the detector material. For a composite 
    *                       detector this is meant to be the 'mean' Moliere radius.
    */
-  float getChi2Fit3DProfileSimple(float a, float b, float c, float d, float X0, 
-				  float Rm);
+  float getChi2Fit3DProfileSimple(float a, float b, float c, float d, float* X0, 
+				  float* Rm);
 
   /**
    * returns the chi2 of the fit in the method Fit3DProfile (if advanced
@@ -168,7 +168,7 @@ class ClusterShapes {
    *                      detector this is meant to be the 'mean' Moliere radius.
    */
   float getChi2Fit3DProfileAdvanced(float E0, float a, float b, float d, float t0, 
-				    float X0, float Rm);
+				    float* X0, float* Rm);
 
   /**
    * performs a least square fit on a helix path in space, which
@@ -220,6 +220,21 @@ class ClusterShapes {
   int FitHelix(int max_iter, int status_out, int parametrisation,
 	       float* parameter, float* dparameter, float& chi2, float& distmax, int direction=1);
 
+  //here add my functions(variables estimated with detector base)
+  //maximum deposit energy of hits
+  float getEmax(float* xStart, int& index_xStart, float* X0, float* Rm);
+
+  //shower max of the hits from the shower start hit
+  float getsmax(float* xStart, int& index_xStart, float* X0, float* Rm);
+
+  //radius where 90% of the cluster energy exists
+  float getxt90(float* xStart, int& index_xStart, float* X0, float* Rm);
+
+  //length where less than 20% of the cluster energy exists
+  float getxl20(float* xStart, int& index_xStart, float* X0, float* Rm);
+
+  //for cluster study
+  void gethits(float* xStart, int& index_xStart, float* X0, float* Rm, float *okxl, float *okxt, float *oke);
   /**
    * distance to the centre of gravity measured from IP
    * (absolut value of the vector to the centre of gravity)
@@ -338,7 +353,7 @@ class ClusterShapes {
   float vecProject(float * x, float * axis);
   double DistanceHelix(double x, double y, double z, double X0, double Y0, double R0, double bz,
 		      double phi0, double * distRPhiZ);
-  int transformToEigensystem(float* xStart, int& index_xStart, float X0, float Xm);
+  int transformToEigensystem(float* xStart, int& index_xStart, float* X0, float* Xm);
   float calculateChi2Fit3DProfileSimple(float a, float b, float c, float d);
   float calculateChi2Fit3DProfileAdvanced(float E0, float a, float b, float d, float t0);
   int fit3DProfileSimple(float& chi2, float& a, float& b, float& c, float& d);

@@ -703,8 +703,8 @@ int ClusterShapes::getEigenSytemCoordinates(float* xlong, float* xtrans) {
 
 
   // NOT SAVE, change to class variables !!!!!
-  float X0 = 7.0;
-  float Rm = 13.5;
+  float X0[2]={3.50,17.57};   //in mm. //this is the exact value of tungsten and iron
+  float Rm[2]={9.00,17.19};   //in mm. need to change to estimate correctly 
 
   if (_ifNotEigensystem == 1) transformToEigensystem(xStart,index_xStart,X0,Rm);
 
@@ -725,8 +725,8 @@ int ClusterShapes::getEigenSytemCoordinates(float* xlong, float* xtrans, float* 
   int index_xStart;
 
   // NOT SAVE, change to class variables !!!!!
-  float X0 = 7.0;
-  float Rm = 13.5;
+  float X0[2]={3.50,17.57};   //in mm. //this is the exact value of tungsten and iron
+  float Rm[2]={9.00,17.19};   //in mm. need to change to estimate correctly 
 
   if (_ifNotEigensystem == 1) transformToEigensystem(xStart,index_xStart,X0,Rm);
 
@@ -744,15 +744,25 @@ int ClusterShapes::getEigenSytemCoordinates(float* xlong, float* xtrans, float* 
 
 int ClusterShapes::fit3DProfile(float& chi2, float& E0, float& A, float& B, float& D,
 				float& xl0, float* xStart, int& index_xStart,
-				float X0, float Rm) {
+				float* X0, float* Rm) {
 
   const int npar = 4;
 
-
-  if (_ifNotEigensystem == 1) transformToEigensystem(xStart,index_xStart,X0,Rm);
-
+  if (_ifNotEigensystem == 1){
+    transformToEigensystem(xStart,index_xStart,X0,Rm);
+  }
+  
   float* E = new float[_nHits];
 
+  //doesn't fit when _nHits==0
+  //std::cout << "_nhits " << _nHits << std::endl;
+  if(_nHits-1 < npar){  //can't fit because number of degrees of freedom is small
+    E0=0.0;
+
+    delete[] E;
+    int result = 0;  // no error handling at the moment
+    return result;
+  }
 
   double par_init[npar];
   for (int i = 0; i < npar; ++i) par_init[i] = 0.0; // initialise
@@ -760,12 +770,12 @@ int ClusterShapes::fit3DProfile(float& chi2, float& E0, float& A, float& B, floa
   float E0_init = 0.0;
   float A_init  = 0.0;
   float B_init  = 0.5; // empirically
-  float D_init  = 0.5; // empirically
-  float t0_init = -10.0/X0; // shift xl0_ini is assumed to be -10.0 without a reason ????
+  float D_init  = 0.06;    //0.5; //if Rm includes 90% of shower energy, absorption length has 63% of shower energy
+  float t0_init = -10.0/X0[0]; // shift xl0_ini is assumed to be -10.0 without a reason ????
   
   float E0_tmp = 0.0;
   int i_max = 0;
-  float t_max = 0.0;
+  //float t_max = 0.0;
   for (int i = 0; i < _nHits; ++i) {
     if (E0_tmp < _aHit[i]) {
       E0_tmp = _aHit[i]; 
@@ -783,10 +793,8 @@ int ClusterShapes::fit3DProfile(float& chi2, float& E0, float& A, float& B, floa
   //A_init = t_max*B_init + 1.0;
 
   // third definition
-  float Ec = X0 * 0.021/Rm;
+  float Ec = X0[0] * 0.021/Rm[0];
   A_init =  B_init * log(E0_init/Ec) + 0.5 * B_init + 1.0; // (+0.5 for Photons initiated showers)
-
-
 
   // par_init[0] = E0_init;
   E0 = E0_init;
@@ -795,16 +803,16 @@ int ClusterShapes::fit3DProfile(float& chi2, float& E0, float& A, float& B, floa
   par_init[1] = B_init;
   par_init[2] = D_init;
   par_init[3] = t0_init;
-
+ 
   // debug
 
-  std::cout << "E0_init : " <<  E0_init << "\t" << "A_init : " << A_init << "\t" 
-	    << "B_init : " <<  B_init << "\t" << "D_init : " << D_init << "\t" 
-	    << "xl0_init : "  << t0_init*X0 << "\t" << "X0 : " << X0 
-	    << "\t" << "t_max : " << t_max << std::endl << std::endl;
+  // std::cout << "E0_init : " <<  E0_init << "\t" << "A_init : " << A_init << "\t" 
+	//     << "B_init : " <<  B_init << "\t" << "D_init : " << D_init << "\t" 
+	//     << "xl0_init : "  << t0_init*X0 << "\t" << "X0 : " << X0 
+	//     << "\t" << "t_max : " << t_max << std::endl << std::endl;
 
 
-  double t0 = xl0/X0;
+  double t0 = xl0/X0[0];   //probably t0 is in ecal
   double par[npar];
   par[0] = A;
   par[1] = B;
@@ -816,7 +824,7 @@ int ClusterShapes::fit3DProfile(float& chi2, float& E0, float& A, float& B, floa
   A   = par[0];
   B   = par[1];
   D   = par[2];
-  xl0 = par[3] * X0;
+  xl0 = par[3] * X0[0];   //probably shower start is in ecal
 
   delete[] E;
 
@@ -827,7 +835,7 @@ int ClusterShapes::fit3DProfile(float& chi2, float& E0, float& A, float& B, floa
 //=============================================================================
 
 float ClusterShapes::getChi2Fit3DProfileSimple(float a, float b, float c, float d,
-					       float X0, float Rm) {
+					       float* X0, float* Rm) {
 
   float chi2 = 0.0;
 
@@ -845,7 +853,7 @@ float ClusterShapes::getChi2Fit3DProfileSimple(float a, float b, float c, float 
 //=============================================================================
 
 float ClusterShapes::getChi2Fit3DProfileAdvanced(float E0, float a, float b, float d,
-						 float t0, float X0, float Rm) {
+						 float t0, float* X0, float* Rm) {
 
   float chi2 = 0.0;
 
@@ -1695,9 +1703,8 @@ double ClusterShapes::DistanceHelix(double x, double y, double z, double X0, dou
 
 //=============================================================================
 
-int ClusterShapes::transformToEigensystem(float* xStart, int& index_xStart, float X0,
-					  float Rm) {
-
+int ClusterShapes::transformToEigensystem(float* xStart, int& index_xStart, float* X0, float* Rm) {
+  
   if (_ifNotInertia == 1) findInertia();
 
   float MainAxis[3];
@@ -1711,9 +1718,16 @@ int ClusterShapes::transformToEigensystem(float* xStart, int& index_xStart, floa
   MainCentre[1] = _analogGravity[1];
   MainCentre[2] = _analogGravity[2];
 
+  //analoginertia looks something wrong!
+  //change it to the direction of CoG
+  //float ll=sqrt(MainCentre[0]*MainCentre[0]+MainCentre[1]*MainCentre[1]+MainCentre[2]*MainCentre[2]);
+  //MainAxis[0]=MainCentre[0]/ll;
+  //MainAxis[1]=MainCentre[1]/ll;
+  //MainAxis[2]=MainCentre[2]/ll;
+
   int ifirst = 0;
   float xx[3];
-  float prodmin = 0.0;
+  float prodmin = 1.0e+100;
   int index = 0;
 
   for (int i(0); i < _nHits; ++i) {
@@ -1731,27 +1745,73 @@ int ClusterShapes::transformToEigensystem(float* xStart, int& index_xStart, floa
   xStart[1] = MainCentre[1] + prodmin*MainAxis[1];
   xStart[2] = MainCentre[2] + prodmin*MainAxis[2];
   index_xStart = index;
+  
+  float l=sqrt(MainAxis[0]*MainAxis[0]+MainAxis[1]*MainAxis[1]+MainAxis[2]*MainAxis[2]);
+  //float ll=sqrt(xStart[0]*xStart[0]+xStart[1]*xStart[1]+xStart[2]*xStart[2]);
+  //std::cout << "xstart: " << index_xStart << " " << prodmin << " " << xStart[0] << std::endl;
 
+  //calculate the surface of hcal
+  float ecalrad=2.058000000e+03;   //in mm 
+  float plugz=2.650000000e+03;   //in mm 
+  
+	float tmpcos=MainAxis[2]/l;
+	float tmpsin=sqrt(MainAxis[0]*MainAxis[0]+MainAxis[1]*MainAxis[1])/l;
+  float detend=0.0;
+  if(fabs(xStart[2])<2.450000000e+03){   //if in the barrel
+    detend=(ecalrad-sqrt(xStart[0]*xStart[0]+xStart[1]*xStart[1]))/tmpsin;
+  }else{  //if in plug
+    detend=(plugz-fabs(xStart[2]))/fabs(tmpcos);
+  }
+  if(detend<0.0) detend=0.0;
+
+  // std::cout << "check length: " << detend << " "
+  //           << xStart[0]/ll << " " << xStart[1]/ll << " " << xStart[2]/ll << " " 
+  //           << MainAxis[0]/l << " " << MainAxis[1]/l << " " << MainAxis[1]/l << std::endl;
+  
   for (int i(0); i < _nHits; ++i) {
     xx[0] = _xHit[i] - xStart[0];
     xx[1] = _yHit[i] - xStart[1];
     xx[2] = _zHit[i] - xStart[2];
     float xx2(0.);
     for (int j(0); j < 3; ++j) xx2 += xx[j]*xx[j];
-
+    
     _xl[i] = 0.001 + vecProject(xx,MainAxis);
-    _xt[i] = sqrt(std::max(0.0,xx2 + 0.1 - _xl[i]*_xl[i]));
+    _xt[i] = sqrt(std::max(0.0,xx2 + 0.01 - _xl[i]*_xl[i]));
     //    std::cout << i << " " << _xl[i] << " " << _xt[i] << " " << _aHit[i] << " "
     //              << std::endl;
   }
-
-  for (int i = 0; i < _nHits; ++i) {
-    _t[i] = _xl[i]/X0;
-    _s[i] = _xt[i]/Rm;
+  
+  //first, check ecal and solve wrong behaviour
+  //std::cout << "param: " << X0[0] << " " << X0[1] << " " << Rm[0] << " " << Rm[1] << std::endl;
+  for (int i = 0; i < _nHits; ++i) { 
+    //if(_types[i]==0 || _types[i]==3){   //if the hit is in Ecal
+      _t[i] = _xl[i]/X0[0];
+      _s[i] = _xt[i]/Rm[0];
+      if(detend<_xl[i]){
+        //std::cout << "something wrong!! " << detend << " " << _xl[i] << " " << _t[i] << std::endl;
+        //detend = _xl[i]; //to avoid wrong behaviour
+      }
+      //}
   }
-
+  
+  //second, check hcal
+  /*for (int i = 0; i < _nHits; ++i) { 
+    if(_types[i]==1 || _types[i]==4){   //if the hit is in Hcal
+      if(_xl[i]>detend){
+        _t[i] = detend/X0[0]+(_xl[i]-detend)/X0[1];
+        _s[i] = _xt[i]/Rm[1];
+      }else{
+        _t[i] = _xl[i]/X0[0];
+        _s[i] = _xt[i]/Rm[0];
+      }   
+    }
+    // std::cout << _types[i] << " " << _xl[i] << " "
+    //           << _xl[i]+sqrt(xStart[0]*xStart[0]+xStart[1]*xStart[1]+xStart[2]*xStart[2])  << " "
+    //           << _t[i] << " " << _s[i] << std::endl;
+    }*/
+  
   _ifNotEigensystem = 0;
-
+  
   return 0; // no error messages at the moment
 
 }
@@ -1764,7 +1824,7 @@ float ClusterShapes::calculateChi2Fit3DProfileSimple(float a, float b, float c,
   // ClusterShapes::transformToEigensystem needs to be executed before
 
   float chi2 = 0.0;
-  float Ampl = 0.0;
+  float Ampl = 0.0; 
 
   for (int i(0); i < _nHits; ++i) {
     // old definition of Ampl and chi2
@@ -1932,6 +1992,8 @@ int ClusterShapes::fit3DProfileAdvanced(float& chi2, double* par_init, double* p
 
   const gsl_multifit_fdfsolver_type* T = gsl_multifit_fdfsolver_lmsder;
 
+  //std::cout << T << " " << _nHits << " " << npar << std::endl;
+
   gsl_multifit_fdfsolver* Solver = gsl_multifit_fdfsolver_alloc(T,_nHits,npar);
 
   gsl_matrix* covar = gsl_matrix_alloc(npar,npar);   // covariance matrix
@@ -1951,6 +2013,8 @@ int ClusterShapes::fit3DProfileAdvanced(float& chi2, double* par_init, double* p
   fitfunct.params = &DataSet;
 
   gsl_vector_view pinit = gsl_vector_view_array(par_init,npar);
+
+  //std::cout << Solver << " " << &fitfunct << " " << &pinit.vector << std::endl;
   gsl_multifit_fdfsolver_set(Solver,&fitfunct,&pinit.vector);
 
   gsl_set_error_handler_off();
@@ -1958,9 +2022,9 @@ int ClusterShapes::fit3DProfileAdvanced(float& chi2, double* par_init, double* p
   // perform fit
   do {
     iter++;
-    std::cout << "Multidimensional Fit Iteration started ... ... ";
+    //std::cout << "Multidimensional Fit Iteration started ... ... ";
     status = gsl_multifit_fdfsolver_iterate(Solver);
-    std::cout << "--- DONE ---" << std::endl;
+    //std::cout << "--- DONE ---" << std::endl;
 
     if (status) break;
     status = gsl_multifit_test_delta (Solver->dx,Solver->x,abs_error,rel_error);
@@ -2003,3 +2067,161 @@ int ClusterShapes::fit3DProfileAdvanced(float& chi2, double* par_init, double* p
 
 //=============================================================================
 
+float ClusterShapes::getEmax(float* xStart, int& index_xStart, float* X0, float* Rm){
+
+  if (_ifNotEigensystem == 1){
+    transformToEigensystem(xStart,index_xStart,X0,Rm);
+  }
+
+  float E_max=0.0;
+  int i_max=0;
+  for (int i = 0; i < _nHits; ++i) {
+    if (E_max < _aHit[i]) {
+      E_max = _aHit[i]; 
+      i_max = i;
+    }
+  }
+  
+  return E_max;
+}
+
+float ClusterShapes::getsmax(float* xStart, int& index_xStart, float* X0, float* Rm){
+
+  if (_ifNotEigensystem == 1){
+    transformToEigensystem(xStart,index_xStart,X0,Rm);
+  }
+
+  float E_max=0.0,xl_max=0.0;
+  float xl_start=1.0e+50;
+  int i_max=0;
+  for (int i = 0; i < _nHits; ++i) {
+    //check the position of maximum energy deposit
+    if (E_max < _aHit[i]) {
+      E_max = _aHit[i]; 
+      xl_max = _xl[i];
+      i_max = i;
+    }
+    //check the position of shower start
+    if (xl_start > _xl[i]) {
+      xl_start = _xl[i];
+    }
+  }
+  
+  return fabs(xl_max-xl_start);
+}
+
+float ClusterShapes::getxl20(float* xStart, int& index_xStart, float* X0, float* Rm){
+  
+  if (_ifNotEigensystem == 1){
+    transformToEigensystem(xStart,index_xStart,X0,Rm);
+  }
+  
+  float *xl_res = new float[_nHits];
+  float *E_res = new float[_nHits];
+  float E_tot=0.0;
+  for (int i = 0; i < _nHits; ++i) {
+    E_res[i]=_aHit[i];
+    xl_res[i]=_xl[i];
+
+    E_tot+=_aHit[i];
+  }
+  
+  //sort deposite energy to xs ascending order
+  float tmpe=0.0, tmpxl=0.0;
+  for (int i = 0; i < _nHits; ++i) {
+    for (int j = i + 1; j < _nHits; ++j) {
+      if(xl_res[i]>xl_res[j]){
+        tmpe=E_res[i];
+        E_res[i]=E_res[j];
+        E_res[j]=tmpe;
+
+        tmpxl=xl_res[i];
+        xl_res[i]=xl_res[j];
+        xl_res[j]=tmpxl;
+      }
+    }
+  }
+
+  // std::cout << "check xt: " << xt_res[0] << " " << xt_res[1] << " " << xt_res[2]
+  //           <<std::endl;
+  float E20=0.0,okxl=0.0;
+  int k=0;
+  while(E20/E_tot<0.2){
+    E20+=E_res[k];
+    k++;
+  }
+  
+  //final hit is located in outer radius
+  okxl=xl_res[k-2];
+
+  delete xl_res;
+  delete E_res;
+
+  return okxl;
+}
+
+float ClusterShapes::getxt90(float* xStart, int& index_xStart, float* X0, float* Rm){
+  
+  if (_ifNotEigensystem == 1){
+    transformToEigensystem(xStart,index_xStart,X0,Rm);
+  }
+  
+  float *xt_res = new float[_nHits];
+  float *E_res = new float[_nHits];
+  float E_tot=0.0;
+  for (int i = 0; i < _nHits; ++i) {
+    E_res[i]=_aHit[i];
+    xt_res[i]=_xt[i];
+
+    E_tot+=_aHit[i];
+  }
+  
+  //sort deposite energy to xt ascending order
+  float tmpe=0.0, tmpxt=0.0;
+  for (int i = 0; i < _nHits; ++i) {
+    for (int j = i + 1; j < _nHits; ++j) {
+      if(xt_res[i]>xt_res[j]){
+        tmpe=E_res[i];
+        E_res[i]=E_res[j];
+        E_res[j]=tmpe;
+
+        tmpxt=xt_res[i];
+        xt_res[i]=xt_res[j];
+        xt_res[j]=tmpxt;
+      }
+    }
+  }
+
+  // std::cout << "check xt: " << xt_res[0] << " " << xt_res[1] << " " << xt_res[2]
+  //           <<std::endl;
+  float E90=0.0,okxt=0.0;
+  int k=0;
+  while(E90/E_tot<0.9){
+    E90+=E_res[k];
+    k++;
+  }
+  
+  //final hit is located in outer radius
+  okxt=xt_res[k-2];
+
+  delete xt_res;
+  delete E_res;
+
+  return okxt;
+}
+
+//for test
+void ClusterShapes::gethits(float* xStart, int& index_xStart, float* X0, float* Rm, float *okxl, float *okxt, float *oke){
+  
+  if (_ifNotEigensystem == 1){
+    transformToEigensystem(xStart,index_xStart,X0,Rm);
+  }
+  
+  for (int i = 0; i < _nHits; ++i) {
+    okxl[i]=_xl[i];
+    okxt[i]=_xt[i];
+    oke[i]=_aHit[i];
+  }
+  
+  return;
+}

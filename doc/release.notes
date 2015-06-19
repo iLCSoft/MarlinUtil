@@ -3,6 +3,10 @@
  release notes for MarlinUtil
 
 ================================
+ ------------
+| v01-08-01  |
+ ------------
+     - added functions for cluster shape calculation (M. Kurata) 
 
  ---------
 | v01-08  |
