@@ -1850,15 +1850,20 @@ void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
     if(showHCALEndcap) {
         if(drawCLIC){
             if(showLCal && (r_max_lcal > r_min_hcal_ecap)){
-                gTV.push_back( CEDGeoTube( r_max_hcal_ecap/cos(M_PI/(float)hcalSymO),    r_max_lcal/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, (z_max_hcal_ecap-z_min_hcal_ecap)/2.0,  z_min_hcal_ecap,   hcalCol, hcalEndcapLayer ,0,1) ) ; //  endcap HCAL +Z
-                gTV.push_back( CEDGeoTube( r_max_hcal_ecap/cos(M_PI/(float)hcalSymO),    r_max_lcal/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, -(z_max_hcal_ecap-z_min_hcal_ecap)/2.0, -z_min_hcal_ecap,  hcalCol, hcalEndcapLayer ,0,1) ) ;  //  endcap HCAL -Z
-                gTV.push_back( CEDGeoTube( r_max_lcal/cos(M_PI/(float)hcalSymO),    r_min_hcal_ecap/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, (z_max_hcal_ecap-z_max_lcal)/2.0,  z_max_lcal,   hcalCol, hcalEndcapLayer ,0,1) ) ; //  endcap HCAL +Z
-                gTV.push_back( CEDGeoTube( r_max_lcal/cos(M_PI/(float)hcalSymO),    r_min_hcal_ecap/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, -(z_max_hcal_ecap-z_max_lcal)/2.0, -z_max_lcal,  hcalCol, hcalEndcapLayer ,0,1) ) ;  //  endcap HCAL -Z
-                
+
+                // gTV.push_back( CEDGeoTube( r_max_hcal_ecap/cos(M_PI/(float)hcalSymO),    r_max_lcal/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, (z_max_hcal_ecap-z_min_hcal_ecap)/2.0,  z_min_hcal_ecap,   hcalCol, hcalEndcapLayer ,1,1) ) ; //  endcap HCAL +Z
+                // gTV.push_back( CEDGeoTube( r_max_hcal_ecap/cos(M_PI/(float)hcalSymO),    r_max_lcal/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, -(z_max_hcal_ecap-z_min_hcal_ecap)/2.0, -z_min_hcal_ecap,  hcalCol, hcalEndcapLayer ,1,1) ) ;  //  endcap HCAL -Z
+                // gTV.push_back( CEDGeoTube( r_max_lcal/cos(M_PI/(float)hcalSymO),    r_min_hcal_ecap/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, (z_max_hcal_ecap-z_max_lcal)/2.0,  z_max_lcal,   hcalCol, hcalEndcapLayer ,0,1) ) ; //  endcap HCAL +Z
+                // gTV.push_back( CEDGeoTube( r_max_lcal/cos(M_PI/(float)hcalSymO),    r_min_hcal_ecap/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, -(z_max_hcal_ecap-z_max_lcal)/2.0, -z_max_lcal,  hcalCol, hcalEndcapLayer ,0,1) ) ;  //  endcap HCAL -Z
+	      
+                gTV.push_back( CEDGeoTube( r_max_hcal_ecap/cos(M_PI/(float)hcalSymO),    r_max_lcal/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, thick_hcal_ecap,  shift_hcal_z_plus,   hcalCol, hcalEndcapLayer ,1,1) ) ; //  endcap HCAL +Z
+                gTV.push_back( CEDGeoTube( r_max_hcal_ecap/cos(M_PI/(float)hcalSymO),    r_max_lcal/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, thick_hcal_ecap, -shift_hcal_z_minus,  hcalCol, hcalEndcapLayer ,1,1) ) ;  //  endcap HCAL -Z
+
             }else{
-                gTV.push_back( CEDGeoTube( r_max_hcal_ecap/cos(M_PI/(float)hcalSymO),    r_min_hcal_ecap/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, thick_hcal_ecap,  shift_hcal_z_plus,   hcalCol, hcalEndcapLayer ,0,1) ) ; //  endcap HCAL +Z
-                gTV.push_back( CEDGeoTube( r_max_hcal_ecap/cos(M_PI/(float)hcalSymO),    r_min_hcal_ecap/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, thick_hcal_ecap, -shift_hcal_z_minus,  hcalCol, hcalEndcapLayer ,0,1) ) ;  //  endcap HCAL -Z
+                gTV.push_back( CEDGeoTube( r_max_hcal_ecap/cos(M_PI/(float)hcalSymO),    r_min_hcal_ecap/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, thick_hcal_ecap,  shift_hcal_z_plus,   hcalCol, hcalEndcapLayer ,1,1) ) ; //  endcap HCAL +Z
+                gTV.push_back( CEDGeoTube( r_max_hcal_ecap/cos(M_PI/(float)hcalSymO),    r_min_hcal_ecap/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, thick_hcal_ecap, -shift_hcal_z_minus,  hcalCol, hcalEndcapLayer ,1,1) ) ;  //  endcap HCAL -Z
             }
+
         }else{
             gTV.push_back( CEDGeoTube( r_out_hcal_ecap,    r_min_hcal_ecap,           ecalSym, 40,  22.5,     0, thick_hcal_ecap,  shift_hcal_z_plus,   hcalCol, hcalEndcapLayer ,0,1) ) ; //  endcap HCAL +Z
             gTV.push_back( CEDGeoTube( r_out_hcal_ecap,    r_min_hcal_ecap,           ecalSym, 40,  22.5,     0, thick_hcal_ecap, -shift_hcal_z_minus,  hcalCol, hcalEndcapLayer ,0,1) ) ;  //  endcap HCAL -Z
@@ -1888,12 +1893,12 @@ void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
     
     
     if(showYoke){
-        gTV.push_back( CEDGeoTube( r_out_yoke_bar,     r_inn_yoke_bar,             yokeSym,yokeSym,        180./(float)yokeSym,   0, z_max_yoke_bar,  - z_max_yoke_bar,     yokeCol,  yokeLayer, 0, 0) ) ; //  YOKE Barrel
+        gTV.push_back( CEDGeoTube( r_out_yoke_bar,     r_inn_yoke_bar,             yokeSym,yokeSym,        180./(float)yokeSym,   0, z_max_yoke_bar,  - z_max_yoke_bar,     yokeCol,  yokeLayer, 0, 1) ) ; //  YOKE Barrel
     }
     
     if(showYokeEndcap){
-        gTV.push_back( CEDGeoTube( r_out_yoke_ecap,    r_min_yoke_ecap,            yokeSym,yokeSym,        180./(float)yokeSym,   0, thick_yoke_ecap,  shift_yoke_z_plus,   yokeCol,  yokeLayer, 0, 0) ) ; //  endcap YOKE +Z
-        gTV.push_back( CEDGeoTube( r_out_yoke_ecap,    r_min_yoke_ecap,            yokeSym,yokeSym,        180./(float)yokeSym,   0, thick_yoke_ecap, -shift_yoke_z_minus,  yokeCol,  yokeLayer, 0, 0) ) ;  //  endcap YOKE -Z
+        gTV.push_back( CEDGeoTube( r_out_yoke_ecap,    r_min_yoke_ecap,            yokeSym,yokeSym,        180./(float)yokeSym,   0, thick_yoke_ecap,  shift_yoke_z_plus,   yokeCol,  yokeLayer, 0, 1) ) ; //  endcap YOKE +Z
+        gTV.push_back( CEDGeoTube( r_out_yoke_ecap,    r_min_yoke_ecap,            yokeSym,yokeSym,        180./(float)yokeSym,   0, thick_yoke_ecap, -shift_yoke_z_minus,  yokeCol,  yokeLayer, 0, 1) ) ;  //  endcap YOKE -Z
     }
     
     
