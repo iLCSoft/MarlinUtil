@@ -1350,7 +1350,7 @@ void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
     DoubleVec ftd_ro ;  // outer r
     DoubleVec ftd_z  ;  // z position
     
-    bool showFTD = true;
+    bool showFTD = false;
     
     try{
         
@@ -1404,10 +1404,9 @@ void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
             
         }
         
-        
+        showFTD=true;
     }
     catch( gear::UnknownParameterException& e){
-        showFTD=false;
     }
     
     
@@ -1427,9 +1426,9 @@ void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
         std::copy( FTD_ri.begin(), FTD_ri.end(), std::back_inserter(  ftd_ri )  ) ;
         std::copy( FTD_ro.begin(), FTD_ro.end(), std::back_inserter(  ftd_ro )  ) ;
         std::copy( FTD_z.begin() , FTD_z.end() , std::back_inserter(  ftd_z  )  ) ;
+        showFTD=true;
     }
     catch( gear::UnknownParameterException& e){
-        showFTD=false;
     }
     
     //note: if both try blocks fail, the ftd vectors simply will be empty and no disks will be drawn
@@ -1754,8 +1753,8 @@ void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
     
     if(showFTD){
         for( unsigned i=0, N = ftd_z.size(); i<N ; ++i) {
-            gTV.push_back( CEDGeoTube( ftd_ri[i],          ftd_ro[i],  40,  40,   0.0   , 0, ftd_d[i]  ,    ftd_z[i] ,   ftdCol, ftdLayer, 0,0 ) ) ;  //  FTD
-            gTV.push_back( CEDGeoTube( ftd_ri[i],          ftd_ro[i],  40,  40,   0.0   , 0, ftd_d[i]  ,  - ftd_z[i] ,   ftdCol, ftdLayer, 0,0 ) ) ;  //  FTD
+            gTV.push_back( CEDGeoTube( ftd_ri[i],          ftd_ro[i],  40,  40,   0.0   , 0, ftd_d[i]  ,    ftd_z[i] ,   ftdCol, ftdLayer, 0,1 ) ) ;  //  FTD
+            gTV.push_back( CEDGeoTube( ftd_ri[i],          ftd_ro[i],  40,  40,   0.0   , 0, ftd_d[i]  ,  - ftd_z[i] ,   ftdCol, ftdLayer, 0,1 ) ) ;  //  FTD
         }
     }
     
@@ -1803,8 +1802,13 @@ void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
     }
     
     if(showBeamcal){
-        gTV.push_back( CEDGeoTube( r_max_beamcal,      r_min_beamcal,              40, 40,    0., 0, thick_beamcal,  shift_beamcal_z_plus,   fcalCol, fcalLayer ,0,0) ) ; //    BEAMCAL +Z
-        gTV.push_back( CEDGeoTube( r_max_beamcal,      r_min_beamcal,              40, 40, 0.,    0, thick_beamcal, -shift_beamcal_z_minus,  fcalCol, fcalLayer ,0,0) ) ;  //   BEAMCAL -Z
+        if(drawCLIC){
+            gTV.push_back( CEDGeoTube( r_max_beamcal,      r_min_beamcal,              40, 40,    0., 0, thick_beamcal,  shift_beamcal_z_plus,   fcalCol, fcalLayer ,0,1) ) ; //    BEAMCAL +Z
+            gTV.push_back( CEDGeoTube( r_max_beamcal,      r_min_beamcal,              40, 40, 0.,    0, thick_beamcal, -shift_beamcal_z_minus,  fcalCol, fcalLayer ,0,1) ) ;  //   BEAMCAL -Z
+        }else{
+            gTV.push_back( CEDGeoTube( r_max_beamcal,      r_min_beamcal,              40, 40,    0., 0, thick_beamcal,  shift_beamcal_z_plus,   fcalCol, fcalLayer ,0,0) ) ; //    BEAMCAL +Z
+            gTV.push_back( CEDGeoTube( r_max_beamcal,      r_min_beamcal,              40, 40, 0.,    0, thick_beamcal, -shift_beamcal_z_minus,  fcalCol, fcalLayer ,0,0) ) ;  //   BEAMCAL -Z
+        }
     }
     
     
@@ -1813,8 +1817,8 @@ void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
     }
     
     if(showECAL){
-        if(drawCLIC){
-            gTV.push_back( CEDGeoTube( r_max_ecal_bar/cos(M_PI/(float)ecalSym),     r_min_ecal_bar/cos(M_PI/(float)ecalSym),             ecalSym, ecalSym, 180./(double)ecalSym , 0,  z_max_ecal_bar,   -z_max_ecal_bar,       ecalCol, ecalLayer ,0,1) ) ; //  ECAL Barrel
+        if(drawCLIC){ //this 40 is due the definition of the ecal outer radius, bug in driver this is a temporary fix
+            gTV.push_back( CEDGeoTube( (r_min_hcal_bar-40)/cos(M_PI/(float)hcalSymO),     r_min_ecal_bar/cos(M_PI/(float)ecalSym),             ecalSym, ecalSym, 180./(double)ecalSym , 0,  z_max_ecal_bar,   -z_max_ecal_bar,       ecalCol, ecalLayer ,0,1) ) ; //  ECAL Barrel
             
         }else{
             gTV.push_back( CEDGeoTube( r_out_ecal_bar,     r_inn_ecal_bar,             ecalSym, ecalSym, 180./(double)ecalSym , 0,  z_max_ecal_bar,   -z_max_ecal_bar,       ecalCol, ecalLayer ,0,1) ) ; //  ECAL Barrel
@@ -1833,7 +1837,7 @@ void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
     
     if(showHCAL){
         if(drawCLIC){
-            gTV.push_back( CEDGeoTube( r_out_hcal_bar*Cos16/cos(M_PI/(float)hcalSymO),     r_inn_hcal_bar*Cos8/cos(M_PI/(float)hcalSymO),            hcalSymO,  hcalSymI, 180./(float)hcalSymO, 0, z_max_hcal_bar,  -z_max_hcal_bar,      hcalCol, hcalLayer ,0,1) ) ; //  HCAL Barrel
+            gTV.push_back( CEDGeoTube( (r_max_hcal_bar)/cos(M_PI/(float)hcalSymO),     r_inn_hcal_bar*Cos8/cos(M_PI/(float)hcalSymO),            hcalSymO,  hcalSymI, 180./(float)hcalSymO, 0, z_max_hcal_bar,  -z_max_hcal_bar,      hcalCol, hcalLayer ,0,1) ) ; //  HCAL Barrel
         }else{
             gTV.push_back( CEDGeoTube( r_out_hcal_bar,     r_inn_hcal_bar,            hcalSymO,  hcalSymI, 11.5, 11.5, z_max_hcal_bar,  -z_max_hcal_bar,      hcalCol, hcalLayer ,0,1) ) ; //  HCAL Barrel
         }
@@ -1850,20 +1854,21 @@ void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
     if(showHCALEndcap) {
         if(drawCLIC){
             if(showLCal && (r_max_lcal > r_min_hcal_ecap)){
-
-                // gTV.push_back( CEDGeoTube( r_max_hcal_ecap/cos(M_PI/(float)hcalSymO),    r_max_lcal/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, (z_max_hcal_ecap-z_min_hcal_ecap)/2.0,  z_min_hcal_ecap,   hcalCol, hcalEndcapLayer ,1,1) ) ; //  endcap HCAL +Z
-                // gTV.push_back( CEDGeoTube( r_max_hcal_ecap/cos(M_PI/(float)hcalSymO),    r_max_lcal/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, -(z_max_hcal_ecap-z_min_hcal_ecap)/2.0, -z_min_hcal_ecap,  hcalCol, hcalEndcapLayer ,1,1) ) ;  //  endcap HCAL -Z
-                // gTV.push_back( CEDGeoTube( r_max_lcal/cos(M_PI/(float)hcalSymO),    r_min_hcal_ecap/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, (z_max_hcal_ecap-z_max_lcal)/2.0,  z_max_lcal,   hcalCol, hcalEndcapLayer ,0,1) ) ; //  endcap HCAL +Z
-                // gTV.push_back( CEDGeoTube( r_max_lcal/cos(M_PI/(float)hcalSymO),    r_min_hcal_ecap/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, -(z_max_hcal_ecap-z_max_lcal)/2.0, -z_max_lcal,  hcalCol, hcalEndcapLayer ,0,1) ) ;  //  endcap HCAL -Z
-	      
-                gTV.push_back( CEDGeoTube( r_max_hcal_ecap/cos(M_PI/(float)hcalSymO),    r_max_lcal/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, thick_hcal_ecap,  shift_hcal_z_plus,   hcalCol, hcalEndcapLayer ,1,1) ) ; //  endcap HCAL +Z
-                gTV.push_back( CEDGeoTube( r_max_hcal_ecap/cos(M_PI/(float)hcalSymO),    r_max_lcal/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, thick_hcal_ecap, -shift_hcal_z_minus,  hcalCol, hcalEndcapLayer ,1,1) ) ;  //  endcap HCAL -Z
-
+                
+                float thick_hcal_ecap2    = 0.5*(z_max_hcal_ecap - z_max_lcal + 20.0);
+                float shift_hcal_z_plus2  = z_max_lcal;
+                float shift_hcal_z_minus2 = z_max_lcal + 2.0*thick_hcal_ecap2;
+                
+                gTV.push_back( CEDGeoTube( r_max_hcal_ecap/cos(M_PI/(float)hcalSymO),    r_max_lcal/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, thick_hcal_ecap,  shift_hcal_z_plus,   hcalCol, hcalEndcapLayer ,0,1) ) ; //  endcap HCAL +Z
+                gTV.push_back( CEDGeoTube( r_max_hcal_ecap/cos(M_PI/(float)hcalSymO),    r_max_lcal/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, thick_hcal_ecap, -shift_hcal_z_minus,  hcalCol, hcalEndcapLayer ,0,1) ) ;  //  endcap HCAL -Z
+                gTV.push_back( CEDGeoTube( r_max_lcal/cos(M_PI/(float)hcalSymO),    r_min_hcal_ecap/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, thick_hcal_ecap2,  shift_hcal_z_plus2,   hcalCol, hcalEndcapLayer ,1,0) ) ; //  endcap HCAL +Z
+                gTV.push_back( CEDGeoTube( r_max_lcal/cos(M_PI/(float)hcalSymO),    r_min_hcal_ecap/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, thick_hcal_ecap2, -shift_hcal_z_minus2,  hcalCol, hcalEndcapLayer ,1,0) ) ;  //  endcap HCAL -Z
+                
             }else{
                 gTV.push_back( CEDGeoTube( r_max_hcal_ecap/cos(M_PI/(float)hcalSymO),    r_min_hcal_ecap/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, thick_hcal_ecap,  shift_hcal_z_plus,   hcalCol, hcalEndcapLayer ,1,1) ) ; //  endcap HCAL +Z
                 gTV.push_back( CEDGeoTube( r_max_hcal_ecap/cos(M_PI/(float)hcalSymO),    r_min_hcal_ecap/cos(M_PI/(float)hcalSymO),           hcalSymO, hcalSymO,  180./(float)hcalSymO,     0, thick_hcal_ecap, -shift_hcal_z_minus,  hcalCol, hcalEndcapLayer ,1,1) ) ;  //  endcap HCAL -Z
             }
-
+            
         }else{
             gTV.push_back( CEDGeoTube( r_out_hcal_ecap,    r_min_hcal_ecap,           ecalSym, 40,  22.5,     0, thick_hcal_ecap,  shift_hcal_z_plus,   hcalCol, hcalEndcapLayer ,0,1) ) ; //  endcap HCAL +Z
             gTV.push_back( CEDGeoTube( r_out_hcal_ecap,    r_min_hcal_ecap,           ecalSym, 40,  22.5,     0, thick_hcal_ecap, -shift_hcal_z_minus,  hcalCol, hcalEndcapLayer ,0,1) ) ;  //  endcap HCAL -Z
@@ -1887,8 +1892,13 @@ void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
     }
     
     if ( showLCal ){
-        gTV.push_back( CEDGeoTube( r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal,  shift_lcal_z_plus,   fcalCol, fcalLayer ,0,0) ) ; //    LCAL +Z
-        gTV.push_back( CEDGeoTube( r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal, -shift_lcal_z_minus,  fcalCol, fcalLayer ,0,0) ) ;  //   LCAL -Z
+        if(drawCLIC){
+            gTV.push_back( CEDGeoTube( r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal,  shift_lcal_z_plus,   fcalCol, fcalLayer ,1,1) ) ; //    LCAL +Z
+            gTV.push_back( CEDGeoTube( r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal, -shift_lcal_z_minus,  fcalCol, fcalLayer ,1,1) ) ;  //   LCAL -Z
+        }else{
+	           gTV.push_back( CEDGeoTube( r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal,  shift_lcal_z_plus,   fcalCol, fcalLayer ,0,0) ) ; //    LCAL +Z
+            gTV.push_back( CEDGeoTube( r_max_lcal,         r_min_lcal,                 40, 40,    0., 0, thick_lcal, -shift_lcal_z_minus,  fcalCol, fcalLayer ,0,0) ) ;  //   LCAL -Z
+        }
     }
     
     
