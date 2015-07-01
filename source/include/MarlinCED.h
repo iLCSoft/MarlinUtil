@@ -296,9 +296,9 @@ class MarlinCED {
 
    
     static CED_GeoCylinder geoCylindersCaliceTestBeam[] = {  // Calice TestBeam Prototype (simple wire frame)
-      {  192.25*sqrt(2.0),  4,  45.0,  101.35, -2.0*101.35      , 0x7f7f1f  },    // ECAL (Proto03)
-      {  450.00*sqrt(2.0),  4,  45.0,  572.87,        0.00      , 0xcf00    },    // HCAL (TBHcal04)
-      {  500.00*sqrt(2.0),  4,  45.0,  457.60,  2.0*572.87+250.0, 0xcf00    },    // TCatcher (TBCatcher04)
+      {  float( 192.25*sqrt(2.0) ),  4,  45.0,  101.35, -2.0*101.35      , 0x7f7f1f  },    // ECAL (Proto03)
+      {  float( 450.00*sqrt(2.0) ),  4,  45.0,  572.87,        0.00      , 0xcf00    },    // HCAL (TBHcal04)
+      {  float( 500.00*sqrt(2.0) ),  4,  45.0,  457.60,  2.0*572.87+250.0, 0xcf00    },    // TCatcher (TBCatcher04)
 	// radius (surrounding (out-circle!) the polygon), poligon order, angle degree, 1/2 length, shift in z, color
     }; 
 
