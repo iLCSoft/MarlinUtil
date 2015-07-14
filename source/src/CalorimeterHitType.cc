@@ -66,3 +66,16 @@ CHT::CaloID caloIDFromString(const std::string& name){
   return CHT::unknown ;
 }
 
+CHT::CaloType caloTypeFromString(const std::string& name){
+
+  std::string str( name ) ;
+  std::transform( str.begin() , str.end() , str.begin(), ::tolower ) ;
+
+  if( str.find("em" ) != std::string::npos )  return CHT::em ;
+  if( str.find("had" ) != std::string::npos )  return CHT::had ;
+  if( str.find("muon" ) != std::string::npos )  return CHT::muon ;
+
+  // jl: this should probably also have a separate "unknown" or "any" value? 
+  return CHT::em ;
+}
+

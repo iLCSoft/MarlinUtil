@@ -144,6 +144,10 @@ CHT::Layout layoutFromString(const std::string& name) ;
     is found, CHT::unknown is returned.*/
 CHT::CaloID caloIDFromString(const std::string& name) ;
 
+/** Return caloType from string, e.g. if name contains tolower("Had") CHT::had is returned. In case no known type
+    is found, CHT::em is returned.*/
+CHT::CaloType caloTypeFromString(const std::string& name) ;
+
 
 
 #endif
