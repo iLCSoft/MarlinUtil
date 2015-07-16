@@ -1753,8 +1753,8 @@ void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
     
     if(showFTD){
         for( unsigned i=0, N = ftd_z.size(); i<N ; ++i) {
-            gTV.push_back( CEDGeoTube( ftd_ri[i],          ftd_ro[i],  40,  40,   0.0   , 0, ftd_d[i]  ,    ftd_z[i] ,   ftdCol, ftdLayer, 0,1 ) ) ;  //  FTD
-            gTV.push_back( CEDGeoTube( ftd_ri[i],          ftd_ro[i],  40,  40,   0.0   , 0, ftd_d[i]  ,  - ftd_z[i] ,   ftdCol, ftdLayer, 0,1 ) ) ;  //  FTD
+            gTV.push_back( CEDGeoTube( ftd_ri[i],          ftd_ro[i],  40,  40,   0.0   , 0, ftd_d[i]  ,    ftd_z[i] ,   ftdCol, ftdLayer, 1,1 ) ) ;  //  FTD
+            gTV.push_back( CEDGeoTube( ftd_ri[i],          ftd_ro[i],  40,  40,   0.0   , 0, ftd_d[i]  ,  - ftd_z[i] ,   ftdCol, ftdLayer, 1,1 ) ) ;  //  FTD
         }
     }
     
