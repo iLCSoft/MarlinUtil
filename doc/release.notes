@@ -3,10 +3,30 @@
  release notes for MarlinUtil
 
 ================================
+
+ ---------
+| v01-10  |
+ ---------
+
+    - added helper function in CHT (J.List)
+      CHT::CaloType caloTypeFromString(const std::string& name) 
+
+    - fixes in MarlinCED (F.Gaede)
+      - fixed warning -Wc++11-narrowing
+      - draw inner and outer edge of FTD disks
+
+
+ ---------
+| v01-09  |
+ ---------
+     - added functions for cluster shape calculation (M. Kurata) 
+     - mad compatible for drawing CLIC detector (F.Gaede/M.Petric)
+
  ------------
 | v01-08-01  |
  ------------
-     - added functions for cluster shape calculation (M. Kurata) 
+     - draw all layers for SIT and SET
+       -> draw two layers per double layer
 
  ---------
 | v01-08  |
