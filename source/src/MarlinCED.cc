@@ -76,6 +76,8 @@ using namespace UTIL;
 //SJA:FIXED:added to make gcc4.3 compliant
 #include <cstdlib>
 #include <cstdio>
+#include <string>
+#include <algorithm>
 
 //hauke
 #include <ctime>
@@ -1598,7 +1600,9 @@ void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
     
     std::string detName = gearMgr->getDetectorName() ;
     
-    if( detName.find("CLIC") != std::string::npos ) drawCLIC = true ;
+    std::transform( detName.begin() , detName.end() , detName.begin() , ::tolower ) ;
+
+    if( detName.find("clic") != std::string::npos ) drawCLIC = true ;
     
     if( drawCLIC ) {
         
