@@ -24,7 +24,7 @@
  */
 class ClusterShapes {
 
- public:
+public:
 
   /**
    *    Constructor
@@ -48,20 +48,20 @@ class ClusterShapes {
   /**
    *    Defining errors for Helix Fit
    */
-   void setErrors(float *ex, float* ey, float *ez);
+  void setErrors(float *ex, float* ey, float *ez);
 
-   /**
-    *   Defining hit types for Helix Fit :
-    *   type 1 - cyllindrical detector
-    *   type 2 - Z disk detector
-    */
-   void setHitTypes(int *ityp);
+  /**
+   *   Defining hit types for Helix Fit :
+   *   type 1 - cyllindrical detector
+   *   type 2 - Z disk detector
+   */
+  void setHitTypes(int *ityp);
 
 
   /**
    * returns the number of elements of the cluster
    */
-   int getNumberOfHits();
+  int getNumberOfHits();
 
   /**
    * returns the accumulated amplitude for the whole cluster (just the sum of the 
@@ -75,15 +75,21 @@ class ClusterShapes {
    * of gravity is calculated with the energy of the entries of the cluster.
    */
   float* getCentreOfGravity();
+  // this is (for now) a pure dummy to allow MarlinPandora development!
+  float* getCentreOfGravityErrors();
 
   /** US spelling of getCentreOfGravity */
   inline float* getCenterOfGravity() { return getCentreOfGravity() ; }
+  // this is (for now) a pure dummy to allow MarlinPandora development!
+  inline float* getCenterOfGravityErrors() { return getCentreOfGravityErrors() ; }
   
   /**
    * array of the inertias of mass (i.\ e.\ energy) corresponding to the three main axes 
    * of inertia. The array is sorted in ascending order.
    */
   float* getEigenValInertia();
+  // this is (for now) a pure dummy to allow MarlinPandora development!
+  float* getEigenValInertiaErrors();
 
   /**
    * array of the three main axes of inertia (9 entries) starting
@@ -92,6 +98,8 @@ class ClusterShapes {
    * of 1.
    */
   float* getEigenVecInertia();
+  // this is (for now) a pure dummy to allow MarlinPandora development!
+  float* getEigenVecInertiaErrors();
 
   /**
    * 'mean' width of the cluster perpendicular to the main 
@@ -295,11 +303,15 @@ class ClusterShapes {
    */
   inline float getElipsoid_r_back() { return _r1_back; }
 
+  //Mean of the radius of the hits
+  float getRhitMean(float* xStart, int& index_xStart, float* X0, float* Rm);
+
+  //RMS of the radius of the hits
+  float getRhitRMS(float* xStart, int& index_xStart, float* X0, float* Rm);
 
 
 
-
- private:
+private:
 
   int _nHits;
 
@@ -352,7 +364,7 @@ class ClusterShapes {
   float vecProduct(float * x1, float * x2);
   float vecProject(float * x, float * axis);
   double DistanceHelix(double x, double y, double z, double X0, double Y0, double R0, double bz,
-		      double phi0, double * distRPhiZ);
+		       double phi0, double * distRPhiZ);
   int transformToEigensystem(float* xStart, int& index_xStart, float* X0, float* Xm);
   float calculateChi2Fit3DProfileSimple(float a, float b, float c, float d);
   float calculateChi2Fit3DProfileAdvanced(float E0, float a, float b, float d, float t0);
@@ -367,5 +379,6 @@ class ClusterShapes {
 
 
 };
+
 
 #endif
