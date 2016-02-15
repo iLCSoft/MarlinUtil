@@ -5,6 +5,28 @@
 ================================
 
  ---------
+| v01-11  |
+ ---------
+
+ M.Berggren
+  - Added WeightedPoints3D class, a class that analyses a set of points
+    in 3 dimensions (possibly with weights), and calculates things like
+    covariance matrix, averge position, eigen-vectors/values ...
+
+ F.Gaede
+   M /MarlinUtil/trunk/source/src/ClusterShapes.cc
+ - merge back changes from version copied to
+   MarlinReco for HLR week at Desy:
+    - added dummy error functions to ClusterShapes for MarlinPandora development (J.List)
+    - cluster shape variables added for mu-pi seaparation (H.Sert)
+
+ T.Quast (RWTH Aachen)
+ 
+   - added DDMarlinCED.cc
+     utility and detector draw routines for CEDViewer
+
+
+ ---------
 | v01-10  |
  ---------
 
