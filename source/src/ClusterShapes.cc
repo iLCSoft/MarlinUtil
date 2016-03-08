@@ -1330,7 +1330,11 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
 
   } while ( status==GSL_CONTINUE && iter < max_iter);
 
-  gsl_multifit_covar (s->J, rel_error, covar);
+  //fg: jacobian has been dropped from gsl_multifit_fdfsolver in gsl 2:
+  gsl_matrix * J = gsl_matrix_alloc(s->fdf->n, s->fdf->p);
+  gsl_multifit_fdfsolver_jac( s, J);
+  gsl_multifit_covar( J, rel_error, covar );
+  //  gsl_multifit_covar (s->J, rel_error, covar);
 
 
 
@@ -2062,7 +2066,11 @@ int ClusterShapes::fit3DProfileAdvanced(float& chi2, double* par_init, double* p
 
   } while ( status==GSL_CONTINUE && iter < max_iter);
 
-  gsl_multifit_covar (Solver->J,rel_error,covar);
+  //fg: jacobian has been dropped from gsl_multifit_fdfsolver in gsl 2:
+  gsl_matrix * J = gsl_matrix_alloc(Solver->fdf->n, Solver->fdf->p);
+  gsl_multifit_fdfsolver_jac(Solver, J);
+  gsl_multifit_covar( J, rel_error, covar );
+  //  gsl_multifit_covar (Solver->J,rel_error,covar);
 
   //  E0  = (float)gsl_vector_get(Solver->x,0);
   par[0] = (float)gsl_vector_get(Solver->x,0); // A
