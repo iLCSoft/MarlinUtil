@@ -465,8 +465,15 @@ void DDMarlinCED::drawDD4hepDetector( DD4hep::Geometry::LCDD& lcdd, bool _surfac
   const DetVec& trackers     = lcdd.detectors( "tracker" ) ;
   const DetVec& calorimeters = lcdd.detectors( "calorimeter" ) ;
   const DetVec& passiveDets  = lcdd.detectors( "passive" ) ;
+
+
   //allocate reference to the surface manager
-  DD4hep::DDRec::SurfaceManager& surfMan = *lcdd.extension<DD4hep::DDRec::SurfaceManager>();
+  // some models might not have a SurfaceManager extension:
+  DD4hep::DDRec::SurfaceManager* sM = 0 ;
+  try{  sM = lcdd.extension<DD4hep::DDRec::SurfaceManager>();
+  } catch( std::runtime_error ) {}
+  const DD4hep::DDRec::SurfaceManager& surfMan = ( sM ?  *sM  : SurfaceManager() ) ; 
+
   //some temporary parameters for visualization
   unsigned color; bool visible;
   //temporary objects
@@ -904,7 +911,7 @@ LayerGeometry TrackerLayerParameterConversion(std::vector<DDRec::ZPlanarData::La
 }
 
 //draws the given surfaces as a set of individual lines from indicated start- to the endpoint
-bool DrawSurfaces(DD4hep::DDRec::SurfaceManager &surfMan, std::string detName, unsigned color, int layer){
+bool DrawSurfaces(const DD4hep::DDRec::SurfaceManager &surfMan, std::string detName, unsigned color, int layer){
   typedef DD4hep::DDRec::SurfaceMap SMap;
   const SMap* sMap = surfMan.map(detName);
   int lineCounter = 0;
