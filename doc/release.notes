@@ -5,6 +5,16 @@
 ================================
 
  ---------
+| v01-12  |
+ ---------
+
+F. Gaede
+   - protect against missing SurfaceManager object in DD4hep model
+   - updated to use gsl 2.1
+   - made compatible with c++11
+   - removed -ansi -pedantic -Wno-long-long 
+
+ ---------
 | v01-11  |
  ---------
 
