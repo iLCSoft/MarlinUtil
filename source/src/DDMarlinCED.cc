@@ -795,7 +795,7 @@ CEDGeoTubeParams PetalParameterConversion (std::vector<DDRec::ZDiskPetalsData::L
 //into those required by the CEDGeoTube
 CEDGeoTubeParams CalorimeterLayerParameterConversion(std::vector<DDRec::LayeredCalorimeterData::Layer>::iterator thisLayer){
   double distance = thisLayer->distance/dd4hep::mm;
-  double thickness = thisLayer->thickness/dd4hep::mm;
+  double thickness = thisLayer->inner_thickness/dd4hep::mm + thisLayer->outer_thickness/dd4hep::mm ;
   double cellSize0 = thisLayer->cellSize0/dd4hep::mm;
   double cellSize1 = thisLayer->cellSize1/dd4hep::mm;
   
