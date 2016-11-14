@@ -4,6 +4,13 @@
 
 ================================
 
+ ------------
+| v01-12-01  |
+ ------------
+  - patch release
+  - replace LayeredCalorimeter::Layer::thickness
+    ( needed for DD4hep v00-18 )
+
  ---------
 | v01-12  |
  ---------
