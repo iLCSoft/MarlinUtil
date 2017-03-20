@@ -1,5 +1,5 @@
 #  MarlinUtil
-[![Build Status](https://travis-ci.org/iLCSoft/ MarlinUtil.svg?branch=master)](https://travis-ci.org/iLCSoft/ MarlinUtil)
+[![Build Status](https://travis-ci.org/iLCSoft/MarlinUtil.svg?branch=master)](https://travis-ci.org/iLCSoft/ MarlinUtil)
 
 Library that containes classes and functions that are used by more than one processor. In particular it contains the geometry classes that are used until we have the geometry for reconstruction package (GEAR).
 
@@ -11,7 +11,7 @@ This package is needed in praticular for MarlinReco but can also be included in 
 
 
 ## License and Copyright
-Copyright (C),  MarlinUtil Authors
+Copyright (C), MarlinUtil Authors
 
  MarlinUtil is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
