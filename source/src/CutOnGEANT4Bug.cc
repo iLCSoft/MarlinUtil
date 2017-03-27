@@ -37,20 +37,15 @@ CutOnGEANT4Bug::CutOnGEANT4Bug() : Processor("CutOnGEANT4Bug") {
 			      _colNameRelationCaloHitToSimCaloHit,
 			      std::string("RelationCaloHit") );
 
-  std::vector<float> calibrECAL;
-  calibrECAL.push_back(33.0235);
-  calibrECAL.push_back(93.5682);
   registerProcessorParameter("calibrCoeffECAL" , 
 			     "Calibration coefficients for ECAL" ,
 			     _calibrCoeffECAL,
-			     calibrECAL);
-  
-  std::vector<float> calibrHCAL;
-  calibrHCAL.push_back(21.19626);
+			     {33.0235,93.5682});
+
   registerProcessorParameter("calibrCoeffHCAL" , 
 			     "Calibration coefficients for HCAL" ,
 			     _calibrCoeffHCAL,
-			     calibrHCAL);
+			     {21.19626});
 }
 
 
@@ -66,7 +61,7 @@ void CutOnGEANT4Bug::init() {
 }
 
 
-void CutOnGEANT4Bug::processRunHeader( LCRunHeader* run) {
+void CutOnGEANT4Bug::processRunHeader( LCRunHeader* ) {
 
   ++_nRun;
 
@@ -80,20 +75,19 @@ void CutOnGEANT4Bug::processEvent( LCEvent* evt ) {
 
   try {
 
-    std::vector< std::string >::const_iterator iter;
-    const std::vector< std::string >* ColNames = evt->getCollectionNames();
+    const std::vector< std::string >* ColNames1 = evt->getCollectionNames();
 
-    for( iter = ColNames->begin() ; iter != ColNames->end() ; iter++) {
+    for(auto iterCol = ColNames1->begin() ; iterCol != ColNames1->end() ; ++iterCol) {
       
-      LCCollection* col = evt->getCollection( *iter ) ;
+      LCCollection* col1 = evt->getCollection( *iterCol ) ;
       
-      if ( (col->getTypeName() == LCIO::TRACK) && (*iter == _colNameTracks) ) {
+      if ( (col1->getTypeName() == LCIO::TRACK) && (*iterCol == _colNameTracks) ) {
 
-	int NTracks = col->getNumberOfElements();
+	int NTracks = col1->getNumberOfElements();
 	
-	for(int j=0; j<NTracks; ++j){
+	for(int jTrack=0; jTrack<NTracks; ++jTrack){
 	  
-	  Track* track = dynamic_cast<Track*>(col->getElementAt(j));
+	  Track* track = dynamic_cast<Track*>(col1->getElementAt(jTrack));
 	  
 	  try {
 	    
@@ -127,10 +121,9 @@ void CutOnGEANT4Bug::processEvent( LCEvent* evt ) {
 		
 		MCParticle* mcp = allMCPsOfTrack.at(j);
 		
-		std::vector< std::string >::const_iterator iter;
 		const std::vector< std::string >* ColNames = evt->getCollectionNames();
 		
-		for( iter = ColNames->begin() ; iter != ColNames->end() ; iter++) {
+		for(auto iter = ColNames->begin() ; iter != ColNames->end() ; iter++) {
 		  
 		  LCCollection* col = evt->getCollection( *iter ) ;
 		  
@@ -350,7 +343,7 @@ void CutOnGEANT4Bug::processEvent( LCEvent* evt ) {
 }
 
 
-void CutOnGEANT4Bug::check( LCEvent * evt ) {
+void CutOnGEANT4Bug::check( LCEvent* ) {
  
 }
 
