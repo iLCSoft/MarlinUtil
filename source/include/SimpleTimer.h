@@ -42,6 +42,8 @@ class SimpleTimer : public Processor {
   virtual Processor*  newProcessor() { return new SimpleTimer ; }
   
   SimpleTimer() ;
+  SimpleTimer(const SimpleTimer&) = delete;
+  SimpleTimer& operator=(const SimpleTimer&) = delete;
   
   virtual void init() ;
   virtual void processRunHeader( LCRunHeader* run ) ;
@@ -52,18 +54,18 @@ class SimpleTimer : public Processor {
   
  protected:
 
-  int _nRun;
-  int _nEvt;
+  int _nRun=-1;
+  int _nEvt=-1;
 
-  int _startTime;
-  int _time;
-  LCTime* _startTimer;
-  LCTime* _currentTimer;
-  int _mode;
-  int _secondsToWait;
-  int _secondsPerEvent;
-  int _secondsOfJob;
-  int _minutesOfJob;
+  int _startTime=0;
+  int _time=0;
+  LCTime* _startTimer=NULL;
+  LCTime* _currentTimer=NULL;
+  int _mode=0;
+  int _secondsToWait=0;
+  int _secondsPerEvent=0;
+  int _secondsOfJob=0;
+  int _minutesOfJob=0;
 
   void wait(int sleepTime);
 
