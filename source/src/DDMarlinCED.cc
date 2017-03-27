@@ -358,11 +358,11 @@ void DDMarlinCED::drawHelix(float b, float charge, float x, float y, float z,
         int count_lines=0;
         for (int j = 0; j < nSteps ; j++) {
             
-            double alpha = step*j ;
+            double alpha0 = step*j ;
             
-            double x2 = cx + r * cos( phi + sign * alpha ) ;
-            double y2 = cy + r * sin( phi + sign * alpha ) ;
-            double z2 = cz + r * alpha * pz / pt ;
+            double x2 = cx + r * cos( phi + sign * alpha0 ) ;
+            double y2 = cy + r * sin( phi + sign * alpha0 ) ;
+            double z2 = cz + r * alpha0 * pz / pt ;
             
             double r_current  = sqrt(x2*x2 + y2*y2); // hypot( x2, y2 )
             
@@ -539,13 +539,13 @@ void DDMarlinCED::drawDD4hepDetector( DD4hep::Geometry::LCDD& lcdd, bool _surfac
     
     try{ 
       trkPlanar = det.extension<ZPlanarData>();
-    } catch(std::runtime_error& e){
+    } catch(std::runtime_error&){
       try{
         trkDisk = det.extension<ZDiskPetalsData>();
-      }catch(std::runtime_error& e){
+      }catch(std::runtime_error&){
         try{
           trkTPC = det.extension<FixedPadSizeTPCData>();
-        } catch(std::runtime_error& e){
+        } catch(std::runtime_error&){
             streamlog_out( MESSAGE ) <<  detName 
              << " has no extension of type ZPlanarData/ZDiskPetalsData. "
              <<   std::endl;           
@@ -620,10 +620,10 @@ void DDMarlinCED::drawDD4hepDetector( DD4hep::Geometry::LCDD& lcdd, bool _surfac
     streamlog_out( MESSAGE ) << " ......processing " <<  detName << std::endl;  
     try{ 
         passiveConical = det.extension<ConicalSupportData>();
-    } catch(std::runtime_error& e){
+    } catch(std::runtime_error&){
       try{
         passiveCalo = det.extension<LayeredCalorimeterData>();
-      } catch(std::runtime_error& e){
+      } catch(std::runtime_error&){
           streamlog_out( MESSAGE ) <<  detName 
              << " has no extension of type ConicalSupportData/LayeredCalorimeterData. "
              <<   std::endl;  
