@@ -7,21 +7,18 @@
 
 //=============================================================================
 
-PseudoHistogram::PseudoHistogram(int NOfBins, double min, double max) {
+PseudoHistogram::PseudoHistogram(int NOfBins, double min, double max):
 
-  _FullNumberOfBins = NOfBins + 2;
-  _NumberOfBins = NOfBins;
-  _MinValue = min;
-  _MaxValue = max;
-  _NOfEntries = new int[_FullNumberOfBins];
-  _Content = new double[_FullNumberOfBins];
-  _UpperIntervalLimit = new double[_FullNumberOfBins-1];
-  for (int i = 0; i < _FullNumberOfBins; ++i) {
-    _NOfEntries[i] = 0;
-    _Content[i] = 0.0;
-  }
+  _FullNumberOfBins(NOfBins + 2),
+  _NumberOfBins(NOfBins),
+  _MinValue(min),
+  _MaxValue(max),
+  _BinWidth((fabs(_MaxValue - _MinValue)) / _NumberOfBins),
+  _NOfEntries(_FullNumberOfBins, 0),
+  _Content(_FullNumberOfBins, 0.0),
+  _UpperIntervalLimit(_FullNumberOfBins-1, 0.0)
 
-  _BinWidth = (fabs(_MaxValue - _MinValue)) / _NumberOfBins;
+{
   for (int i = 0; i < _FullNumberOfBins-1; ++i) {
     _UpperIntervalLimit[i] = _MinValue + i*_BinWidth;
   }
@@ -31,15 +28,6 @@ PseudoHistogram::PseudoHistogram(int NOfBins, double min, double max) {
 //=============================================================================
 
 PseudoHistogram::~PseudoHistogram() {
-
-  _FullNumberOfBins = 0;
-  delete[] _NOfEntries;
-  _NOfEntries = 0;
-  delete[] _Content;
-  _Content = 0;
-  delete[] _UpperIntervalLimit;
-  _UpperIntervalLimit = 0;
-
 }
 
 //=============================================================================
