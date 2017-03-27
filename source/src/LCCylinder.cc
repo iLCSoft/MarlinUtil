@@ -11,34 +11,29 @@
 LCCylinder::LCCylinder(LCVector3D point1, 
 		       LCVector3D point2, 
 		       double radius,
-		       bool endPlane) 
-{
-  _axisSstartPoint = point1;
-  _axisEndPoint = point2;
-
-  _radius = fabs(radius);
-  _endPlane = endPlane;
-}
+		       bool endPlane):
+  _radius(fabs(radius)),
+  _endPlane(endPlane),
+  _axisSstartPoint(point1),
+  _axisEndPoint(point2)
+{}
 
 LCCylinder::LCCylinder(double radius, 
 		       LCVector3D point, 
 		       LCVector3D axis, 
-		       bool endPlane) 
+		       bool endPlane):
+  _radius(fabs(radius)),
+  _endPlane(endPlane),
+  _axisSstartPoint(point - axis),
+  _axisEndPoint(point + axis)
+{}
+
+LCCylinder::LCCylinder(const LCCylinder & cylinder):
+  _radius(cylinder._radius),
+  _endPlane(cylinder._endPlane),
+  _axisSstartPoint(cylinder._axisSstartPoint),
+  _axisEndPoint(cylinder._axisEndPoint)
 {
-  _axisSstartPoint = point - axis ;
-  _axisEndPoint    = point + axis ;
-
-  _radius = fabs(radius);
-  _endPlane = endPlane;
-}
-
-LCCylinder::LCCylinder(const LCCylinder & cylinder) 
-{
-  _axisSstartPoint = cylinder._axisSstartPoint ;
-  _axisEndPoint    = cylinder._axisEndPoint ;
-
-  _radius = cylinder._radius ;
-  _endPlane = cylinder._endPlane;
 }
 
 LCCylinder & LCCylinder::operator=(const LCCylinder & rhs) 
