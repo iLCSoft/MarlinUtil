@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include <math.h>
 
 /**
@@ -93,8 +94,8 @@ class PseudoHistogram {
   double _MinValue;
   double _MaxValue;
   double _BinWidth;
-  int* _NOfEntries;
-  double* _Content;
-  double* _UpperIntervalLimit;
+  std::vector<int> _NOfEntries;
+  std::vector<double> _Content;
+  std::vector<double> _UpperIntervalLimit;
 
 };
