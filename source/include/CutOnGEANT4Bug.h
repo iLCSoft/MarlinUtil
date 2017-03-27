@@ -40,18 +40,18 @@ class CutOnGEANT4Bug : public Processor {
   
  protected:
 
-  double _eMin;
-  double _k;
+  double _eMin=5.0;
+  double _k=1.75;
 
-  std::string _colNameTracks;
-  std::string _colNameRelationTrackToMCP;
-  std::string _colNameRelationCaloHitToSimCaloHit;
+  std::string _colNameTracks="Tracks";
+  std::string _colNameRelationTrackToMCP="TrueTrackToMCP";
+  std::string _colNameRelationCaloHitToSimCaloHit="RelationCaloHit";
 
- std::vector<float> _calibrCoeffECAL;
-  std::vector<float> _calibrCoeffHCAL;
+  std::vector<float> _calibrCoeffECAL{};
+  std::vector<float> _calibrCoeffHCAL{};
 
-  int _nRun;
-  int _nEvt;
+  int _nRun=-1;
+  int _nEvt=-1;
 
 } ;
 
