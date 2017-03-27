@@ -213,7 +213,7 @@ std::string MarlinUtil::getMCName(int PDGCode) {
 
 
 
-int MarlinUtil::getPDGCode(std::string name) {
+int MarlinUtil::getPDGCode(std::string /*name*/) {
   /*
   const char pdgfile[] = "mass_width_2004.mc";
   std::ifstream pdfile;
@@ -403,7 +403,7 @@ bool MarlinUtil::isDaughterOf( MCParticle* daughter, MCParticle* parent )  {
 // ____________________________________________________________________________________________________
 
 
-bool MarlinUtil::DecayChainInTree(std::vector<int> DecayChannel, LCEvent* evt)
+bool MarlinUtil::DecayChainInTree(std::vector<int> /*DecayChannel*/, LCEvent* evt)
 {
 
   // FIXME rewrite the whole method!
@@ -539,7 +539,7 @@ void MarlinUtil::getMC_Balance(LCEvent * evt, double* accumulatedEnergies){
   int idpdg;
   const double* mom;
   float enr;
-  double mass;
+  //double mass;
 
   // FIXME : hard coded name of MC Collection (this is the convention)
   std::string colNameMC("MCParticle");
@@ -612,7 +612,7 @@ void MarlinUtil::getMC_Balance(LCEvent * evt, double* accumulatedEnergies){
       idpdg = imc-> getPDG (); 
       mom = imc-> getMomentum (); 
       enr = imc-> getEnergy (); 
-      mass = imc-> getMass (); 
+      //mass = imc-> getMass ();
       if( imc-> getGeneratorStatus() == 1) { // stable particles only   
 	px = mom[0]; 
 	py = mom[1]; 
@@ -858,7 +858,7 @@ const double* MarlinUtil::getMomentum(Track* track, double bField) {
 
 
 
-const double MarlinUtil::getAbsMomentum(Track* track, double bField) {
+double MarlinUtil::getAbsMomentum(Track* track, double bField) {
   
   const double* p = getMomentum(track,bField);
   

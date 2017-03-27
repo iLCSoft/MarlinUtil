@@ -67,7 +67,7 @@ class MarlinUtil {
 
   static void printTrack(Track* track, double bField=4.0);
   static const double* getMomentum(Track* track, double bField=4.0);
-  static const double getAbsMomentum(Track* track, double bField=4.0);
+  static double getAbsMomentum(Track* track, double bField=4.0);
   static void printCluster(Cluster* cluster);
   static void printRecoParticle(ReconstructedParticle* recoParticle, double bField=4.0);
   static int countAllSimTrackerHits(LCEvent* evt,MCParticle* MCP);
@@ -93,10 +93,10 @@ class MCParticleHelper {
 
  private: 
 
-  std::vector<int> _pdgCodesMCParticles;
-  std::vector<double> _massMCParticles;
-  std::vector<std::string> _nameMCParticles;
-  std::vector<std::string> _chargeMCParticles;
+  std::vector<int> _pdgCodesMCParticles{};
+  std::vector<double> _massMCParticles{};
+  std::vector<std::string> _nameMCParticles{};
+  std::vector<std::string> _chargeMCParticles{};
 
 
 };
