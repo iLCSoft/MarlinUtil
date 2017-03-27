@@ -69,14 +69,13 @@ double DinvG(double x) {
   double rel_error = 1e-6;
   double result = 0.0;
   double error = 0.0;
-  int status = 0;
   
   gsl_integration_workspace* w  = gsl_integration_workspace_alloc(workspace_size);
   gsl_function F;
   F.function = &Integral_G;
   F.params = &x;
     
-  status = gsl_integration_qagiu(&F,0,abs_error,rel_error,workspace_size,w,
+  /*int status=*/gsl_integration_qagiu(&F,0,abs_error,rel_error,workspace_size,w,
 				 &result,&error); 
 
   // debug  
@@ -571,39 +570,35 @@ int fdfParametrisation3(const gsl_vector* par, void* d, gsl_vector* f, gsl_matri
 
 //=============================================================================
 
-ClusterShapes::ClusterShapes(int nhits, float* a, float* x, float* y, float* z){
+ClusterShapes::ClusterShapes(int nhits, float* a, float* x, float* y, float* z):
 
-  _nHits = nhits;
-  _aHit = new float[_nHits];
-  _xHit = new float[_nHits];
-  _yHit = new float[_nHits];
-  _zHit = new float[_nHits];
-  _exHit = new float[_nHits];   
-  _eyHit = new float[_nHits];
-  _ezHit = new float[_nHits];         
-  _types = new int[_nHits];
+  _nHits(nhits),
+  _aHit  (nhits, 0.0),
+  _xHit  (nhits, 0.0),
+  _yHit  (nhits, 0.0),
+  _zHit  (nhits, 0.0),
+  _exHit (nhits, 1.0),
+  _eyHit (nhits, 1.0),
+  _ezHit (nhits, 1.0),
+  _xl    (nhits, 0.0),
+  _xt    (nhits, 0.0),
+  _t     (nhits, 0.0),
+  _s     (nhits, 0.0),
+  _types(nhits, 1), // all hits are assumed to be "cylindrical"
 
-  _xl = new float[_nHits];
-  _xt = new float[_nHits];
-
-  _t = new float[_nHits];
-  _s = new float[_nHits]; 
+  _ifNotGravity    (1),
+  _ifNotWidth      (1),
+  _ifNotInertia    (1),
+  _ifNotEigensystem(1)
+{
 
   for (int i(0); i < nhits; ++i) {
     _aHit[i] = a[i];
     _xHit[i] = x[i];
     _yHit[i] = y[i];
     _zHit[i] = z[i];
-    _exHit[i] = 1.0;
-    _eyHit[i] = 1.0;
-    _ezHit[i] = 1.0;
-    _types[i] = 1; // all hits are assumed to be "cyllindrical"
   }
 
-  _ifNotGravity     = 1;
-  _ifNotWidth       = 1;
-  _ifNotInertia     = 1;
-  _ifNotEigensystem = 1;
 
 }
 
@@ -612,18 +607,6 @@ ClusterShapes::ClusterShapes(int nhits, float* a, float* x, float* y, float* z){
 
 ClusterShapes::~ClusterShapes() {
 
-  delete[] _aHit;
-  delete[] _xHit;
-  delete[] _yHit;
-  delete[] _zHit;
-  delete[] _exHit;
-  delete[] _eyHit;
-  delete[] _ezHit;
-  delete[] _types;
-  delete[] _xl;
-  delete[] _xt;
-  delete[] _t;
-  delete[] _s;
 }
 
 //=============================================================================
@@ -790,12 +773,12 @@ int ClusterShapes::fit3DProfile(float& chi2, float& E0, float& A, float& B, floa
   float t0_init = -10.0/X0[0]; // shift xl0_ini is assumed to be -10.0 without a reason ????
   
   float E0_tmp = 0.0;
-  int i_max = 0;
+  //  int i_max = 0;
   //float t_max = 0.0;
   for (int i = 0; i < _nHits; ++i) {
     if (E0_tmp < _aHit[i]) {
       E0_tmp = _aHit[i]; 
-      i_max = i;
+      //i_max = i;
     }
     E0_init += _aHit[i];
   }
@@ -835,7 +818,7 @@ int ClusterShapes::fit3DProfile(float& chi2, float& E0, float& A, float& B, floa
   par[2] = D;
   par[3] = t0;
 
-  fit3DProfileAdvanced(chi2,par_init,par,npar,_t,_s,E,E0);
+  fit3DProfileAdvanced(chi2,par_init,par,npar,&_t[0],&_s[0],E,E0);
 
   A   = par[0];
   B   = par[1];
@@ -1011,10 +994,10 @@ int ClusterShapes::FitHelix(int max_iter, int status_out, int parametrisation,
     }
   }
 
-  int problematic = 0;
+  //int problematic = 0;
 
   if (i2 < 0 || i2 == i1 || i2 == i3) {
-    problematic = 1;
+    //problematic = 1;
     // std::cout << "here we are " << std::endl;
     for (int i(0); i < _nHits; ++i) {
       if (i != i1 && i != i3) {
@@ -2098,11 +2081,11 @@ float ClusterShapes::getEmax(float* xStart, int& index_xStart, float* X0, float*
   }
 
   float E_max=0.0;
-  int i_max=0;
+  //int i_max=0;
   for (int i = 0; i < _nHits; ++i) {
     if (E_max < _aHit[i]) {
       E_max = _aHit[i]; 
-      i_max = i;
+      //i_max = i;
     }
   }
   
@@ -2117,13 +2100,13 @@ float ClusterShapes::getsmax(float* xStart, int& index_xStart, float* X0, float*
 
   float E_max=0.0,xl_max=0.0;
   float xl_start=1.0e+50;
-  int i_max=0;
+  //int i_max=0;
   for (int i = 0; i < _nHits; ++i) {
     //check the position of maximum energy deposit
     if (E_max < _aHit[i]) {
       E_max = _aHit[i]; 
       xl_max = _xl[i];
-      i_max = i;
+      //i_max = i;
     }
     //check the position of shower start
     if (xl_start > _xl[i]) {
