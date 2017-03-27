@@ -52,6 +52,8 @@ class MCTree {
  private:
   
   LCCollection* _col;
+  MCTree(const MCTree&) = default;
+  MCTree& operator=(const MCTree&) = default;
 
   int  printShortMCInfo(const MCParticle* part, const unsigned int pdg_size, 
 			const int options );

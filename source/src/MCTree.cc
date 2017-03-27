@@ -18,11 +18,7 @@ using namespace EVENT;
 
 //=============================================================================
 
-MCTree::MCTree(LCCollection* col){
-
-  _col = col;
-
-}
+MCTree::MCTree(LCCollection* col): _col(col) {}
 
 
 //=============================================================================
@@ -60,7 +56,6 @@ void MCTree::print(int opt) {
     };
     // fill map with particle pointers and collection indices
     typedef std::map< MCParticle*, int > PointerToIndexMap ;
-    typedef std::map< int, int > LineOrder ;
     PointerToIndexMap p2i_map ;
     std::vector<MCParticle*> moms ;
     PointerToIndexMap id2line_map;
@@ -68,7 +63,7 @@ void MCTree::print(int opt) {
     // maximal size of PDG name
     unsigned int max_size_of_pdg=0;
     
-    ispis   test[nParticles+1];
+    std::vector<ispis> test(nParticles+1);
     
     for( int k=0; k<nParticles; k++)
       {
@@ -144,7 +139,7 @@ void MCTree::print(int opt) {
 	  }
       }// over n particles
     
-    int new_line[nParticles];
+    std::vector<int> new_line(nParticles);
     for ( int i=0 ; i< nParticles;++i) new_line[i]=0;
     
     
