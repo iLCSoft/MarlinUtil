@@ -4,11 +4,7 @@
 #include <iostream>
 #include "ced_cli.h"
 
-HelixClass_double::HelixClass_double() {
-    _const_2pi = 2.0*M_PI;
-    _const_pi2 = 0.5*M_PI;
-    _FCT = 2.99792458E-4;
-}
+HelixClass_double::HelixClass_double() {}
 
 HelixClass_double::~HelixClass_double() {}
 
