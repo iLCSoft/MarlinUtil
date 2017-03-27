@@ -34,7 +34,12 @@ class TrackExtended {
     TrackExtended( TrackerHitExtended * trackerhit );
     TrackExtended( Track * track );
     ~TrackExtended();
-    
+
+    //objects do not own pointers, we can use defaults, or they do own and
+    //things leak like mad because the dtor is not correctly implemented
+    TrackExtended(TrackExtended& trackextended) = default;
+    TrackExtended& operator=(TrackExtended& trackextended) = default;
+
     Track * getTrack();
     const float * getSeedDirection();
     const float * getSeedPosition();

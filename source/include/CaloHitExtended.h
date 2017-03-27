@@ -25,6 +25,11 @@ class CaloHitExtended {
     
     ~CaloHitExtended();
 
+    //objects do not own pointers, we can use defaults, or they do own and
+    //things leak like mad because the dtor is not correctly implemented
+    CaloHitExtended(CaloHitExtended& calohitextended) = default;
+    CaloHitExtended& operator=(CaloHitExtended& calohitextended) = default;
+
     CalorimeterHit * getCalorimeterHit();
     CaloHitExtended * getCaloHitTo();
     CaloHitExtended * getCaloHitFrom();

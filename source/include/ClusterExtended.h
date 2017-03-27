@@ -34,6 +34,11 @@ class ClusterExtended {
     ClusterExtended(CaloHitExtended * calohit);
     ClusterExtended(TrackExtended * track);
 
+    //objects do not own pointers, we can use defaults, or they do own and
+    //things leak like mad because the dtor is not correctly implemented
+    ClusterExtended(ClusterExtended& clusterextended) = default;
+    ClusterExtended& operator=(ClusterExtended& clusterextended) = default;
+
     ~ClusterExtended();
     
     CaloHitExtendedVec & getCaloHitExtendedVec();
