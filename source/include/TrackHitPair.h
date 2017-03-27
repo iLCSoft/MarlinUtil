@@ -19,6 +19,12 @@ class TrackHitPair {
 
     TrackHitPair(TrackExtended * trkExt, TrackerHitExtended * hitExt, float distance);
     ~TrackHitPair();
+
+    //objects do not own pointers, we can use defaults, or the do own and things
+    //leak like mad because the dtor is not correctly implemented
+    TrackHitPair(TrackHitPair& trackhitpair) = default;
+    TrackHitPair& operator=(TrackHitPair& trackhitpair) = default;
+
     void setTrackExtended(TrackExtended * trkExt);
     void setTrackerHitExtended(TrackerHitExtended * hitExt);
     void setDistance(float distance);
@@ -28,9 +34,9 @@ class TrackHitPair {
     
 
  private:
-    TrackExtended * _trackExtended;
-    TrackerHitExtended * _trackerHitExtended;
-    float _distance;
+    TrackExtended * _trackExtended=NULL;
+    TrackerHitExtended * _trackerHitExtended=NULL;
+    float _distance=0.0;
     
 
 };

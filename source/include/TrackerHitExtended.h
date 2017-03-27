@@ -27,6 +27,12 @@ class TrackerHitExtended {
 
     TrackerHitExtended(TrackerHit * trackerhit);
     ~TrackerHitExtended();
+
+    //objects do not own pointers, we can use defaults, or they do own and
+    //things leak like mad because the dtor is not correctly implemented
+    TrackerHitExtended(TrackerHitExtended& trackerhitextended) = default;
+    TrackerHitExtended& operator=(TrackerHitExtended& trackerhitextended) = default;
+
     void setTrackExtended(TrackExtended * trackAR);
     void addTrackExtended(TrackExtended * trackAR);
     void setTrackerHitTo(TrackerHitExtended * hitTo);
