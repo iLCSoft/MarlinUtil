@@ -114,7 +114,7 @@ unsigned int MarlinDrawUtil::getColorAmplitude(float amplitude, float max_amplit
 
 
   if (mode == "rainbow") {
-    if ( (0 <= ratioInt) && (ratioInt < 1*color_category_width) ) {
+    if ( ratioInt < 1*color_category_width ) {
       r = 255;
       g = 0 + ratioInt;
       b = 0;
