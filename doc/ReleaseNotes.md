@@ -1,19 +1,9 @@
-================================
-
- release notes for MarlinUtil
-
-================================
-
- ------------
-| v01-12-01  |
- ------------
+# v01-12-01
   - patch release
   - replace LayeredCalorimeter::Layer::thickness
     ( needed for DD4hep v00-18 )
 
- ---------
-| v01-12  |
- ---------
+# v01-12
 
 F. Gaede
    - protect against missing SurfaceManager object in DD4hep model
@@ -21,9 +11,7 @@ F. Gaede
    - made compatible with c++11
    - removed -ansi -pedantic -Wno-long-long 
 
- ---------
-| v01-11  |
- ---------
+# v01-11
 
  M.Berggren
   - Added WeightedPoints3D class, a class that analyses a set of points
@@ -43,9 +31,7 @@ F. Gaede
      utility and detector draw routines for CEDViewer
 
 
- ---------
-| v01-10  |
- ---------
+# v01-10
 
     - added helper function in CHT (J.List)
       CHT::CaloType caloTypeFromString(const std::string& name) 
@@ -55,73 +41,53 @@ F. Gaede
       - draw inner and outer edge of FTD disks
 
 
- ---------
-| v01-09  |
- ---------
+# v01-09
      - added functions for cluster shape calculation (M. Kurata) 
      - mad compatible for drawing CLIC detector (F.Gaede/M.Petric)
 
- ------------
-| v01-08-01  |
- ------------
+# v01-08-01
      - draw all layers for SIT and SET
        -> draw two layers per double layer
 
- ---------
-| v01-08  |
- ---------
+# v01-08
      - improved FPCCD classes (T.Mori)
      - added HelixClass_double 
 
 
- ------------
-| v01-07-01  |
- ------------
+# v01-07-01
     - added wrapper function (extern "C")
       void draw_helix( ... ) to MarlinCED::drawHelix(...)
        
 
- ---------
-| v01-07  |
- ---------
+# v01-07
     - updated code for the ANN library to version 1.1.2 
       (see: http://www.cs.umd.edu/~mount/ANN/ )
 
     - added helper function to library (extern "C")
       void drawDetectorFromGearFile( const char* fname ) ;
 
- ------------
-| v01-06-01  |
- ------------
+# v01-06-01
     - adopted for multi-module support in MarlinCED for the TPC detector
 
 
- ---------
-| v01-06  |
- ---------
+# v01-06
 		- Akiya Miyamoto:
 	   implemented flags to turn On and Off geometry of EcalBarrel, EcalEndcap, HcalBarrel, HcalRing, HcalEndcap individually.
 
 
- -----------
-| v01-05-03 |
- -----------
+# v01-05-03
 
     - fixed drawing of Hcal endcap (outer radius in gear file)
     - fixed uninitialised variables
 
 
- -----------
-| v01-05-02 |
- -----------
+# v01-05-02
     
     - bug fix MarlinCED: high pt track straight line was sometimes drawn in wrong direction
     - fixed warnings and made compatible w/ clang++
 
 
- -----------
-| v01-05-01 |
- -----------
+# v01-05-01
 
    bug fixes:
 
@@ -138,9 +104,7 @@ F. Gaede
             - changed order of ring and endcap in order to get HcalEndCapRingsCollection as ring layout (reported by G.Grenier)
 
 
- --------
-| v01-05 |
- -------- 
+# v01-05
 
     - added drawing of the SET
     - added picking print funtions for TrackerHitPlane and TrackerHitZCylinder
@@ -149,9 +113,7 @@ F. Gaede
     - added plannar SIT and protected against Gear exceptions for missing parameters
 
 
- --------
-| v01-04 |
- -------- 
+# v01-04
 
     New features:
 
@@ -197,9 +159,7 @@ F. Gaede
 
 
 
---------
-| v01-03 |
- -------- 
+# v01-03
 
     - Changes (A. Sailer):
         
@@ -210,9 +170,7 @@ F. Gaede
             larger than given distance, keeps cpu intensive functions from being run.
 
 
- --------
-| v01-02 |
- -------- 
+# v01-02
 
     - Changes (H. Hoelbe, DESY):
         - Implement remote access to CED:
@@ -235,9 +193,7 @@ F. Gaede
             - exchanged CMakeModules dependency with new package ILCUTIL
 
 
- --------
-| v01-01 |
- -------- 
+# v01-01
 
        Changes (H. Hoelbe, DESY):
     -  New methods: MarlinCED::set_layer_description and
@@ -252,9 +208,7 @@ F. Gaede
       (moved from MarlinReco/LDCCaloDigi/src/CHT_helper)
     - fixed: removed gsl include statements from public header files
 
- --------
-| v01-00 |
- -------- 
+# v01-00
 
      - added support for picking to MarlinCED 
   
@@ -263,15 +217,11 @@ F. Gaede
      - made compliant w/ MacOSX
 
 
- -----------
-| v00-14-01 |
- -----------
+# v00-14-01
 
     * bug fix: incorrect library version numbers
 
- --------
-| v00-14 |
- --------
+# v00-14
 
         * New helper functions for MarlinCED< print(andDraw)MCFamily
         * Header file changes associated with new picking/client-server (as in MarlinCED.cc)
@@ -280,55 +230,41 @@ F. Gaede
         * Changed references to pi = acos(-1) to pi = M_PI
           (Stewart Martin-Haugh)        
 
- --------
-| v00-13 |
- --------
+# v00-13
     * added helper class CalorimeterHitType for encoding/decoding CalorimeterHit      types (for the ILD detector)
 
- --------
-| v00-12 |
- --------
+# v00-12
     * added drawing of the VTX detector in drawGEARDetector() [S.Aplin]
     * improved drawing of neutral particles in drawHelix (straight lines)
     * made cmake 2.6 compliant
     * added LIBRARY_DIRS
     * added 32 bit compatibility build option
 
- --------
-| v00-11 |
- --------
+# v00-11
     * bug fix MarlinCED.h (removed unneeded "#include ced.h" statement)
     * bug fix in CED dependency:
         -> MarMarlinUtilConfig.cmake.in now exports ced_cli.h
         -> needs CED >= v00-05
  
- --------
-| v00-10 |
- --------
+# v00-10
     * removed duplicated code from CED 
       -> made dependant on CED ( >= v00-04-01 ) 
      
 
- --------
-| v00-09 |
- --------
+# v00-09
 
     * src/TrackPair.cc: 
       New class used to associate tracks coming from neutral vertices
       (needed by MarlinReco/Tracking/V0Finder) 
 
- --------
-| v00-08 |
- --------
+# v00-08
 
     * Updated HelixClass. (A.Raspereza)
       added new  method added which identifies neutral vertices
 
     * cleaned up code and made gcc4.3 compliant (S.Aplin)
 
- --------
-| v00-07 |
- --------
+# v00-07
    * removed optional AIDA dependency ( SelectEvents.cc )  J.Engels
 
    * fixed compiler warnings  J.Samson
@@ -337,9 +273,7 @@ F. Gaede
 
    * modfied MarlinCED::newEvent to not draw detector for modelID=-1
 
- --------
-| v00-06 |
- --------
+# v00-06
 	* MarlinCED:  modified drawGEARDetector(): incl. Hcal ring/
 	  removed overlap Ecal/Hcal (M.Morgunov)
 
@@ -348,9 +282,7 @@ F. Gaede
 
         * improved cmake scriots (J.Engels)
 
- --------
-| v00-05 |
- --------
+# v00-05
     - improved versions of Track utility classes (A.Raspereza)
 
     - made compatible with CLHEP 2.0.3.x
@@ -363,9 +295,7 @@ F. Gaede
 	-  patched for 64 bit (M.Killenberg)
         - ...
 
- --------
-| v00-04 |
- --------
+# v00-04
       - cmake now default build tool (J.Engels)
          -> see README for instructions
 
@@ -389,9 +319,7 @@ F. Gaede
 
       see Changelog for details 
 
- --------
-| v00-03 |
- --------
+# v00-03
   - suport for Full Tracking  (A.Raspereza)
 
   -  suport for TrackBasedPFA (O.Wendt)
