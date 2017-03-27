@@ -121,5 +121,5 @@ ADD_MARLINUTIL_TEST( testmarlinutil )
 DISPLAY_STD_VARIABLES()
 
 # generate and install following configuration files
-GENERATE_PACKAGE_CONFIGURATION_FILES( MarlinUtilConfig.cmake MarlinUtilConfigVersion.cmake MarlinUtilLibDeps.cmake )
+GENERATE_PACKAGE_CONFIGURATION_FILES( MarlinUtilConfig.cmake MarlinUtilConfigVersion.cmake )
 
