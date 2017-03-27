@@ -9,9 +9,10 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-Circle::Circle()
+Circle::Circle():
+  m_dRadius(-1),// error checking
+  m_Center()
 {
-	this->m_dRadius=-1;		// error checking 
 }
 
 Circle::~Circle()
@@ -19,9 +20,10 @@ Circle::~Circle()
 
 }
 
-Circle::Circle(CLHEP::Hep2Vector *V1, CLHEP::Hep2Vector *V2, CLHEP::Hep2Vector *V3)
+Circle::Circle(CLHEP::Hep2Vector *V1, CLHEP::Hep2Vector *V2, CLHEP::Hep2Vector *V3):
+  m_dRadius(-1),// error checking
+  m_Center()
 {
-	this->m_dRadius=-1;		// error checking 
 
 	CLHEP::Hep2Vector *pt1=new CLHEP::Hep2Vector;	CLHEP::Hep2Vector *pt2=new CLHEP::Hep2Vector;	CLHEP::Hep2Vector *pt3=new CLHEP::Hep2Vector;
 
