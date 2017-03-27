@@ -2,8 +2,6 @@
 #include <math.h>
 
 ClusterExtended::ClusterExtended() {
-    _hitVector.clear();
-    _trackVector.clear();
 
     _direction[0] = 0.;
     _direction[1] = 0.;
@@ -15,9 +13,9 @@ ClusterExtended::ClusterExtended() {
 
 }
 
-ClusterExtended::ClusterExtended( Cluster * cluster ) {
-    _hitVector.clear();
-    _trackVector.clear();
+ClusterExtended::ClusterExtended( Cluster * cluster ):
+  _cluster(cluster)
+{
 
     _direction[0] = 0.;
     _direction[1] = 0.;
@@ -26,8 +24,6 @@ ClusterExtended::ClusterExtended( Cluster * cluster ) {
     _startingPoint[0] = 0.;
     _startingPoint[1] = 0.;
     _startingPoint[2] = 0.;	
-
-    _cluster = cluster;
 
 }
 

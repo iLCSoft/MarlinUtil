@@ -83,21 +83,21 @@ class ClusterExtended {
 
  private:
 
-    TrackExtendedVec _trackVector;
-    CaloHitExtendedVec _hitVector;
+    TrackExtendedVec _trackVector{};
+    CaloHitExtendedVec _hitVector{};
     float _startingPoint[3];
     float _direction[3];
 
-    int _type;
-    Cluster * _cluster;
+    int _type=0;
+    Cluster * _cluster=NULL;
 
     float _axis[3];
     float _position[3];
-    float _eccentricity;
+    float _eccentricity=0.0;
 
-    HelixClass _helix;
-    float _helixChi2R;
-    float _helixChi2Z;
+    HelixClass _helix{};
+    float _helixChi2R=0.0;
+    float _helixChi2Z=0.0;
     
     float _lowEdge[3];
     float _upEdge[3];
