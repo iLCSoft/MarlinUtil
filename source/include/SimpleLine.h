@@ -14,7 +14,7 @@ class SimpleLine : public Trajectory {
 protected:
   SimpleLine() {} 
 
-  LCLine3D _line;
+  LCLine3D _line{};
 
 public:
 
