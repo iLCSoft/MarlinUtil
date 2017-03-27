@@ -315,46 +315,46 @@ private:
 
   int _nHits;
 
-  float* _aHit;
-  float* _xHit;
-  float* _yHit;
-  float* _zHit;
-  float* _exHit;
-  float* _eyHit;
-  float* _ezHit;
-  int* _types;
-  float* _xl;
-  float* _xt;
-  float* _t;
-  float* _s;
+  std::vector<float> _aHit;
+  std::vector<float> _xHit;
+  std::vector<float> _yHit;
+  std::vector<float> _zHit;
+  std::vector<float> _exHit;
+  std::vector<float> _eyHit;
+  std::vector<float> _ezHit;
+  std::vector<float> _xl;
+  std::vector<float> _xt;
+  std::vector<float> _t;
+  std::vector<float> _s;
+  std::vector<int>   _types;
 
-  int   _ifNotGravity;
-  float _totAmpl;
-  float _radius;
-  float _xgr;
-  float _ygr;
-  float _zgr;
-  float _analogGravity[3];
+  int   _ifNotGravity=1;
+  float _totAmpl=0.0;
+  float _radius=0.0;
+  float _xgr=0.0;
+  float _ygr=0.0;
+  float _zgr=0.0;
+  float _analogGravity[3]={0.0, 0.0,0.0};
 
-  int   _ifNotWidth;
-  float _analogWidth;
+  int   _ifNotWidth=1;
+  float _analogWidth=0.0;
 
-  int   _ifNotInertia;
+  int   _ifNotInertia=1;
   float _ValAnalogInertia[3];
   float _VecAnalogInertia[9];
 
-  int _ifNotEigensystem;
+  int _ifNotEigensystem=1;
 
-  int   _ifNotElipsoid;
-  float _r1           ;  // Cluster spatial axis length -- the largest
-  float _r2           ;  // Cluster spatial axis length -- less
-  float _r3           ;  // Cluster spatial axis length -- less
-  float _vol          ;  // Cluster ellipsoid volume
-  float _r_ave        ;  // Cluster average radius  (qubic root)
-  float _density      ;  // Cluster density
-  float _eccentricity ;  // Cluster Eccentricity
-  float _r1_forw      ;
-  float _r1_back      ;
+  //int   _ifNotElipsoid=1;
+  float _r1           =0.0;  // Cluster spatial axis length -- the largest
+  float _r2           =0.0;  // Cluster spatial axis length -- less
+  float _r3           =0.0;  // Cluster spatial axis length -- less
+  float _vol          =0.0;  // Cluster ellipsoid volume
+  float _r_ave        =0.0;  // Cluster average radius  (qubic root)
+  float _density      =0.0;  // Cluster density
+  float _eccentricity =0.0;  // Cluster Eccentricity
+  float _r1_forw      =0.0;
+  float _r1_back      =0.0;
 
   void  findElipsoid();
   void  findGravity();
