@@ -16,7 +16,7 @@ LCVector3D SimpleLine::getPosition(double s, LCErrorMatrix* errors) const
   return _line.position(s) ;
 }
 
-LCVector3D SimpleLine::getDirection(double s,  LCErrorMatrix* errors) const
+LCVector3D SimpleLine::getDirection(double /*s*/,  LCErrorMatrix* errors) const
 {
   if( errors != 0 ) 
     *errors = LCErrorMatrix( 3 , 0 ) ;
@@ -24,7 +24,7 @@ LCVector3D SimpleLine::getDirection(double s,  LCErrorMatrix* errors) const
   return _line.direction() ;
 }
 
-LCErrorMatrix SimpleLine::getCovarianceMatrix( double s) const  
+LCErrorMatrix SimpleLine::getCovarianceMatrix( double /*s*/) const
 {
   return LCErrorMatrix( 6 , 0 ) ;
 }
