@@ -128,9 +128,9 @@ public:
 
 protected:
 
-  LCVector3D _point;
-  LCVector3D _direction;
-  LCVector3D _reference;
+  LCVector3D _point{};
+  LCVector3D _direction{};
+  LCVector3D _reference{};
 };
 
 std::ostream & operator << (std::ostream &os, const LCLine3D &l) ;
