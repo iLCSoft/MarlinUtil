@@ -17,10 +17,10 @@ bool isequal(  double x , double y , double epsilon=1.e-9) {
   return ( 2.*fabs(x-y)/fabs(x+y) < epsilon ) ;  
 }
 
-void printLine( const SimpleLine& l , double s=0) {
+void printLine( const SimpleLine& l , double _s=0) {
 
   int nStep = 10 ;
-  double s0 =  s + 0. ;
+  double s0 =  _s + 0. ;
   double s1 = s0 + 1.  ;
 
   for(int i=0 ; i < nStep ; ++i ){
