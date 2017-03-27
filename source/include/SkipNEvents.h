@@ -28,10 +28,10 @@ class SkipNEvents : public Processor {
   
  protected:
 
-  int _nSkip;
+  int _nSkip=0;
 
-  int _nRun;
-  int _nEvt;
+  int _nRun=-1;
+  int _nEvt=-1;
 
 } ;
 

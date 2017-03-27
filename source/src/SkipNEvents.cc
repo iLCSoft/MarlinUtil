@@ -32,14 +32,14 @@ void SkipNEvents::init() {
 }
 
 
-void SkipNEvents::processRunHeader( LCRunHeader* run) {
+void SkipNEvents::processRunHeader( LCRunHeader* ) {
 
   ++_nRun;
 
 }
 
 
-void SkipNEvents::processEvent( LCEvent * evt ) {
+void SkipNEvents::processEvent( LCEvent * ) {
 
   if ( _nEvt < _nSkip ) setReturnValue(false);
   else setReturnValue(true);
@@ -49,7 +49,7 @@ void SkipNEvents::processEvent( LCEvent * evt ) {
 }
 
 
-void SkipNEvents::check( LCEvent * evt ) {
+void SkipNEvents::check( LCEvent * ) {
  
 }
 
