@@ -40,13 +40,13 @@ void SimpleTimer::init() {
 }
 
 
-void SimpleTimer::processRunHeader(LCRunHeader* run) { 
+void SimpleTimer::processRunHeader(LCRunHeader*) {
   _nRun++ ;
   _nEvt = 0;
 } 
 
 
-void SimpleTimer::processEvent(LCEvent* evt) {
+void SimpleTimer::processEvent(LCEvent*) {
 
   _currentTimer = new LCTime();
 
@@ -86,7 +86,7 @@ void SimpleTimer::processEvent(LCEvent* evt) {
 }
 
 
-void SimpleTimer::check(LCEvent* evt) { }
+void SimpleTimer::check(LCEvent*) { }
 
   
 void SimpleTimer::end() {
