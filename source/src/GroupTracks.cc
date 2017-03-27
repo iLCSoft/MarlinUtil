@@ -1,13 +1,11 @@
 #include "GroupTracks.h"
 
 GroupTracks::GroupTracks() {
-  _trackARVec.clear();
   _edges[0] = 0.0;
   _edges[1] = 0.0;
 }
 
 GroupTracks::GroupTracks( TrackExtended * track ) {
-  _trackARVec.clear();
   _trackARVec.push_back( track );
   _edges[0] = 0.0;
   _edges[1] = 0.0;
