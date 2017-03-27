@@ -28,19 +28,22 @@
 FPCCDPixelHit::FPCCDPixelHit(unsigned short int layerID, unsigned short int ladderID,
 		unsigned short int xiID,    unsigned short int zetaID,
 		float edep,     HitQuality_t quality,
-		EVENT::MCParticle *mc )
+                               EVENT::MCParticle *mc ):
+  _layerID(layerID),
+  _ladderID(ladderID),
+  _xiID(xiID),
+  _zetaID(zetaID),
+  _edep(edep),
+  _orderID(),
+  _quality(quality),
+  _MCParticleVec()
+
 {
   // check validity of input variables
   assert( layerID < 8 );
   assert( ladderID < 32 );
   assert( xiID < 8192 );
   
-  _layerID=layerID;
-  _ladderID=ladderID;
-  _xiID=xiID;
-  _zetaID=zetaID;
-  _edep=edep;
-  _quality=quality;
   if( mc != 0 ) { _MCParticleVec.push_back(mc); }
 
 }
