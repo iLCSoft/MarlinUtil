@@ -60,17 +60,17 @@ class CaloHitExtended {
     private:
     
     CalorimeterHit * _calohit;
-    CaloHitExtended * _calohitTo;
-    CaloHitExtended * _calohitFrom;
-    ClusterExtended * _clusterAR;
-    int _index;
     int _type;
+    CaloHitExtended * _calohitTo=NULL;
+    CaloHitExtended * _calohitFrom=NULL;
+    ClusterExtended * _clusterAR=NULL;
+    int _index=0;
     float _dirVec[3];
-    float _yresTo;
-    float _yresFrom;
-    float _genericDistance;
-    float _caloDistance;
-    float _distanceToNearestHit;
+    float _yresTo=0.0;
+    float _yresFrom=0.0;
+    float _genericDistance=0.0;
+    float _caloDistance=0.0;
+    float _distanceToNearestHit=0.0;
 
 };
 

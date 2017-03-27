@@ -1,13 +1,10 @@
 #include "CaloHitExtended.h"
 #include <math.h>
 
-CaloHitExtended::CaloHitExtended(CalorimeterHit* calhit, int type) {
-    _calohit = calhit;
-    _type    = type;
-    _index   = 0;
-    _calohitTo = NULL;
-    _calohitFrom = NULL;
-}
+CaloHitExtended::CaloHitExtended(CalorimeterHit* calhit, int type):
+  _calohit(calhit),
+  _type(type)
+{}
 
 CaloHitExtended::~CaloHitExtended(){    
 }

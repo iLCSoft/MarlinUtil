@@ -1,11 +1,8 @@
 #include "TrackerHitExtended.h"
 
-TrackerHitExtended::TrackerHitExtended(TrackerHit * trackerhit) {
-    _trackerHit = trackerhit;
-    _trackAR = NULL;
-    _trackVecAR.clear();
-    _usedInFit = false;
-}
+TrackerHitExtended::TrackerHitExtended(TrackerHit * trackerhit):
+  _trackerHit(trackerhit)
+{}
 
 TrackerHitExtended::~TrackerHitExtended() {
 

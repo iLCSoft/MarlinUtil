@@ -67,22 +67,22 @@ class TrackerHitExtended {
  private:
 
     TrackerHit * _trackerHit;
-    TrackExtended * _trackAR;
-    TrackerHitExtended * _hitTo;
-    TrackerHitExtended * _hitFrom;
-    TrackExtendedVec _trackVecAR;
+    TrackExtended * _trackAR=NULL;
+    TrackerHitExtended * _hitTo=NULL;
+    TrackerHitExtended * _hitFrom=NULL;
+    TrackExtendedVec _trackVecAR{};
 
-    float _rphiReso;
-    float _zReso;
-    float _yresTo;
-    float _yresFrom;
-    float _genericDistance;
+    float _rphiReso=0.0;
+    float _zReso=0.0;
+    float _yresTo=0.0;
+    float _yresFrom=0.0;
+    float _genericDistance=0.0;
     float _dirVec[3];
 
-    int _type;
-    int _idet;
+    int _type=0;
+    int _idet=0;
 
-    bool _usedInFit;
+    bool _usedInFit=false;
 	
 };
 
