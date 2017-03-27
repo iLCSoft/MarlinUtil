@@ -35,7 +35,7 @@ class GroupTracks {
 
  private:
 
-  TrackExtendedVec _trackARVec;
+  TrackExtendedVec _trackARVec{};
 
   float _edges[2];
 
