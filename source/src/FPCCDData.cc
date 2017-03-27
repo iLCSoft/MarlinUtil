@@ -9,18 +9,19 @@
 #include <iostream>
 
 // =====================================================================
-FPCCDData::FPCCDData(int maxlayer, int maxladder): _maxlayer(maxlayer), _maxladder(maxladder)
+FPCCDData::FPCCDData(int maxlayer, int maxladder): _maxlayer(maxlayer), _maxladder(maxladder),
+                                                   _pxHits( _maxlayer, std::vector<PixelHitMap_t>(_maxladder) )
 {
   //std::cout << "***FPCCDData class: constructor!**** " << std::endl; 
   //std::cout << "_maxlayer = " << _maxlayer << std::endl; 
   //std::cout << "_maxladder = " << _maxladder << std::endl; 
   //The above check shows that Both _maxlayer and _maxladder are always same, 6 and 17.
 
-  _pxHits.resize(_maxlayer); //--> "resize" method belongs to std::vector. This changes the number of elements. In this case, resized to 6 elements. (_maxlayer is 6 by default.)
+  //_pxHits.resize(_maxlayer); //--> "resize" method belongs to std::vector. This changes the number of elements. In this case, resized to 6 elements. (_maxlayer is 6 by default.)
   //_pxHits is defined in FPCCDData.h. _pxHits is PixelDataBuf_t, namely std::vector< std::vector<std::map<unsigned int, FPCCDPixelHit*>> > .
   //This structure is matrix whose elements are FPCCDPixelHit*.
   
-  for(int i=0;i<_maxlayer;i++){ _pxHits[i].resize(_maxladder); }
+  //for(int i=0;i<_maxlayer;i++){ _pxHits[i].resize(_maxladder); }
   //--> 2nd elements are resized. By default, _maxlayer is 17 regardless that each layer has different number of ladders. 
   //Namely, when you do with 1st layer, 2nd elements has some value until 10th and has unknown values from 11th to 17th.
 }

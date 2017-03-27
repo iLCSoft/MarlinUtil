@@ -55,9 +55,9 @@ typedef std::vector< std::vector<PixelHitMap_t> > PixelDataBuf_t;
 // =================================================================
 class FPCCDData {
  protected:
-  PixelDataBuf_t _pxHits; // Hit map for each layer/ladder
   int _maxlayer;
   int _maxladder;
+  PixelDataBuf_t _pxHits; // Hit map for each layer/ladder
 
  public:
   FPCCDData(int max_layer, int max_ladder);
