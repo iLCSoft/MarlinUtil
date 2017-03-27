@@ -54,11 +54,11 @@ class SelectEvents : public Processor {
   
  protected:
 
-  int _nRun ;
-  int _nEvt ;
+  int _nRun=-1;
+  int _nEvt=-1;
   
-  int _firstEvent;
-  int _lastEvent;
+  int _firstEvent=0;
+  int _lastEvent=0;
 
 } ;
 

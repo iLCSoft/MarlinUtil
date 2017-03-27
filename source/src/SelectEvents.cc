@@ -44,12 +44,12 @@ void SelectEvents::init() {
   
 }
 
-void SelectEvents::processRunHeader( LCRunHeader* run) { 
+void SelectEvents::processRunHeader( LCRunHeader* ) {
 
   _nRun++ ;
 } 
 
-void SelectEvents::processEvent( LCEvent * evt ) { 
+void SelectEvents::processEvent( LCEvent* ) {
 
   if ( (_nEvt >= _firstEvent) && (_nEvt <= _lastEvent) ) setReturnValue(true);
   else setReturnValue(false);
@@ -59,7 +59,7 @@ void SelectEvents::processEvent( LCEvent * evt ) {
 
 
 
-void SelectEvents::check( LCEvent * evt ) { 
+void SelectEvents::check( LCEvent* ) {
 
 }
 
