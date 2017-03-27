@@ -161,7 +161,7 @@ class DDMarlinCED {
  public:
   static DDMarlinCED* instance() ;
   
-  LCEvent* _currEvent;
+  LCEvent* _currEvent=NULL;
   
   /** To be called by every processor that uses CED in intit(). 
    */
@@ -182,7 +182,7 @@ class DDMarlinCED {
    *  as template argument.
    */
   template <class In>
-  static void drawObjectsWithPosition(In first, In last, int marker, int size ,unsigned int color, unsigned int layer=0, const char * PickingMessage="") {
+  static void drawObjectsWithPosition(In first, In last, int marker, int size ,unsigned int color, unsigned int layer=0, const char * /*PickingMessage*/="") {
     while( first != last ) {
       int id = (*first)->id();
       ced_hit_ID( (*first)->getPosition()[0],
@@ -248,12 +248,12 @@ private:
 protected:
 
   //hauke hoelbe: 08.02.2010
-  DDMarlinCED() : _first(0) , _last(0){ _currEvent=0; }
+  DDMarlinCED() :  _currEvent(NULL), _first(0) , _last(0) {}
   
   static DDMarlinCED* _me ;
   
-  Processor* _first ;
-  Processor* _last ;
+  Processor* _first=NULL;
+  Processor* _last=NULL;
   // helper method to draw hit collections by type
   static void drawHitCollectionsByType(LCEvent* event, const char* type, int marker, int size, 
 				       unsigned int color, unsigned int layer=0) {
@@ -391,8 +391,8 @@ struct CEDGeoTubeParams {
 
 //Convenient summary of both parameter sets above as (tracker) layers may be drawn as one tube or as a sequence of staves (-->GeoBox)
 struct LayerGeometry {
-  CEDGeoTubeParams tube;
-  std::vector<CEDGeoBox> staves;
+  CEDGeoTubeParams tube{};
+  std::vector<CEDGeoBox> staves{};
 };
 
 
