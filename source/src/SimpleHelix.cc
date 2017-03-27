@@ -28,16 +28,12 @@ SimpleHelix::SimpleHelix( double d0, double phi0, double omega,
 
   //  _Bz = Bz;
 
-  if ( errors == 0 )
-    {
-      _errors = new LCErrorMatrix(5,0);
-    }
-  else
-    {
-      if ( errors->num_row() != 5 )
-	throw("The error matrix has to be a 5x5 symmetric matrix in SimpleHelix Constructor");
-      *_errors = *errors;
-    }
+
+  if( errors != NULL ) {
+    if ( errors->num_row() != 5 )
+      throw("The error matrix has to be a 5x5 symmetric matrix in SimpleHelix Constructor");
+    _errors = *errors;
+  }
 }
 
 void SimpleHelix::init()
@@ -71,7 +67,7 @@ double SimpleHelix::getWindingLength() const
   return 2*_pi*sqrt(1+_tanLambda*_tanLambda)/fabs(_omega);
 }
 
-LCVector3D SimpleHelix::getPosition(double s, LCErrorMatrix* errors) const 
+LCVector3D SimpleHelix::getPosition(double s, LCErrorMatrix* /*errors*/) const
 {
   LCVector3D x;
 
@@ -88,7 +84,7 @@ LCVector3D SimpleHelix::getPosition(double s, LCErrorMatrix* errors) const
   return x;
 }
 
-LCVector3D SimpleHelix::getDirection(double s,  LCErrorMatrix* errors) const
+LCVector3D SimpleHelix::getDirection(double s,  LCErrorMatrix* /*errors*/) const
 {
   LCVector3D t;
 
@@ -102,7 +98,7 @@ LCVector3D SimpleHelix::getDirection(double s,  LCErrorMatrix* errors) const
   return t.unit();
 }
 
-LCErrorMatrix SimpleHelix::getCovarianceMatrix( double s) const  
+LCErrorMatrix SimpleHelix::getCovarianceMatrix( double /*s*/) const
 {
   return LCErrorMatrix( 6 , 0 ) ;
 }

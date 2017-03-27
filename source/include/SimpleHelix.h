@@ -87,24 +87,23 @@ protected:
   virtual double getCentreY() const ;
   virtual double getWindingLength() const ;
   virtual double getPitch();
-  double _d0;
-  double _phi0;
-  double _omega;
-  double _z0;
-  double _tanLambda;
+  double _d0=0.0;
+  double _phi0=0.0;
+  double _omega=1.0;
+  double _z0=0.0;
+  double _tanLambda=0.0;
 
   //  double _Bz;
 
-  double _helixStart;
-  double _helixEnd;
-
-  static const char* _names[];
+  double _helixStart=0.0;
+  double _helixEnd=0.0;
 
   static const double _a; // = 2.99792458E-4;
   static const double _pi; // = 3.14159265358979323846;
 
-  LCVector3D  _reference; 
-  LCErrorMatrix* _errors;
+  LCVector3D  _reference{};
+  LCErrorMatrix _errors{5,0};
+
 }; // class 
 
 
