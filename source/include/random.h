@@ -4,11 +4,10 @@
 //Romans class to produce random numbers
 class RandomNumberGenerator {
 private:
- float width;
- float x1, x2, w;
- float y[2];
+ float x1=0.0, x2=0.0, w=0.0;
+  std::vector<float> y;
 public:
- RandomNumberGenerator() { y[0]=0.0; y[1]=0.0;}
+ RandomNumberGenerator(): y(2, 0.0) {}
  float* Gauss(const float width) {
    //random number generation a la
    //Dr. Everett (Skip) F. Carter Jr.
