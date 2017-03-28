@@ -36,11 +36,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using namespace std;
 
 
-CSVParser::CSVParser()
-{
-  m_sData = "";
-  m_nPos = 0;
-}
+CSVParser::CSVParser():
+  m_sData(""),
+  m_nPos(0)
+{}
 
 void CSVParser::SkipSpaces(void)
 {
