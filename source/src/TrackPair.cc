@@ -1,11 +1,8 @@
 #include "TrackPair.h"
 
-TrackPair::TrackPair() {
-   _trkVec.clear();
-   _trkVec.resize(2);
-   _trkVec[0] = NULL;
-   _trkVec[1] = NULL;
-}
+TrackPair::TrackPair():
+  _trkVec(2, NULL)
+{}
 
 TrackPair::~TrackPair() {
   _trkVec.clear();
