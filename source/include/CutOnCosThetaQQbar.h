@@ -32,10 +32,10 @@ class CutOnCosThetaQQbar : public Processor {
   
  protected:
 
-  double _cutCosTheta;
+  double _cutCosTheta=0.0;
 
-  int _nRun;
-  int _nEvt;
+  int _nRun=-1;
+  int _nEvt=-1;
 
 
   double getCosThOfQuarkSystem(const LCEvent* evt);
