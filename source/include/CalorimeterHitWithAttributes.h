@@ -12,15 +12,16 @@ class CalorimeterHitWithAttributes {
 
  public:
 
-  CalorimeterHitWithAttributes(CalorimeterHit* calorimeterHit, float distanceToHelix, float pathLengthOnHelix) {
-  
-    _calorimeterHit = calorimeterHit;
-    _distanceToHelix = distanceToHelix;
-    _pathLengthOnHelix = pathLengthOnHelix;
-  
-  };
-  
-  ~CalorimeterHitWithAttributes() {};
+  CalorimeterHitWithAttributes(CalorimeterHit* calorimeterHit, float distanceToHelix, float pathLengthOnHelix):
+    _calorimeterHit(calorimeterHit),
+    _distanceToHelix(distanceToHelix),
+    _pathLengthOnHelix(pathLengthOnHelix)
+  {}
+
+  CalorimeterHitWithAttributes(const CalorimeterHitWithAttributes&) = default;
+  CalorimeterHitWithAttributes& operator=(const CalorimeterHitWithAttributes&) = default;
+
+  ~CalorimeterHitWithAttributes() {}
   
   CalorimeterHit* getCalorimeterHit() { return _calorimeterHit; };
   float getDistanceToHelix() { return _distanceToHelix; };
@@ -33,9 +34,9 @@ class CalorimeterHitWithAttributes {
   
  private:
 
-  CalorimeterHit* _calorimeterHit;
-  float _distanceToHelix;
-  float _pathLengthOnHelix;
+  CalorimeterHit* _calorimeterHit=NULL;
+  float _distanceToHelix=0.0;
+  float _pathLengthOnHelix=0.0;
 
 } ;
 
