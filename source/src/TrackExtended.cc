@@ -1,30 +1,30 @@
 #include "TrackExtended.h"
 #include <math.h>
 
-TrackExtended::TrackExtended( ) {
-    _track = NULL;
-    _superCluster = NULL;
-    _trackerHitVector.clear();
-    _clusterVec.clear();
-    _group = NULL;
-}
+TrackExtended::TrackExtended( ):
+    _superCluster(NULL),
+    _clusterVec(),
+    _group(NULL),
+    _track(NULL),
+    _trackerHitVector()
+    {}
 
-TrackExtended::TrackExtended( Track * track) {
-    _track = track;
-    _superCluster = NULL;
-    _trackerHitVector.clear();
-    _clusterVec.clear();
-    _group = NULL;
-    
-}
+TrackExtended::TrackExtended( Track * track):
+    _superCluster(NULL),
+    _clusterVec(),
+    _group(NULL),
+    _track(track),
+    _trackerHitVector()
+{}
 
-TrackExtended::TrackExtended( TrackerHitExtended * trackerhit) {
-    _trackerHitVector.clear();
+TrackExtended::TrackExtended( TrackerHitExtended * trackerhit):
+    _superCluster(NULL),
+    _clusterVec(),
+    _group(NULL),
+    _track(NULL),
+    _trackerHitVector()
+{
     _trackerHitVector.push_back(trackerhit);
-    _track = NULL;
-    _superCluster = NULL;
-    _clusterVec.clear();
-    _group = NULL;
 }
 
 
