@@ -113,7 +113,7 @@ public:
   bool operator!=(const LCPlane3D & plane) const ; 
 
 protected:
-  double _a, _b, _c, _d;
+  double _a=0, _b=0, _c=0, _d=0;
 };
 
 std::ostream & operator << (std::ostream &os, const LCPlane3D &p) ;
