@@ -62,20 +62,20 @@ class DrawMCParticles : public Processor {
 
   /** Input collection name.
    */
-  std::string _colNameMC ;
+  std::string _colNameMC="";
 
 
-  double _rIn;
-  double _zIn;
-  double _rOut;
-  double _zOut;
-  double _energyCut;
+  double _rIn=0.0;
+  double _zIn=0.0;
+  double _rOut=0.0;
+  double _zOut=0.0;
+  double _energyCut=0.0;
 
-  double _bField;
-  int _waitForKeyboard;
+  double _bField=0.0;
+  int _waitForKeyboard=1;
 
-  int _nRun ;
-  int _nEvt ;
+  int _nRun=-1;
+  int _nEvt=-1;
 } ;
 
 #endif

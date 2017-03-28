@@ -82,7 +82,7 @@ void DrawMCParticles::init() {
   
 }
 
-void DrawMCParticles::processRunHeader( LCRunHeader* run) { 
+void DrawMCParticles::processRunHeader( LCRunHeader* ) {
 
   _nRun++ ;
 } 
@@ -101,7 +101,7 @@ void DrawMCParticles::processEvent( LCEvent * evt ) {
 
 
 
-void DrawMCParticles::check( LCEvent * evt ) { 
+void DrawMCParticles::check( LCEvent* ) {
 
 }
 
