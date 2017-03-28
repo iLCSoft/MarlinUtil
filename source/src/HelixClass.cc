@@ -4,11 +4,7 @@
 #include <iostream>
 #include "ced_cli.h"
 
-HelixClass::HelixClass() {
-    _const_2pi = 2.0*M_PI;
-    _const_pi2 = 0.5*M_PI;
-    _FCT = 2.99792458E-4;
-}
+HelixClass::HelixClass() {}
 
 HelixClass::~HelixClass() {}
 

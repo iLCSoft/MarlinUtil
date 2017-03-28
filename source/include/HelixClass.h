@@ -1,6 +1,8 @@
 #ifndef HELIXAR_H
 #define HELIXAR_H 1
 #include <vector>
+#include <cmath>
+
 /**
  *    Utility class to manipulate with different parameterisations <br>
  *    of helix. Helix can be initialized in a three different <br>
@@ -268,33 +270,32 @@ class HelixClass {
  private:    
     float _momentum[3]; // momentum @ ref point 
     float _referencePoint[3]; // coordinates @ ref point
-    float _phi0; // phi0 in canonical parameterization 
-    float _d0;   // d0 in canonical parameterisation
-    float _z0;   // z0 in canonical parameterisation
-    float _omega; // signed curvuture in canonical parameterisation
-    float _tanLambda; // TanLambda 
-    float _pxy; // Transverse momentum
-    float _charge; // Particle Charge
-    float _bField; // Magnetic field (assumed to point to Z>0)
-    float _radius; // radius of circle in XY plane
-    float _xCentre; // X of circle centre
-    float _yCentre; // Y of circle centre
-    float _phiRefPoint; // Phi w.r.t. (X0,Y0) of circle @ ref point
-    float _phiAtPCA; // Phi w.r.t. (X0,Y0) of circle @ PCA 
-    float _xAtPCA; // X @ PCA
-    float _yAtPCA; // Y @ PCA
-    float _pxAtPCA; // PX @ PCA
-    float _pyAtPCA; // PY @ PCA
-    float _phiMomRefPoint; // Phi of Momentum vector @ ref point
-    float _const_pi; // PI
-    float _const_2pi; // 2*PI
-    float _const_pi2; // PI/2    
-    float _FCT; // 2.99792458E-4
+    float _phi0=0.0; // phi0 in canonical parameterization
+    float _d0=0.0;   // d0 in canonical parameterisation
+    float _z0=0.0;   // z0 in canonical parameterisation
+    float _omega=0.0; // signed curvuture in canonical parameterisation
+    float _tanLambda=0.0; // TanLambda
+    float _pxy=0.0; // Transverse momentum
+    float _charge=0.0; // Particle Charge
+    float _bField=0.0; // Magnetic field (assumed to point to Z>0)
+    float _radius=0.0; // radius of circle in XY plane
+    float _xCentre=0.0; // X of circle centre
+    float _yCentre=0.0; // Y of circle centre
+    float _phiRefPoint=0.0; // Phi w.r.t. (X0,Y0) of circle @ ref point
+    float _phiAtPCA=0.0; // Phi w.r.t. (X0,Y0) of circle @ PCA
+    float _xAtPCA=0.0; // X @ PCA
+    float _yAtPCA=0.0; // Y @ PCA
+    float _pxAtPCA=0.0; // PX @ PCA
+    float _pyAtPCA=0.0; // PY @ PCA
+    float _phiMomRefPoint=0.0; // Phi of Momentum vector @ ref point
+    double _const_2pi=2.0*M_PI; // 2*PI
+    double _const_pi2=0.5*M_PI; // PI/2
+    double _FCT=2.99792458E-4; // 2.99792458E-4
     float _xStart[3]; // Starting point of track segment
     float _xEnd[3]; // Ending point of track segment
 
-    float _bZ;
-    float _phiZ;
+    float _bZ=0.0;
+    float _phiZ=0.0;
 
 };
 
