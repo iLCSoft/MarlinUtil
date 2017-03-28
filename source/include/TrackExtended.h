@@ -105,28 +105,28 @@ class TrackExtended {
     float _seedPosition[3];
     TrackerHitExtendedVec _trackerHitVector;    
 
-    float _x0;
-    float _y0;
-    float _r0;
-    float _bz;
-    float _phi0;
+    float _x0=0.0;
+    float _y0=0.0;
+    float _r0=0.0;
+    float _bz=0.0;
+    float _phi0=0.0;
 
     float _xStart[3];
     float _xEnd[3];
 
-    float _d0; // d0 in canonical parameterisation
-    float _z0; // z0 in canonical parameterisation
-    float _omega; // omega in canonical parameterisation
-    float _tanLambda; // tanlambda in canonical parameterisation
-    float _phi; // phi in canonical parameterisation 
+    float _d0=0.0; // d0 in canonical parameterisation
+    float _z0=0.0; // z0 in canonical parameterisation
+    float _omega=0.0; // omega in canonical parameterisation
+    float _tanLambda=0.0; // tanlambda in canonical parameterisation
+    float _phi=0.0; // phi in canonical parameterisation
 
-    float _chi2; // chi2 of the fit
+    float _chi2=0.0; // chi2 of the fit
 
     float _cov[15]; // covariance matrix
     
-    int _ndf; // NDF
+    int _ndf=0; // NDF
 
-    int _type; // Track type;
+    int _type=0; // Track type;
     
 };
 
