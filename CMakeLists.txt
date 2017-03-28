@@ -86,11 +86,16 @@ INSTALL_DIRECTORY( ./source/include/ DESTINATION ./include/marlinutil FILES_MATC
 # get list of all source files
 AUX_SOURCE_DIRECTORY( ./source/src library_sources )
 AUX_SOURCE_DIRECTORY( ./source/src/mille library_sources )
-AUX_SOURCE_DIRECTORY( ./source/src/ann library_sources )
+AUX_SOURCE_DIRECTORY( ./source/ann ann_sources )
 
+ADD_SHARED_LIBRARY( MarlinUtilAnn ${ann_sources} )
+SET_TARGET_PROPERTIES( MarlinUtilAnn PROPERTIES COMPILE_FLAGS "-w" )
+INSTALL_SHARED_LIBRARY( MarlinUtilAnn DESTINATION lib )
 
 ADD_SHARED_LIBRARY( ${PROJECT_NAME} ${library_sources} )
 INSTALL_SHARED_LIBRARY( ${PROJECT_NAME} DESTINATION lib )
+
+TARGET_LINK_LIBRARIES( ${PROJECT_NAME} MarlinUtilAnn )
 
 #AUX_SOURCE_DIRECTORY( ./source/src/ann ann_library_sources )
 SET_SOURCE_FILES_PROPERTIES( "./source/src/ann/kd_pr_search.cpp" PROPERTIES COMPILE_FLAGS "-fno-strict-aliasing" )
