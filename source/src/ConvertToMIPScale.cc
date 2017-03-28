@@ -88,7 +88,7 @@ void ConvertToMIPScale::init() {
 
 
 
-void ConvertToMIPScale::processRunHeader( LCRunHeader* run) { 
+void ConvertToMIPScale::processRunHeader( LCRunHeader* ) {
 
   ++_nRun;
   _nEvt = 0;
@@ -244,7 +244,7 @@ void ConvertToMIPScale::processEvent( LCEvent * evt ) {
 
 
 
-void ConvertToMIPScale::check( LCEvent * evt ) { }
+void ConvertToMIPScale::check( LCEvent* ) { }
 
 
   

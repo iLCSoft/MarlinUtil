@@ -42,21 +42,21 @@ class ConvertToMIPScale : public Processor {
   
  protected:
 
-  int _nRun;
-  int _nEvt;
+  int _nRun=-1;
+  int _nEvt=-1;
   
-  std::string _inputEcalCollection;
-  std::string _inputHcalCollection;
+  std::string _inputEcalCollection{};
+  std::string _inputHcalCollection{};
 
-  std::string _outputEcalCollection;
-  std::string _outputHcalCollection;
+  std::string _outputEcalCollection{};
+  std::string _outputHcalCollection{};
 
 
-  float _cutEcal;
-  float _cutHcal;
+  float _cutEcal=0.0;
+  float _cutHcal=0.0;
 
-  std::vector<float> _mipCoeffEcal;
-  std::vector<float> _mipCoeffHcal;
+  std::vector<float> _mipCoeffEcal{};
+  std::vector<float> _mipCoeffHcal{};
 
 };
 
