@@ -38,11 +38,11 @@ class TrackPair {
  private:
 
   TrackVec  _trkVec;
-  float _distance;
+  float _distance=0.0;
   float  _vertex[3];
   float  _momentum[3];
-  float _mass;
-  int _code;
+  float _mass=0.0;
+  int _code=0;
 
 };
 
