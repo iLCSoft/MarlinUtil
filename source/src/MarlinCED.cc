@@ -595,11 +595,11 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
         int count_lines=0;
         for (int j = 0; j < nSteps ; j++) {
             
-            double alpha = step*j ;
+            double alpha0 = step*j ;
             
-            double x2 = cx + r * cos( phi + sign * alpha ) ;
-            double y2 = cy + r * sin( phi + sign * alpha ) ;
-            double z2 = cz + r * alpha * pz / pt ;
+            double x2 = cx + r * cos( phi + sign * alpha0 ) ;
+            double y2 = cy + r * sin( phi + sign * alpha0 ) ;
+            double z2 = cz + r * alpha0 * pz / pt ;
             
             double r_current  = sqrt(x2*x2 + y2*y2); // hypot( x2, y2 )
             
@@ -772,7 +772,7 @@ void MarlinCED::drawSpike( float x0, float y0, float z0,float x1, float y1, floa
 
 
 void MarlinCED::drawMCParticle(MCParticle* MCP, bool drawSimHits, LCEvent* event, int marker, int size, unsigned int color, unsigned int layer, double bField,
-                               double rmin, double zmin, double rmax, double zmax, bool drawOnDifferentLayers) {
+                               double rmin, double /*zmin*/, double rmax, double zmax, bool drawOnDifferentLayers) {
     
     
     streamlog_out(DEBUG)<<"Hauke: draw mcparticle, id="<<MCP->id() << std::endl;
@@ -1592,8 +1592,8 @@ void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
     unsigned coilCol = 0x4949dd ;
     unsigned ftdCol  = 0x651c93 ;
     unsigned fcalCol = 0xabaaab ;
-    unsigned bcalCol = 0x5a0078 ;
-    unsigned lcalCol = 0x006666 ;
+    //unsigned bcalCol = 0x5a0078 ;
+    //unsigned lcalCol = 0x006666 ;
     
     
     bool drawCLIC = false ;
@@ -1616,8 +1616,8 @@ void MarlinCED::drawDetectorFromGear( gear::GearMgr* gearMgr ){
         coilCol = 0x333333 ;
         ftdCol  = 0x8c6e0a ;
         fcalCol = 0x5a0078 ;
-        bcalCol = 0x5a0078 ;
-        lcalCol = 0x006666 ;
+        //bcalCol = 0x5a0078 ;
+        //lcalCol = 0x006666 ;
         
         hcalSymI = 12 ;
         hcalSymO = 12 ;
