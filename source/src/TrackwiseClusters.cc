@@ -928,14 +928,14 @@ void TrackwiseClusters::calculateProperties(ClusterExtended* Cl) {
     float axis[3];
     float pos[3];
     float axisMod = 0.0;
-    float low[3];
-    float up[3];
+    //float low[3];
+    //float up[3];
     for (int i=0; i<3; ++i) {
       pos[i]  = shapes->getCentreOfGravity()[i];
       axis[i] = shapes->getEigenVecInertia()[i];
       axisMod += axis[i]*axis[i];
-      low[i] = Cl->getLowEdge()[i];
-      up[i]  = Cl->getUpEdge()[i];
+      //low[i] = Cl->getLowEdge()[i];
+      //up[i]  = Cl->getUpEdge()[i];
     }
     axisMod = sqrt(axisMod);
     Cl->setAxis(axis);
@@ -955,11 +955,11 @@ void TrackwiseClusters::calculateProperties(ClusterExtended* Cl) {
 	std::cout << "Par : " << par[0] << " " << par[1] << " " << par[2] << " " << par[3] << " " << par[4] << std::endl;
       */
 
-       float xx[3];
-       int nn = nhcl / 2;
-       xx[0] = xhit[nn];
-       xx[1] = yhit[nn];
-       xx[2] = zhit[nn];
+       //float xx[3];
+       //int nn = nhcl / 2;
+       // xx[0] = xhit[nn];
+       // xx[1] = yhit[nn];
+       // xx[2] = zhit[nn];
        // float dd[3];
        // float time = helix.getDistanceToPoint(xx,dd);
        // float dist1 = dd[2];

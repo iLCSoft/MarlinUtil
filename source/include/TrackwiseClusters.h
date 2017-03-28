@@ -104,66 +104,66 @@ class TrackwiseClusters {
 
  private:
 
-  std::vector<float> _distanceTrackBack;
-  std::vector<float> _stepTrackBack;
-  std::vector<float> _resolutionParameter;
-  std::vector<float> _distanceMergeForward;
-  float _distanceToTrackSeed;
-  float _distanceToDefineDirection;
-  float _resolutionToMerge;
-  int _nhit_merge_forward;
-  int _use_tracks;
-  int _nhit_minimal;
-  int _typeOfGenericDistance;
+  std::vector<float> _distanceTrackBack{};
+  std::vector<float> _stepTrackBack{};
+  std::vector<float> _resolutionParameter{};
+  std::vector<float> _distanceMergeForward{};
+  float _distanceToTrackSeed=0.0;
+  float _distanceToDefineDirection=0.0;
+  float _resolutionToMerge=0.0;
+  int _nhit_merge_forward=0;
+  int _use_tracks=0;
+  int _nhit_minimal=0;
+  int _typeOfGenericDistance=0;
 
-  int _doMerging;
-  int _doMergingForward;
-  int _displayClusters;
-  int _NDefineSP;
-  int _nScanToMergeForward;
+  int _doMerging=0;
+  int _doMergingForward=0;
+  int _displayClusters=0;
+  int _NDefineSP=0;
+  int _nScanToMergeForward=0;
 
-  ClusterExtendedVec _allSuperClusters;
-  ClusterExtendedVec _allClusters;
-  CaloHitExtendedVec _allHits;
+  ClusterExtendedVec _allSuperClusters{};
+  ClusterExtendedVec _allClusters{};
+  CaloHitExtendedVec _allHits{};
 
   /** Parameters specifying generic geometry of 
    *  calorimeter system
    */
 
   // z position of ECAL Endcap front face
-  float _zofendcap;
+  float _zofendcap=0.0;
   // radius of ECAL Barrel
-  float _rofbarrel;
+  float _rofbarrel=0.0;
   // offset in Phi angle of Barrel 
   // (Phi = 0 for canonical LC detector)
-  float _phiofbarrel;
+  float _phiofbarrel=0.0;
   // Factor defining N_fold symmetry
   // N = 8 for canonical LC detector
-  int _nsymmetry;
+  int _nsymmetry=0;
   // Theta of ENDCAP = atan(_rofbarrel/_zofendcap)
-  float _thetaofendcap;
+  float _thetaofendcap=0.0;
 
-  float _weightForReso;
-  float _weightForDist;
-  
-  float _const_pi  ;
-  float _const_2pi ;
-  float _const_pi_n  ;
-  float _const_2pi_n ;
+  float _weightForReso=0.0;
+  float _weightForDist=0.0;
 
-  float _xmax_in_distance;
-  float _xmin_in_distance;
+  float _const_pi=M_PI;
+  float _const_2pi=2.0*M_PI;
+  float _const_pi_n=0.0;
+  float _const_2pi_n=0.0;
 
-  float _bField;
+  float _xmax_in_distance=0.0;
+  float _xmin_in_distance=0.0;
 
-  int _debugLevel;
+  float _bField=0.0;
+
+  int _debugLevel=0;
 
 
-  std::vector<CalorimeterHitWithAttributes*> _calorimeterHitsWithAttributes;
-  std::vector<float> _startPoint;
-  float _pathLengthOnHelixOfStartPoint;
-  float _distanceToHelixOfStartPoint;
-  std::vector<float> _startDirection;
+  std::vector<CalorimeterHitWithAttributes*> _calorimeterHitsWithAttributes{};
+  std::vector<float> _startPoint{};
+  float _pathLengthOnHelixOfStartPoint=0.0;
+  float _distanceToHelixOfStartPoint=0.0;
+  std::vector<float> _startDirection{};
   
   void initialiseCollections();
   float findResolutionParameter(CaloHitExtended* fromHit, CaloHitExtended* toHit);
