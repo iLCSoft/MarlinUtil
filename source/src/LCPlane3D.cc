@@ -8,13 +8,13 @@
 #include <exception>
 // #include <CLHEP/Vector/ThreeVector.h>
 
-LCPlane3D::LCPlane3D(double a, double b, double c, double d) 
-{
-  _a = a;
-  _b = b;
-  _c = c;
-  _d = d;
-  normalize();
+LCPlane3D::LCPlane3D(double a, double b, double c, double d):
+  _a(a),
+  _b(b),
+  _c(c),
+  _d(d)
+  {
+    normalize();
 
   // _d has to be negative to give the distance with the normal vector pointing
   // away from the Origen !!!
