@@ -26,24 +26,52 @@
 // alternative c'tor if cov known - no points available ....
 WeightedPoints3D::WeightedPoints3D(const std::vector<double> &cog,
 				   const std::vector<double> &cov, const std::vector<double> &mayor_axis_error, int npnt , 
-   double wgtsum  , double wgt2sum , double wgt4sum ){
+				   double wgtsum  , double wgt2sum , double wgt4sum ):
 
-  _ifNotPointsGiven = 1;
-  _nPoints = npnt;
-  _nfact3 = 0.0;
-  _ifNotCOG     = 0;
-  _ifNotCOGErrors = 0;
-  _ifNotWidth       = 1;
-  _ifNotEigenSolved =1;
-  _ifNotEigenToPolarDone =1;
-  _ifNotCovErrors= 1;
-  _ifNotVecErrorsPolarPropagated= 1;
-  _ifNotVecErrorsCartesianPropagated= 1;
-  _ifNotValErrorsPropagated= 1;
-  _ifNot_dVec_dCov= 1;
-  _ifNot_fourthmom = 1;
-  //  _ifNotEigensystem = 1;
-  _last_evec_to_error_propagate = 2;
+  _nPoints(npnt),
+  _Wgt(),
+  _x  (),
+  _y  (),
+  _z  (),
+  _ex (),
+  _ey (),
+  _ez (),
+  _xl (),
+  _xt (),
+  _t  (),
+  _s  (),
+  _ifNotPointsGiven(1),
+
+  _ifNotCOG(0),
+  _ifNotCOGErrors(0),
+
+  _sumWgt(0.0),
+  _wgt_sqr_sum (0.0),
+  _wgt_4_sum (0.0),
+  _radius(0.0),
+  _xgr(0.0),
+  _ygr(0.0),
+  _zgr(0.0),
+
+  _ifNotWidth(1),
+  _Width(0.0),
+  _ifNotEigenSolved (1),
+  _ifNotEigenToPolarDone (1),
+  _ifNotCovErrors(1),
+  _ifNotVecErrorsPolarPropagated( 1),
+  _ifNotVecErrorsCartesianPropagated( 1),
+  _ifNotValErrorsPropagated( 1),
+  _ifNot_dVec_dCov( 1),
+  _ifNot_fourthmom ( 1),
+  _last_evec_to_error_propagate ( 2),
+
+  _nfact1(0.0),
+  _nfact2(0.0),
+  _nfact3(0.0),
+  _nfact4(0.0){
+
+  //  _ifNotEigensystem ( 1)
+
   for ( int i=0 ; i < 3 ; i++) {
     _COG[i] = cog[i];
   }
@@ -93,71 +121,67 @@ WeightedPoints3D::WeightedPoints3D(const std::vector<double> &cog,
   }  
 }
 //
-WeightedPoints3D::WeightedPoints3D(int nhits, double* a, double* x, double* y, double* z){
+WeightedPoints3D::WeightedPoints3D(int nhits, double* a, double* x, double* y, double* z):
+  _nPoints(nhits),
+  _Wgt(nhits, 0.0),
+  _x  (nhits, 0.0),
+  _y  (nhits, 0.0),
+  _z  (nhits, 0.0),
+  _ex (nhits, 1.0),
+  _ey (nhits, 1.0),
+  _ez (nhits, 1.0),
+  _xl (nhits, 0.0),
+  _xt (nhits, 0.0),
+  _t  (nhits, 0.0),
+  _s  (nhits, 0.0),
+  _ifNotPointsGiven(0),
 
-  _ifNotPointsGiven = 0;
-  _nPoints = nhits;
+  _ifNotCOG     ( 1),
+  _ifNotCOGErrors ( 1),
+  _sumWgt(0.0),
+  _wgt_sqr_sum(0.0),
+  _wgt_4_sum(0.0),
+  _radius(0.0),
+  _xgr(0.0),
+  _ygr(0.0),
+  _zgr(0.0),
+
+  _ifNotWidth(1),
+  _Width(0.0),
+  _ifNotEigenSolved (1),
+  _ifNotEigenToPolarDone (1),
+  _ifNotCovErrors( 1),
+  _ifNotVecErrorsPolarPropagated( 1),
+  _ifNotVecErrorsCartesianPropagated( 1),
+  _ifNotValErrorsPropagated( 1),
+  _ifNot_dVec_dCov( 1),
+  _ifNot_fourthmom ( 1),
+  //  _ifNotEigensystem ( 1),
+  _last_evec_to_error_propagate ( 3),
+  _nfact1(0.),
+  _nfact2 (0.),
+  _nfact3(0.),
+  _nfact4(0.)
+  
+{
+
+
   //if ( _nPoints < 3 ) { throw int (); }
-  _Wgt = new double[_nPoints];
-  _x = new double[_nPoints];
-  _y = new double[_nPoints];
-  _z = new double[_nPoints];
-  _ex = new double[_nPoints];   
-  _ey = new double[_nPoints];
-  _ez = new double[_nPoints];         
-
-  _xl = new double[_nPoints];
-  _xt = new double[_nPoints];
-
-  _t = new double[_nPoints];
-  _s = new double[_nPoints]; 
 
   for (int i(0); i < nhits; ++i) {
     _Wgt[i] = a[i];
     _x[i] = x[i];
     _y[i] = y[i];
     _z[i] = z[i];
-    _ex[i] = 1.0;
-    _ey[i] = 1.0;
-    _ez[i] = 1.0;
   }
 
-  _ifNotCOG     = 1;
-  _ifNotCOGErrors = 1;
-  _ifNotWidth       = 1;
-  _ifNotEigenSolved =1;
-  _ifNotEigenToPolarDone =1;
-  _ifNotCovErrors= 1;
-  _ifNotVecErrorsPolarPropagated= 1;
-  _ifNotVecErrorsCartesianPropagated= 1;
-  _ifNotValErrorsPropagated= 1;
-  _ifNot_dVec_dCov= 1;
-  _ifNot_fourthmom = 1;
-  //  _ifNotEigensystem = 1;
-  _last_evec_to_error_propagate = 3;
-  _nfact2 =0. ;
-  _nfact3=0.;
-  _nfact4=0.;
+
 }
 
 
 //=============================================================================
 
 WeightedPoints3D::~WeightedPoints3D() {
-
-  if ( _ifNotPointsGiven == 0 ) {
-    delete[] _Wgt;
-    delete[] _x;
-    delete[] _y;
-    delete[] _z;
-    delete[] _ex;
-    delete[] _ey;
-    delete[] _ez;
-    delete[] _xl;
-    delete[] _xt;
-    delete[] _t;
-    delete[] _s;
-  }
 }
 
 //=============================================================================
