@@ -37,7 +37,7 @@ void CutOnCosThetaQQbar::init() {
 }
 
 
-void CutOnCosThetaQQbar::processRunHeader( LCRunHeader* run) {
+void CutOnCosThetaQQbar::processRunHeader( LCRunHeader* ) {
 
   ++_nRun;
 
@@ -66,7 +66,7 @@ void CutOnCosThetaQQbar::processEvent( LCEvent * evt ) {
 }
 
 
-void CutOnCosThetaQQbar::check( LCEvent * evt ) {
+void CutOnCosThetaQQbar::check( LCEvent* ) {
  
 }
 
