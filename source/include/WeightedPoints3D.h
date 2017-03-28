@@ -148,17 +148,17 @@ private:
 
   int _nPoints;
 
-  double* _Wgt;
-  double* _x;
-  double* _y;
-  double* _z;
-  double* _ex;
-  double* _ey;
-  double* _ez;
-  double* _xl;
-  double* _xt;
-  double* _t;
-  double* _s;
+  std::vector<double> _Wgt;
+  std::vector<double> _x;
+  std::vector<double> _y;
+  std::vector<double> _z;
+  std::vector<double> _ex;
+  std::vector<double> _ey;
+  std::vector<double> _ez;
+  std::vector<double> _xl;
+  std::vector<double> _xt;
+  std::vector<double> _t;
+  std::vector<double> _s;
 
   int   _ifNotPointsGiven;
   int   _ifNotCOG;
