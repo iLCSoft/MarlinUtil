@@ -307,15 +307,15 @@ void PGdb::Zone::_init_ecal2_cap(int last_ecal1_layer){
   _init_ecal_cap_common();
 }
 //============================================================================
-void PGdb::Zone::_init_hcal(PGdb::ZONE zone){
+void PGdb::Zone::_init_hcal(PGdb::ZONE fzone){
 //============================================================================
   const gear::CalorimeterParameters *pHCAL;
-  if(zone==HCAL_BAR)
+  if(fzone==HCAL_BAR)
    pHCAL = & Global::GEAR->getHcalBarrelParameters();
   else
    pHCAL = & Global::GEAR->getHcalEndcapParameters();
   const gear::LayerLayout &lhb = pHCAL->getLayerLayout() ;
-  no        = zone;
+  no        = fzone;
   shape     = POLYGON;
   symmetry  = pHCAL->getSymmetryOrder();
   phi0      = pHCAL->getPhi0();

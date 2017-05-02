@@ -125,8 +125,6 @@ class TrackExtended {
     float _cov[15]; // covariance matrix
     
     int _ndf=0; // NDF
-
-    int _type=0; // Track type;
     
 };
 

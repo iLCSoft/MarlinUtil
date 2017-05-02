@@ -194,7 +194,7 @@ class MarlinCED {
 
 //hauke hoelbe
   template <class In>
-  static void drawObjectsWithPositionID(LCCollection* col,In first, In last, int marker, int size ,unsigned int color, unsigned int layer=0) {
+  static void drawObjectsWithPositionID(LCCollection* /*col*/,In first, In last, int marker, int size ,unsigned int color, unsigned int layer=0) {
     int i=0;
     while( first != last ) {
       int id = (*first)->id(); 

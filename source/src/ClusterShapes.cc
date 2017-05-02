@@ -2161,8 +2161,8 @@ float ClusterShapes::getxl20(float* xStart, int& index_xStart, float* X0, float*
   //final hit is located in outer radius
   okxl=xl_res[k-2];
 
-  delete xl_res;
-  delete E_res;
+  delete[] xl_res;
+  delete[] E_res;
 
   return okxl;
 }
@@ -2211,8 +2211,8 @@ float ClusterShapes::getxt90(float* xStart, int& index_xStart, float* X0, float*
   //final hit is located in outer radius
   okxt=xt_res[k-2];
 
-  delete xt_res;
-  delete E_res;
+  delete[] xt_res;
+  delete[] E_res;
 
   return okxt;
 }
