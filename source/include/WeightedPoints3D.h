@@ -189,10 +189,8 @@ private:
   int   _ifNot_fourthmom;
   int   _last_evec_to_error_propagate;
   double _EigenVal[3];
-  double _EigenValCov[3][3];
   double _EigenVec[3][3];
   double _EigenVecAngle[2][3];
-  double _EigenVecCov[9][9];
   double _theta_phi_cov[2][2][3];
   double _xyz_cov[3][3][3];
   double _var_lam[3];
