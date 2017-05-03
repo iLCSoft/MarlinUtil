@@ -436,7 +436,7 @@ void MarlinCED::printAndDrawMCFamily(MCParticle* part, LCEvent* evt, unsigned in
     const gear::TPCParameters& gearTPC = Global::GEAR->getTPCParameters() ;
     
     //int colour = 0xff00ff;
-    int colour = abs(0xff00ff-abs((daughterIndent-motherIndent)*128));
+    int colour = std::abs(0xff00ff-std::abs(((long)daughterIndent-motherIndent)*128));
     
     double endpoint_r = gearTPC.getPlaneExtent()[1];
     double endpoint_z = gearTPC.getMaxDriftLength();
