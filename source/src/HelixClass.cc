@@ -444,7 +444,7 @@ float HelixClass::getPointInZ(float zLine, float * ref, float * point) {
 
 }
 
-float HelixClass::getDistanceToPoint(float * xPoint, float * Distance) {
+float HelixClass::getDistanceToPoint(float const* xPoint, float * Distance) {
 
   float zOnHelix;
   float phi = atan2(xPoint[1]-_yCentre,xPoint[0]-_xCentre);

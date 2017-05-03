@@ -194,7 +194,7 @@ class HelixClass_double {
      * Distance[1] - distance along Z axis <br>
      * Distance[2] - 3D distance <br> 
      */
-    double getDistanceToPoint(double * xPoint, double * Distance);
+    double getDistanceToPoint(double const* xPoint, double * Distance);
 
     /**
      * Return distance of the closest approach of the helix to <br>

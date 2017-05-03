@@ -444,7 +444,7 @@ double HelixClass_double::getPointInZ(double zLine, double * ref, double * point
 
 }
 
-double HelixClass_double::getDistanceToPoint(double * xPoint, double * Distance) {
+double HelixClass_double::getDistanceToPoint(double const* xPoint, double * Distance) {
 
   double zOnHelix;
   double phi = atan2(xPoint[1]-_yCentre,xPoint[0]-_xCentre);
