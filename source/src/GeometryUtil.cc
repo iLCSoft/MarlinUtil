@@ -2,10 +2,6 @@
 
 #include <streamlog/streamlog.h>
 
-#include <gear/BField.h>
-#include <gear/GEAR.h>
-#include <marlin/Global.h>
-
 #include <DD4hep/DD4hepUnits.h>
 #include <DD4hep/DetType.h>
 #include <DD4hep/DetectorSelector.h>
@@ -16,15 +12,6 @@
 double MarlinUtil::getBzAtOrigin() {
 
   double bfield(0.0);
-
-  if( marlin::Global::GEAR != NULL ){
-    try{
-      bfield = marlin::Global::GEAR->getBField().at( gear::Vector3D( 0., 0., 0.) ).z();
-      return bfield;
-    } catch( gear::UnknownParameterException ) {
-    }
-  } else {
-  }
 
   DD4hep::Geometry::LCDD& lcdd = DD4hep::Geometry::LCDD::getInstance();
   if ( not lcdd.field().isValid() ) {
