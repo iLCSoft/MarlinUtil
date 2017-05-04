@@ -8,11 +8,11 @@
 #include <exception>
 // #include <CLHEP/Vector/ThreeVector.h>
 
-LCPlane3D::LCPlane3D(double a, double b, double c, double d):
-  _a(a),
-  _b(b),
-  _c(c),
-  _d(d)
+LCPlane3D::LCPlane3D(double aVal, double bVal, double cVal, double dVal):
+  _a(aVal),
+  _b(bVal),
+  _c(cVal),
+  _d(dVal)
   {
     normalize();
 
@@ -27,9 +27,9 @@ LCPlane3D::LCPlane3D(double a, double b, double c, double d):
     }
 }
 
-LCPlane3D::LCPlane3D(LCVector3D normal, LCVector3D point)
+LCPlane3D::LCPlane3D(LCVector3D normalVector, LCVector3D point)
 {
-  LCVector3D n = normal.unit();
+  LCVector3D n = normalVector.unit();
 
   _a = n.x();
   _b = n.y();
@@ -47,13 +47,13 @@ LCPlane3D::LCPlane3D(LCVector3D point1, LCVector3D point2, LCVector3D point3)
   _d = - n*point1;
 }
 
-LCPlane3D::LCPlane3D(LCVector3D normal, double distance) 
+LCPlane3D::LCPlane3D(LCVector3D normalVector, double dist)
 {
-  LCVector3D n = normal.unit() ;
+  LCVector3D n = normalVector.unit() ;
   _a = n.x();
   _b = n.y();
   _c = n.z();
-  _d = -distance;
+  _d = -dist;
 }
 
 LCPlane3D::LCPlane3D(const LCPlane3D & plane) 

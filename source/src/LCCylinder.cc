@@ -10,19 +10,19 @@
 
 LCCylinder::LCCylinder(LCVector3D point1, 
 		       LCVector3D point2, 
-		       double radius,
+		       double radiusArg,
 		       bool endPlane):
-  _radius(fabs(radius)),
+  _radius(fabs(radiusArg)),
   _endPlane(endPlane),
   _axisSstartPoint(point1),
   _axisEndPoint(point2)
 {}
 
-LCCylinder::LCCylinder(double radius, 
+LCCylinder::LCCylinder(double radiusArg,
 		       LCVector3D point, 
 		       LCVector3D axis, 
 		       bool endPlane):
-  _radius(fabs(radius)),
+  _radius(fabs(radiusArg)),
   _endPlane(endPlane),
   _axisSstartPoint(point - axis),
   _axisEndPoint(point + axis)

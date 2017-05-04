@@ -79,8 +79,8 @@ public:
   }
   
   /** C'tor  for encoding the calo type inforamtion  */
-  CHT(CaloType c, CaloID n, Layout l , unsigned layer):
-    _type(c * fCaloType  + n * fCaloID  + l * fLayout + layer * fLayer)
+  CHT(CaloType c, CaloID n, Layout l , unsigned lay):
+    _type(c * fCaloType  + n * fCaloID  + l * fLayout + lay * fLayer)
   {}
   
   /** calorimeter type: CHT::em , CHT::had, CHT::muon */

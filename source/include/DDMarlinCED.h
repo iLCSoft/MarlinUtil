@@ -391,7 +391,7 @@ struct CEDGeoTubeParams {
 
 //Convenient summary of both parameter sets above as (tracker) layers may be drawn as one tube or as a sequence of staves (-->GeoBox)
 struct LayerGeometry {
-  CEDGeoTubeParams tube{};
+  CEDGeoTubeParams tube{0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,false};
   std::vector<CEDGeoBox> staves{};
 };
 
