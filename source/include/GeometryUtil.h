@@ -9,8 +9,7 @@ namespace MarlinUtil {
   /**
    * Returns the bfield value in Z direction at (0 0 0),
    *
-   * Obtains value from Gear (if GEAR File isgiven) or from DD4hep (lcdd) if no
-   * gear file is given.  Throws an exception if neither geometry is
+   * Obtains value from DD4hep (lcdd) Throws an exception if geometry is not
    * instantiated correctly
    */
   double getBzAtOrigin();
