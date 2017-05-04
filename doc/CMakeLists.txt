@@ -29,7 +29,7 @@ ADD_CUSTOM_COMMAND(
         ../source/include/ANN/*
         ../source/include/mille/*
         ../source/include/*
-        ../source/src/ann/*
+        ../source/ann/*
         ../source/src/mille/*
         ../source/src/*
 )
