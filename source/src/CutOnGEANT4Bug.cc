@@ -174,10 +174,10 @@ void CutOnGEANT4Bug::processEvent( LCEvent* evt ) {
 			    for ( unsigned int n = 0; n < _calibrCoeffECAL.size(); ++n ) calibration.push_back(_calibrCoeffECAL.at(n));
 			    for ( unsigned int n = 0; n < _calibrCoeffHCAL.size(); ++n ) calibration.push_back(_calibrCoeffHCAL.at(n));
 			    
-			    int type   = caloHit->getType();
+			    int hitType = caloHit->getType();
 			    float EHit = caloHit->getEnergy();
 			    // float EHitCalculated   = ESimHit*calibration.at(type); // only for debugging
-			    float EHitContribution = ESimHitContribution*calibration.at(type);
+			    float EHitContribution = ESimHitContribution*calibration.at(hitType);
 			    
 			    
 			    // search if caloHit has already been assigned to track	  

@@ -13,16 +13,16 @@ LCLine3D::LCLine3D()
   _direction.set(1.,0.,0.);
 }
 
-LCLine3D::LCLine3D(const LCVector3D & point, const LCVector3D & direction) 
+LCLine3D::LCLine3D(const LCVector3D & point, const LCVector3D & lineDirection)
 {
-  set( point, direction, LCVector3D(0.,0.,0.) );
+  set( point, lineDirection, LCVector3D(0.,0.,0.) );
 }
 
 LCLine3D::LCLine3D(const LCVector3D & point,
-		   const LCVector3D & direction,
+		   const LCVector3D & lineDirection,
 		   const LCVector3D & reference) 
 {
-  set( point, direction, reference );
+  set( point, lineDirection, reference );
 }
 
 LCLine3D::LCLine3D(double d0, double phi0, double z0, double tanLambda) 
@@ -44,13 +44,13 @@ LCLine3D::LCLine3D(const LCLine3D & line)
 }
 
 bool LCLine3D::set(const LCVector3D & point,
-		   const LCVector3D & direction,
+		   const LCVector3D & lineDirection,
 		   const LCVector3D & reference) 
 {
   //  std::cout << "LCLine  " << _reference << " " << point << " " << direction << std::endl;
 
   _reference = reference;
-  _direction = direction.unit();
+  _direction = lineDirection.unit();
   if (_direction.mag2() == 0)
     {
       return false;

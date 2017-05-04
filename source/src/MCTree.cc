@@ -423,12 +423,12 @@ int  MCTree::length_of_int( const int&  to_convert){
 string  MCTree::pdg_to_string( const int&  to_convert , const unsigned int&  max_size){
      ostringstream dtes;
       dtes<< to_convert;
-      string pdg_to_string= dtes.str();
-      while( pdg_to_string.size()<max_size)
+      string pdgString= dtes.str();
+      while( pdgString.size()<max_size)
       {
-	  pdg_to_string=" "+pdg_to_string;
+	  pdgString=" "+pdgString;
       }
-      return pdg_to_string;
+      return pdgString;
 }
 
 string  MCTree::adjust_position( const unsigned int&  pdg_size, const unsigned int& index){
