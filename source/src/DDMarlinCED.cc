@@ -300,7 +300,7 @@ void DDMarlinCED::draw( Processor* proc , int waitForKeyboard ) {
             }
             
             signal(SIGWINCH,SIG_IGN);
-            char c = getchar();
+            int c = getchar();
             if(c=='q'||c=='Q'||c==3){ //quit if the user pressed q or strg+c (3 = strg+c)
                 exit(0);
             }
