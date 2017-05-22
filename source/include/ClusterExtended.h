@@ -63,7 +63,7 @@ class ClusterExtended {
     void setEccentricity( float eccentricity);
     float getEccentricity();
 
-    void setHelix(HelixClass helix);
+    void setHelix(HelixClass const& helix);
     HelixClass & getHelix();
 
     void setHelixChi2R(float helixChi2);
