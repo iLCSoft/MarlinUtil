@@ -145,7 +145,7 @@ float ClusterExtended::getEccentricity() {
   return _eccentricity;
 }
 
-void ClusterExtended::setHelix(HelixClass helix) {
+void ClusterExtended::setHelix(HelixClass const& helix) {
   _helix = helix;
   int nHits = int(_hitVector.size());
   float timeMax = -1.0e+20;
