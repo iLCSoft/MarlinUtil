@@ -791,6 +791,9 @@ CEDGeoTubeParams PetalParameterConversion (std::vector<DDRec::ZDiskPetalsData::L
   returnParams.delta_z = thicknessSupport; 
   //Again: z0 is the left handed starting point for drawing
   returnParams.z0 = zPosition-returnParams.delta_z;
+
+  returnParams.isBarrel = false;
+
   return returnParams;
 }
 
@@ -821,6 +824,8 @@ CEDGeoTubeParams CalorimeterLayerParameterConversion(std::vector<DDRec::LayeredC
   //cellSize0 is defined to be the middle point of the geometry 
   returnParams.z0 = -cellSize1 + cellSize0;
 
+  returnParams.isBarrel = true;
+
   return returnParams;
 }
 
@@ -850,6 +855,8 @@ CEDGeoTubeParams TPCParameterConversion(FixedPadSizeTPCData *tpc){
   
   returnParams.delta_z = zHalf;
   returnParams.z0 = -zHalf;
+
+  returnParams.isBarrel = true;
 
   return returnParams;
 }
