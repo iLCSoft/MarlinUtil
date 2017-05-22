@@ -10,6 +10,24 @@
 //#include <CLHEP/HepPDT/TempParticleData.hh>
 //#endif
 
+#include "csvparser.h"
+#include "HelixClass.h"
+
+#include <algorithm>
+
+using lcio::MCParticle;
+using lcio::MCParticleVec;
+using lcio::LCEvent;
+using lcio::LCCollection;
+using lcio::DataNotAvailableException;
+using lcio::Track;
+using lcio::ReconstructedParticle;
+using lcio::Cluster;
+using lcio::TrackVec;
+using lcio::ClusterVec;
+using lcio::SimTrackerHit;
+using lcio::SimCalorimeterHit;
+using lcio::CalorimeterHit;
 
 void MarlinUtil::printMCParticle(MCParticle* MCP, bool printDaughters) {
 
@@ -1008,7 +1026,7 @@ int MarlinUtil::countAllSimTrackerHits(LCEvent* evt,MCParticle* MCP) {
     
     LCCollection* col = evt->getCollection( *iter ) ;
     
-    if ( col->getTypeName() == LCIO::SIMTRACKERHIT ) {
+    if ( col->getTypeName() == lcio::LCIO::SIMTRACKERHIT ) {
       
       int n = col->getNumberOfElements();
 
@@ -1047,7 +1065,7 @@ int MarlinUtil::countAllSimCalorimeterHits(LCEvent* evt,MCParticle* MCP,double& 
     
     LCCollection* col = evt->getCollection( *iter ) ;
     
-    if ( col->getTypeName() == LCIO::SIMCALORIMETERHIT ) {
+    if ( col->getTypeName() == lcio::LCIO::SIMCALORIMETERHIT ) {
       
       int n = col->getNumberOfElements();
 
@@ -1093,7 +1111,7 @@ double MarlinUtil::getEnergyDepositedInFullCalorimeter(LCEvent* evt) {
     
     LCCollection* col = evt->getCollection( *iter ) ;
     
-    if ( col->getTypeName() == LCIO::CALORIMETERHIT ) {
+    if ( col->getTypeName() == lcio::LCIO::CALORIMETERHIT ) {
       
       int n = col->getNumberOfElements();
 

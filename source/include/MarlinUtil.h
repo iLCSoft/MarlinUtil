@@ -1,15 +1,6 @@
 #ifndef MarlinUtil_h
 #define MarlinUtil_h 1
 
-#include <iostream>
-#include <fstream>
-
-#include <cmath>
-#include <string>
-#include <vector>
-#include <utility>
-#include <algorithm>
-
 #include <lcio.h>
 #include <EVENT/LCEvent.h>
 #include <EVENT/LCCollection.h>
@@ -18,26 +9,21 @@
 #include <EVENT/SimCalorimeterHit.h>
 #include <EVENT/ReconstructedParticle.h>
 
-#include "HelixClass.h"
-
-#include "csvparser.h"
-
-
-using namespace lcio;
+#include <string>
+#include <vector>
+#include <fstream>
 
 
-class MarlinUtil {
+namespace MarlinUtil {
 
 
- public:
-
-  static void printMCParticle(MCParticle* MCP, bool printDaughters = false);
-  static std::string getMCName(int PDGCode);
-  static int getPDGCode(std::string name);
-  static MCParticleVec getAllMCParents(MCParticle* mcPart );
-  static MCParticleVec getAllMCDaughters(MCParticle* mcPart);
-  static bool isDaughterOf( MCParticle* daughter, MCParticle* parent );
-  static bool DecayChainInTree(std::vector<int> DecayChannel, LCEvent* evt);
+  void printMCParticle(lcio::MCParticle* MCP, bool printDaughters = false);
+  std::string getMCName(int PDGCode);
+  int getPDGCode(std::string name);
+  lcio::MCParticleVec getAllMCParents(lcio::MCParticle* mcPart );
+  lcio::MCParticleVec getAllMCDaughters(lcio::MCParticle* mcPart);
+  bool isDaughterOf( lcio::MCParticle* daughter, lcio::MCParticle* parent );
+  bool DecayChainInTree(std::vector<int> DecayChannel, lcio::LCEvent* evt);
 
   /** Function to get the accumulated sum of the energy per event and the number of particles within different categories at IP. The return values are given in the array accumulatedEnergies of size 21 with the following content. Only MC particles with generator status 1 are considered:
    *
@@ -63,19 +49,19 @@ class MarlinUtil {
    *  accumulatedEnergies[19] : number of charged hadrons
    *  accumulatedEnergies[20] : energy of MC particles which is possible to measure (real sum [see 0])
    */   
-  static void getMC_Balance(LCEvent* evt, double* accumulatedEnergies);
+  void getMC_Balance(lcio::LCEvent* evt, double* accumulatedEnergies);
 
-  static void printTrack(Track* track, double bField=4.0);
-  static const double* getMomentum(Track* track, double bField=4.0);
-  static double getAbsMomentum(Track* track, double bField=4.0);
-  static void printCluster(Cluster* cluster);
-  static void printRecoParticle(ReconstructedParticle* recoParticle, double bField=4.0);
-  static int countAllSimTrackerHits(LCEvent* evt,MCParticle* MCP);
-  static int countAllSimCalorimeterHits(LCEvent* evt,MCParticle* MCP,double& accumulatedSimCaloEnergy);
-  static double getEnergyDepositedInFullCalorimeter(LCEvent* evt);
+  void printTrack(lcio::Track* track, double bField=4.0);
+  const double* getMomentum(lcio::Track* track, double bField=4.0);
+  double getAbsMomentum(lcio::Track* track, double bField=4.0);
+  void printCluster(lcio::Cluster* cluster);
+  void printRecoParticle(lcio::ReconstructedParticle* recoParticle, double bField=4.0);
+  int countAllSimTrackerHits(lcio::LCEvent* evt,lcio::MCParticle* MCP);
+  int countAllSimCalorimeterHits(lcio::LCEvent* evt,lcio::MCParticle* MCP,double& accumulatedSimCaloEnergy);
+  double getEnergyDepositedInFullCalorimeter(lcio::LCEvent* evt);
 
 
-};
+}
 
 
 
