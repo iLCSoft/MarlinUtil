@@ -607,8 +607,8 @@ float HelixClass::getDistanceToHelix(HelixClass * helix, float * pos, float * mo
     ref2[i]=helix->getReferencePoint()[i];
   }
   
-  float pos1[3];
-  float pos2[3];
+  float pos1[6]; //last three accessed in getPointOnCircle
+  float pos2[6]; //last three accessed in getPointOnCircle
   float mom1[3];
   float mom2[3];
 
