@@ -887,7 +887,7 @@ double MarlinUtil::getAbsMomentum(Track* track, double bField) {
 
   const double pAbsReturn = pAbs;
 
-  delete p;
+  delete[] p;
 
   return pAbsReturn;
   
