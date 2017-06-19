@@ -24,7 +24,7 @@ namespace MarlinUtil {
    *
    */
   dd4hep::rec::LayeredCalorimeterData const* getLayeredCalorimeterData(unsigned int includeFlag,
-                                                                         unsigned int excludeFlag=0);
+                                                                       unsigned int excludeFlag=0);
 
 }//namespace MarlinUtil
 
