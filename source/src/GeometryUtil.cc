@@ -26,9 +26,9 @@ double MarlinUtil::getBzAtOrigin() {
 }
 
 
-DD4hep::DDRec::LayeredCalorimeterData const* MarlinUtil::getLayeredCalorimeterData(unsigned int includeFlag, unsigned int excludeFlag) {
+dd4hep::rec::LayeredCalorimeterData const* MarlinUtil::getLayeredCalorimeterData(unsigned int includeFlag, unsigned int excludeFlag) {
 
-  DD4hep::DDRec::LayeredCalorimeterData * theExtension = 0;
+  dd4hep::rec::LayeredCalorimeterData * theExtension = 0;
 
   DD4hep::Geometry::LCDD& lcdd = DD4hep::Geometry::LCDD::getInstance();
   std::vector<DD4hep::Geometry::DetElement> const& theDetectors = DD4hep::Geometry::DetectorSelector(lcdd).detectors(  includeFlag, excludeFlag ) ;
@@ -52,7 +52,7 @@ DD4hep::DDRec::LayeredCalorimeterData const* MarlinUtil::getLayeredCalorimeterDa
   }
 
   //size is 1 or we would have exited before, so we can safely use at(0)
-  theExtension = theDetectors.at(0).extension<DD4hep::DDRec::LayeredCalorimeterData>();
+  theExtension = theDetectors.at(0).extension<dd4hep::rec::LayeredCalorimeterData>();
 
   return theExtension;
 }
