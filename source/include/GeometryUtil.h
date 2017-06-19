@@ -23,7 +23,7 @@ namespace MarlinUtil {
    * @param excludeFlag : bitmask describing detector to exclude (optional)
    *
    */
-  DD4hep::DDRec::LayeredCalorimeterData const* getLayeredCalorimeterData(unsigned int includeFlag,
+  dd4hep::rec::LayeredCalorimeterData const* getLayeredCalorimeterData(unsigned int includeFlag,
                                                                          unsigned int excludeFlag=0);
 
 }//namespace MarlinUtil
