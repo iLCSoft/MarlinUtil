@@ -48,19 +48,11 @@ date: 12 August 2015
 using namespace marlin ;
 
 //Includes for detector drawing
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/DD4hepUnits.h" 
 #include "DDRec/DetectorData.h"
 #include "DDRec/SurfaceManager.h"
 #include "DDRec/Surface.h"
-using namespace DD4hep::Geometry ;
-using namespace DD4hep;
-using namespace DD4hep::DDRec ;
-namespace DD4hep{ 
-  namespace Geometry{
-    class LCDD ;
-  }
-}
 
 
 struct DDCEDMapParticleObject{const LCObject *obj;  void (*function)(const LCObject *);};
@@ -238,7 +230,7 @@ class DDMarlinCED {
      * date: 31/07/2015
     */
      //TODO: rename
-    static void drawDD4hepDetector( DD4hep::Geometry::LCDD& lcdd, bool _surfaces, StringVec _detailled);
+    static void drawDD4hepDetector( dd4hep::Detector& theDetector, bool _surfaces, StringVec _detailled);
 
 private:
     static int _int_count;
@@ -397,29 +389,29 @@ struct LayerGeometry {
 
 
 
-void getVisAttributes(DD4hep::Geometry::DetElement det, unsigned &color, bool &visible);
+void getVisAttributes(dd4hep::DetElement det, unsigned &color, bool &visible);
 
 /***detector draw helpers***/
 
 //converts the parameters in LayeredCalorimeterData given by the appropriate drivers
 //into those required by the CEDGeoTube
-CEDGeoTubeParams CalorimeterParameterConversion (LayeredCalorimeterData *calo);
+CEDGeoTubeParams CalorimeterParameterConversion (dd4hep::rec::LayeredCalorimeterData *calo);
 
 //converts the parameters in ZDiskPetalsData given by the appropriate drivers
 //into those required by the CEDGeoTube
-CEDGeoTubeParams PetalParameterConversion (std::vector<DDRec::ZDiskPetalsData::LayerLayout>::iterator thisLayer);
+CEDGeoTubeParams PetalParameterConversion (std::vector<dd4hep::rec::ZDiskPetalsData::LayerLayout>::iterator thisLayer);
 
 //converts the parameters from a LayeredCalorimeterData layer given by the appropriate drivers
 //into those required by the CEDGeoTube
-CEDGeoTubeParams CalorimeterLayerParameterConversion(std::vector<DDRec::LayeredCalorimeterData::Layer>::iterator thisLayer);
+CEDGeoTubeParams CalorimeterLayerParameterConversion(std::vector<dd4hep::rec::LayeredCalorimeterData::Layer>::iterator thisLayer);
 
 //converts the parameters from a FixedPadSizeTPCData given by the appropriate drivers
 //into those required by the CEDGeoTube
-CEDGeoTubeParams TPCParameterConversion(FixedPadSizeTPCData *tpc);
+CEDGeoTubeParams TPCParameterConversion(dd4hep::rec::FixedPadSizeTPCData *tpc);
 
 //converts the parameters from a ZPlanarData::LayerLayout layer given by the appropriate drivers
 //into those required by the CEDGeoBox (for drawing of staves) or by CEDGeoTube (for approximation of the set of staves into tubes)
-LayerGeometry TrackerLayerParameterConversion(std::vector<DDRec::ZPlanarData::LayerLayout>::iterator thisLayer);
+LayerGeometry TrackerLayerParameterConversion(std::vector<dd4hep::rec::ZPlanarData::LayerLayout>::iterator thisLayer);
 
 //draws the given surfaces as a set of individual lines
 bool DrawSurfaces(const DD4hep::DDRec::SurfaceManager &surfMan, std::string detName, unsigned color, int layer);
