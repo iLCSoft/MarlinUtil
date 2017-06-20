@@ -414,7 +414,7 @@ CEDGeoTubeParams TPCParameterConversion(dd4hep::rec::FixedPadSizeTPCData *tpc);
 LayerGeometry TrackerLayerParameterConversion(std::vector<dd4hep::rec::ZPlanarData::LayerLayout>::iterator thisLayer);
 
 //draws the given surfaces as a set of individual lines
-bool DrawSurfaces(const DD4hep::DDRec::SurfaceManager &surfMan, std::string detName, unsigned color, int layer);
+bool DrawSurfaces(const dd4hep::rec::SurfaceManager &surfMan, std::string detName, unsigned color, int layer);
 
 #endif
 

@@ -469,13 +469,13 @@ void DDMarlinCED::drawDD4hepDetector( dd4hep::Detector& lcdd, bool _surfaces, St
 
   //allocate reference to the surface manager
   // some models might not have a SurfaceManager extension:
-  DD4hep::DDRec::SurfaceManager* sM = 0 ;
-  try{  sM = lcdd.extension<DD4hep::DDRec::SurfaceManager>();
+  dd4hep::rec::SurfaceManager* sM = 0 ;
+  try{  sM = lcdd.extension<dd4hep::rec::SurfaceManager>();
   } catch( std::runtime_error ) {
     lcdd.apply( "InstallSurfaceManager",0,0);
-    sM = lcdd.extension<DD4hep::DDRec::SurfaceManager>();
+    sM = lcdd.extension<dd4hep::rec::SurfaceManager>();
   }
-  const DD4hep::DDRec::SurfaceManager& surfMan = *sM;
+  const dd4hep::rec::SurfaceManager& surfMan = *sM;
 
   //some temporary parameters for visualization
   unsigned color; bool visible;
