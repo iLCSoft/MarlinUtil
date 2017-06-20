@@ -65,15 +65,14 @@ using namespace UTIL;
 
 
 //for detector drawing (Thorben Quast)
-#include "DD4hep/LCDD.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/DD4hepUnits.h" 
 #include "DDRec/DetectorData.h"
 #include "DDRec/SurfaceManager.h"
 #include "DDRec/Surface.h"
 #include "TColor.h"
-using namespace DD4hep::Geometry ;
-using namespace DD4hep;
-using namespace DD4hep::DDRec ;
+
+using namespace dd4hep;
 
 
 DDMarlinCED* DDMarlinCED::_me = 0;
@@ -460,8 +459,8 @@ void DDMarlinCED::drawHelix(float b, float charge, float x, float y, float z,
 }
 
 
-void DDMarlinCED::drawDD4hepDetector( DD4hep::Geometry::LCDD& lcdd, bool _surfaces, StringVec _detailled){
-  typedef std::vector< DD4hep::Geometry::DetElement> DetVec ;
+void DDMarlinCED::drawDD4hepDetector( dd4hep::Detector& lcdd, bool _surfaces, StringVec _detailled){
+  typedef std::vector< dd4hep::DetElement> DetVec ;
   // get DetElements for the main sub detectors from dd4hep 
   const DetVec& trackers     = lcdd.detectors( "tracker" ) ;
   const DetVec& calorimeters = lcdd.detectors( "calorimeter" ) ;
@@ -491,11 +490,11 @@ void DDMarlinCED::drawDD4hepDetector( DD4hep::Geometry::LCDD& lcdd, bool _surfac
   for( unsigned i=0,n=calorimeters.size() ; i<n ; ++i ){
     det = calorimeters[i] ;
     detName = det.name() ;
-    LayeredCalorimeterData* calo = 0 ;
+    dd4hep::rec::LayeredCalorimeterData* calo = nullptr;
     streamlog_out( MESSAGE ) << " ......processing " << detName << std::endl;  
     //try to get the appropriate extension
     try{ 
-      calo = det.extension<LayeredCalorimeterData>() ; 
+      calo = det.extension<dd4hep::rec::LayeredCalorimeterData>();
     } catch(std::runtime_error& e){
       streamlog_out( MESSAGE ) <<  detName 
              << " has no extension of type LayeredCalorimeterData. "
@@ -535,17 +534,19 @@ void DDMarlinCED::drawDD4hepDetector( DD4hep::Geometry::LCDD& lcdd, bool _surfac
   for( unsigned i=0,n=trackers.size() ; i<n ; ++i ){
     det = trackers[i] ;
     detName = trackers[i].name() ;
-    ZPlanarData* trkPlanar = 0; ZDiskPetalsData* trkDisk = 0; FixedPadSizeTPCData* trkTPC = 0;
+    dd4hep::rec::ZPlanarData* trkPlanar = nullptr;
+    dd4hep::rec::ZDiskPetalsData* trkDisk = nullptr;
+    dd4hep::rec::FixedPadSizeTPCData* trkTPC = nullptr;
     streamlog_out( MESSAGE ) << " ......processing" <<  detName << std::endl; 
     
     try{ 
-      trkPlanar = det.extension<ZPlanarData>();
+      trkPlanar = det.extension<dd4hep::rec::ZPlanarData>();
     } catch(std::runtime_error&){
       try{
-        trkDisk = det.extension<ZDiskPetalsData>();
+        trkDisk = det.extension<dd4hep::rec::ZDiskPetalsData>();
       }catch(std::runtime_error&){
         try{
-          trkTPC = det.extension<FixedPadSizeTPCData>();
+          trkTPC = det.extension<dd4hep::rec::FixedPadSizeTPCData>();
         } catch(std::runtime_error&){
             streamlog_out( MESSAGE ) <<  detName 
              << " has no extension of type ZPlanarData/ZDiskPetalsData. "
@@ -561,7 +562,7 @@ void DDMarlinCED::drawDD4hepDetector( DD4hep::Geometry::LCDD& lcdd, bool _surfac
     if (!isDrawn && visible){
       //the following if statements are exclusive, i.e. only one may apply
       if(trkPlanar){
-        for (std::vector<DDRec::ZPlanarData::LayerLayout>::iterator thisLayer = trkPlanar->layers.begin(); thisLayer != trkPlanar->layers.end(); thisLayer++){
+        for (std::vector<dd4hep::rec::ZPlanarData::LayerLayout>::iterator thisLayer = trkPlanar->layers.begin(); thisLayer != trkPlanar->layers.end(); thisLayer++){
           LayerGeometry Geo;
           Geo = TrackerLayerParameterConversion(thisLayer);
           if (detailledDrawing(_detailled, detName)){
@@ -582,7 +583,7 @@ void DDMarlinCED::drawDD4hepDetector( DD4hep::Geometry::LCDD& lcdd, bool _surfac
           streamlog_out( MESSAGE )<<detName<<": Not drawn for now (appropriate geometry does not exist)"<<std::endl;
         }
         else{
-          for (std::vector<DDRec::ZDiskPetalsData::LayerLayout>::iterator thisLayer = trkDisk->layers.begin(); thisLayer != trkDisk->layers.end(); thisLayer++){
+          for (std::vector<dd4hep::rec::ZDiskPetalsData::LayerLayout>::iterator thisLayer = trkDisk->layers.begin(); thisLayer != trkDisk->layers.end(); thisLayer++){
             CEDGeoTubeParams params;    
             params = PetalParameterConversion(thisLayer);
             gTV.push_back( CEDGeoTube( params.Rmax, params.Rmin, params.outer_symmetry, params.inner_symmetry, params.phi0, params.delta_phi, params.delta_z,  params.z0, color , layer  ,1,1 ) ) ; 
@@ -617,13 +618,14 @@ void DDMarlinCED::drawDD4hepDetector( DD4hep::Geometry::LCDD& lcdd, bool _surfac
   for( unsigned i=0,n=passiveDets.size() ; i<n ; ++i ){
     det = passiveDets[i] ;
     detName = passiveDets[i].name() ;
-    ConicalSupportData* passiveConical = 0; LayeredCalorimeterData* passiveCalo = 0;
+    dd4hep::rec::ConicalSupportData* passiveConical = nullptr;
+    dd4hep::rec::LayeredCalorimeterData* passiveCalo = nullptr;
     streamlog_out( MESSAGE ) << " ......processing " <<  detName << std::endl;  
     try{ 
-        passiveConical = det.extension<ConicalSupportData>();
+        passiveConical = det.extension<dd4hep::rec::ConicalSupportData>();
     } catch(std::runtime_error&){
       try{
-        passiveCalo = det.extension<LayeredCalorimeterData>();
+        passiveCalo = det.extension<dd4hep::rec::LayeredCalorimeterData>();
       } catch(std::runtime_error&){
           streamlog_out( MESSAGE ) <<  detName 
              << " has no extension of type ConicalSupportData/LayeredCalorimeterData. "
@@ -637,12 +639,12 @@ void DDMarlinCED::drawDD4hepDetector( DD4hep::Geometry::LCDD& lcdd, bool _surfac
     if (!isDrawn && visible){
       if (passiveConical){
         streamlog_out( MESSAGE )<<detName<<" is not drawn for now (not needed)."<<std::endl;
-        for (std::vector<DDRec::ConicalSupportData::Section>::iterator thisSection = passiveConical->sections.begin(); thisSection != passiveConical->sections.end(); thisSection++){
+        for (std::vector<dd4hep::rec::ConicalSupportData::Section>::iterator thisSection = passiveConical->sections.begin(); thisSection != passiveConical->sections.end(); thisSection++){
         }
         isDrawn = true;
       }
       if (passiveCalo){
-        for (std::vector<DDRec::LayeredCalorimeterData::Layer>::iterator thisLayer = passiveCalo->layers.begin(); thisLayer != passiveCalo->layers.end(); thisLayer++){
+        for (std::vector<dd4hep::rec::LayeredCalorimeterData::Layer>::iterator thisLayer = passiveCalo->layers.begin(); thisLayer != passiveCalo->layers.end(); thisLayer++){
           CEDGeoTubeParams params;
           params = CalorimeterLayerParameterConversion(thisLayer);
           gTV.push_back( CEDGeoTube( params.Rmax, params.Rmin, params.outer_symmetry, params.inner_symmetry,  params.phi0, params.delta_phi, params.delta_z,  params.z0, color , layer  ,1,1 ) ) ; 
@@ -695,7 +697,7 @@ bool detailledDrawing(StringVec _detailled, std::string detName){
 
 //converts the parameters in LayeredCalorimeterData given by the appropriate drivers
 //into those required by the CEDGeoTube
-CEDGeoTubeParams CalorimeterParameterConversion (LayeredCalorimeterData *calo){
+CEDGeoTubeParams CalorimeterParameterConversion (dd4hep::rec::LayeredCalorimeterData *calo){
   //get all the information from the lcdd class
   double rMin = calo->extent[0]/dd4hep::mm ;
   double rMax = calo->extent[1]/dd4hep::mm ;
@@ -741,7 +743,7 @@ CEDGeoTubeParams CalorimeterParameterConversion (LayeredCalorimeterData *calo){
   
 
   //endcaps and barrels take the same parameters in CED but the interpretation of the z-coordinates differs:
-  returnParams.isBarrel = calo->layoutType == LayeredCalorimeterData::BarrelLayout;
+  returnParams.isBarrel = calo->layoutType == dd4hep::rec::LayeredCalorimeterData::BarrelLayout;
   
   //type specific conversions
   if (returnParams.isBarrel){
@@ -759,7 +761,7 @@ CEDGeoTubeParams CalorimeterParameterConversion (LayeredCalorimeterData *calo){
 }
 //converts the parameters in ZDiskPetalsData given by the appropriate drivers
 //into those required by the CEDGeoTube
-CEDGeoTubeParams PetalParameterConversion (std::vector<DDRec::ZDiskPetalsData::LayerLayout>::iterator thisLayer){
+CEDGeoTubeParams PetalParameterConversion (std::vector<dd4hep::rec::ZDiskPetalsData::LayerLayout>::iterator thisLayer){
 
   double phi0 = thisLayer->phi0*180/M_PI;
   double distanceSensitive = thisLayer->distanceSensitive/dd4hep::mm;
@@ -800,7 +802,7 @@ CEDGeoTubeParams PetalParameterConversion (std::vector<DDRec::ZDiskPetalsData::L
 
 //converts the parameters from a LayeredCalorimeterData layer given by the appropriate drivers
 //into those required by the CEDGeoTube
-CEDGeoTubeParams CalorimeterLayerParameterConversion(std::vector<DDRec::LayeredCalorimeterData::Layer>::iterator thisLayer){
+CEDGeoTubeParams CalorimeterLayerParameterConversion(std::vector<dd4hep::rec::LayeredCalorimeterData::Layer>::iterator thisLayer){
   double distance = thisLayer->distance/dd4hep::mm;
   double thickness = thisLayer->inner_thickness/dd4hep::mm + thisLayer->outer_thickness/dd4hep::mm ;
   double cellSize0 = thisLayer->cellSize0/dd4hep::mm;
@@ -832,7 +834,7 @@ CEDGeoTubeParams CalorimeterLayerParameterConversion(std::vector<DDRec::LayeredC
 
 //converts the parameters from a FixedPadSizeTPCData given by the appropriate drivers
 //into those required by the CEDGeoTube
-CEDGeoTubeParams TPCParameterConversion(FixedPadSizeTPCData *tpc){
+CEDGeoTubeParams TPCParameterConversion(dd4hep::rec::FixedPadSizeTPCData *tpc){
   double zHalf = tpc->zHalf/dd4hep::mm;
   //these radii include the insensitive space!
   double rMin = tpc->rMin/dd4hep::mm;
@@ -864,7 +866,7 @@ CEDGeoTubeParams TPCParameterConversion(FixedPadSizeTPCData *tpc){
 
 //converts the parameters from a ZPlanarData::LayerLayout layer given by the appropriate drivers
 //into those required by the CEDGeoBox (for drawing of staves) or by CEDGeoTube (for approximation of the set of staves into tubes)
-LayerGeometry TrackerLayerParameterConversion(std::vector<DDRec::ZPlanarData::LayerLayout>::iterator thisLayer){
+LayerGeometry TrackerLayerParameterConversion(std::vector<dd4hep::rec::ZPlanarData::LayerLayout>::iterator thisLayer){
   int nLadders = thisLayer->ladderNumber;
   double phi0 = thisLayer->phi0*180/M_PI;
   
@@ -922,16 +924,16 @@ LayerGeometry TrackerLayerParameterConversion(std::vector<DDRec::ZPlanarData::La
 }
 
 //draws the given surfaces as a set of individual lines from indicated start- to the endpoint
-bool DrawSurfaces(const DD4hep::DDRec::SurfaceManager &surfMan, std::string detName, unsigned color, int layer){
-  typedef DD4hep::DDRec::SurfaceMap SMap;
+bool DrawSurfaces(const dd4hep::rec::SurfaceManager &surfMan, std::string detName, unsigned color, int layer){
+  typedef dd4hep::rec::SurfaceMap SMap;
   const SMap* sMap = surfMan.map(detName);
   int lineCounter = 0;
   if(sMap) {
     for (SMap::const_iterator it = sMap->begin(); it != sMap->end(); ++it){
-      DD4hep::DDRec::Surface* surf = dynamic_cast<DD4hep::DDRec::Surface*> (it->second);
+      dd4hep::rec::Surface* surf = dynamic_cast<dd4hep::rec::Surface*> (it->second);
       if (!surf) continue;
       if (!(surf->type().isVisible())) continue;
-      const std::vector<std::pair<Vector3D,Vector3D> > lines = surf->getLines();
+      const std::vector<std::pair<dd4hep::rec::Vector3D,dd4hep::rec::Vector3D> > lines = surf->getLines();
       if (lines.empty()){
         streamlog_out( MESSAGE )<<" **** drawSurfaces(): empty lines vector for surface "<< *surf <<std::endl;
         continue;
@@ -956,8 +958,8 @@ bool DrawSurfaces(const DD4hep::DDRec::SurfaceManager &surfMan, std::string detN
 
 
 
-void getVisAttributes(DD4hep::Geometry::DetElement det, unsigned &color, bool &visible) {
-    DD4hep::Geometry::VisAttr thisVisAttribute = det.volume().visAttributes();  
+void getVisAttributes(dd4hep::DetElement det, unsigned &color, bool &visible) {
+    dd4hep::VisAttr thisVisAttribute = det.volume().visAttributes();
     if (thisVisAttribute.isValid()){
       TColor* c = new TColor(thisVisAttribute.color(), 1, 1, 1);
       //convert the given TColor into a hexadecimal whereby R_i, G_i, B_i integers
