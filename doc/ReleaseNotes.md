@@ -1,3 +1,43 @@
+# v01-14
+
+* 2017-05-03 Frank Gaede ([PR#3](https://github.com/iLCSoft/MarlinUtil/pull/3))
+  - fix -Wabsolute-value in MarlinCED.cc
+
+* 2017-05-03 Andre Sailer ([PR#2](https://github.com/iLCSoft/MarlinUtil/pull/2))
+  - Fix all warnings in MarlinUtil for gcc and llvm, and cmake
+      - use vectors instead of arrays to simplify memory handling in many classes, shadow warnings, unused parameters, unused member variables (LLVM), initialising members
+  - Fix bug in copy constructor of SimpleHelix if the LCErrorMatrix argument was not NULL (https://github.com/iLCSoft/MarlinUtil/commit/4a65837e720e5ba001f3031622c1eeb6cc20be3e) the LCErrorMatrix member was never properly initialised
+  - Separated ANN code into separate library to ignore all warnings, as this is exernal code (https://github.com/iLCSoft/MarlinUtil/commit/773a4d1dfd4ea7ad468d705a6c580e7a2890e165)
+
+* 2017-05-05 Andre Sailer ([PR#4](https://github.com/iLCSoft/MarlinUtil/pull/4))
+  - Add GeometryUtil file: implemented MarlinUtil::getBFieldInZ and MarlinUtil::getDetectorExtension
+    - getBFieldInZ returns bfield at (0 0 0) in z direction in Tesla from GEAR or DD4hep automagically
+    - getDetectorExtension returns DDRec detector extension for given flags
+  - HelixClass[_double]::getDistanceToPoint, first argument is now const to allow passing return values from lcio functions. Fully backward compatible
+
+* 2017-05-04 Andre Sailer ([PR#5](https://github.com/iLCSoft/MarlinUtil/pull/5))
+  - Fixed warnings for gcc49
+  - add Werror to CI configuration, no longer accepting PRs creating warnings
+
+* 2017-06-20 Shaojun Lu ([PR#10](https://github.com/iLCSoft/MarlinUtil/pull/10))
+  - Update DD4hep::DDRec::LayeredCalorimeterData to dd4hep::rec::LayeredCalorimeterData for backward compatible.
+  - Adapt namespaces to changes in DD4hep
+
+* 2017-06-03 Andre Sailer ([PR#8](https://github.com/iLCSoft/MarlinUtil/pull/8))
+  - MarlinUtil::getAbsMomentum: bugfix: use `delete[]` instead of `delete` as getMomentum uses new[]
+
+* 2017-05-29 Andre Sailer ([PR#7](https://github.com/iLCSoft/MarlinUtil/pull/7))
+  - MarlinUtil::getAbsMomentum: fix memory leak
+  - ClusterExtended::setHelix: use const reference instead of object as argument for function
+  - HelixClass[_double]::getDistanceToHelix: fix out-of-bounds access of array
+  - DDMarlinCED::*ParameterConversion: initialise isBarrel for CEDGeoTubeParams
+  - DDMarlinCED:: draw: getchar returns int, value otherwise truncated
+  - DDMarlinCED::kbhit: initialise fd_set
+
+* 2017-05-22 Andre Sailer ([PR#6](https://github.com/iLCSoft/MarlinUtil/pull/6))
+  - Changed `class MarlinUtil` to `namespace MarlinUtil`
+  - MarlinUtilConfig: include the dependency on DD4hep and ROOT
+
 # v01-13
 
 # v01-12-01
