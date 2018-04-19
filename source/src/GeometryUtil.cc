@@ -14,7 +14,7 @@ double MarlinUtil::getBzAtOrigin() {
   double bfield(0.0);
 
   dd4hep::Detector& theDetector = dd4hep::Detector::getInstance();
-  if ( not theDetector.field().isValid() ) {
+  if ( not (theDetector.state() == dd4hep::Detector::READY) ) {
     throw std::runtime_error("Detector geometry not initialised, cannot get bfield");
   }
   const double position[3]={0,0,0}; // position to calculate magnetic field at (the origin in this case)
