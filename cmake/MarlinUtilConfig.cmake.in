@@ -45,6 +45,7 @@ IF( MarlinUtil_INCLUDE_DIRS )
     LIST( APPEND MarlinUtil_INCLUDE_DIRS ${MarlinUtil_INCLUDE_DIRS}/marlinutil )
 ENDIF( MarlinUtil_INCLUDE_DIRS )
 
+FIND(DD4hep REQUIRED)
 
 # ---------- libraries --------------------------------------------------------
 INCLUDE( "@ILCSOFT_CMAKE_MODULES_ROOT@/MacroCheckPackageLibs.cmake" )
