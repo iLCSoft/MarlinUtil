@@ -1,3 +1,13 @@
+# v01-15-01
+
+* 2019-08-26 Andre Sailer ([PR#13](https://github.com/iLCSoft/MarlinUtil/pull/13))
+  - MarlinUtilConfig: explicitly add DD4hep dependency so that dependent packages resolve the DD4hep::DDCore etc. libraries
+
+* 2018-04-20 Erica Brondolin ([PR#11](https://github.com/iLCSoft/MarlinUtil/pull/11))
+  - This PR is related to a detector issue discussed in: https://github.com/AIDASoft/DD4hep/issues/356
+  Given that the return value of det.field().isValid() is always true for design, a different approach on the check of the geometry validity is applied.
+  - This PR must be integrated with the following PR in AIDASoft/DD4hep: https://github.com/AIDASoft/DD4hep/pull/367
+
 # v01-15
 
 # v01-14
