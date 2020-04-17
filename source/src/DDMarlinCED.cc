@@ -471,7 +471,7 @@ void DDMarlinCED::drawDD4hepDetector( dd4hep::Detector& lcdd, bool _surfaces, St
   // some models might not have a SurfaceManager extension:
   dd4hep::rec::SurfaceManager* sM = 0 ;
   try{  sM = lcdd.extension<dd4hep::rec::SurfaceManager>();
-  } catch( std::runtime_error ) {
+  } catch(const std::runtime_error& ) {
     lcdd.apply( "InstallSurfaceManager",0,0);
     sM = lcdd.extension<dd4hep::rec::SurfaceManager>();
   }
@@ -495,7 +495,7 @@ void DDMarlinCED::drawDD4hepDetector( dd4hep::Detector& lcdd, bool _surfaces, St
     //try to get the appropriate extension
     try{ 
       calo = det.extension<dd4hep::rec::LayeredCalorimeterData>();
-    } catch(std::runtime_error& e){
+    } catch(const std::runtime_error& e){
       streamlog_out( MESSAGE ) <<  detName 
              << " has no extension of type LayeredCalorimeterData. "
              <<   std::endl;  
@@ -541,13 +541,13 @@ void DDMarlinCED::drawDD4hepDetector( dd4hep::Detector& lcdd, bool _surfaces, St
     
     try{ 
       trkPlanar = det.extension<dd4hep::rec::ZPlanarData>();
-    } catch(std::runtime_error&){
+    } catch(const std::runtime_error&){
       try{
         trkDisk = det.extension<dd4hep::rec::ZDiskPetalsData>();
-      }catch(std::runtime_error&){
+      }catch(const std::runtime_error&){
         try{
           trkTPC = det.extension<dd4hep::rec::FixedPadSizeTPCData>();
-        } catch(std::runtime_error&){
+        } catch(const std::runtime_error&){
             streamlog_out( MESSAGE ) <<  detName 
              << " has no extension of type ZPlanarData/ZDiskPetalsData. "
              <<   std::endl;           
@@ -623,10 +623,10 @@ void DDMarlinCED::drawDD4hepDetector( dd4hep::Detector& lcdd, bool _surfaces, St
     streamlog_out( MESSAGE ) << " ......processing " <<  detName << std::endl;  
     try{ 
         passiveConical = det.extension<dd4hep::rec::ConicalSupportData>();
-    } catch(std::runtime_error&){
+    } catch(const std::runtime_error&){
       try{
         passiveCalo = det.extension<dd4hep::rec::LayeredCalorimeterData>();
-      } catch(std::runtime_error&){
+      } catch(const std::runtime_error&){
           streamlog_out( MESSAGE ) <<  detName 
              << " has no extension of type ConicalSupportData/LayeredCalorimeterData. "
              <<   std::endl;  
