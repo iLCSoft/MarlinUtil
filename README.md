@@ -1,5 +1,5 @@
 #  MarlinUtil
-[![Build Status](https://travis-ci.org/iLCSoft/MarlinUtil.svg?branch=master)](https://travis-ci.org/iLCSoft/MarlinUtil)
+[![Build](https://github.com/iLCSoft/MarlinUtil/actions/workflows/linux.yml/badge.svg)](https://github.com/iLCSoft/MarlinUtil/actions/workflows/linux.yml)
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/12366/badge.svg)](https://scan.coverity.com/projects/ilcsoft-marlinutil)
 
 Library that containes classes and functions that are used by more than one processor. In particular it contains the geometry classes that are used until we have the geometry for reconstruction package (GEAR).
