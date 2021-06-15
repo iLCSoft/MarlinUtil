@@ -1,3 +1,16 @@
+# v01-16
+
+* 2021-06-15 Thomas Madlener ([PR#18](https://github.com/iLCSoft/MarlinUtil/pull/18))
+  - Move `TrueJet_Parser` utility class from MarlinReco to MarlinUtil.
+    - Make it possible to use this in analysis code outside of MarlinReco
+
+* 2021-06-09 Thomas Madlener ([PR#17](https://github.com/iLCSoft/MarlinUtil/pull/17))
+  - Migrate the CI setup to use github actions instead of travis
+
+* 2020-04-12 Frank Gaede ([PR#15](https://github.com/iLCSoft/MarlinUtil/pull/15))
+  - make compatible w/ c++17 for macos/clang
+        - patch provided by K.Fujii
+
 # v01-15-01
 
 * 2019-08-26 Andre Sailer ([PR#13](https://github.com/iLCSoft/MarlinUtil/pull/13))
