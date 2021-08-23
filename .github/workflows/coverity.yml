@@ -17,5 +17,5 @@ jobs:
         coverity-project: 'iLCSoft%2FMarlinUtil'
         coverity-project-token: ${{ secrets.MARLINUTIL_COVERITY_TOKEN }}
         github-pat: ${{ secrets.READ_COVERITY_IMAGE }}
-        view-path: "/cvmfs/clicdp.cern.ch/iLCSoft/lcg/97/nightly/x86_64-centos7-gcc9-opt"
+        view-path: "/cvmfs/clicdp.cern.ch/iLCSoft/lcg/100/nightly/x86_64-centos7-gcc10-opt"
         setup-script: "init_ilcsoft.sh"
