@@ -57,3 +57,43 @@ dd4hep::rec::LayeredCalorimeterData const* MarlinUtil::getLayeredCalorimeterData
 
   return theExtension;
 }
+
+
+dd4hep::rec::ZPlanarData* MarlinUtil::getVXDData(){
+    dd4hep::Detector& theDetector = dd4hep::Detector::getInstance();
+    dd4hep::DetElement vxdDet = theDetector.detector("VXD");
+    dd4hep::rec::ZPlanarData* vxd = vxdDet.extension <dd4hep::rec::ZPlanarData>();
+    return vxd;
+}
+
+
+dd4hep::rec::ZPlanarData* MarlinUtil::getSITData(){
+    dd4hep::Detector& theDetector = dd4hep::Detector::getInstance();
+    dd4hep::DetElement sitDet = theDetector.detector("SIT");
+    dd4hep::rec::ZPlanarData* sit = sitDet.extension <dd4hep::rec::ZPlanarData>();
+    return sit;
+}
+
+
+dd4hep::rec::ZDiskPetalsData* MarlinUtil::getFTDData(){
+    dd4hep::Detector& theDetector = dd4hep::Detector::getInstance();
+    dd4hep::DetElement ftdDet = theDetector.detector("FTD");
+    dd4hep::rec::ZDiskPetalsData* ftd = ftdDet.extension <dd4hep::rec::ZDiskPetalsData>();
+    return ftd;
+}
+
+
+dd4hep::rec::FixedPadSizeTPCData* MarlinUtil::getTPCData(){
+    dd4hep::Detector& theDetector = dd4hep::Detector::getInstance();
+    dd4hep::DetElement tpcDet = theDetector.detector("TPC");
+    dd4hep::rec::FixedPadSizeTPCData* tpc = tpcDet.extension <dd4hep::rec::FixedPadSizeTPCData>();
+    return tpc;
+}
+
+
+dd4hep::rec::ZPlanarData* MarlinUtil::getSETData(){
+    dd4hep::Detector& theDetector = dd4hep::Detector::getInstance();
+    dd4hep::DetElement setDet = theDetector.detector("SET");
+    dd4hep::rec::ZPlanarData* set = setDet.extension <dd4hep::rec::ZPlanarData>();
+    return set;
+}
