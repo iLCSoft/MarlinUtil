@@ -6,7 +6,6 @@
 #include <DD4hep/DetType.h>
 #include <DD4hep/DetectorSelector.h>
 #include <DD4hep/Detector.h>
-// #include <DDRec/DetectorData.h>
 
 
 double MarlinUtil::getBzAtOrigin() {
