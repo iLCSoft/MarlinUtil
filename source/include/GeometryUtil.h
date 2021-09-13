@@ -27,6 +27,15 @@ namespace MarlinUtil {
                                                                        unsigned int excludeFlag=0);
 
 
+
+
+   /**
+   * Returns DDRec detector extension for detector with detName
+   * (link to the dd4hep documentation of the class so user knows which parameters he get get from this...)
+   */
+    template<class DetExtension>
+    DetExtension* getDetData(const std::string& detName);
+
    /**
    * Returns DDRec detector extension ZPlanarData for vertex detector
    * (link to the dd4hep documentation of the class so user knows which parameters he get get from this...)

@@ -6,7 +6,7 @@
 #include <DD4hep/DetType.h>
 #include <DD4hep/DetectorSelector.h>
 #include <DD4hep/Detector.h>
-#include <DDRec/DetectorData.h>
+// #include <DDRec/DetectorData.h>
 
 
 double MarlinUtil::getBzAtOrigin() {
@@ -59,41 +59,34 @@ dd4hep::rec::LayeredCalorimeterData const* MarlinUtil::getLayeredCalorimeterData
 }
 
 
+template<class DetExtension>
+DetExtension* MarlinUtil::getDetData(const std::string& detName){
+    auto& detector = dd4hep::Detector::getInstance();
+    auto detElem = detector.detector(detName);
+    auto detData = detElem.extension<DetExtension>();
+    return detData;
+}
+
 dd4hep::rec::ZPlanarData* MarlinUtil::getVXDData(){
-    dd4hep::Detector& theDetector = dd4hep::Detector::getInstance();
-    dd4hep::DetElement vxdDet = theDetector.detector("VXD");
-    dd4hep::rec::ZPlanarData* vxd = vxdDet.extension <dd4hep::rec::ZPlanarData>();
-    return vxd;
+    return getDetData<dd4hep::rec::ZPlanarData>("VXD");
 }
 
 
 dd4hep::rec::ZPlanarData* MarlinUtil::getSITData(){
-    dd4hep::Detector& theDetector = dd4hep::Detector::getInstance();
-    dd4hep::DetElement sitDet = theDetector.detector("SIT");
-    dd4hep::rec::ZPlanarData* sit = sitDet.extension <dd4hep::rec::ZPlanarData>();
-    return sit;
+    return getDetData<dd4hep::rec::ZPlanarData>("SIT");
 }
 
 
 dd4hep::rec::ZDiskPetalsData* MarlinUtil::getFTDData(){
-    dd4hep::Detector& theDetector = dd4hep::Detector::getInstance();
-    dd4hep::DetElement ftdDet = theDetector.detector("FTD");
-    dd4hep::rec::ZDiskPetalsData* ftd = ftdDet.extension <dd4hep::rec::ZDiskPetalsData>();
-    return ftd;
+    return getDetData<dd4hep::rec::ZDiskPetalsData>("FTD");
 }
 
 
 dd4hep::rec::FixedPadSizeTPCData* MarlinUtil::getTPCData(){
-    dd4hep::Detector& theDetector = dd4hep::Detector::getInstance();
-    dd4hep::DetElement tpcDet = theDetector.detector("TPC");
-    dd4hep::rec::FixedPadSizeTPCData* tpc = tpcDet.extension <dd4hep::rec::FixedPadSizeTPCData>();
-    return tpc;
+    return getDetData<dd4hep::rec::FixedPadSizeTPCData>("TPC");
 }
 
 
 dd4hep::rec::ZPlanarData* MarlinUtil::getSETData(){
-    dd4hep::Detector& theDetector = dd4hep::Detector::getInstance();
-    dd4hep::DetElement setDet = theDetector.detector("SET");
-    dd4hep::rec::ZPlanarData* set = setDet.extension <dd4hep::rec::ZPlanarData>();
-    return set;
+    return getDetData<dd4hep::rec::ZPlanarData>("SET");
 }
