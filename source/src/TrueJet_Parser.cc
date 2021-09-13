@@ -144,7 +144,7 @@ double TrueJet_Parser::Etrueseen(int ijet) {
     try{
      rmclcol = evt->getCollection( get_recoMCTruthLink() );
     }
-    catch( lcio::DataNotAvailableException e )
+    catch( lcio::DataNotAvailableException& e )
     {
       streamlog_out(WARNING) << get_recoMCTruthLink()   << " collection not available" << std::endl;
         rmclcol = NULL;
@@ -185,7 +185,7 @@ const double* TrueJet_Parser::ptrueseen(int ijet) {
      try{
       rmclcol = evt->getCollection( get_recoMCTruthLink() );
     }
-    catch( lcio::DataNotAvailableException e )
+    catch( lcio::DataNotAvailableException& e )
     {
       streamlog_out(WARNING) << get_recoMCTruthLink()   << " collection not available" << std::endl;
         rmclcol = NULL;
@@ -549,7 +549,7 @@ void TrueJet_Parser::getall( LCEvent * event ) {
       tjcol = evt->getCollection( _trueJetCollectionName);
       if (  tjcol->getNumberOfElements() == 0 ) { return ; }
     }
-    catch( lcio::DataNotAvailableException e )
+    catch( lcio::DataNotAvailableException& e )
     {
       streamlog_out(WARNING) <<    _trueJetCollectionName  << " collection not available 1" << std::endl;
       tjcol = NULL;
@@ -561,7 +561,7 @@ void TrueJet_Parser::getall( LCEvent * event ) {
     try{
       fcncol = evt->getCollection( _finalColourNeutralCollectionName);
     }
-    catch( lcio::DataNotAvailableException e )
+    catch( lcio::DataNotAvailableException& e )
     {
         streamlog_out(WARNING) <<    _finalColourNeutralCollectionName << " collection not available" << std::endl;
         fcncol = NULL;
@@ -573,7 +573,7 @@ void TrueJet_Parser::getall( LCEvent * event ) {
     try{
       icncol = evt->getCollection( _initialColourNeutralCollectionName);
     }
-    catch( lcio::DataNotAvailableException e )
+    catch( lcio::DataNotAvailableException& e )
     {
         streamlog_out(WARNING) <<    _initialColourNeutralCollectionName << " collection not available" << std::endl;
         icncol = NULL;
@@ -586,7 +586,7 @@ void TrueJet_Parser::getall( LCEvent * event ) {
     try{
       fcnlcol  = evt->getCollection(  _finalColourNeutralLink );
     }
-    catch( lcio::DataNotAvailableException e )
+    catch( lcio::DataNotAvailableException& e )
     {
         streamlog_out(WARNING) <<  _finalColourNeutralLink   << " collection not available" << std::endl;
         fcnlcol  = NULL;
@@ -598,7 +598,7 @@ void TrueJet_Parser::getall( LCEvent * event ) {
     try{
       icnlcol  = evt->getCollection(  _initialColourNeutralLink );
     }
-    catch( lcio::DataNotAvailableException e )
+    catch( lcio::DataNotAvailableException& e )
     {
         streamlog_out(WARNING) <<  _initialColourNeutralLink  << " collection not available" << std::endl;
         fcnlcol  = NULL;
@@ -610,7 +610,7 @@ void TrueJet_Parser::getall( LCEvent * event ) {
     try{
       fplcol  = evt->getCollection(  _finalElementonLink );
     }
-    catch( lcio::DataNotAvailableException e )
+    catch( lcio::DataNotAvailableException& e )
     {
         streamlog_out(WARNING) <<  _finalElementonLink   << " collection not available" << std::endl;
         fcnlcol  = NULL;
@@ -622,7 +622,7 @@ void TrueJet_Parser::getall( LCEvent * event ) {
     try{
       iplcol  = evt->getCollection(  _initialElementonLink );
     }
-    catch( lcio::DataNotAvailableException e )
+    catch( lcio::DataNotAvailableException& e )
     {
         streamlog_out(WARNING) <<  _initialElementonLink   << " collection not available" << std::endl;
         fcnlcol  = NULL;
@@ -634,7 +634,7 @@ void TrueJet_Parser::getall( LCEvent * event ) {
     try{
       tjrecolcol  = evt->getCollection(  _trueJetPFOLink );
     }
-    catch( lcio::DataNotAvailableException e )
+    catch( lcio::DataNotAvailableException& e )
     {
         streamlog_out(WARNING) <<  _trueJetPFOLink   << " collection not available" << std::endl;
         fcnlcol  = NULL;
@@ -647,7 +647,7 @@ void TrueJet_Parser::getall( LCEvent * event ) {
     try{
       tjmcplcol  = evt->getCollection(  _trueJetMCParticleLink );
     }
-    catch( lcio::DataNotAvailableException e )
+    catch( lcio::DataNotAvailableException& e )
     {
         streamlog_out(WARNING) <<  _trueJetMCParticleLink   << " collection not available" << std::endl;
         fcnlcol  = NULL;
