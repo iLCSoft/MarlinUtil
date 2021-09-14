@@ -4,7 +4,7 @@
 #include <DDRec/DetectorData.h>
 
 
-namespace MarlinUtil::ILD {
+namespace MarlinUtil::ILD{
     /**
     * Returns DDRec detector extension ZPlanarData for vertex detector of the ILD
     * (link to the dd4hep documentation of the class so user knows which parameters he get get from this...)
