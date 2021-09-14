@@ -3,10 +3,6 @@
 #include <streamlog/streamlog.h>
 
 #include <DD4hep/DD4hepUnits.h>
-#include <DD4hep/DetType.h>
-#include <DD4hep/DetectorSelector.h>
-#include <DD4hep/Detector.h>
-
 
 double MarlinUtil::getBzAtOrigin() {
 
@@ -55,37 +51,4 @@ dd4hep::rec::LayeredCalorimeterData const* MarlinUtil::getLayeredCalorimeterData
   theExtension = theDetectors.at(0).extension<dd4hep::rec::LayeredCalorimeterData>();
 
   return theExtension;
-}
-
-
-template<class DetExtension>
-DetExtension* MarlinUtil::getDetData(const std::string& detName){
-    auto& detector = dd4hep::Detector::getInstance();
-    auto detElem = detector.detector(detName);
-    auto detData = detElem.extension<DetExtension>();
-    return detData;
-}
-
-dd4hep::rec::ZPlanarData* MarlinUtil::getVXDData(){
-    return getDetData<dd4hep::rec::ZPlanarData>("VXD");
-}
-
-
-dd4hep::rec::ZPlanarData* MarlinUtil::getSITData(){
-    return getDetData<dd4hep::rec::ZPlanarData>("SIT");
-}
-
-
-dd4hep::rec::ZDiskPetalsData* MarlinUtil::getFTDData(){
-    return getDetData<dd4hep::rec::ZDiskPetalsData>("FTD");
-}
-
-
-dd4hep::rec::FixedPadSizeTPCData* MarlinUtil::getTPCData(){
-    return getDetData<dd4hep::rec::FixedPadSizeTPCData>("TPC");
-}
-
-
-dd4hep::rec::ZPlanarData* MarlinUtil::getSETData(){
-    return getDetData<dd4hep::rec::ZPlanarData>("SET");
 }
