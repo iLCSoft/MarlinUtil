@@ -2,6 +2,9 @@
 #define GEOMETRYUTIL_H 1
 
 #include <DDRec/DetectorData.h>
+#include <DD4hep/DetType.h>
+#include <DD4hep/DetectorSelector.h>
+#include <DD4hep/Detector.h>
 
 namespace MarlinUtil {
 
@@ -30,52 +33,16 @@ namespace MarlinUtil {
 
 
    /**
-   * Returns DDRec detector extension for detector with detName
+   * Returns DDRec detector extension for the provided detector name "detName"
    * (link to the dd4hep documentation of the class so user knows which parameters he get get from this...)
    */
     template<class DetExtension>
-    DetExtension* getDetData(const std::string& detName);
-
-   /**
-   * Returns DDRec detector extension ZPlanarData for vertex detector
-   * (link to the dd4hep documentation of the class so user knows which parameters he get get from this...)
-   */
-   dd4hep::rec::ZPlanarData* getVXDData();
-
-
-   /**
-   * Returns DDRec detector extension ZPlanarData for SIT detector
-   * (link to the dd4hep documentation of the class so user knows which parameters he get get from this...)
-   */
-   dd4hep::rec::ZPlanarData* getSITData();
-
-
-   /**
-   * Returns DDRec detector extension ZDiskPetalsStruct for FTD detector
-   * (link to the dd4hep documentation of the class so user knows which parameters he get get from this...)
-   */
-   dd4hep::rec::ZDiskPetalsData* getFTDData();
-
-
-   /**
-   * Returns DDRec detector extension FixedPadSizeTPCData for TPC detector
-   * (link to the dd4hep documentation of the class so user knows which parameters he get get from this...)
-   */
-   dd4hep::rec::FixedPadSizeTPCData* getTPCData();
-
-
-   /**
-   * Returns DDRec detector extension ZPlanarData for SET detector
-   * (link to the dd4hep documentation of the class so user knows which parameters he get get from this...)
-   */
-   dd4hep::rec::ZPlanarData* getSETData();
-
-
-
-
-
-
-
+    DetExtension* getDetData(const std::string& detName){
+        auto& detector = dd4hep::Detector::getInstance();
+        auto detElem = detector.detector(detName);
+        auto detData = detElem.extension<DetExtension>();
+        return detData;
+    }
 
 
 }//namespace MarlinUtil
