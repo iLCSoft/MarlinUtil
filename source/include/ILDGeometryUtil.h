@@ -3,39 +3,36 @@
 
 #include <DDRec/DetectorData.h>
 
+/** Namespace for the ILD specific geometry functions.
 
+MarlinUtil::ILD contains helper functions which provide easier interface for extracting
+geometry information of the ILD detector elements.
+
+They are based on the template function MarlinUtil::getDetData(const std::string& detName)
+which can be applied to extract the detector element extension for any generic detector model.
+*/
 namespace MarlinUtil::ILD{
-    /**
-    * Returns DDRec detector extension ZPlanarData for vertex detector of the ILD
-    * (link to the dd4hep documentation of the class so user knows which parameters he get get from this...)
+    /**Get dd4hep::rec::StructExtension of the dd4hep::rec::ZPlanarStruct for the VXD detector.
     */
     dd4hep::rec::ZPlanarData* getVXDData();
 
 
-    /**
-    * Returns DDRec detector extension ZPlanarData for SIT detector of the ILD
-    * (link to the dd4hep documentation of the class so user knows which parameters he get get from this...)
+    /**Get dd4hep::rec::StructExtension of the dd4hep::rec::ZPlanarStruct for the SIT detector.
     */
     dd4hep::rec::ZPlanarData* getSITData();
 
 
-    /**
-    * Returns DDRec detector extension ZDiskPetalsStruct for FTD detector of the ILD
-    * (link to the dd4hep documentation of the class so user knows which parameters he get get from this...)
+    /**Get dd4hep::rec::StructExtension of the dd4hep::rec::ZDiskPetalsStruct for the FTD detector.
     */
     dd4hep::rec::ZDiskPetalsData* getFTDData();
 
 
-    /**
-    * Returns DDRec detector extension FixedPadSizeTPCData for TPC detector of the ILD
-    * (link to the dd4hep documentation of the class so user knows which parameters he get get from this...)
+    /**Get dd4hep::rec::StructExtension of the dd4hep::rec::FixedPadSizeTPCStruct for the TPC detector.
     */
     dd4hep::rec::FixedPadSizeTPCData* getTPCData();
 
 
-    /**
-    * Returns DDRec detector extension ZPlanarData for SET detector of the ILD
-    * (link to the dd4hep documentation of the class so user knows which parameters he get get from this...)
+    /**Get dd4hep::rec::StructExtension of the dd4hep::rec::ZPlanarStruct for the SET detector.
     */
     dd4hep::rec::ZPlanarData* getSETData();
 }

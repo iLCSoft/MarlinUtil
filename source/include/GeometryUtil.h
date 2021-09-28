@@ -32,10 +32,12 @@ namespace MarlinUtil {
 
 
 
-   /**
-   * Returns DDRec detector extension for the provided detector name "detName"
-   * (link to the dd4hep documentation of the class so user knows which parameters he get get from this...)
-   */
+    /** Get DDRec detector extension for the provided detector element name.
+    \tparam DetExtension dd4hep::rec::StructExtension of the data struct of one of the detector elements.
+
+    DD4hep documentation about various existing data structs one can find here:
+    https://dd4hep.web.cern.ch/dd4hep/reference/DDRec_2include_2DDRec_2DetectorData_8h.html
+    */
     template<class DetExtension>
     DetExtension* getDetData(const std::string& detName){
         auto& detector = dd4hep::Detector::getInstance();
