@@ -1,3 +1,13 @@
+# v01-16-01
+
+* 2021-09-29 Bohdan Dudar ([PR#23](https://github.com/iLCSoft/MarlinUtil/pull/23))
+  - Add generic `MarlinUtil::getDetData` for getting DDRec detector extension data from dd4hep.
+  - Add dedicated `getVXDData`, `getSITData`, `getFTDData`, `getTPCData`, `getSETData` in `MarlinUtil::ILD` namespace which return DDRec extensions of corresponding detector elements of the ILD detector.
+  - Fix warnings about catching exceptions by value in `TrueJet_Parser`
+
+* 2021-08-23 Andre Sailer ([PR#20](https://github.com/iLCSoft/MarlinUtil/pull/20))
+  - CI: build against LCG_99python2 gcc8 and LCG_100 gcc10, clang11
+
 # v01-16
 
 * 2021-06-15 Thomas Madlener ([PR#18](https://github.com/iLCSoft/MarlinUtil/pull/18))
