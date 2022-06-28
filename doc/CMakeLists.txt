@@ -14,6 +14,15 @@ SET( DOC_BIN_DIR "${PROJECT_BINARY_DIR}/docbuild" )
 
 SET( DOX_INPUT ../source )
 
+FILE(GLOB DOXYGEN_SOURCES
+        ../source/include/ANN/*
+        ../source/include/mille/*
+        ../source/include/*
+        ../source/ann/*
+        ../source/src/mille/*
+        ../source/src/*
+    )
+
 # custom command to build documentation
 ADD_CUSTOM_COMMAND(
     OUTPUT  "${DOC_BIN_DIR}/html/index.html"
@@ -26,12 +35,7 @@ ADD_CUSTOM_COMMAND(
     WORKING_DIRECTORY "${DOC_SRC_DIR}"
     COMMENT "Building API Documentation..."
     DEPENDS Doxyfile CMakeLists.txt
-        ../source/include/ANN/*
-        ../source/include/mille/*
-        ../source/include/*
-        ../source/ann/*
-        ../source/src/mille/*
-        ../source/src/*
+            ${DOXYGEN_SOURCES}
 )
 
 ADD_CUSTOM_TARGET( doc DEPENDS "${DOC_BIN_DIR}/html/index.html" )
