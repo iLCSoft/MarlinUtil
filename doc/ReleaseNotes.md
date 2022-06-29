@@ -1,3 +1,8 @@
+# v01-16-02
+
+* 2022-06-28 Thomas Madlener ([PR#27](https://github.com/iLCSoft/MarlinUtil/pull/27))
+  - Make the doxygen cmake configuartion work with newer versions of CMake (>= 3.17)
+
 # v01-16-01
 
 * 2021-09-29 Bohdan Dudar ([PR#23](https://github.com/iLCSoft/MarlinUtil/pull/23))
