@@ -38,8 +38,15 @@ WeightedPoints3D::WeightedPoints3D(const std::vector<double> &cog,
   _ez (),
   _xl (),
   _xt (),
-  _t  (),
-  _s  (),
+  _x_trans  (),
+  _y_trans  (),
+  _z_trans  (),
+  _current_transformation (0),
+  _th_ref (0.0),
+  _ph_ref (0.0),
+  _ind_first (0),
+
+
   _ifNotPointsGiven(1),
 
   _ifNotCOG(0),
@@ -55,6 +62,8 @@ WeightedPoints3D::WeightedPoints3D(const std::vector<double> &cog,
 
   _ifNotWidth(1),
   _Width(0.0),
+  _ifNotMaxDist(1),
+  _MaxDist(0.0),
   _ifNotEigenSolved (1),
   _ifNotEigenToPolarDone (1),
   _ifNotCovErrors(1),
@@ -68,7 +77,20 @@ WeightedPoints3D::WeightedPoints3D(const std::vector<double> &cog,
   _nfact1(0.0),
   _nfact2(0.0),
   _nfact3(0.0),
-  _nfact4(0.0){
+  _nfact4(0.0),
+  _r1(0.0),
+  _r2(0.0),
+  _r3(0.0),
+  _vol(0.0),
+  _r_ave(0.0),
+  _density(0.0),
+  _logitudinaleccentricity(0.0),
+  _transverseeccentricity(0.0),
+  _ifNotfirst_and_last_found (1),
+  _r1_forw(0.0),
+  _r1_back(0.0),
+  _FractionInside(0.0)
+{
 
   //  _ifNotEigensystem ( 1)
 
@@ -103,11 +125,20 @@ WeightedPoints3D::WeightedPoints3D(const std::vector<double> &cog,
     }
   }
   _sumWgt = wgtsum ; _wgt_sqr_sum =  wgt2sum; _wgt_4_sum =  wgt4sum;
+  
+  for ( int k=0 ; k < 3; k++) {
+    for ( int i=0 ; i < 2 ; i++) {
+      for ( int j=0 ; j < 2 ; j++) {
+        _theta_phi_cov[i][j][k] = 0.0 ;
+      }
+    }
+  }
   if ( mayor_axis_error.size() == 3 ) {
     int kkk=0;
     for ( int i=0 ; i < 2 ; i++) {
       for ( int j=0 ; j <=i ; j++) {
-        _theta_phi_cov[i][j][2] =  mayor_axis_error[kkk]; kkk++;
+        _theta_phi_cov[i][j][2] =  mayor_axis_error[kkk]; 
+        _theta_phi_cov[j][i][2] =  mayor_axis_error[kkk]; kkk++;
       }
     }  
   } else if ( mayor_axis_error.size() == 4 ) {
@@ -132,8 +163,14 @@ WeightedPoints3D::WeightedPoints3D(int nhits, double* a, double* x, double* y, d
   _ez (nhits, 1.0),
   _xl (nhits, 0.0),
   _xt (nhits, 0.0),
-  _t  (nhits, 0.0),
-  _s  (nhits, 0.0),
+  _x_trans  (nhits, 0.0),
+  _y_trans  (nhits, 0.0),
+  _z_trans  (nhits, 0.0),
+  _current_transformation (0),
+  _th_ref (0.0),
+  _ph_ref (0.0),
+  _ind_first (0),
+
   _ifNotPointsGiven(0),
 
   _ifNotCOG     ( 1),
@@ -148,6 +185,8 @@ WeightedPoints3D::WeightedPoints3D(int nhits, double* a, double* x, double* y, d
 
   _ifNotWidth(1),
   _Width(0.0),
+  _ifNotMaxDist(1),
+  _MaxDist(0.0),
   _ifNotEigenSolved (1),
   _ifNotEigenToPolarDone (1),
   _ifNotCovErrors( 1),
@@ -161,20 +200,37 @@ WeightedPoints3D::WeightedPoints3D(int nhits, double* a, double* x, double* y, d
   _nfact1(0.),
   _nfact2 (0.),
   _nfact3(0.),
-  _nfact4(0.)
+  _nfact4(0.),
+  _r1(0.0),
+  _r2(0.0),
+  _r3(0.0),
+  _vol(0.0),
+  _r_ave(0.0),
+  _density(0.0),
+  _logitudinaleccentricity(0.0),
+  _transverseeccentricity(0.0),
+  _ifNotfirst_and_last_found (1),
+  _r1_forw(0.0),
+  _r1_back(0.0),
+  _FractionInside(0.0)
   
 {
 
-
+ 
   //if ( _nPoints < 3 ) { throw int (); }
+
+
+  for ( int i=0 ; i<3 ; i++ ) { _xyz_ref[i] = 0.0 ; }
 
   for (int i(0); i < nhits; ++i) {
     _Wgt[i] = a[i];
     _x[i] = x[i];
     _y[i] = y[i];
     _z[i] = z[i];
+    _x_trans[i] = x[i];
+    _y_trans[i] = y[i];
+    _z_trans[i] = z[i];
   }
-
 
 }
 
@@ -182,6 +238,7 @@ WeightedPoints3D::WeightedPoints3D(int nhits, double* a, double* x, double* y, d
 //=============================================================================
 
 WeightedPoints3D::~WeightedPoints3D() {
+
 }
 
 //=============================================================================
@@ -238,6 +295,7 @@ double* WeightedPoints3D::getCentreOfGravity() {
   if (_ifNotCOG == 1) findCOG() ;
   return &_COG[0] ;
 }
+
 double* WeightedPoints3D::getCentreOfGravityErrors() {
   if (_ifNotCOGErrors == 1) findCOGErrors() ;
   return &_COGCov[0][0] ;
@@ -281,6 +339,67 @@ double* WeightedPoints3D::getEigenVecPolarErrors() {
   if (_ifNotVecErrorsPolarPropagated == 1) propagateVecErrorsPolar();
   return &_theta_phi_cov[0][0][0];
 }
+double WeightedPoints3D::getElipsoid_r1(double cl3d ) {
+  if (_ifNotEigenSolved == 1) solveEigenValEq();
+  return sqrt(_EigenVal[2])*cl3d;
+}
+double WeightedPoints3D::getElipsoid_r2(double cl3d) {
+  if (_ifNotEigenSolved == 1) solveEigenValEq();
+  return sqrt(_EigenVal[1])*cl3d;
+}
+double WeightedPoints3D::getElipsoid_r3(double cl3d) {
+  if (_ifNotEigenSolved == 1) solveEigenValEq();
+  return sqrt(_EigenVal[0])*cl3d;
+}
+double WeightedPoints3D::getElipsoid_r1Error(double cl3d) {
+  if (_ifNotEigenSolved == 1) solveEigenValEq();
+  if (_ifNotValErrorsPropagated == 1) propagateValErrors();
+  return sqrt(_var_lam[2])/(2.0*sqrt(_EigenVal[2]))*cl3d;
+}
+double WeightedPoints3D::getElipsoid_r2Error(double cl3d) {
+  if (_ifNotEigenSolved == 1) solveEigenValEq();
+  if (_ifNotValErrorsPropagated == 1) propagateValErrors();
+  return sqrt(_var_lam[1])/(2.0*sqrt(_EigenVal[1]))*cl3d;
+}
+double WeightedPoints3D::getElipsoid_r3Error(double cl3d) {
+  if (_ifNotEigenSolved == 1) solveEigenValEq();
+  if (_ifNotValErrorsPropagated == 1) propagateValErrors();
+  return sqrt(_var_lam[0])/(2.0*sqrt(_EigenVal[0]))*cl3d;
+}
+double WeightedPoints3D::getElipsoid_vol(double cl3d) {
+  if (_ifNotEigenSolved == 1) solveEigenValEq();
+  _vol = 4.*M_PI* 
+         sqrt(_EigenVal[2] *  _EigenVal[1] *  _EigenVal[0])* 
+         pow(cl3d/2.0,3.) /3.;  
+  return  _vol ;
+}
+double WeightedPoints3D::getElipsoid_r_ave(double cl3d) {
+  _r_ave = pow(getElipsoid_vol(cl3d),1./3.);
+  return   _r_ave ;
+}
+double WeightedPoints3D::getElipsoid_density(double cl3d) {
+  if (_ifNotEigenSolved == 1) solveEigenValEq();
+  _density = _sumWgt/getElipsoid_vol(cl3d);
+  return  _density ;
+}
+double WeightedPoints3D::getLongitudinalElipsis_eccentricity(){
+  if (_ifNotEigenSolved == 1) solveEigenValEq();
+  _logitudinaleccentricity = sqrt(1.0-pow(((sqrt(_EigenVal[0])+sqrt(_EigenVal[1]))/2.),2)  /_EigenVal[2]);
+  return   _logitudinaleccentricity ;
+}
+double WeightedPoints3D::getTransverseElipsis_eccentricity(){
+  if (_ifNotEigenSolved == 1) solveEigenValEq();
+  _transverseeccentricity = sqrt(1.0-_EigenVal[0]/_EigenVal[1]);
+  return   _transverseeccentricity ;
+}
+double WeightedPoints3D::getElipsoid_r_forw() { 
+  if ( _ifNotfirst_and_last_found ) { findFirstAndLast() ;}
+  return _r1_forw; 
+}
+double WeightedPoints3D::getElipsoid_r_back() { 
+  if ( _ifNotfirst_and_last_found ) { findFirstAndLast() ;}
+  return _r1_back; 
+}
 
 //=============================================================================
 
@@ -289,6 +408,15 @@ double WeightedPoints3D::getWidth() {
   return _Width;
 }
 
+double WeightedPoints3D::getMaxDist() {
+  if (_ifNotMaxDist == 1) findMaxDist();
+  return _MaxDist;
+}
+
+double WeightedPoints3D::getElipsoid_FractionInside(double cl3d) {
+  if ( _ifNotPointsGiven == 0 ) { findElipsoid_FractionInside(cl3d); }
+  return _FractionInside ;
+}
 
 // ##########################################
 // #####                                #####
@@ -510,7 +638,13 @@ void WeightedPoints3D::solveEigenValEq() {
     }
   }
 
+  // rotation = transpose of eigen-vectors:
 
+  for ( int i=0 ; i < 3 ; i++ ) {
+    for ( int j=0 ; j < 3 ; j++ ) {
+      _RotToEigen[i][j] = _EigenVec[j][i];
+    }
+  }
 
 
   _ifNotEigenSolved = 0;
@@ -789,9 +923,9 @@ void WeightedPoints3D::propagateValErrors(){
     for ( int i=0 ; i <3 ; i++ ) {
       d_lam[i]= _EigenVec[i][j]*_EigenVec[i][j];
     }
-    d_lam[3]= _EigenVec[0][j]*_EigenVec[1][j];
-    d_lam[4]= _EigenVec[0][j]*_EigenVec[2][j];
-    d_lam[5]= _EigenVec[1][j]*_EigenVec[2][j];
+    d_lam[3]= 2.0*_EigenVec[0][j]*_EigenVec[1][j];
+    d_lam[4]= 2.0*_EigenVec[0][j]*_EigenVec[2][j];
+    d_lam[5]= 2.0*_EigenVec[1][j]*_EigenVec[2][j];
     for ( int i=0 ; i < 6 ; i++ ) {
       vv_dlam[i]=0.0;
       for ( int k=0 ; k < 6 ; k++ ) {
@@ -826,6 +960,26 @@ void WeightedPoints3D::findWidth() {
   _ifNotWidth = 0 ;
 } // findWidth
 
+void WeightedPoints3D::findMaxDist() {
+
+  // forall (i=1,_nPoints) _Width=findDistance(i)**2 +  _Width
+  // _Width=sqrt(_Width/ _sumWgt)
+
+  _MaxDist= 0.;
+  if ( _ifNotPointsGiven == 1 ) return;
+
+  double dist = 0.0;
+  if (_ifNotEigenSolved == 1)  solveEigenValEq() ;
+  _MaxDist = 0.0 ;
+  for (int i(0); i < _nPoints; ++i) {
+    dist = findDistance(i) ;
+    if ( dist > _MaxDist ) {
+      _MaxDist = dist;
+    }
+  }  
+  _ifNotMaxDist = 0 ;
+} // findMaxDist
+
 //=============================================================================
 
 double WeightedPoints3D::findDistance(int i) {
@@ -852,3 +1006,264 @@ double WeightedPoints3D::findDistance(int i) {
   double f = tt / ti ;
   return f ;
 } // findDistance
+
+double*  WeightedPoints3D::TransformPointToEigenSyst(double* xyz){
+  if (_ifNotEigenSolved == 1 )  solveEigenValEq();
+  //  double xyz_eigen[3] ;
+  for ( int j = 0 ; j <3 ; j++ ) { 
+    xyz_eigen [j] = 0.;
+    for ( int k = 0 ; k <3 ; k++ ) { 
+      xyz_eigen[j]+=_RotToEigen[j][k]*(xyz[k] - _COG[k]);
+    }
+  
+  } 
+  return &xyz_eigen[0];
+}
+
+void  WeightedPoints3D::TransformToEigenSyst(){
+  /* Transform all points - in _(x,y,z)_trans -to the eigen-system, 
+   * the origin - in _COG_trans - to (0,0,0), the covariance -  in _COGCov_trans - to 
+   * diagonal (with the eigen values along the diagonal.
+   *  _xyz_ref, _th_ref, and _ph_ref contains the position and direction
+   *  of this sytem wrt the lab-frame,
+   */
+  if (_ifNotEigenSolved == 1 )  solveEigenValEq();
+  if ( _current_transformation == 1 ) return;
+  // COG = null-vector:
+  for ( int i=0 ; i < 3 ; i++ ) {
+    _COG_trans[i] = 0.0;
+  }
+  // covariance matrix = diag(eigen-values):
+  for ( int kkk=0 ; kkk < 3 ; kkk++ ) {
+    for ( int lll=0 ; lll<3 ; lll++) {
+      _COGCov_trans[lll][kkk] = 0. ;
+      if ( kkk == lll ) { _COGCov_trans[lll][kkk]  = _EigenVal[lll] ;}
+    }
+  }
+  // transform all points:
+  //double r_mod_trans[3] ;
+  // double r_mod[3] ;
+  double r[3] ;
+  for ( int i = 0 ; i < _nPoints ; i++ ) {
+    r[0] = _x[i] ; r[1] = _y[i] ; r[2] = _z[i] ;
+    double* r_mod_trans=TransformPointToEigenSyst(r);
+    // for ( int j = 0 ; j <3 ; j++ ) { r_mod[j]=r[j] - _COG[j] ; }
+    // for ( int j = 0 ; j <3 ; j++ ) { 
+    //   r_mod_trans[j] = 0.;
+    //   for ( int k = 0 ; k <3 ; k++ ) { 
+    //     r_mod_trans[j]+=_RotToEigen[j][k]* r_mod[k];
+    //   }
+  
+    //    } 
+    _x_trans[i] = r_mod_trans[0] ;
+    _y_trans[i] = r_mod_trans[1] ;
+    _z_trans[i] = r_mod_trans[2] ;
+  }
+  _ind_first = 0;
+  _current_transformation = 1;
+  _th_ref= _EigenVecAngle[0][2];
+  _ph_ref= _EigenVecAngle[1][2];
+  for ( int j = 0 ; j <3 ; j++ ) { _xyz_ref[j] = _COG[j] ; }
+}
+void  WeightedPoints3D::TransformAlongDirection(double tht , double pht , int on_axis ){
+  /* transform all points to a system along the direction given by tht and pht. The origin
+   * will be the point that is closest to the third eigen-vector, either (on_axis == 1)
+   * projected onto the third eigen-vector, or  (on_axis == 0) the point itself.
+   */
+  if ( _current_transformation != 1 ) TransformToEigenSyst();
+  double r2min=100000.;
+  int imin = 0 ;
+  for ( int i = 0 ; i < _nPoints ; i++ ) {
+    if ( _x_trans[0]*_x_trans[0] + _x_trans[1]*_x_trans[1] + _x_trans[2]*_x_trans[2] < r2min ) {
+      r2min =  _x_trans[0]*_x_trans[0] + _x_trans[1]*_x_trans[1] + _x_trans[2]*_x_trans[2] ;
+      imin = 1 ;
+    }
+  }
+  double xyz[3] ;
+  // xyz[0] = _x_trans[imin] + _COG[0] ;
+  // xyz[1] = _y_trans[imin] + _COG[1]  ;
+  // xyz[2] = _z_trans[imin] + _COG[2]  ;
+  xyz[0] = _x[imin] ;
+  xyz[1] = _y[imin] ;
+  xyz[2] = _z[imin] ;
+  TransformAlongDirection(tht , pht , xyz , on_axis) ;
+  if ( on_axis != 1 ) _current_transformation = 2 ;
+  if ( on_axis == 1 ) _current_transformation = 3 ;
+  _th_ref= _EigenVecAngle[0][2];
+  _ph_ref= _EigenVecAngle[1][2];
+  // for ( int j = 0 ; j <3 ; j++ ) { _xyz_ref[j] = xyz[j] ; }
+  _xyz_ref[0] =_x_trans[imin] ;  
+  _xyz_ref[1] =_y_trans[imin] ;  
+  _xyz_ref[2] =_z_trans[imin] ; 
+  _ind_first = imin ;  
+}
+void  WeightedPoints3D::TransformAlongDirection(double tht , double pht , double* xyz_start, int on_axis  ){
+  /* As the previous, except that the reference point is also input, rather than the
+   * point closest to the axis
+   */
+                // transform cluster to syst along track direction, then check transversal pos wrt track
+  
+                // Fortran:
+                //
+                // tht = atan(1./stat%tanlambda) 
+                // pht = stat%phi
+                // erot1 = reshape([cos(tht)*cos(pht) , -sin(pht), sin(tht)*cos(pht)  , &
+                //                  cos(tht)*sin(pht) , cos(pht) , sin(tht)*sin(pht)  , &
+                //                  -sin(tht)         ,      0.  , cos(tht) ] , [3,3])
+                // cog_rot_trans =  matmul(erot,clu%getPosition-xyz_calo)
+                // seen_covmat_esys= matmul(erot,matmul(clu%seen_covmat,transpose(erot)) )
+  
+                // C++ :
+  if (_ifNotCOG == 1) findCOG();
+  if (_ifNotCOGErrors == 1) findCOGErrors() ;
+  double xyz[3];
+  if ( on_axis == 1 ) {
+    double xp[3];
+    for ( int i = 0 ; i <3 ; i++ ) { xp[i] = xyz_start[i] - _EigenVec[i][2];}
+    double d=xp[0]*_EigenVec[0][2]+xp[1]*_EigenVec[1][2]+xp[2]*_EigenVec[2][2];
+    for ( int i = 0 ; i <3 ; i++ ) { xyz[i]=_COG[i]+d*_EigenVec[i][2] ; }
+  } else {
+    for ( int i = 0 ; i <3 ; i++ ) { xyz[i]=xyz_start[i];}
+  }
+
+  if ( abs( tht - _EigenVecAngle[0][2] ) < 0.0001 &&  abs( pht - _EigenVecAngle[1][2] ) < 0.0001 ) {
+
+    TransformToEigenSyst();
+
+    double* xyz_t=TransformPointToEigenSyst(xyz);
+    for ( int kkk=0 ; kkk<3 ; kkk++) {
+      _COG_trans[kkk] =  _COG_trans[kkk]-xyz_t[kkk];
+    }
+    for ( int i = 0 ; i < _nPoints ; i++ ) {
+      _x_trans[i] = _x_trans[i]  - xyz_t[0] ; 
+      _y_trans[i] = _y_trans[i]  - xyz_t[1] ; 
+      _z_trans[i] = _z_trans[i]  - xyz_t[2] ; 
+    }
+    _ind_first = 0;
+    if ( on_axis != 1 ) _current_transformation = 4 ;
+    if ( on_axis == 1 ) _current_transformation = 5 ;
+    _th_ref= _EigenVecAngle[0][2];
+    _ph_ref= _EigenVecAngle[1][2];
+    for ( int j = 0 ; j <3 ; j++ ) { _xyz_ref[j] = xyz_start[j] ; }
+
+  } else {
+ 
+    if ( tht < 0.0 ) { tht = 3.14159 + tht ;}
+    float erot[3][3] ;
+    erot[0][0] = cos(tht)*cos(pht) ;
+    erot[1][0] = -sin(pht) ;
+    erot[2][0] =  sin(tht)*cos(pht) ;
+    erot[0][1] = cos(tht)*sin(pht) ;
+    erot[1][1] =  cos(pht) ;
+    erot[2][1] = sin(tht)*sin(pht) ;
+    erot[0][2] =  -sin(tht)  ;
+    erot[1][2] = 0. ;
+    erot[2][2] = cos(tht) ;
+    //              float seen_covmat_esys[3][3] ;
+    float temp[3][3];
+    for ( int kkk=0 ; kkk < 3 ; kkk++ ) {
+      for ( int lll=0 ; lll<3 ; lll++) {
+        temp[lll][kkk] = 0. ;
+        for ( int nnn=0 ; nnn<3 ; nnn++) {
+          temp[lll][kkk] +=   _COGCov[lll][nnn]*erot[kkk][nnn];
+        }
+      }
+    }
+    for ( int kkk=0 ; kkk < 3 ; kkk++ ) {
+      for ( int lll=0 ; lll<3 ; lll++) {
+        _COGCov_trans[lll][kkk] = 0. ;
+        for ( int nnn=0 ; nnn<3 ; nnn++) {
+          _COGCov_trans[lll][kkk] +=  erot[lll][nnn]*temp[nnn][kkk];
+        }
+      }
+    }
+  
+   //  float xyz_rot[3]; 
+   // for ( int kkk=0 ; kkk<3 ; kkk++) {
+   //    xyz_rot[kkk] = 0.0 ;
+   //    for ( int lll=0 ; lll<3 ; lll++) {
+   //      xyz_rot[kkk] += (xyz[lll]-_COG[lll])*erot[kkk][lll];
+   //    }
+   //  }
+    
+    //              float cog_rot_trans[3] ;
+  
+    float cog_mod[3] ;
+    for ( int kkk=0 ; kkk<3 ; kkk++) {
+      cog_mod[kkk] =  _COG[kkk]-xyz[kkk];
+    }
+    for ( int kkk=0 ; kkk<3 ; kkk++) {
+      _COG_trans[kkk] = 0.0 ;
+      for ( int lll=0 ; lll<3 ; lll++) {
+        _COG_trans[kkk] += cog_mod[lll]*erot[kkk][lll];
+      }
+    }
+  
+    double r_mod_trans[3] ;
+    double r_mod[3] ;
+    double r[3] ;
+    for ( int i = 0 ; i < _nPoints ; i++ ) {
+      r[0] = _x[i] ; r[1] = _y[i] ; r[2] = _z[i] ;
+      for ( int j = 0 ; j <3 ; j++ ) { r_mod[j]=r[j] - xyz[j] ; }
+      for ( int j = 0 ; j <3 ; j++ ) { 
+        r_mod_trans[j] = 0.;
+        for ( int k = 0 ; k <3 ; k++ ) { 
+          r_mod_trans[j]+=erot[j][k]* r_mod[k];
+        }
+    
+      } 
+      _x_trans[i] = r_mod_trans[0] ;
+      _y_trans[i] = r_mod_trans[1] ;
+      _z_trans[i] = r_mod_trans[2] ;
+    }
+    _ind_first = 0;
+    _current_transformation = 6 ;
+    _th_ref= tht;
+    _ph_ref= pht;
+    for ( int j = 0 ; j <3 ; j++ ) { _xyz_ref[j] = xyz_start[j] ; }
+  }
+}
+void WeightedPoints3D::findFirstAndLast() {
+  if ( _ifNotPointsGiven == 0 ) {
+    if (_ifNotEigenSolved == 1) solveEigenValEq();
+    double r_hit_max, d_begn, d_last, r_max, proj;
+    double d[3] ;
+    r_hit_max = -100000.;
+    d_begn    =  100000.;
+    d_last    = -100000.;
+    for (int i(0); i < _nPoints; ++i) {
+      d[0] = _x[i] - _COG[0];
+      d[1] = _y[i] - _COG[1];
+      d[2] = _z[i] - _COG[2];
+      r_max = sqrt(d[0]*d[0] + d[1]*d[1] + d[2]*d[2]);;
+      if(r_max > r_hit_max) r_hit_max = r_max;
+      proj = 0.;
+      for ( int j=0 ; j<3 ; j++ ) { proj += d[j]*_EigenVec[j][2] ; }
+      if(proj < d_begn)
+        d_begn = proj;
+      if(proj > d_last)
+        d_last = proj;
+    }
+    _r1_forw = abs(d_last);
+    _r1_back = abs(d_begn);
+  } else {
+    _r1_forw = 0. ;
+    _r1_back = 0. ;
+  }
+  _ifNotfirst_and_last_found = 0;
+}
+void WeightedPoints3D::findElipsoid_FractionInside(double cl3d) {
+  double wgt_inside = 0.0;
+  if ( _ifNotPointsGiven == 0 ) {
+    TransformToEigenSyst();
+    for ( int i = 0 ; i < _nPoints ; i++ ) {
+      if ( pow(_x_trans[i]/cl3d,2)/_EigenVal[0] +  
+           pow(_y_trans[i]/cl3d,2)/_EigenVal[1] +   
+           pow(_z_trans[i]/cl3d,2)/_EigenVal[2] < 1.0 ) {
+        wgt_inside+=_Wgt[i];
+      } 
+    }
+  }
+  _FractionInside = wgt_inside/_sumWgt;
+}
+
