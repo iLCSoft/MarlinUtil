@@ -15,10 +15,10 @@
  * inside a 3dim Gaussian equal to 0.64, 0.90, 0.95 and 0.99, respectively.
  */
 
-#define  _one_sigma 1.56 
-#define  _CL90  2.12
-#define  _CL95  2.39 
-#define  _CL99  2.93
+constexpr static auto  _one_sigma = 1.56;
+constexpr static auto  _CL90 = 2.12;
+constexpr static auto  _CL95 = 2.39;
+constexpr static auto  _CL99 = 2.93;
 
 /**
  *    Utility class to derive properties of a set of weighted points in 3D, 
