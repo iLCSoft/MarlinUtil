@@ -300,7 +300,7 @@ public:
   inline std::vector<double> get_y_trans() {return _y_trans ;};
   inline std::vector<double> get_z_trans() {return _z_trans ;};
   inline double* get_COG_trans() {return _COG_trans;};
-  inline double* get_COGCov_trans() {return _COGCov_trans[3];};
+  inline double* get_COGCov_trans() {return _COGCov_trans[2];};
   inline double get_th_ref(){return _th_ref;};
   inline double get_ph_ref(){return _ph_ref;};
   inline double* get_xyz_ref(){return _xyz_ref;};
