@@ -1,7 +1,6 @@
 #ifndef HELIXCLASST_H
 #define HELIXCLASST_H 1
 
-
 #include <vector>
 #include <cmath>
 
@@ -105,6 +104,23 @@ class HelixClassT {
  */
     void Initialize_Canonical(FloatT phi0, FloatT d0, FloatT z0, FloatT omega,
 			      FloatT tanlambda, FloatT B);
+
+/**
+ *  Canonical (LEP-wise) parameterisation with the following parameters<br>
+ *     - phi0 - Phi angle of momentum vector at the point of<br>
+ *       closest approach to IP in R-Phi plane;
+ *     - d0 - signed distance of closest approach in R-Phi plane;<br>
+ *     - z0 - z coordinate of the point of closest approach to IP
+ *       in R-Phi plane;<br>
+ *     - omega - signed curvature;<br>
+ *     - tanlambda - tangent of dip angle;<br>
+ *     - B - magnetic field (in Tesla)<br>
+ *	   - pos - reference point at which the helix parameteres are given
+ *	     (by default PCA is used as the reference point);<br>
+ */
+  	void Initialize_Canonical(FloatT phi0, FloatT d0, FloatT z0,
+  				  FloatT omega, FloatT tanLambda, FloatT B, FloatT * pos);
+
     /**
      *  Returns momentum of particle at the point of closest approach <br>
      *  to IP <br>
@@ -159,6 +175,16 @@ class HelixClassT {
      *  Returns y coordinate of circumference
      */
     FloatT getYC() const { return _yCentre; }
+
+    /**
+     *  Returns x coordinate of point of closest approach
+     */
+    FloatT getXPCA() const { return _xAtPCA; }
+
+    /**
+     *  Returns y coordinate of point of closest approach
+     */
+    FloatT getYPCA() const { return _yAtPCA; }
 
 
      /**

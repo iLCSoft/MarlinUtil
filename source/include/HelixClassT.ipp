@@ -3,6 +3,8 @@
 #include <iostream>
 #include "ced_cli.h"
 
+#include <streamlog/streamlog.h>
+
 template<typename FloatT>
 void HelixClassT<FloatT>::Initialize_VP(FloatT * pos, FloatT * mom, FloatT q, FloatT B) {
     _referencePoint[0] = pos[0];
@@ -112,6 +114,36 @@ void HelixClassT<FloatT>::Initialize_Canonical(FloatT phi0, FloatT d0, FloatT z0
     _bField = B;
 }
 
+template<typename FloatT>
+void HelixClassT<FloatT>::Initialize_Canonical(FloatT phi0, FloatT d0, FloatT z0,
+				      FloatT omega, FloatT tanLambda, FloatT B, FloatT* pos) {
+    _omega = omega;
+    _d0 = d0;
+    _phi0 = phi0;
+    _z0 = z0;
+    _tanLambda = tanLambda;
+    _charge = omega/fabs(omega);
+    _radius = 1./fabs(omega);
+    _referencePoint[0] = pos[0];
+    _referencePoint[1] = pos[1];
+    _referencePoint[2] = pos[2];
+    _xAtPCA = -_d0*sin(_phi0) + _referencePoint[0];
+    _yAtPCA = _d0*cos(_phi0) + _referencePoint[1];
+    _pxy = _FCT*B*_radius;
+    _momentum[0] = _pxy*cos(_phi0);
+    _momentum[1] = _pxy*sin(_phi0);
+    _momentum[2] = _tanLambda * _pxy;
+    _pxAtPCA = _momentum[0];
+    _pyAtPCA = _momentum[1];
+    _phiMomRefPoint = atan2(_momentum[1],_momentum[0]);
+    _xCentre = _referencePoint[0] +
+      _radius*cos(_phi0-_const_pi2*_charge);
+    _yCentre = _referencePoint[1] +
+      _radius*sin(_phi0-_const_pi2*_charge);
+    _phiAtPCA = atan2(-_yCentre,-_xCentre);
+    _phiRefPoint =  _phiAtPCA ;
+    _bField = B;
+}
 
 template<typename FloatT>
 void HelixClassT<FloatT>::Initialize_BZ(FloatT xCentre, FloatT yCentre, FloatT radius,
@@ -248,10 +280,9 @@ FloatT HelixClassT<FloatT>::getPointInXY(FloatT x0, FloatT y0, FloatT ax, FloatT
   tt2 = -_charge*dphi2*_radius/_pxy;
 
   if (tt1 < 0. )
-    std::cout << "WARNING " << tt1 << std::endl;
+    streamlog_out(WARNING) << "Time : " << tt1 << " < 0!" << std::endl;
   if (tt2 < 0. )
-    std::cout << "WARNING " << tt2 << std::endl;
-
+    streamlog_out(WARNING) << "Time : " << tt2 << " < 0!" << std::endl;
 
   if (tt1 < tt2) {
     point[0] = xx1;
@@ -341,9 +372,9 @@ FloatT HelixClassT<FloatT>::getPointOnCircle(FloatT Radius, FloatT * ref, FloatT
   tt2 = -_charge*dphi2*_radius/_pxy;
 
   if (tt1 < 0. )
-    std::cout << "WARNING " << tt1 << std::endl;
+    streamlog_out(WARNING) << "Time : " << tt1 << " < 0!" << std::endl;
   if (tt2 < 0. )
-    std::cout << "WARNING " << tt2 << std::endl;
+    streamlog_out(WARNING) << "Time : " << tt2 << " < 0!" << std::endl;
 
 
   FloatT time2;
@@ -594,9 +625,6 @@ FloatT HelixClassT<FloatT>::getDistanceToHelix(HelixClassT * helix, FloatT * pos
     FloatT xSect2 = x02 + rad2*cos(phi2);
     FloatT ySect2 = y02 + rad2*sin(phi2);
 
-//     std::cout << "(xSect1,ySect1)=(" << xSect1 << "," << ySect1 << ")" << std::endl;
-//     std::cout << "(xSect2,ySect2)=(" << xSect2 << "," << ySect2 << ")" << std::endl;
-
     FloatT temp21[3];
     FloatT temp22[3];
 
@@ -608,25 +636,52 @@ FloatT HelixClassT<FloatT>::getDistanceToHelix(HelixClassT * helix, FloatT * pos
     FloatT charge2 = helix->getCharge();
     FloatT pxy2 = helix->getPXY();
     FloatT pz2   = helix->getMomentum()[2];
-    if (deltaPhi21 < 0 && charge2 < 0) {
-      deltaPhi21 += _const_2pi;
-    }
-    else if (deltaPhi21 > 0 && charge2 > 0) {
-      deltaPhi21 -= _const_2pi;
-    }
 
-    if (deltaPhi22 < 0 && charge2 < 0) {
-      deltaPhi22 += _const_2pi;
-    }
-    else if (deltaPhi22 > 0 && charge2 > 0) {
-      deltaPhi22 -= _const_2pi;
+    float xAtPCA2 = helix->getXPCA();
+    float yAtPCA2 = helix->getYPCA();
+
+    // if helix initialized with no input ref. point or with (0,0,0)
+    if ( (ref2[0]==xAtPCA2 && ref2[1]==yAtPCA2 && ref2[2]==helix->getZ0())
+         || (ref2[0]==0 && ref2[1]==0 && ref2[2]==0) ) { 
+      if (deltaPhi21 < 0 && charge2 < 0) {
+        deltaPhi21 += _const_2pi;
+      }
+      else if (deltaPhi21 > 0 && charge2 > 0) {
+        deltaPhi21 -= _const_2pi;
+      }
+
+      if (deltaPhi22 < 0 && charge2 < 0) {
+        deltaPhi22 += _const_2pi;
+      }
+      else if (deltaPhi22 > 0 && charge2 > 0) {
+        deltaPhi22 -= _const_2pi;
+      }
+    } else { // any other ref. point
+      if (fabs(deltaPhi21) > M_PI) {
+        if (deltaPhi21 < 0 && charge2 > 0) {
+          deltaPhi21 += _const_2pi;
+        }
+        else if (deltaPhi21 > 0 && charge2 < 0) {
+          deltaPhi21 -= _const_2pi;
+        }
+      }
+      if (fabs(deltaPhi22) > M_PI) {
+        if (deltaPhi22 < 0 && charge2 > 0) {
+          deltaPhi22 += _const_2pi;
+        }
+        else if (deltaPhi22 > 0 && charge2 < 0) {
+          deltaPhi22 -= _const_2pi;
+        }
+      }
     }
 
     FloatT time21 = -charge2*deltaPhi21*rad2/ pxy2;
     FloatT time22 = -charge2 * deltaPhi22 * rad2 / pxy2;
 
-    FloatT Z21 = ref2[2] + time21 * pz2;
-    FloatT Z22 = ref2[2] + time22 * pz2;
+    FloatT tanLambda2 = helix->getTanLambda();
+
+    FloatT Z21 = ref2[2] - charge2*deltaPhi21*rad2*tanLambda2;
+    FloatT Z22 = ref2[2] - charge2*deltaPhi22*rad2*tanLambda2;
 
     temp21[0] = xSect1;
     temp21[1] = ySect1;
@@ -650,10 +705,35 @@ FloatT HelixClassT<FloatT>::getDistanceToHelix(HelixClassT * helix, FloatT * pos
     FloatT charge1 = _charge;
     FloatT pxy1 = _pxy;
     FloatT pz1 = _momentum[2];
-    if (deltaPhi11 < 0 && charge1 < 0) {
-      deltaPhi11 += _const_2pi;
-    } else if (deltaPhi11 > 0 && charge1 > 0) {
-      deltaPhi11 -= _const_2pi;
+
+    FloatT xAtPCA1 = _xAtPCA;
+    FloatT yAtPCA1 = _yAtPCA;
+
+    // if helix initialized with no input ref. point or with (0,0,0)
+    if ( (ref1[0]==xAtPCA1 && ref1[1]==yAtPCA1 && ref1[2]==_z0)
+         || (ref1[0]==0 && ref1[1]==0 && ref1[2]==0) ) {
+      if (deltaPhi11 < 0 && charge1 < 0) {
+        deltaPhi11 += _const_2pi;
+      } else if (deltaPhi11 > 0 && charge1 > 0) {
+        deltaPhi11 -= _const_2pi;
+      }
+    } else { // any other ref. point
+      if (fabs(deltaPhi11) > M_PI) {
+        if (deltaPhi11 < 0 && charge1 > 0) {
+          deltaPhi11 += _const_2pi;
+        }
+        else if (deltaPhi11 > 0 && charge1 < 0) {
+          deltaPhi11 -= _const_2pi;
+        }
+      }
+      if (fabs(deltaPhi12) > M_PI) {
+        if (deltaPhi12 < 0 && charge1 > 0) {
+          deltaPhi12 += _const_2pi;
+        }
+        else if (deltaPhi12 > 0 && charge1 < 0) {
+          deltaPhi12 -= _const_2pi;
+        }
+      }
     }
 
     if (deltaPhi12 < 0 && charge1 < 0) {
@@ -665,8 +745,10 @@ FloatT HelixClassT<FloatT>::getDistanceToHelix(HelixClassT * helix, FloatT * pos
     FloatT time11 = -charge1 * deltaPhi11 * rad1 / pxy1;
     FloatT time12 = -charge1 * deltaPhi12 * rad1 / pxy1;
 
-    FloatT Z11 = ref1[2] + time11 * pz1;
-    FloatT Z12 = ref1[2] + time12 * pz1;
+    FloatT tanLambda1 = getTanLambda();
+
+    FloatT Z11 = ref1[2] - charge1*deltaPhi11*rad1*tanLambda1;
+    FloatT Z12 = ref1[2] - charge1*deltaPhi12*rad1*tanLambda1;
 
     temp11[0] = xSect1;
     temp11[1] = ySect1;
@@ -674,10 +756,6 @@ FloatT HelixClassT<FloatT>::getDistanceToHelix(HelixClassT * helix, FloatT * pos
     temp12[0] = xSect2;
     temp12[1] = ySect2;
     temp12[2] = Z12;
-
-    //     std::cout << "temp11 = " << temp11[0] << " " << temp11[1] << " " <<
-    //     temp11[2] << std::endl; std::cout << "temp12 = " << temp12[0] << " "
-    //     << temp12[1] << " " << temp12[2] << std::endl;
 
     FloatT Dist1 = 0;
     FloatT Dist2 = 0;
