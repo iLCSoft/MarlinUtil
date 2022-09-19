@@ -61,11 +61,11 @@ class HelixClassT {
  *  Constructor. Initializations of constants which are used
  *  to calculate various parameters associated with helix.
  */
-    HelixClassT();
+    HelixClassT() = default;
 /**
  *  Destructor.
  */
-    ~HelixClassT();
+    ~HelixClassT() = default;
 /**
  *   Initialization of helix using <br>
  *     - position of the reference point : pos[3]; <br>
