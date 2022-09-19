@@ -4,12 +4,6 @@
 #include "ced_cli.h"
 
 template<typename FloatT>
-HelixClassT<FloatT>::HelixClassT() {}
-
-template<typename FloatT>
-HelixClassT<FloatT>::~HelixClassT() {}
-
-template<typename FloatT>
 void HelixClassT<FloatT>::Initialize_VP(FloatT * pos, FloatT * mom, FloatT q, FloatT B) {
     _referencePoint[0] = pos[0];
     _referencePoint[1] = pos[1];
