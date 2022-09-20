@@ -109,62 +109,62 @@ class HelixClassT {
      *  Returns momentum of particle at the point of closest approach <br>
      *  to IP <br>
      */
-    const FloatT * getMomentum();
+    const FloatT *const getMomentum() const { return _momentum; }
 
     /**
      *  Returns reference point of track <br>
      */
-    const FloatT * getReferencePoint();
+    const FloatT *const getReferencePoint() const { return _referencePoint; }
 
     /**
      *  Returns Phi angle of the momentum vector <br>
      *  at the point of closest approach to IP <br>
      */
-    FloatT getPhi0();
+    FloatT getPhi0() const;
 
     /**
      *  Returns signed distance of closest approach <br>
      *  to IP in the R-Phi plane <br>
      */
-    FloatT getD0();
+    FloatT getD0() const { return _d0; }
 
     /**
      *  Returns z coordinate of the point of closest
      *  approach to IP in the R-Phi plane <br>
      */
-    FloatT getZ0();
+    FloatT getZ0() const { return _z0; }
 
     /**
      *  Returns signed curvature of the track <br>
      */
-    FloatT getOmega();
+    FloatT getOmega() const { return _omega; }
 
     /**
      *  Returns tangent of dip angle of the track <br>
      */
-    FloatT getTanLambda();
+    FloatT getTanLambda() const { return _tanLambda; }
 
     /**
      *  Returns transverse momentum of the track <br>
      */
-    FloatT getPXY();
+    FloatT getPXY() const { return _pxy; }
 
 
     /**
      *  Returns x coordinate of circumference
      */
-    FloatT getXC();
+    FloatT getXC() const { return _xCentre; }
 
     /**
      *  Returns y coordinate of circumference
      */
-    FloatT getYC();
+    FloatT getYC() const { return _yCentre; }
 
 
      /**
      *  Returns radius of circumference
      */
-    FloatT getRadius();
+    FloatT getRadius() const { return _radius; }
 
 
     /**
@@ -176,7 +176,7 @@ class HelixClassT {
      *  intersection point <br>
      */
     FloatT getPointInXY(FloatT x0, FloatT y0, FloatT ax, FloatT ay,
-			      FloatT * ref , FloatT * point);
+			      FloatT * ref , FloatT * point) const;
 
     /**
      *  Returns helix intersection point with the plane <br>
@@ -185,7 +185,7 @@ class HelixClassT {
      *  point[3] - returned vector holding the coordinates of <br>
      *  intersection point <br>
      */
-    FloatT getPointInZ(FloatT zLine, FloatT * ref, FloatT * point);
+    FloatT getPointInZ(FloatT zLine, FloatT * ref, FloatT * point) const;
 
     /**
      * Return distance of the closest approach of the helix to <br>
@@ -196,7 +196,7 @@ class HelixClassT {
      * Distance[1] - distance along Z axis <br>
      * Distance[2] - 3D distance <br>
      */
-    FloatT getDistanceToPoint(FloatT const* xPoint, FloatT * Distance);
+    FloatT getDistanceToPoint(FloatT const* xPoint, FloatT * Distance) const;
 
     /**
      * Return distance of the closest approach of the helix to <br>
@@ -207,8 +207,8 @@ class HelixClassT {
      * If the R-Phi distance is not too big, than the exact 3D distance is returned <br>
      * This function can be used, if the exact distance is not always needed <br>
      */
-    FloatT getDistanceToPoint(const FloatT* xPoint, FloatT distCut);
-    FloatT getDistanceToPoint(const std::vector<FloatT>& xPoint, FloatT distCut);
+    FloatT getDistanceToPoint(const FloatT* xPoint, FloatT distCut) const;
+    FloatT getDistanceToPoint(const std::vector<FloatT>& xPoint, FloatT distCut) const;
 
     /**
      * This method calculates coordinates of both intersection <br>
@@ -225,14 +225,14 @@ class HelixClassT {
      * ratio of helix length from reference point to the intersection <br>
      * point to the particle momentum <br>
      */
-    FloatT getPointOnCircle(FloatT Radius, FloatT * ref, FloatT * point);
+    FloatT getPointOnCircle(FloatT Radius, FloatT * ref, FloatT * point) const;
 
     /** Returns distance between two helixes <br>
      * Output : <br>
      * pos[3] - position of the point of closest approach <br>
      * mom[3] - momentum of V0 <br>
      */
-    FloatT getDistanceToHelix(HelixClassT * helix, FloatT * pos, FloatT * mom);
+    FloatT getDistanceToHelix(HelixClassT * helix, FloatT * pos, FloatT * mom) const;
 
     /**
      * Set Edges of helix
@@ -242,32 +242,32 @@ class HelixClassT {
     /**
      * Returns starting point of helix
      */
-    FloatT * getStartingPoint() {return _xStart;}
+    const FloatT *const getStartingPoint() const {return _xStart;}
 
     /**
      * Returns endpoint of helix
      */
-    FloatT * getEndPoint() {return _xEnd;}
+    const FloatT *const getEndPoint() const {return _xEnd;}
 
     /**
      * Returns BZ for the second parameterization
      */
-    FloatT getBz();
+    FloatT getBz() const { return _bZ; }
 
     /**
      * Returns Phi for the second parameterization
      */
-    FloatT getPhiZ();
+    FloatT getPhiZ() const { return _phiZ; }
 
     /**
      * Returns extrapolated momentum
      */
-    void getExtrapolatedMomentum(FloatT * pos, FloatT * momentum);
+    void getExtrapolatedMomentum(FloatT * pos, FloatT * momentum) const;
 
     /**
      * Returns charge
      */
-    FloatT getCharge();
+    FloatT getCharge() const { return _charge; }
 
  private:
     FloatT _momentum[3]; // momentum @ ref point
@@ -290,8 +290,8 @@ class HelixClassT {
     FloatT _pxAtPCA=0.0; // PX @ PCA
     FloatT _pyAtPCA=0.0; // PY @ PCA
     FloatT _phiMomRefPoint=0.0; // Phi of Momentum vector @ ref point
-    double _const_2pi=2.0*M_PI; // 2*PI
-    double _const_pi2=0.5*M_PI; // PI/2
+    constexpr static double _const_2pi=2.0*M_PI; // 2*PI
+    constexpr static double _const_pi2=0.5*M_PI; // PI/2
     double _FCT=2.99792458E-4; // 2.99792458E-4
     FloatT _xStart[3]; // Starting point of track segment
     FloatT _xEnd[3]; // Ending point of track segment
