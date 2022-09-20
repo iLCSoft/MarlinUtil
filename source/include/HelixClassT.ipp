@@ -170,80 +170,15 @@ void HelixClassT<FloatT>::Initialize_BZ(FloatT xCentre, FloatT yCentre, FloatT r
 }
 
 template<typename FloatT>
-const FloatT * HelixClassT<FloatT>::getMomentum() {
-    return _momentum;
-}
-
-template<typename FloatT>
-const FloatT * HelixClassT<FloatT>::getReferencePoint() {
-    return _referencePoint;
-}
-
-template<typename FloatT>
-FloatT HelixClassT<FloatT>::getPhi0() {
+FloatT HelixClassT<FloatT>::getPhi0() const {
   if (_phi0<0.0)
-    _phi0 += 2*M_PI;
+    return _phi0 + _const_2pi;
   return _phi0;
 }
 
 template<typename FloatT>
-FloatT HelixClassT<FloatT>::getD0() {
-    return _d0;
-}
-
-template<typename FloatT>
-FloatT HelixClassT<FloatT>::getZ0() {
-    return _z0;
-}
-
-template<typename FloatT>
-FloatT HelixClassT<FloatT>::getOmega() {
-    return _omega;
-}
-
-template<typename FloatT>
-FloatT HelixClassT<FloatT>::getTanLambda() {
-    return _tanLambda;
-}
-
-template<typename FloatT>
-FloatT HelixClassT<FloatT>::getPXY() {
-    return _pxy;
-}
-
-template<typename FloatT>
-FloatT HelixClassT<FloatT>::getXC() {
-  return _xCentre;
-}
-
-template<typename FloatT>
-FloatT HelixClassT<FloatT>::getYC() {
-  return _yCentre;
-}
-
-template<typename FloatT>
-FloatT HelixClassT<FloatT>::getRadius() {
-  return _radius;
-}
-
-template<typename FloatT>
-FloatT HelixClassT<FloatT>::getBz() {
-  return _bZ;
-}
-
-template<typename FloatT>
-FloatT HelixClassT<FloatT>::getPhiZ() {
-  return _phiZ;
-}
-
-template<typename FloatT>
-FloatT HelixClassT<FloatT>::getCharge() {
-    return _charge;
-}
-
-template<typename FloatT>
 FloatT HelixClassT<FloatT>::getPointInXY(FloatT x0, FloatT y0, FloatT ax, FloatT ay,
-			      FloatT * ref , FloatT * point) {
+			      FloatT * ref , FloatT * point) const {
 
   FloatT time;
 
@@ -339,7 +274,7 @@ FloatT HelixClassT<FloatT>::getPointInXY(FloatT x0, FloatT y0, FloatT ax, FloatT
 
 
 template<typename FloatT>
-FloatT HelixClassT<FloatT>::getPointOnCircle(FloatT Radius, FloatT * ref, FloatT * point) {
+FloatT HelixClassT<FloatT>::getPointOnCircle(FloatT Radius, FloatT * ref, FloatT * point) const {
 
   FloatT distCenterToIP = sqrt(_xCentre*_xCentre + _yCentre*_yCentre);
 
@@ -439,7 +374,7 @@ FloatT HelixClassT<FloatT>::getPointOnCircle(FloatT Radius, FloatT * ref, FloatT
 
 
 template<typename FloatT>
-FloatT HelixClassT<FloatT>::getPointInZ(FloatT zLine, FloatT * ref, FloatT * point) {
+FloatT HelixClassT<FloatT>::getPointInZ(FloatT zLine, FloatT * ref, FloatT * point) const {
 
   FloatT time = zLine - ref[2];
 
@@ -468,7 +403,7 @@ FloatT HelixClassT<FloatT>::getPointInZ(FloatT zLine, FloatT * ref, FloatT * poi
 }
 
 template<typename FloatT>
-FloatT HelixClassT<FloatT>::getDistanceToPoint(FloatT const* xPoint, FloatT * Distance) {
+FloatT HelixClassT<FloatT>::getDistanceToPoint(FloatT const* xPoint, FloatT * Distance) const {
 
   FloatT zOnHelix;
   FloatT phi = atan2(xPoint[1]-_yCentre,xPoint[0]-_xCentre);
@@ -530,7 +465,7 @@ FloatT HelixClassT<FloatT>::getDistanceToPoint(FloatT const* xPoint, FloatT * Di
 //already far enough away in XY, before we start calculating in Z as the
 //distance will only increase
 template<typename FloatT>
-FloatT HelixClassT<FloatT>::getDistanceToPoint(const std::vector<FloatT>& xPoint, FloatT distCut) {
+FloatT HelixClassT<FloatT>::getDistanceToPoint(const std::vector<FloatT>& xPoint, FloatT distCut) const {
   //calculate distance to XYprojected centre of Helix, comparing this with distance to radius around centre gives DistXY
   FloatT tempx = xPoint[0]-_xCentre;
   FloatT tempy = xPoint[1]-_yCentre;
@@ -571,7 +506,7 @@ FloatT HelixClassT<FloatT>::getDistanceToPoint(const std::vector<FloatT>& xPoint
 }//getDistanceToPoint(vector,FloatT)
 
 template<typename FloatT>
-FloatT HelixClassT<FloatT>::getDistanceToPoint(const FloatT* xPoint, FloatT distCut) {
+FloatT HelixClassT<FloatT>::getDistanceToPoint(const FloatT* xPoint, FloatT distCut) const {
   std::vector<FloatT> xPosition(xPoint, xPoint + 3 );//We are expecting three coordinates, must be +3, last element is excluded!
   return getDistanceToPoint(xPosition, distCut);
 }//getDistanceToPoint(FloatT*,FloatT)
@@ -586,7 +521,7 @@ void HelixClassT<FloatT>::setHelixEdges(FloatT * xStart, FloatT * xEnd) {
 }
 
 template<typename FloatT>
-FloatT HelixClassT<FloatT>::getDistanceToHelix(HelixClassT * helix, FloatT * pos, FloatT * mom) {
+FloatT HelixClassT<FloatT>::getDistanceToHelix(HelixClassT * helix, FloatT * pos, FloatT * mom) const {
 
   FloatT x01 = getXC();
   FloatT y01 = getYC();
@@ -781,7 +716,7 @@ FloatT HelixClassT<FloatT>::getDistanceToHelix(HelixClassT * helix, FloatT * pos
 }
 
 template<typename FloatT>
-void HelixClassT<FloatT>::getExtrapolatedMomentum(FloatT *pos, FloatT *momentum) {
+void HelixClassT<FloatT>::getExtrapolatedMomentum(FloatT *pos, FloatT *momentum) const {
 
   FloatT phi = atan2(pos[1] - _yCentre, pos[0] - _xCentre);
   if (phi < 0.)
