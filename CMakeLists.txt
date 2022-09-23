@@ -121,23 +121,9 @@ SET_SOURCE_FILES_PROPERTIES( "./source/src/ann/kd_pr_search.cpp" PROPERTIES COMP
 #INSTALL_SHARED_LIBRARY( ${PROJECT_NAME}_ann DESTINATION lib )
 
 
-# helper macro for adding new tests
-# build with 'make tests'
-ADD_CUSTOM_TARGET( tests )
-MACRO( ADD_MARLINUTIL_TEST _name )
-    # MarlinUtil test
-    IF( BUILD_TESTING )
-        ADD_EXECUTABLE( ${_name} "./source/tests/${_name}.cc" )
-    ELSE()
-        ADD_EXECUTABLE( ${_name} EXCLUDE_FROM_ALL "./source/tests/${_name}.cc" )
-    ENDIF()
-    ADD_DEPENDENCIES( tests ${_name} )
-    TARGET_LINK_LIBRARIES( ${_name} ${PROJECT_NAME} )
-    #INSTALL( TARGETS ${_name} DESTINATION bin )
-ENDMACRO()
-
-ADD_MARLINUTIL_TEST( testmarlinutil )
-
+IF( BUILD_TESTING )
+  ADD_SUBDIRECTORY(source/tests)
+ENDIF()
 
 # display some variables and write them to cache
 DISPLAY_STD_VARIABLES()
