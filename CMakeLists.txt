@@ -89,7 +89,7 @@ ENDIF()
 
 # include directories
 INCLUDE_DIRECTORIES( BEFORE ./source/include )
-INSTALL_DIRECTORY( ./source/include/ DESTINATION ./include/marlinutil FILES_MATCHING PATTERN "*.h" )
+INSTALL_DIRECTORY( ./source/include/ DESTINATION ./include/marlinutil FILES_MATCHING PATTERN "*.h" PATTERN "*.ipp")
 
 # get list of all source files
 AUX_SOURCE_DIRECTORY( ./source/src library_sources )
