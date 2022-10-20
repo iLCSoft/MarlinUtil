@@ -112,12 +112,12 @@ class HelixClassT {
      *  Returns momentum of particle at the point of closest approach <br>
      *  to IP <br>
      */
-    const FloatT *const getMomentum() const { return _momentum; }
+    const FloatT* getMomentum() const { return _momentum; }
 
     /**
      *  Returns reference point of track <br>
      */
-    const FloatT *const getReferencePoint() const { return _referencePoint; }
+    const FloatT* getReferencePoint() const { return _referencePoint; }
 
     /**
      *  Returns Phi angle of the momentum vector <br>
@@ -245,12 +245,12 @@ class HelixClassT {
     /**
      * Returns starting point of helix
      */
-    const FloatT *const getStartingPoint() const {return _xStart;}
+    const FloatT* getStartingPoint() const {return _xStart;}
 
     /**
      * Returns endpoint of helix
      */
-    const FloatT *const getEndPoint() const {return _xEnd;}
+    const FloatT* getEndPoint() const {return _xEnd;}
 
     /**
      * Returns BZ for the second parameterization
