@@ -13,7 +13,7 @@ jobs:
     - uses: cvmfs-contrib/github-action-cvmfs@v2
     - uses: aidasoft/run-lcg-view@v3
       with:
-        coverity-cmake-command: 'cmake -C $ILCSOFT/ILCSoft.cmake ..'
+        coverity-cmake-command: 'cmake -C $ILCSOFT/ILCSoft.cmake -DBUILD_TESTING=OFF ..'
         coverity-project: 'iLCSoft%2FMarlinUtil'
         coverity-project-token: ${{ secrets.MARLINUTIL_COVERITY_TOKEN }}
         github-pat: ${{ secrets.READ_COVERITY_IMAGE }}

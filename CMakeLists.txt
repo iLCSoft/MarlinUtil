@@ -89,7 +89,7 @@ ENDIF()
 
 # include directories
 INCLUDE_DIRECTORIES( BEFORE ./source/include )
-INSTALL_DIRECTORY( ./source/include/ DESTINATION ./include/marlinutil FILES_MATCHING PATTERN "*.h" )
+INSTALL_DIRECTORY( ./source/include/ DESTINATION ./include/marlinutil FILES_MATCHING PATTERN "*.h" PATTERN "*.ipp")
 
 # get list of all source files
 AUX_SOURCE_DIRECTORY( ./source/src library_sources )
@@ -120,24 +120,11 @@ SET_SOURCE_FILES_PROPERTIES( "./source/src/ann/kd_pr_search.cpp" PROPERTIES COMP
 #ADD_SHARED_LIBRARY( ${PROJECT_NAME}_ann ${ann_library_sources} )
 #INSTALL_SHARED_LIBRARY( ${PROJECT_NAME}_ann DESTINATION lib )
 
+option(USE_EXTERNAL_CATCH2 "Link against an external Catch2 v3 static library, otherwise build it locally" ON)
 
-# helper macro for adding new tests
-# build with 'make tests'
-ADD_CUSTOM_TARGET( tests )
-MACRO( ADD_MARLINUTIL_TEST _name )
-    # MarlinUtil test
-    IF( BUILD_TESTING )
-        ADD_EXECUTABLE( ${_name} "./source/tests/${_name}.cc" )
-    ELSE()
-        ADD_EXECUTABLE( ${_name} EXCLUDE_FROM_ALL "./source/tests/${_name}.cc" )
-    ENDIF()
-    ADD_DEPENDENCIES( tests ${_name} )
-    TARGET_LINK_LIBRARIES( ${_name} ${PROJECT_NAME} )
-    #INSTALL( TARGETS ${_name} DESTINATION bin )
-ENDMACRO()
-
-ADD_MARLINUTIL_TEST( testmarlinutil )
-
+IF( BUILD_TESTING )
+  ADD_SUBDIRECTORY(source/tests)
+ENDIF()
 
 # display some variables and write them to cache
 DISPLAY_STD_VARIABLES()
