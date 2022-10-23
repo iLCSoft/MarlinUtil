@@ -140,7 +140,7 @@ void HelixClassT<FloatT>::Initialize_Canonical(FloatT phi0, FloatT d0, FloatT z0
       _radius*cos(_phi0-_const_pi2*_charge);
     _yCentre = _referencePoint[1] +
       _radius*sin(_phi0-_const_pi2*_charge);
-    _phiAtPCA = atan2(-_yCentre,-_xCentre);
+    _phiAtPCA = atan2(_referencePoint[1]-_yCentre,_referencePoint[0]-_xCentre);
     _phiRefPoint =  _phiAtPCA ;
     _bField = B;
 }
@@ -642,7 +642,7 @@ FloatT HelixClassT<FloatT>::getDistanceToHelix(HelixClassT * helix, FloatT * pos
 
     // if helix initialized with no input ref. point or with (0,0,0)
     if ( (ref2[0]==xAtPCA2 && ref2[1]==yAtPCA2 && ref2[2]==helix->getZ0())
-         || (ref2[0]==0 && ref2[1]==0 && ref2[2]==0) ) { 
+         || (ref2[0]==0 && ref2[1]==0 && ref2[2]==0) ) {
       if (deltaPhi21 < 0 && charge2 < 0) {
         deltaPhi21 += _const_2pi;
       }
@@ -717,6 +717,12 @@ FloatT HelixClassT<FloatT>::getDistanceToHelix(HelixClassT * helix, FloatT * pos
       } else if (deltaPhi11 > 0 && charge1 > 0) {
         deltaPhi11 -= _const_2pi;
       }
+      if (deltaPhi12 < 0 && charge1 < 0) {
+  		  deltaPhi12 += _const_2pi;
+  		}
+  		else if (deltaPhi12 > 0 && charge1 > 0) {
+  		  deltaPhi12 -= _const_2pi;
+  		}
     } else { // any other ref. point
       if (fabs(deltaPhi11) > M_PI) {
         if (deltaPhi11 < 0 && charge1 > 0) {
@@ -736,11 +742,6 @@ FloatT HelixClassT<FloatT>::getDistanceToHelix(HelixClassT * helix, FloatT * pos
       }
     }
 
-    if (deltaPhi12 < 0 && charge1 < 0) {
-      deltaPhi12 += _const_2pi;
-    } else if (deltaPhi12 > 0 && charge1 > 0) {
-      deltaPhi12 -= _const_2pi;
-    }
 
     FloatT time11 = -charge1 * deltaPhi11 * rad1 / pxy1;
     FloatT time12 = -charge1 * deltaPhi12 * rad1 / pxy1;
