@@ -640,38 +640,32 @@ FloatT HelixClassT<FloatT>::getDistanceToHelix(HelixClassT * helix, FloatT * pos
     float xAtPCA2 = helix->getXPCA();
     float yAtPCA2 = helix->getYPCA();
 
-    // if helix initialized with no input ref. point or with (0,0,0)
-    if ( (ref2[0]==xAtPCA2 && ref2[1]==yAtPCA2 && ref2[2]==helix->getZ0())
-         || (ref2[0]==0 && ref2[1]==0 && ref2[2]==0) ) {
-      if (deltaPhi21 < 0 && charge2 < 0) {
-        deltaPhi21 += _const_2pi;
-      }
-      else if (deltaPhi21 > 0 && charge2 > 0) {
-        deltaPhi21 -= _const_2pi;
-      }
 
-      if (deltaPhi22 < 0 && charge2 < 0) {
+    // if helix initialized with no input ref. point, for backward compatibility
+    if ( ref2[0]==xAtPCA2 && ref2[1]==yAtPCA2 && ref2[2]==helix->getZ0() ) {
+      if (deltaPhi21 < 0 && charge2 < 0)
+        deltaPhi21 += _const_2pi;
+      else if (deltaPhi21 > 0 && charge2 > 0)
+        deltaPhi21 -= _const_2pi;
+
+      if (deltaPhi22 < 0 && charge2 < 0)
         deltaPhi22 += _const_2pi;
-      }
-      else if (deltaPhi22 > 0 && charge2 > 0) {
+      else if (deltaPhi22 > 0 && charge2 > 0)
         deltaPhi22 -= _const_2pi;
-      }
-    } else { // any other ref. point
+    }
+
+    else { // for non-zero ref. points given as an input
       if (fabs(deltaPhi21) > M_PI) {
-        if (deltaPhi21 < 0 && charge2 > 0) {
+        if (deltaPhi21 < 0 && charge2 > 0)
           deltaPhi21 += _const_2pi;
-        }
-        else if (deltaPhi21 > 0 && charge2 < 0) {
+        else if (deltaPhi21 > 0 && charge2 < 0)
           deltaPhi21 -= _const_2pi;
-        }
       }
       if (fabs(deltaPhi22) > M_PI) {
-        if (deltaPhi22 < 0 && charge2 > 0) {
+        if (deltaPhi22 < 0 && charge2 > 0)
           deltaPhi22 += _const_2pi;
-        }
-        else if (deltaPhi22 > 0 && charge2 < 0) {
+        else if (deltaPhi22 > 0 && charge2 < 0)
           deltaPhi22 -= _const_2pi;
-        }
       }
     }
 
@@ -690,9 +684,6 @@ FloatT HelixClassT<FloatT>::getDistanceToHelix(HelixClassT * helix, FloatT * pos
     temp22[1] = ySect2;
     temp22[2] = Z22;
 
-    //     std::cout << "temp21 = " << temp21[0] << " " << temp21[1] << " " <<
-    //     temp21[2] << std::endl; std::cout << "temp22 = " << temp22[0] << " "
-    //     << temp22[1] << " " << temp22[2] << std::endl;
 
     FloatT temp11[3];
     FloatT temp12[3];
@@ -709,36 +700,30 @@ FloatT HelixClassT<FloatT>::getDistanceToHelix(HelixClassT * helix, FloatT * pos
     FloatT xAtPCA1 = _xAtPCA;
     FloatT yAtPCA1 = _yAtPCA;
 
-    // if helix initialized with no input ref. point or with (0,0,0)
-    if ( (ref1[0]==xAtPCA1 && ref1[1]==yAtPCA1 && ref1[2]==_z0)
-         || (ref1[0]==0 && ref1[1]==0 && ref1[2]==0) ) {
-      if (deltaPhi11 < 0 && charge1 < 0) {
+    // if helix initialized with no input ref. point, for backward compatibility
+    if ( ref1[0]==xAtPCA1 && ref1[1]==yAtPCA1 && ref1[2]==_z0 ) {
+      if (deltaPhi11 < 0 && charge1 < 0)
         deltaPhi11 += _const_2pi;
-      } else if (deltaPhi11 > 0 && charge1 > 0) {
+      else if (deltaPhi11 > 0 && charge1 > 0)
         deltaPhi11 -= _const_2pi;
-      }
-      if (deltaPhi12 < 0 && charge1 < 0) {
-  		  deltaPhi12 += _const_2pi;
-  		}
-  		else if (deltaPhi12 > 0 && charge1 > 0) {
-  		  deltaPhi12 -= _const_2pi;
-  		}
-    } else { // any other ref. point
+      if (deltaPhi12 < 0 && charge1 < 0)
+        deltaPhi12 += _const_2pi;
+      else if (deltaPhi12 > 0 && charge1 > 0)
+        deltaPhi12 -= _const_2pi;
+    }
+
+    else { // for non-zero ref. points given as an input
       if (fabs(deltaPhi11) > M_PI) {
-        if (deltaPhi11 < 0 && charge1 > 0) {
+        if (deltaPhi11 < 0 && charge1 > 0)
           deltaPhi11 += _const_2pi;
-        }
-        else if (deltaPhi11 > 0 && charge1 < 0) {
+        else if (deltaPhi11 > 0 && charge1 < 0)
           deltaPhi11 -= _const_2pi;
-        }
       }
       if (fabs(deltaPhi12) > M_PI) {
-        if (deltaPhi12 < 0 && charge1 > 0) {
+        if (deltaPhi12 < 0 && charge1 > 0)
           deltaPhi12 += _const_2pi;
-        }
-        else if (deltaPhi12 > 0 && charge1 < 0) {
+        else if (deltaPhi12 > 0 && charge1 < 0)
           deltaPhi12 -= _const_2pi;
-        }
       }
     }
 
