@@ -136,10 +136,8 @@ void HelixClassT<FloatT>::Initialize_Canonical(FloatT phi0, FloatT d0, FloatT z0
     _pxAtPCA = _momentum[0];
     _pyAtPCA = _momentum[1];
     _phiMomRefPoint = atan2(_momentum[1],_momentum[0]);
-    _xCentre = _referencePoint[0] +
-      _radius*cos(_phi0-_const_pi2*_charge);
-    _yCentre = _referencePoint[1] +
-      _radius*sin(_phi0-_const_pi2*_charge);
+    _xCentre = _xAtPCA + _radius*cos(_phi0-_const_pi2*_charge);
+    _yCentre = _yAtPCA + _radius*sin(_phi0-_const_pi2*_charge);
     _phiAtPCA = atan2(_referencePoint[1]-_yCentre,_referencePoint[0]-_xCentre);
     _phiRefPoint =  _phiAtPCA ;
     _bField = B;
@@ -641,7 +639,7 @@ FloatT HelixClassT<FloatT>::getDistanceToHelix(HelixClassT * helix, FloatT * pos
     float yAtPCA2 = helix->getYPCA();
 
 
-    // if helix initialized with no input ref. point, for backward compatibility
+    // if canonical initialization with no input ref. point (for backward compatibility)
     if ( ref2[0]==xAtPCA2 && ref2[1]==yAtPCA2 && ref2[2]==helix->getZ0() ) {
       if (deltaPhi21 < 0 && charge2 < 0)
         deltaPhi21 += _const_2pi;
@@ -700,7 +698,7 @@ FloatT HelixClassT<FloatT>::getDistanceToHelix(HelixClassT * helix, FloatT * pos
     FloatT xAtPCA1 = _xAtPCA;
     FloatT yAtPCA1 = _yAtPCA;
 
-    // if helix initialized with no input ref. point, for backward compatibility
+    // if canonical initialization with no input ref. point (for backward compatibility)
     if ( ref1[0]==xAtPCA1 && ref1[1]==yAtPCA1 && ref1[2]==_z0 ) {
       if (deltaPhi11 < 0 && charge1 < 0)
         deltaPhi11 += _const_2pi;

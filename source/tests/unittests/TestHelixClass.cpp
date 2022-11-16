@@ -9,10 +9,6 @@
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 #include <catch2/matchers/catch_matchers_quantifiers.hpp>
 
-#include <DD4hep/Detector.h>
-#include <DD4hep/DD4hepUnits.h>
-#include <DDRec/Vector3D.h>
-
 #include <array>
 #include <cmath>
 #include <tuple>
@@ -194,7 +190,7 @@ TEMPLATE_LIST_TEST_CASE("getDistance-Initialize_Canonical",
 
   SECTION("input reference point and helices with small d0, z0") {
     // "real-world" numbers (BSM event)
-    std::array<FloatT, 3> position = {2.42e+02,-3.58e+02, 1.72e+02}; // true vtx
+    std::array<FloatT, 3> position = {242.5, -358.5, 171.6}; // true vtx
     std::array<FloatT, 3> ref1 = {244.944, -359.603, 169.052};
     std::array<FloatT, 3> ref2 = {249.609, -356.381, 198.409};
 
