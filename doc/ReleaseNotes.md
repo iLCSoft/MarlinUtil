@@ -1,3 +1,67 @@
+# v01-17
+
+* 2022-11-14 Thomas Madlener ([PR#35](https://github.com/iLCSoft/MarlinUtil/pull/35))
+  - Remove the no longer supported gcc8 based CI workflow.
+
+* 2022-10-20 Thomas Madlener ([PR#31](https://github.com/iLCSoft/MarlinUtil/pull/31))
+  - Adding a basic Catch2 v3 based unittest setup that can be used to easily add unittests.
+    - The CMake configuration allows to either build Catch2 on the fly or to discover a suitable installation of Catch2
+  - Add the existing test and an example unittest to the test suit that can be run via `ctest` after building the package.
+  - Disable building the tests for the coverity workflow for now to avoid polluting the output of that with Catch2 issues
+
+* 2022-10-19 Thomas Madlener ([PR#33](https://github.com/iLCSoft/MarlinUtil/pull/33))
+  - Make sure that `.ipp` files are also installed. Necessary since #30, fixes #32
+
+* 2022-10-19 Thomas Madlener ([PR#30](https://github.com/iLCSoft/MarlinUtil/pull/30))
+  - Introduce a `HelixClassT` template class and make `HelixClass` and `HellixClass_double` typedefs of this class, instead of having two separate (but practically identical) implementations that are in place currently.
+    - Explicitly instantiate both versions that were in place previously to make sure things don't break downstream.
+    - Mark getters as `const`
+
+* 2022-09-19 Carl Mikael Berggren ([PR#28](https://github.com/iLCSoft/MarlinUtil/pull/28))
+  The header-file has been re-organised and heavily
+  commented - should work as a manual.
+  
+  Bug fix: a missing factor of two in propagateValErrors , the errors
+  on the eigen-values (= the error on the estimated variances)
+  
+  New public methods:
+  
+  getElipsoid_r1 (_r2, _r3)
+  getElipsoid_r1Error (_r2, _r3)
+  getElipsoid_r_ave
+  * getElipsoid_r_forw (_back)
+  getElipsoid_vol
+  getElipsoid_density
+  getLongitudinalElipsis_eccentricity
+  getTransverseElipsis_eccentricity
+  * getMaxDist
+  * getElipsoid_FractionInside
+  
+  Transformations:
+  
+  TransformPointToEigenSyst
+  * TransformToEigenSyst
+  * TransformAlongDirection (2 versions)
+  
+  (The ones with a * in front are only useful with Reco-input, since
+   they need to have access to the CaloHits)
+  getters of transformed properties:
+  
+  * get_x_trans (_y_, _z_)
+  * get_COG_trans
+  * get_COGCov_trans
+  * get_th_ref
+  * get_ph_ref
+  * get_xyz_ref
+  
+  New private methods:
+  
+  findMaxDist
+  findFirstAndLast
+  findElipsoid_FractionInside
+  
+  Symbols defined: _one_sigma, _CL90, _CL95, _CL99
+
 # v01-16-02
 
 * 2022-06-28 Thomas Madlener ([PR#27](https://github.com/iLCSoft/MarlinUtil/pull/27))
