@@ -61,6 +61,44 @@ namespace MarlinUtil {
   double getEnergyDepositedInFullCalorimeter(lcio::LCEvent* evt);
 
 
+  /** Return track weight contribution encoded as trackwgt = (int(wgt)%10000)/1000. by
+   * the MarlinReco/Analysis/RecoMCTruthLink/include/RecoMCTruthLinker.h for the
+   * ReconstructedParticle-MCParticle (or vise-versa) type of relations.
+   * 
+   */
+  inline float getTrackWeight(float encodedWeight){
+      return ( int(encodedWeight) % 10000 ) / 1000.;
+  }
+
+
+  /** Return cluster weight contribution encoded as clusterwgt = (int(wgt)/10000)/1000. by
+   * the MarlinReco/Analysis/RecoMCTruthLink/include/RecoMCTruthLinker.h for the
+   * ReconstructedParticle-MCParticle (or vise-versa) type of relations.
+   */
+  inline float getClusterWeight(float encodedWeight){
+      return ( int(encodedWeight) / 10000 ) / 1000.;
+  }
+
+
+  /** Comparator function to compare weights with track weight encoding trackwgt =
+   * (int(wgt)%10000)/1000. set by the MarlinReco/Analysis/RecoMCTruthLink/include/RecoMCTruthLinker.h 
+   * for the ReconstructedParticle-MCParticle (or vise-versa) type of relations.
+   */
+  inline bool compareTrackWeights(float a, float b) {
+    return getTrackWeight(a) < getTrackWeight(b);
+  }
+
+  /** Comparator function to compare weights with cluster weight encoding clusterwgt = (int(wgt)/10000)/1000.
+   * set by the MarlinReco/Analysis/RecoMCTruthLink/include/RecoMCTruthLinker.h 
+   * for the ReconstructedParticle-MCParticle (or vise-versa) type of relations.
+   */
+  inline bool compareClusterWeights(float a, float b) {
+    return getClusterWeight(a) < getClusterWeight(b);
+  }
+
+
+  // ...
+
 }
 
 
