@@ -79,21 +79,12 @@ namespace MarlinUtil {
       return float( int(encodedWeight) / 10000 ) / 1000.f;
   }
 
-
-  /** Comparator function to compare weights with track weight encoding trackwgt =
-   * (int(wgt)%10000)/1000. set by the MarlinReco/Analysis/RecoMCTruthLink/include/RecoMCTruthLinker.h 
-   * for the ReconstructedParticle-MCParticle (or vise-versa) type of relations.
+  /** Return a single number that encodes in itself two numbers representing track and cluster weights given as arguments.
+   * For tracks and clusters, the weight is the sum of hits from the considered true particle divided by the sum of all hits.
+   * It is used inside RecoMCTruthLinker.
    */
-  inline bool compareTrackWeights(float a, float b) {
-    return getTrackWeight(a) < getTrackWeight(b);
-  }
-
-  /** Comparator function to compare weights with cluster weight encoding clusterwgt = (int(wgt)/10000)/1000.
-   * set by the MarlinReco/Analysis/RecoMCTruthLink/include/RecoMCTruthLinker.h 
-   * for the ReconstructedParticle-MCParticle (or vise-versa) type of relations.
-   */
-  inline bool compareClusterWeights(float a, float b) {
-    return getClusterWeight(a) < getClusterWeight(b);
+  inline float encodeTrackAndClusterWeights(const float trackWeight,const float clusterWeight){
+      return int(clusterWeight*1000)*10000 + int(trackWeight*1000);
   }
 
 }
