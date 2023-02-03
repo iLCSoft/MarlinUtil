@@ -67,7 +67,7 @@ namespace MarlinUtil {
    * 
    */
   inline float getTrackWeight(float encodedWeight){
-      return ( int(encodedWeight) % 10000 ) / 1000.;
+      return float( int(encodedWeight) % 10000 ) / 1000.f;
   }
 
 
@@ -76,7 +76,7 @@ namespace MarlinUtil {
    * ReconstructedParticle-MCParticle (or vise-versa) type of relations.
    */
   inline float getClusterWeight(float encodedWeight){
-      return ( int(encodedWeight) / 10000 ) / 1000.;
+      return float( int(encodedWeight) / 10000 ) / 1000.f;
   }
 
 
@@ -95,9 +95,6 @@ namespace MarlinUtil {
   inline bool compareClusterWeights(float a, float b) {
     return getClusterWeight(a) < getClusterWeight(b);
   }
-
-
-  // ...
 
 }
 
