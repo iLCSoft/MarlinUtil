@@ -62,7 +62,7 @@ namespace MarlinUtil {
 
 
   /** Return track weight contribution encoded as trackwgt = (int(wgt)%10000)/1000. by
-   * the MarlinReco/Analysis/RecoMCTruthLink/include/RecoMCTruthLinker.h for the
+   * the encodeTrackAndClusterWeights function for the
    * ReconstructedParticle-MCParticle (or vise-versa) type of relations.
    * 
    */
@@ -72,7 +72,7 @@ namespace MarlinUtil {
 
 
   /** Return cluster weight contribution encoded as clusterwgt = (int(wgt)/10000)/1000. by
-   * the MarlinReco/Analysis/RecoMCTruthLink/include/RecoMCTruthLinker.h for the
+   * the encodeTrackAndClusterWeights function for the
    * ReconstructedParticle-MCParticle (or vise-versa) type of relations.
    */
   inline float getClusterWeight(float encodedWeight){
