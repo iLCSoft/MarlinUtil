@@ -1,3 +1,18 @@
+# v01-17-01
+
+* 2023-05-30 Andre Sailer ([PR#40](https://github.com/iLCSoft/MarlinUtil/pull/40))
+  - CMake: make sure DD4hep include directories come first
+
+* 2023-05-30 tmadlener ([PR#38](https://github.com/iLCSoft/MarlinUtil/pull/38))
+  - Add a CI workflow based on the Key4hep release and nightly builds
+
+* 2023-05-30 Bohdan Dudar ([PR#37](https://github.com/iLCSoft/MarlinUtil/pull/37))
+  - Added `DD4hep::DDRec` library as a dependency to avoid undefined reference symbol errors using `dd4hep::rec` features. Fixes #26
+
+* 2023-02-06 Bohdan Dudar ([PR#36](https://github.com/iLCSoft/MarlinUtil/pull/36))
+  - Add function to extract decoded Track and Cluster weights from encoded LCRelation collection for PFO/MCParticles.
+  - Add comparator functions for these weights encodings
+
 # v01-17
 
 * 2022-11-14 Thomas Madlener ([PR#35](https://github.com/iLCSoft/MarlinUtil/pull/35))
