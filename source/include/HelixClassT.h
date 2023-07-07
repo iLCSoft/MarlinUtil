@@ -57,7 +57,7 @@ template<typename FloatT>
 class HelixClassT {
  public:
     /**
-     * The floatint point type used internally. Useful for generic programming
+     * The floating point type used internally. Useful for generic programming
      */
     using float_type = FloatT;
 /**

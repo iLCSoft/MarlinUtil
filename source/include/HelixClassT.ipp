@@ -1,7 +1,6 @@
 #include <math.h>
 #include <stdlib.h>
 #include <iostream>
-#include "ced_cli.h"
 
 template<typename FloatT>
 void HelixClassT<FloatT>::Initialize_VP(FloatT * pos, FloatT * mom, FloatT q, FloatT B) {
