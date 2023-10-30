@@ -1,3 +1,8 @@
+# v01-17-02
+
+* 2023-07-07 Leonhard Reichenbach ([PR#41](https://github.com/iLCSoft/MarlinUtil/pull/41))
+  - HelixClass: cleanup includes
+
 # v01-17-01
 
 * 2023-05-30 Andre Sailer ([PR#40](https://github.com/iLCSoft/MarlinUtil/pull/40))
