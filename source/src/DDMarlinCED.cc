@@ -71,6 +71,7 @@ using namespace UTIL;
 #include "DDRec/SurfaceManager.h"
 #include "DDRec/Surface.h"
 #include "TColor.h"
+#include "TROOT.h"
 
 using namespace dd4hep;
 
@@ -961,17 +962,21 @@ bool DrawSurfaces(const dd4hep::rec::SurfaceManager &surfMan, std::string detNam
 void getVisAttributes(dd4hep::DetElement det, unsigned &color, bool &visible) {
     dd4hep::VisAttr thisVisAttribute = det.volume().visAttributes();
     if (thisVisAttribute.isValid()){
-      TColor* c = new TColor(thisVisAttribute.color(), 1, 1, 1);
-      //convert the given TColor into a hexadecimal whereby R_i, G_i, B_i integers
-      //color = 0x00|R_1 R_2|G_1 G_2|B_1 B_2|
-      color = ((int(255*c->GetRed())<<16) |  //multiply with 2^16 to get the last two bits
-        (int(255*c->GetGreen())<<8)|          //multiply with 2^8 to get the middle bits
-        (int(255*c->GetBlue())<<0));          //multiply with 2^0 to get the first two bits
-                                              //the | operator is a bitwise addition of the number
-      delete c;
+        TColor* c = gROOT->GetColor( thisVisAttribute.color() );
+        if ( c != nullptr ){
+            //convert the given TColor into a hexadecimal whereby R_i, G_i, B_i integers
+            //color = 0x00|R_1 R_2|G_1 G_2|B_1 B_2|
+            color = ((int(255*c->GetRed())<<16) |  //multiply with 2^16 to get the last two bits
+                (int(255*c->GetGreen())<<8)|          //multiply with 2^8 to get the middle bits
+                (int(255*c->GetBlue())<<0));          //multiply with 2^0 to get the first two bits
+                                                    //the | operator is a bitwise addition of the number
+        }
+        else{
+            color = ((int(255)<<16) | (int(255)<<8) | (int(255)<<0));
+        }
     }
     else{
-      streamlog_out( MESSAGE )<<"color: pointer does not exist"<<std::endl;
+        streamlog_out( MESSAGE )<<"color: pointer does not exist"<<std::endl;
         color  = 8947848; //== 0xff999999
         visible = true;   
     }
