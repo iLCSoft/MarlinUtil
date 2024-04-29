@@ -11,9 +11,20 @@ ENDMACRO()
 ADD_MARLINUTIL_TEST( testmarlinutil )
 
 #--- Unit test setup. Use existing Catch2 or fetch a suitable version and build it
-if(USE_EXTERNAL_CATCH2)
-  FIND_PACKAGE(Catch2 3.0.0 REQUIRED)
+if(CMAKE_CXX_STANDARD GREATER_EQUAL 20)
+  set(CATCH2_MIN_VERSION 3.4)
 else()
+  set(CATCH2_MIN_VERSION 3.1)
+endif()
+if(USE_EXTERNAL_CATCH2)
+  if (USE_EXTERNAL_CATCH2 STREQUAL AUTO)
+    find_package(Catch2 ${CATCH2_MIN_VERSION})
+  else()
+    find_package(Catch2 ${CATCH2_MIN_VERSION} REQUIRED)
+  endif()
+endif()
+
+if(NOT Catch2_FOUND)
   MESSAGE(STATUS "Fetching local copy of Catch2 library for unit-tests...")
   # Build Catch2 with the default flags, to avoid generating warnings when we
   # build it

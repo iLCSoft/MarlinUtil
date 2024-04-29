@@ -120,7 +120,9 @@ SET_SOURCE_FILES_PROPERTIES( "./source/src/ann/kd_pr_search.cpp" PROPERTIES COMP
 #ADD_SHARED_LIBRARY( ${PROJECT_NAME}_ann ${ann_library_sources} )
 #INSTALL_SHARED_LIBRARY( ${PROJECT_NAME}_ann DESTINATION lib )
 
-option(USE_EXTERNAL_CATCH2 "Link against an external Catch2 v3 static library, otherwise build it locally" ON)
+option(USE_EXTERNAL_CATCH2 "Link against an external Catch2 v3 static library, otherwise build it locally" AUTO)
+set(USE_EXTERNAL_CATCH2 AUTO CACHE STRING "Link against an external Catch2 v3 static library, otherwise build it locally")
+set_property(CACHE USE_EXTERNAL_CATCH2 PROPERTY STRINGS AUTO ON OFF)
 
 IF( BUILD_TESTING )
   ADD_SUBDIRECTORY(source/tests)
