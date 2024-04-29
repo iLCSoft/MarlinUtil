@@ -1,36 +1,18 @@
-name: key4hep
+name: keyh4ep
 on: [push, pull_request]
 
 jobs:
-  key4hep:
+  build-and-test:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
-        release: ["sw.hsf.org/key4hep",
-                  "sw-nightlies.hsf.org/key4hep"]
+        build_type: ["release", "nightly"]
+        image: ["alma9", "ubuntu22", "centos7"]
+      fail-fast: false
+
     steps:
-    - uses: actions/checkout@v3
-    - uses: cvmfs-contrib/github-action-cvmfs@v3
-    - uses: aidasoft/run-lcg-view@v4
+    - uses: actions/checkout@v4
+    - uses: key4hep/key4hep-actions/key4hep-build@main
       with:
-        container: centos7
-        view-path: /cvmfs/${{ matrix.release }}
-        run: |
-          echo "::group::Run CMake"
-          mkdir build
-          cd build
-          cmake -GNinja \
-            -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always " \
-            -DINSTALL_DOC=ON \
-            -DUSE_EXTERNAL_CATCH2=ON \
-            ..
-          echo "::endgroup::"
-          echo "::group::Build"
-          ninja -k0
-          echo "::endgroup::"
-          echo "::group::Test"
-          ctest --output-on-failure
-          echo "::endgroup::"
-          echo "::group::Install"
-          ninja install
+        build_type: ${{ matrix.build_type }}
+        image: ${{ matrix.image }}
