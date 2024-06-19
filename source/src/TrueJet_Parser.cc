@@ -25,8 +25,8 @@ struct MCPseen : LCIntExtension<MCPseen> {} ;
 
   TrueJet_Parser::TrueJet_Parser() {
 
-    intvec=new IntVec()    ;
-    mcpartvec=new MCParticleVec()    ;
+    m_intvec=new IntVec()    ;
+    m_mcpartvec=new MCParticleVec()    ;
     _COUNT_FSR=1;
 }
 
@@ -37,12 +37,12 @@ TrueJet_Parser::~TrueJet_Parser() {
 
 //*************************///
 const double* TrueJet_Parser::p4seen(int ijet) {
-  p4[0]=Eseen(ijet);
+  m_p4[0]=Eseen(ijet);
   const double* mom = pseen(ijet);
    for (int kk=1 ; kk<=3 ; kk++ ) {
-     p4[kk]=mom[kk-1];
+     m_p4[kk]=mom[kk-1];
    }
-   return p4 ;
+   return m_p4 ;
 }
 
 
@@ -78,40 +78,40 @@ const double* TrueJet_Parser::ptrue(int ijet) {
   static FloatVec www ;
   LCObjectVec mcpvec = reltjmcp->getRelatedToObjects( jets->at(ijet) );
   www =  reltjmcp->getRelatedToWeights( jets->at(ijet));
-  p3[0]=0.; p3[1]=0.; p3[2]=0.;
+  m_p3[0]=0.; m_p3[1]=0.; m_p3[2]=0.;
   for ( unsigned kk=0 ; kk<mcpvec.size() ; kk++ ) {
     MCParticle* mcp  = dynamic_cast<MCParticle*>(mcpvec[kk]);
     if ( _COUNT_FSR ) {
       if (  abs(www[kk]) == 1.0) {
         const double* mom = mcp->getMomentum();
         for (int jj=0 ; jj<3 ; jj++ ) {
-          p3[jj]+=mom[jj];
+          m_p3[jj]+=mom[jj];
         }
       }
     } else {
       if (  www[kk] == 1.0) {
         const double* mom = mcp->getMomentum();
         for (int jj=0 ; jj<3 ; jj++ ) {
-          p3[jj]+=mom[jj];
+          m_p3[jj]+=mom[jj];
         }
       }
     }
   }
-  return p3;
+  return m_p3;
 }
 
 const double* TrueJet_Parser::p4true(int ijet) {
   const double* mom = ptrue(ijet);
   for (int kk=1 ; kk<=3 ; kk++ ) {
-     p4[kk]=mom[kk-1];
+     m_p4[kk]=mom[kk-1];
   }
-  p4[0]=Etrue(ijet);
-  return p4 ;
+  m_p4[0]=Etrue(ijet);
+  return m_p4 ;
 }
 
 const MCParticleVec& TrueJet_Parser::true_partics(int ijet) {
-  mcpartvec->clear();
-  MCParticleVec* jetmcps=mcpartvec;
+  m_mcpartvec->clear();
+  MCParticleVec* jetmcps=m_mcpartvec;
   LCObjectVec jetmcpsx = reltjmcp->getRelatedToObjects( jets->at(ijet) );
   for ( unsigned iii=0 ; iii < jetmcpsx.size() ; iii++ ) {
     jetmcps->push_back(dynamic_cast<MCParticle*>(jetmcpsx[iii]));
@@ -123,18 +123,18 @@ const double* TrueJet_Parser::pquark(int ijet) {
   if (final_elementon(ijet) != NULL ) {
     return final_elementon(ijet)->getMomentum() ;
   } else {
-    p3[0]=0. ;p3[1]=0. ;p3[2]=0. ;
-    return p3 ;
+    m_p3[0]=0. ;m_p3[1]=0. ;m_p3[2]=0. ;
+    return m_p3 ;
   }
 }
 
 const double* TrueJet_Parser::p4quark(int ijet) {
   const double* mom = pquark(ijet);
   for (int kk=1 ; kk<=3 ; kk++ ) {
-     p4[kk]=mom[kk-1];
+     m_p4[kk]=mom[kk-1];
   }
-  p4[0]=Equark(ijet);
-  return p4 ;
+  m_p4[0]=Equark(ijet);
+  return m_p4 ;
 }
 
 
@@ -142,7 +142,7 @@ double TrueJet_Parser::Etrueseen(int ijet) {
   if (  reltrue_tj == 0 ) {
     LCCollection* rmclcol = NULL;
     try{
-     rmclcol = evt->getCollection( get_recoMCTruthLink() );
+     rmclcol = m_evt->getCollection( get_recoMCTruthLink() );
     }
     catch( lcio::DataNotAvailableException& e )
     {
@@ -183,7 +183,7 @@ const double* TrueJet_Parser::ptrueseen(int ijet) {
   if (  reltrue_tj == 0 ) {
     LCCollection* rmclcol = NULL;
      try{
-      rmclcol = evt->getCollection( get_recoMCTruthLink() );
+      rmclcol = m_evt->getCollection( get_recoMCTruthLink() );
     }
     catch( lcio::DataNotAvailableException& e )
     {
@@ -193,7 +193,7 @@ const double* TrueJet_Parser::ptrueseen(int ijet) {
     reltrue_tj = new LCRelationNavigator( rmclcol );
   }
   LCObjectVec mcpvec = reltjmcp->getRelatedToObjects( jets->at(ijet) );
-  p3[0]=0 ; p3[1]=0 ; p3[2]=0 ;
+  m_p3[0]=0 ; m_p3[1]=0 ; m_p3[2]=0 ;
   for ( unsigned kk=0 ; kk<mcpvec.size() ; kk++ ) {
     MCParticle* mcp  = dynamic_cast<MCParticle*>(mcpvec[kk]);
     LCObjectVec recovec = reltrue_tj->getRelatedFromObjects( mcp);
@@ -201,7 +201,7 @@ const double* TrueJet_Parser::ptrueseen(int ijet) {
       if ( mcp->getParents().size() == 0 || ! ( mcp->getParents()[0]->ext<MCPseen>() == 1 ) ) {  // if ancestor not already counted
         const double* mom = mcp->getMomentum();
         for (int jj=0 ; jj<3 ; jj++ ) {
-          p3[jj]+=mom[jj];
+          m_p3[jj]+=mom[jj];
         }
       }
       mcp->ext<MCPseen>() = 1 ;
@@ -212,16 +212,16 @@ const double* TrueJet_Parser::ptrueseen(int ijet) {
       }
     }
   }
-  return p3;
+  return m_p3;
 }
 
 const double* TrueJet_Parser::p4trueseen(int ijet) {
   const double* mom = ptrueseen(ijet);
   for (int kk=1 ; kk<=3 ; kk++ ) {
-     p4[kk]=mom[kk-1];
+     m_p4[kk]=mom[kk-1];
   }
-  p4[0]=Etrueseen(ijet);
-  return p4 ;
+  m_p4[0]=Etrueseen(ijet);
+  return m_p4 ;
 }
 
 
@@ -277,8 +277,8 @@ ReconstructedParticleVec* TrueJet_Parser::getJets(){
     return icns;
 }
 const IntVec&  TrueJet_Parser::final_siblings( int ijet ) {
-  intvec->clear();
-  IntVec* sibl=intvec;
+  m_intvec->clear();
+  IntVec* sibl=m_intvec;
   LCObjectVec fcnvec = relfcn->getRelatedToObjects( jets->at(ijet) );
   int nsibl=0;
   for ( unsigned kk=0 ; kk<fcnvec.size() ; kk++ ) {
@@ -297,8 +297,8 @@ const IntVec&  TrueJet_Parser::final_siblings( int ijet ) {
 
 }
 const IntVec& TrueJet_Parser::initial_siblings( int ijet ){
-  intvec->clear();
-  IntVec* sibl=intvec;
+  m_intvec->clear();
+  IntVec* sibl=m_intvec;
   LCObjectVec icnvec = relicn->getRelatedToObjects( jets->at(ijet) );
   int nsibl=0;
   for ( unsigned kk=0 ; kk<icnvec.size() ; kk++ ) {
@@ -398,8 +398,8 @@ int TrueJet_Parser::initial_cn( int ijet ) {
 }
 
 const IntVec&  TrueJet_Parser::jets_of_final_cn( int ifcn ) {
-  intvec->clear();
-  IntVec* jets_of_fcn=intvec;
+  m_intvec->clear();
+  IntVec* jets_of_fcn=m_intvec;
   // way to find: jet-to-icn link icn->reco : jets, find notthis.
   //  index<->jet : LCExtension
   LCObjectVec jetvec = relfcn->getRelatedFromObjects(  finalcns->at(ifcn) );
@@ -413,8 +413,8 @@ const IntVec&  TrueJet_Parser::jets_of_final_cn( int ifcn ) {
 
 }
 const IntVec&  TrueJet_Parser::jets_of_initial_cn( int iicn ) {
-  intvec->clear();
-  IntVec* jets_of_icn=intvec;
+  m_intvec->clear();
+  IntVec* jets_of_icn=m_intvec;
   // way to find: jet-to-icn link icn->reco : jets, find notthis.
   //  index<->jet : LCExtension
   //LCObjectVec jetvec = relfcn->getRelatedFromObjects(  finalcns->at(ifcn) );
@@ -429,21 +429,21 @@ const IntVec&  TrueJet_Parser::jets_of_initial_cn( int iicn ) {
 }
 
 const IntVec&  TrueJet_Parser::pdg_icn_comps(int iicn) {
-  intvec->clear();
+  m_intvec->clear();
   for ( unsigned ipid=1 ; ipid <  initialcns->at(iicn)->getParticleIDs().size() ; ipid++ ) {
-    intvec->push_back( initialcns->at(iicn)->getParticleIDs()[ipid]->getPDG());
+    m_intvec->push_back( initialcns->at(iicn)->getParticleIDs()[ipid]->getPDG());
   }
-  return *intvec;
+  return *m_intvec;
   //
 
 }
 
 const IntVec&  TrueJet_Parser::type_icn_comps(int iicn) {
-  intvec->clear();
+  m_intvec->clear();
   for ( unsigned ipid=1 ; ipid <  initialcns->at(iicn)->getParticleIDs().size() ; ipid++ ) {
-    intvec->push_back( initialcns->at(iicn)->getParticleIDs()[ipid]->getType());
+    m_intvec->push_back( initialcns->at(iicn)->getParticleIDs()[ipid]->getType());
   }
-  return *intvec;
+  return *m_intvec;
   //
 
 }
@@ -452,27 +452,27 @@ const IntVec&  TrueJet_Parser::type_icn_comps(int iicn) {
 const double* TrueJet_Parser::p4_icn(int iicn) {
   const double* mom = p_icn(iicn);
    for (int kk=1 ; kk<=3 ; kk++ ) {
-     p4[kk]=mom[kk-1];
+     m_p4[kk]=mom[kk-1];
    }
-   p4[0]=E_icn(iicn);
-   return p4 ;
+   m_p4[0]=E_icn(iicn);
+   return m_p4 ;
 }
 
 const IntVec&  TrueJet_Parser::pdg_fcn_comps(int ifcn) {
-  intvec->clear();
+  m_intvec->clear();
   for ( unsigned ipid=1 ; ipid <  finalcns->at(ifcn)->getParticleIDs().size() ; ipid++ ) {
-    intvec->push_back( finalcns->at(ifcn)->getParticleIDs()[ipid]->getPDG());
+    m_intvec->push_back( finalcns->at(ifcn)->getParticleIDs()[ipid]->getPDG());
   }
-  return *intvec;
+  return *m_intvec;
   //
 
 }
 const IntVec&  TrueJet_Parser::type_fcn_comps(int ifcn) {
-  intvec->clear();
+  m_intvec->clear();
   for ( unsigned ipid=1 ; ipid <  finalcns->at(ifcn)->getParticleIDs().size() ; ipid++ ) {
-    intvec->push_back( finalcns->at(ifcn)->getParticleIDs()[ipid]->getType());
+    m_intvec->push_back( finalcns->at(ifcn)->getParticleIDs()[ipid]->getType());
   }
-  return *intvec;
+  return *m_intvec;
   //
 
 }
@@ -482,10 +482,10 @@ const IntVec&  TrueJet_Parser::type_fcn_comps(int ifcn) {
 const double* TrueJet_Parser::p4_fcn(int ifcn) {
   const double* mom = p_fcn(ifcn);
    for (int kk=1 ; kk<=3 ; kk++ ) {
-     p4[kk]=mom[kk-1];
+     m_p4[kk]=mom[kk-1];
    }
-   p4[0]=E_fcn(ifcn);
-   return p4 ;
+   m_p4[0]=E_fcn(ifcn);
+   return m_p4 ;
 }
 
 MCParticle* TrueJet_Parser::initial_elementon(int ijet){
@@ -513,9 +513,9 @@ MCParticle* TrueJet_Parser::final_elementon(int ijet){
 
 }
 const MCParticleVec& TrueJet_Parser::elementons_final_cn(int ifcn){
-  mcpartvec->clear();
+  m_mcpartvec->clear();
 
-  MCParticleVec* elementons= mcpartvec;
+  MCParticleVec* elementons= m_mcpartvec;
   IntVec jetind=jets_of_final_cn(ifcn );
   for (unsigned kk=0 ; kk <jetind.size() ; kk++ ) {
     MCParticle* mcp=final_elementon(jetind[kk]);
@@ -527,9 +527,9 @@ const MCParticleVec& TrueJet_Parser::elementons_final_cn(int ifcn){
 }
 
 const MCParticleVec& TrueJet_Parser::elementons_initial_cn(int iicn){
-  mcpartvec->clear();
+  m_mcpartvec->clear();
 
-  MCParticleVec* elementons= mcpartvec;
+  MCParticleVec* elementons= m_mcpartvec;
   IntVec jetind=jets_of_initial_cn(iicn );
   for (unsigned kk=0 ; kk <jetind.size() ; kk++ ) {
     MCParticle* mcp=initial_elementon(jetind[kk]);
@@ -543,10 +543,10 @@ const MCParticleVec& TrueJet_Parser::elementons_initial_cn(int iicn){
 void TrueJet_Parser::getall( LCEvent * event ) {
 
 
-    evt=event;
+    m_evt=event;
      // get TrueJets
     try{
-      tjcol = evt->getCollection( _trueJetCollectionName);
+      tjcol = m_evt->getCollection( _trueJetCollectionName);
       if (  tjcol->getNumberOfElements() == 0 ) { return ; }
     }
     catch( lcio::DataNotAvailableException& e )
@@ -559,7 +559,7 @@ void TrueJet_Parser::getall( LCEvent * event ) {
 
      // get  FinalColourNeutrals
     try{
-      fcncol = evt->getCollection( _finalColourNeutralCollectionName);
+      fcncol = m_evt->getCollection( _finalColourNeutralCollectionName);
     }
     catch( lcio::DataNotAvailableException& e )
     {
@@ -571,7 +571,7 @@ void TrueJet_Parser::getall( LCEvent * event ) {
 
      // get  InitialColourNeutrals
     try{
-      icncol = evt->getCollection( _initialColourNeutralCollectionName);
+      icncol = m_evt->getCollection( _initialColourNeutralCollectionName);
     }
     catch( lcio::DataNotAvailableException& e )
     {
@@ -584,7 +584,7 @@ void TrueJet_Parser::getall( LCEvent * event ) {
      // get  FinalColourNeutralLink
     LCCollection* fcnlcol = NULL;
     try{
-      fcnlcol  = evt->getCollection(  _finalColourNeutralLink );
+      fcnlcol  = m_evt->getCollection(  _finalColourNeutralLink );
     }
     catch( lcio::DataNotAvailableException& e )
     {
@@ -596,7 +596,7 @@ void TrueJet_Parser::getall( LCEvent * event ) {
      // get  InitialColourNeutralLink
     LCCollection* icnlcol = NULL;
     try{
-      icnlcol  = evt->getCollection(  _initialColourNeutralLink );
+      icnlcol  = m_evt->getCollection(  _initialColourNeutralLink );
     }
     catch( lcio::DataNotAvailableException& e )
     {
@@ -608,7 +608,7 @@ void TrueJet_Parser::getall( LCEvent * event ) {
      // get  FinalElementonLink
     LCCollection* fplcol = NULL;
     try{
-      fplcol  = evt->getCollection(  _finalElementonLink );
+      fplcol  = m_evt->getCollection(  _finalElementonLink );
     }
     catch( lcio::DataNotAvailableException& e )
     {
@@ -620,7 +620,7 @@ void TrueJet_Parser::getall( LCEvent * event ) {
      // get  InitialElementonLink
     LCCollection* iplcol = NULL;
     try{
-      iplcol  = evt->getCollection(  _initialElementonLink );
+      iplcol  = m_evt->getCollection(  _initialElementonLink );
     }
     catch( lcio::DataNotAvailableException& e )
     {
@@ -632,7 +632,7 @@ void TrueJet_Parser::getall( LCEvent * event ) {
      // get  TrueJetPFOLink
     LCCollection* tjrecolcol = NULL;
     try{
-      tjrecolcol  = evt->getCollection(  _trueJetPFOLink );
+      tjrecolcol  = m_evt->getCollection(  _trueJetPFOLink );
     }
     catch( lcio::DataNotAvailableException& e )
     {
@@ -645,7 +645,7 @@ void TrueJet_Parser::getall( LCEvent * event ) {
      // get  TrueJetMCParticleLink
     LCCollection* tjmcplcol = NULL;
     try{
-      tjmcplcol  = evt->getCollection(  _trueJetMCParticleLink );
+      tjmcplcol  = m_evt->getCollection(  _trueJetMCParticleLink );
     }
     catch( lcio::DataNotAvailableException& e )
     {
