@@ -295,10 +295,10 @@ class TrueJet_Parser {
   std::string _recoMCTruthLink{};
   int _COUNT_FSR{};
 private:
-  LCEvent* evt{};
-  double p4[4]{};
-  double p3[3]{};
-  IntVec* intvec{};
-  MCParticleVec* mcpartvec{};
+  LCEvent* m_evt{};
+  double m_p4[4]{};
+  double m_p3[3]{};
+  IntVec* m_intvec{};
+  MCParticleVec* m_mcpartvec{};
 } ;
 #endif
