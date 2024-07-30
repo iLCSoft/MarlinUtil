@@ -1,3 +1,20 @@
+# v01-18
+
+* 2024-06-20 tmadlener ([PR#46](https://github.com/iLCSoft/MarlinUtil/pull/46))
+  - Prefix currently unprefixed member variables of the `TrueJet_Parser` with an `m_` prefix.
+
+* 2024-06-19 Ulrich Einhaus ([PR#45](https://github.com/iLCSoft/MarlinUtil/pull/45))
+  - Adds SelectNthEventsProcessor.
+  - This sets its own processor ReturnValue to true or false, depending on chosen parameters, which can be used in the Marlin steering file to use a particular sub-set of a sample.
+  - Via the InvertSelection parameter this can be easily inverted, which is convenient for training vs. inference of ML models.
+
+* 2024-04-29 tmadlener ([PR#44](https://github.com/iLCSoft/MarlinUtil/pull/44))
+  - Update CI to use latest clicdp nightlies and central key4hep build workflows
+  - Make Catch2 discovery a bit more robust and easier to use
+
+* 2024-04-29 Bohdan Dudar ([PR#43](https://github.com/iLCSoft/MarlinUtil/pull/43))
+  - Avoid the TColor warning when retrieving existing colours.
+
 # v01-17-02
 
 * 2023-07-07 Leonhard Reichenbach ([PR#41](https://github.com/iLCSoft/MarlinUtil/pull/41))
