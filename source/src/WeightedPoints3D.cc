@@ -885,8 +885,8 @@ void WeightedPoints3D::propagateVecErrorsCartesian(){
     Dmat[1][1] =  sin(phi)*cos(theta) ;
     Dmat[2][1] =  -sin(theta) ;
     double thph_dmat [2][3];
-    for ( int i =0 ; i < 3 ; i++ ) {
-      for ( int j=0 ; j < 2 ; j++ ) {
+    for ( int i =0 ; i < 2 ; i++ ) {
+      for ( int j=0 ; j < 3 ; j++ ) {
         thph_dmat [i][j] = 0. ;
         for (int k=0 ; k < 2 ; k++ ) {
           thph_dmat [i][j] += _theta_phi_cov[i][k][l]*Dmat[j][k];
