@@ -1,3 +1,9 @@
+# v01-18-01
+
+* 2024-08-26 tmadlener ([PR#47](https://github.com/iLCSoft/MarlinUtil/pull/47))
+  - Fix a potential indexing issue in `WeightedPoints3D`
+  - Remove no longer supported CentOS7 from Key4hep workflows
+
 # v01-18
 
 * 2024-06-20 tmadlener ([PR#46](https://github.com/iLCSoft/MarlinUtil/pull/46))
