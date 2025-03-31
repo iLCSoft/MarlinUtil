@@ -34,7 +34,7 @@ if(NOT Catch2_FOUND)
   fETCHCONTENT_DECLARE(
     Catch2
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG        v3.0.1
+    GIT_TAG        v${CATCH2_MIN_VERSION}.0
     )
   FETCHCONTENT_MAKEAVAILABLE(Catch2)
   set(CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras ${CMAKE_MODULE_PATH})
