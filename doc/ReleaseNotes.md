@@ -1,3 +1,8 @@
+# v01-18-02
+
+* 2025-03-31 Thomas Madlener ([PR#49](https://github.com/iLCSoft/MarlinUtil/pull/49))
+  - Make sure to fetch a Catch2 version that can actually be built with the required C++ standard.
+
 # v01-18-01
 
 * 2024-08-26 tmadlener ([PR#47](https://github.com/iLCSoft/MarlinUtil/pull/47))
