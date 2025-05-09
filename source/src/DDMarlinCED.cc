@@ -356,7 +356,6 @@ void DDMarlinCED::drawHelix(float b, float charge, float x, float y, float z,
         int nSteps = int(100/step); //hauke
         
         
-        int count_lines=0;
         for (int j = 0; j < nSteps ; j++) {
             
             double alpha0 = step*j ;
@@ -381,7 +380,6 @@ void DDMarlinCED::drawHelix(float b, float charge, float x, float y, float z,
             }
             
             if( r_current >= (rmin+step)) {
-                count_lines++;
                 ced_line_ID( x1, y1, z1, x2, y2, z2 , marker , size, col, id);
             }
             x1 = x2;

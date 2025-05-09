@@ -17,11 +17,11 @@ public:
        // generate pair of random numbers
        // generate first random number
        float frand = rand();
-       frand = frand/RAND_MAX;
+       frand = frand/static_cast<float>(RAND_MAX);
        x1 = 2.0*(frand) - 1.0;
        // generate second random number
        frand = rand();
-       frand = frand/RAND_MAX;
+       frand = frand/static_cast<float>(RAND_MAX);
        x2 = 2.0*frand - 1.0;
        w = x1 *x1 + x2*x2;
      } while ( w >= 1.0 );

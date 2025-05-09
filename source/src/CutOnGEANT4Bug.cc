@@ -107,7 +107,7 @@ void CutOnGEANT4Bug::processEvent( LCEvent* evt ) {
 	    unsigned int index = 0;
 	    bool alreadyCollected = false;	
 	    
-	    float ESumCalorimeterHits = 0.0; // accumulated energy of calorimeter hits where the track contributes
+	    //float ESumCalorimeterHits = 0.0; // accumulated energy of calorimeter hits where the track contributes
 	    float ESumSubCalorimeterHits = 0.0; // accumulated energy of calorimeter hit energies, but only the part which originates from the track,i.e. sub-hit accuracy
 	  
 	  
@@ -264,14 +264,14 @@ void CutOnGEANT4Bug::processEvent( LCEvent* evt ) {
 	      
 	      // debug
 	      // CalorimeterHit* caloHit = collectedCalorimeterHitsWithEnergies.at(i).first;
-	      float EHit = collectedCalorimeterHitsWithEnergies.at(i).second;
+	      //float EHit = collectedCalorimeterHitsWithEnergies.at(i).second;
 	      
 	      // debug
 	      // CalorimeterHit* caloSubHit = collectedSubCalorimeterHitsWithEnergies.at(i).first;
 	      float ESubHit = collectedSubCalorimeterHitsWithEnergies.at(i).second;
 	      
 	      
-	      ESumCalorimeterHits += EHit;
+	      //ESumCalorimeterHits += EHit;
 	      ESumSubCalorimeterHits += ESubHit;
 	    
 	      // debug

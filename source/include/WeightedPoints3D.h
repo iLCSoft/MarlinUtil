@@ -385,9 +385,6 @@ private:
   double _nfact4;
   double _fourth_mom[3][3][3][3];
   double dang[6][2][3]; 
-  double _r1           ;  // Cluster spatial axis length -- the largest
-  double _r2           ;  // Cluster spatial axis length -- less
-  double _r3           ;  // Cluster spatial axis length -- less
   double _vol          ;  // Cluster ellipsoid volume
   double _r_ave        ;  // Cluster average radius  (cubic root)
   double _density      ;  // Cluster density
