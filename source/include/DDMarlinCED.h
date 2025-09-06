@@ -297,7 +297,7 @@ protected:
 
   // FIXME: Not so elegant, refine! Use iterators, templates etc. See drawHitCollectionsByType(...).
   // helper method to draw hit collections by MC Contribution
-  static void drawHitCollectionsByMCContribution(LCEvent* event, MCParticle* MCP, int marker, int size, 
+  static void drawHitCollectionsByMCContribution(LCEvent* event, MCParticle* mcp, int marker, int size,
              unsigned int color, unsigned int layer=0) {
     
     std::vector< std::string >::const_iterator iter;
@@ -315,11 +315,11 @@ protected:
 
         SimTrackerHit* hit = dynamic_cast<SimTrackerHit*>(col->getElementAt(i));
     
-        if (hit->getMCParticle() == MCP) {
+        if (hit->getMCParticle() == mcp) {
           double x = hit->getPosition()[0];
           double y = hit->getPosition()[1];
           double z = hit->getPosition()[2];
-            ced_hit_ID(x,y,z,marker, layer,size,color, MCP->id());
+            ced_hit_ID(x,y,z,marker, layer,size,color, mcp->id());
 
 
         }
@@ -338,7 +338,7 @@ protected:
 
         bool found = false;
         for (int j = 0; j < nMC; ++j) {
-          if (hit->getParticleCont(j) == MCP) {
+          if (hit->getParticleCont(j) == mcp) {
             found = true; 
             break;
           }
@@ -348,7 +348,7 @@ protected:
           double x = hit->getPosition()[0];
           double y = hit->getPosition()[1];
           double z = hit->getPosition()[2];
-            ced_hit_ID(x,y,z,marker,layer,size,color, MCP->id());
+            ced_hit_ID(x,y,z,marker,layer,size,color, mcp->id());
         }
       }
       }
