@@ -47,7 +47,6 @@ class GenericCluster ;
 template <class In, class Out, class Pred > 
 void cluster( In first, In last, Out result, Pred* pred ) {
 
-  typedef typename In::value_type GenericHitPtr ;
   typedef typename Pred::hit_type HitType ;
 
   typedef std::vector< GenericCluster<HitType >* >  ClusterList ;
@@ -346,7 +345,7 @@ struct LCIOCluster{
     unsigned n = c->size() ;
     unsigned i=0 ;
 
-    float a[n], x[n], y[n], z[n] ;
+    std::vector<float> a(n), x(n), y(n), z(n);
 
     for( typename GenericCluster<T>::iterator hi = c->begin(); hi != c->end() ; hi++) {
       
@@ -362,7 +361,7 @@ struct LCIOCluster{
       ++i ;
     }
     
-    ClusterShapes cs( n,a,x,y,z) ;
+    ClusterShapes cs( n,a.data(),x.data(),y.data(),z.data()) ;
 
     clu->setEnergy( cs.getTotalAmplitude()  ) ;
     clu->setPosition( cs.getCenterOfGravity() ) ;
