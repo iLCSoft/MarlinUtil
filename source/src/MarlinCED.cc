@@ -592,7 +592,7 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
         //streamlog_out(DEBUG) << "draw helix (nsteps: " << nSteps << ") id= " << id<<std::endl;
         
         
-        int count_lines=0;
+        //int count_lines=0;
         for (int j = 0; j < nSteps ; j++) {
             
             double alpha0 = step*j ;
@@ -618,7 +618,7 @@ void MarlinCED::drawHelix(float b, float charge, float x, float y, float z,
             }
             
             if( r_current >= (rmin+step)) {
-                count_lines++;
+                //count_lines++;
                 ced_line_ID( x1, y1, z1, x2, y2, z2 , marker , size, col, id);
                 //ced_line( x1, y1, z1, x2, y2, z2 , marker , size, col);
             }

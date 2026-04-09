@@ -572,57 +572,30 @@ void MarlinUtil::getMC_Balance(LCEvent * evt, double* accumulatedEnergies){
     double px,py,pz,pt,ttet;
     
     double e_to_tube  = 0.;
-    double e_to_tubex = 0.;
-    double e_to_tubey = 0.;
-    double e_to_tubez = 0.;
     int    n_to_tube = 0; 
     
     double e_neutr = 0.;   
-    double e_neutrx= 0.;   
-    double e_neutry= 0.;   
-    double e_neutrz= 0.;   
     int    n_neutr= 0;    
     
     double e_muon = 0.;  
-    double e_muonx= 0.;  
-    double e_muony= 0.;  
-    double e_muonz= 0.;  
     int    n_muon= 0;   
     
     double e_elect = 0.; 
-    double e_electx= 0.; 
-    double e_electy= 0.; 
-    double e_electz= 0.; 
     int    n_elect= 0;  
     
     double e_photon = 0.;
-    double e_photonx= 0.;
-    double e_photony= 0.;
-    double e_photonz= 0.;
     int    n_photon= 0; 
     
     double e_pi0 = 0.;
-    double e_pi0x= 0.;
-    double e_pi0y= 0.;
-    double e_pi0z= 0.;
     int    n_pi0= 0; 
     
     double e_llhadr = 0.;
-    double e_llhadrx= 0.;
-    double e_llhadry= 0.;
-    double e_llhadrz= 0.;
     int    n_llhadr= 0; 
     
     double e_slhadr = 0.;
-    double e_slhadrx= 0.;
-    double e_slhadry= 0.;
-    double e_slhadrz= 0.;
     int    n_slhadr= 0; 
     
     double e_chadr = 0.; 
-    double e_chadrx= 0.; 
-    double e_chadry= 0.; 
-    double e_chadrz= 0.; 
     int    n_chadr= 0;  
 
     for(int i=0; i<mcpCol->getNumberOfElements() ; i++){
@@ -640,49 +613,31 @@ void MarlinUtil::getMC_Balance(LCEvent * evt, double* accumulatedEnergies){
 	//FIXME : Hard coded cut. Use GEAR instead
 	if ((fabs(ttet) < 0.1) || (fabs(M_PI-ttet) < 0.1)) {
 	  e_to_tube  += enr;
-	  e_to_tubex += px;
-	  e_to_tubey += py;
-	  e_to_tubez += pz;
 	  n_to_tube ++;
 	  continue;
 	} 
 	if((abs(idpdg)==12)||(abs(idpdg)==14)||(abs(idpdg)==16)) {
 	  e_neutr  += enr;
-	  e_neutrx += px;
-	  e_neutry += py;
-	  e_neutrz += pz;
 	  n_neutr ++;
 	  continue;
 	} 
 	if(abs(idpdg)==13) { // mu+ mu- 
 	  e_muon  += enr;
-	  e_muonx += px;
-	  e_muony += py;
-	  e_muonz += pz;
 	  n_muon ++;
 	  continue;
 	} 
 	if(abs(idpdg)==11) { //  e+ e-
 	  e_elect  += enr;
-	  e_electx += px;
-	  e_electy += py;
-	  e_electz += pz;
 	  n_elect ++;
 	  continue;
 	} 
 	if(idpdg == 111) { // Pi0 as stable 
 	  e_pi0  += enr;
-	  e_pi0x += px;
-	  e_pi0y += py;
-	  e_pi0z += pz;
 	  n_pi0 ++;
 	  continue;
 	} 
 	if(idpdg == 22) { // photon
 	  e_photon  += enr;
-	  e_photonx += px;
-	  e_photony += py;
-	  e_photonz += pz;
 	  n_photon ++;
 	  continue;
 	} 
@@ -691,9 +646,6 @@ void MarlinUtil::getMC_Balance(LCEvent * evt, double* accumulatedEnergies){
 	   (abs(idpdg)== 130)   // KoL
 	   ) {                     
 	  e_llhadr  += enr;
-	  e_llhadrx += px;
-	  e_llhadry += py;
-	  e_llhadrz += pz;
 	  n_llhadr ++;
 	  continue;
 	}
@@ -704,9 +656,6 @@ void MarlinUtil::getMC_Balance(LCEvent * evt, double* accumulatedEnergies){
 	   (abs(idpdg)==3322)   // Xi0
 	   ) {
 	  e_slhadr  += enr;
-	  e_slhadrx += px;
-	  e_slhadry += py;
-	  e_slhadrz += pz;
 	  n_slhadr ++;
 	  continue;
 	}
@@ -719,9 +668,6 @@ void MarlinUtil::getMC_Balance(LCEvent * evt, double* accumulatedEnergies){
 	   !(abs(idpdg)== 130) && !(abs(idpdg)== 310) && // neutral hadrons
 	   !(abs(idpdg)==3122) && !(abs(idpdg)==3212) && !(abs(idpdg)==3322) ) { // neutral hadrons
 	  e_chadr  += enr;
-	  e_chadrx += px;
-	  e_chadry += py;
-	  e_chadrz += pz;
 	  n_chadr ++;
 	  continue;
 	}
@@ -1184,7 +1130,7 @@ MCParticleHelper::MCParticleHelper() {
   }
 
   bool endOfFile = false;
-  unsigned int numberOfLines = 0;
+  //unsigned int numberOfLines = 0;
 
   while (!endOfFile) {
     
@@ -1202,7 +1148,7 @@ MCParticleHelper::MCParticleHelper() {
 
     if ( ( (P != "+") && (P != "-") && (P != "?") && (P != "") ) || (Charge.length() == 0) ) continue;
 
-    ++numberOfLines;
+    //++numberOfLines;
 
      // debug
     /*

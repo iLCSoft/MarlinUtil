@@ -853,9 +853,6 @@ void TrackwiseClusters::calculateProperties(ClusterExtended* Cl) {
     float * exhit = new float[nhcl];
     float * eyhit = new float[nhcl];
     float * ezhit = new float[nhcl];    
-    float totene = 0.0;
-    float totecal = 0.0;
-    float tothcal = 0.0;
     RandomNumberGenerator random;
     float zmin = 1.0e+20;
     float zmax = -1.0e+20;
@@ -871,13 +868,6 @@ void TrackwiseClusters::calculateProperties(ClusterExtended* Cl) {
 	exhit[jhit] = 4.0;
 	eyhit[jhit] = 4.0;
 	ezhit[jhit] = 4.0;
-	totene += ahit[jhit];
-	if (calohitvec[jhit]->getType() == 0) {
-	  totecal += ahit[jhit];
-	}
-	else {
-	  tothcal += ahit[jhit];
-	}	
 	if (zhit[jhit]<zmin )
 	  zmin = zhit[jhit];
 	if (zhit[jhit]>zmax)
