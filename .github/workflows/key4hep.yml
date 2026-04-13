@@ -1,18 +1,31 @@
-name: keyh4ep
-on: [push, pull_request]
+name: Key4hep build
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
+  build:
     strategy:
       matrix:
         build_type: ["release", "nightly"]
-        image: ["alma9", "ubuntu22"]
+        image: ["alma9"]
+        include:
+          - build_type: nightly
+            image: ubuntu24
       fail-fast: false
-
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
+    - uses: key4hep/key4hep-actions/cache-external-data@main
     - uses: key4hep/key4hep-actions/key4hep-build@main
       with:
         build_type: ${{ matrix.build_type }}
         image: ${{ matrix.image }}
+        stack: ${{ matrix.stack }}
