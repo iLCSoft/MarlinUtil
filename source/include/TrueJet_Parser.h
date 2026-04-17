@@ -10,6 +10,7 @@
 #include "IMPL/LCCollectionVec.h"
 #include <IMPL/ReconstructedParticleImpl.h>
 #include <IMPL/ParticleIDImpl.h>
+#include <memory>
 #include <string>
 
 using namespace lcio ;
@@ -250,15 +251,15 @@ class TrueJet_Parser {
                                  // while in the other way jetindex( truejet-object ) gives the index.
 
 
-    LCRelationNavigator* relfcn{};      // a truejet to final colour neutral(s)    [ ReconstructedParticle:s ]
-    LCRelationNavigator* relicn{};      // a truejet to initial colour neutral(s)   [ ReconstructedParticle:s ]
+    std::unique_ptr<LCRelationNavigator> relfcn;      // a truejet to final colour neutral(s)    [ ReconstructedParticle:s ]
+    std::unique_ptr<LCRelationNavigator> relicn;      // a truejet to initial colour neutral(s)   [ ReconstructedParticle:s ]
 
-    LCRelationNavigator* relfp{};       // a truejet to its final quarks/leptons   [ MCParticle:s ]
-    LCRelationNavigator* relip{};       // a truejet to its initial quarks/leptons [ MCParticle:s ]
+    std::unique_ptr<LCRelationNavigator> relfp;       // a truejet to its final quarks/leptons   [ MCParticle:s ]
+    std::unique_ptr<LCRelationNavigator> relip;       // a truejet to its initial quarks/leptons [ MCParticle:s ]
 
 
-    LCRelationNavigator* reltjreco{};   // a truejet to all seen particles in it    [ ReconstructedParticle:s ]
-    LCRelationNavigator* reltjmcp{};    // a truejet to all true particles in it   [ MCParticle:s ]
+    std::unique_ptr<LCRelationNavigator> reltjreco;   // a truejet to all seen particles in it    [ ReconstructedParticle:s ]
+    std::unique_ptr<LCRelationNavigator> reltjmcp;    // a truejet to all true particles in it   [ MCParticle:s ]
 
 
                                  // Example:
@@ -272,14 +273,14 @@ class TrueJet_Parser {
                                 //  seen_partics(ijet) returns a ReconstructedParticlVec of all
                                 //  PFOs belonging to jet ijet)
 
-    LCRelationNavigator* reltrue_tj{};  // = RecoMCTruthLink
+    std::unique_ptr<LCRelationNavigator> reltrue_tj;  // = RecoMCTruthLink
 
     LCCollection* tjcol{};
     LCCollection* fcncol{};
     LCCollection* icncol{};
-    ReconstructedParticleVec* jets{};
-    ReconstructedParticleVec* finalcns{};
-    ReconstructedParticleVec* initialcns{};
+    std::unique_ptr<ReconstructedParticleVec> jets;
+    std::unique_ptr<ReconstructedParticleVec> finalcns;
+    std::unique_ptr<ReconstructedParticleVec> initialcns;
 
  protected:
  /**  input collection names */

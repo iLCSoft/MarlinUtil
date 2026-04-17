@@ -139,7 +139,7 @@ const double* TrueJet_Parser::p4quark(int ijet) {
 
 
 double TrueJet_Parser::Etrueseen(int ijet) {
-  if (  reltrue_tj == 0 ) {
+  if ( !reltrue_tj ) {
     LCCollection* rmclcol = NULL;
     try{
      rmclcol = m_evt->getCollection( get_recoMCTruthLink() );
@@ -149,7 +149,7 @@ double TrueJet_Parser::Etrueseen(int ijet) {
       streamlog_out(WARNING) << get_recoMCTruthLink()   << " collection not available" << std::endl;
         rmclcol = NULL;
     }
-    reltrue_tj = new LCRelationNavigator( rmclcol );
+    reltrue_tj = std::make_unique<LCRelationNavigator>( rmclcol );
   }
   LCObjectVec mcpvec = reltjmcp->getRelatedToObjects( jets->at(ijet) );
   double E=0.0;
@@ -180,7 +180,7 @@ double TrueJet_Parser::Mtrueseen(int ijet) {
   return M ;
 }
 const double* TrueJet_Parser::ptrueseen(int ijet) {
-  if (  reltrue_tj == 0 ) {
+  if ( !reltrue_tj ) {
     LCCollection* rmclcol = NULL;
      try{
       rmclcol = m_evt->getCollection( get_recoMCTruthLink() );
@@ -190,7 +190,7 @@ const double* TrueJet_Parser::ptrueseen(int ijet) {
       streamlog_out(WARNING) << get_recoMCTruthLink()   << " collection not available" << std::endl;
         rmclcol = NULL;
     }
-    reltrue_tj = new LCRelationNavigator( rmclcol );
+    reltrue_tj = std::make_unique<LCRelationNavigator>( rmclcol );
   }
   LCObjectVec mcpvec = reltjmcp->getRelatedToObjects( jets->at(ijet) );
   m_p3[0]=0 ; m_p3[1]=0 ; m_p3[2]=0 ;
@@ -551,7 +551,7 @@ void TrueJet_Parser::getall( LCEvent * event ) {
       tjcol = NULL;
     }
 
-    jets=getJets();
+    jets.reset(getJets());
 
      // get  FinalColourNeutrals
     try{
@@ -563,7 +563,7 @@ void TrueJet_Parser::getall( LCEvent * event ) {
         fcncol = NULL;
     }
 
-    finalcns=getFinalcn();
+    finalcns.reset(getFinalcn());
 
      // get  InitialColourNeutrals
     try{
@@ -575,7 +575,7 @@ void TrueJet_Parser::getall( LCEvent * event ) {
         icncol = NULL;
     }
 
-    initialcns=getInitialcn();
+    initialcns.reset(getInitialcn());
 
      // get  FinalColourNeutralLink
     LCCollection* fcnlcol = NULL;
@@ -587,7 +587,7 @@ void TrueJet_Parser::getall( LCEvent * event ) {
         streamlog_out(WARNING) <<  _finalColourNeutralLink   << " collection not available" << std::endl;
         fcnlcol  = NULL;
     }
-    relfcn = new LCRelationNavigator( fcnlcol );
+    relfcn = std::make_unique<LCRelationNavigator>( fcnlcol );
 
      // get  InitialColourNeutralLink
     LCCollection* icnlcol = NULL;
@@ -599,7 +599,7 @@ void TrueJet_Parser::getall( LCEvent * event ) {
         streamlog_out(WARNING) <<  _initialColourNeutralLink  << " collection not available" << std::endl;
         fcnlcol  = NULL;
     }
-    relicn = new LCRelationNavigator( icnlcol );
+    relicn = std::make_unique<LCRelationNavigator>( icnlcol );
 
      // get  FinalElementonLink
     LCCollection* fplcol = NULL;
@@ -611,7 +611,7 @@ void TrueJet_Parser::getall( LCEvent * event ) {
         streamlog_out(WARNING) <<  _finalElementonLink   << " collection not available" << std::endl;
         fcnlcol  = NULL;
     }
-    relfp = new LCRelationNavigator( fplcol );
+    relfp = std::make_unique<LCRelationNavigator>( fplcol );
 
      // get  InitialElementonLink
     LCCollection* iplcol = NULL;
@@ -623,7 +623,7 @@ void TrueJet_Parser::getall( LCEvent * event ) {
         streamlog_out(WARNING) <<  _initialElementonLink   << " collection not available" << std::endl;
         fcnlcol  = NULL;
     }
-    relip = new LCRelationNavigator( iplcol );
+    relip = std::make_unique<LCRelationNavigator>( iplcol );
 
      // get  TrueJetPFOLink
     LCCollection* tjrecolcol = NULL;
@@ -635,7 +635,7 @@ void TrueJet_Parser::getall( LCEvent * event ) {
         streamlog_out(WARNING) <<  _trueJetPFOLink   << " collection not available" << std::endl;
         fcnlcol  = NULL;
     }
-    reltjreco = new LCRelationNavigator( tjrecolcol );
+    reltjreco = std::make_unique<LCRelationNavigator>( tjrecolcol );
 
 
      // get  TrueJetMCParticleLink
@@ -648,19 +648,19 @@ void TrueJet_Parser::getall( LCEvent * event ) {
         streamlog_out(WARNING) <<  _trueJetMCParticleLink   << " collection not available" << std::endl;
         fcnlcol  = NULL;
     }
-    reltjmcp = new LCRelationNavigator( tjmcplcol );
-    reltrue_tj =NULL ;
+    reltjmcp = std::make_unique<LCRelationNavigator>( tjmcplcol );
+    reltrue_tj.reset();
 
 }
 void TrueJet_Parser::delall( ) {
-    if (  relfcn!= NULL ) delete relfcn;
-    if (  relicn!= NULL ) delete relicn;
-    if (  relfp!= NULL ) delete relfp;
-    if (  relip!= NULL ) delete relip;
-    if (  reltjreco != NULL) delete reltjreco;
-    if (  reltjmcp != NULL) delete reltjmcp;
-    if (  jets != NULL) delete  jets;
-    if (  finalcns != NULL) delete  finalcns;
-    if (  initialcns!= NULL ) delete   initialcns;
-    if ( reltrue_tj != NULL ) delete reltrue_tj;
+    relfcn.reset();
+    relicn.reset();
+    relfp.reset();
+    relip.reset();
+    reltjreco.reset();
+    reltjmcp.reset();
+    jets.reset();
+    finalcns.reset();
+    initialcns.reset();
+    reltrue_tj.reset();
 }
