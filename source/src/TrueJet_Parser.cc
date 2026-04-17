@@ -653,14 +653,14 @@ void TrueJet_Parser::getall( LCEvent * event ) {
 
 }
 void TrueJet_Parser::delall( ) {
-    if (  relfcn!= NULL ) delete relfcn;
-    if (  relicn!= NULL ) delete relicn;
-    if (  relfp!= NULL ) delete relfp;
-    if (  relip!= NULL ) delete relip;
-    if (  reltjreco != NULL) delete reltjreco;
-    if (  reltjmcp != NULL) delete reltjmcp;
-    if (  jets != NULL) delete  jets;
-    if (  finalcns != NULL) delete  finalcns;
-    if (  initialcns!= NULL ) delete   initialcns;
-    if ( reltrue_tj != NULL ) delete reltrue_tj;
+    if (  relfcn!= NULL ) { delete relfcn; relfcn = NULL; }
+    if (  relicn!= NULL ) { delete relicn; relicn = NULL; }
+    if (  relfp!= NULL ) { delete relfp; relfp = NULL; }
+    if (  relip!= NULL ) { delete relip; relip = NULL; }
+    if (  reltjreco != NULL) { delete reltjreco; reltjreco = NULL; }
+    if (  reltjmcp != NULL) { delete reltjmcp; reltjmcp = NULL; }
+    if (  jets != NULL) { delete jets; jets = NULL; }
+    if (  finalcns != NULL) { delete finalcns; finalcns = NULL; }
+    if (  initialcns!= NULL ) { delete initialcns; initialcns = NULL; }
+    if ( reltrue_tj != NULL ) { delete reltrue_tj; reltrue_tj = NULL; }
 }
