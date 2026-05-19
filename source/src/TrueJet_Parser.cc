@@ -662,15 +662,3 @@ void TrueJet_Parser::getall( LCEvent * event ) {
     reltrue_tj.reset();
 
 }
-void TrueJet_Parser::delall( ) {
-    relfcn.reset();
-    relicn.reset();
-    relfp.reset();
-    relip.reset();
-    reltjreco.reset();
-    reltjmcp.reset();
-    jets.reset();
-    finalcns.reset();
-    initialcns.reset();
-    reltrue_tj.reset();
-}
