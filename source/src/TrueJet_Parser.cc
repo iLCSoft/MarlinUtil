@@ -23,18 +23,7 @@ using namespace marlin ;
 struct MCPseen : LCIntExtension<MCPseen> {} ;
 
 
-  TrueJet_Parser::TrueJet_Parser() :
-    relfcn(),
-    relicn(),
-    relfp(),
-    relip(),
-    reltjreco(),
-    reltjmcp(),
-    reltrue_tj(),
-    jets(),
-    finalcns(),
-    initialcns()
-  {
+TrueJet_Parser::TrueJet_Parser() {
     m_intvec=new IntVec()    ;
     m_mcpartvec=new MCParticleVec()    ;
     _COUNT_FSR=1;
