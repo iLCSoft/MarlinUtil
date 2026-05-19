@@ -43,6 +43,7 @@ class TrueJet_Parser {
                                   // the three above individually. Also all navigators are set up
                                   // with this call - See below.
 
+  void delall() ;                 // Tidy up, to be called at end of each event.
 
   int njets() { return tjcol->getNumberOfElements(); };
                                   // Get the total number of true jets in the event
