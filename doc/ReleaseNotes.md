@@ -1,3 +1,24 @@
+# v01-18-03
+
+* 2026-05-19 Juan Miguel Carceller ([PR#58](https://github.com/iLCSoft/MarlinUtil/pull/58))
+  - Use std::unique_ptr when possible in TrueJet_Parser to avoid manually managing the memory
+
+* 2026-04-13 Thomas Madlener ([PR#56](https://github.com/iLCSoft/MarlinUtil/pull/56))
+  - Update the CI to the latest Key4hep nightlies and releases
+  - Remove the (no longer maintained) clicdp nightlies based CI workflows
+
+* 2026-04-09 sss ([PR#55](https://github.com/iLCSoft/MarlinUtil/pull/55))
+  - Fix some warnings seen when compiling with clang.
+
+* 2026-04-07 sss ([PR#54](https://github.com/iLCSoft/MarlinUtil/pull/54))
+  - Fix some warnings about shadowed identifiers (seen in MarlinReco).
+
+* 2026-04-07 sss ([PR#53](https://github.com/iLCSoft/MarlinUtil/pull/53))
+  - Avoid use of nonstandard variable-length arrays.
+
+* 2026-04-07 sss ([PR#52](https://github.com/iLCSoft/MarlinUtil/pull/52))
+  - Update minimum cmake version to 3.10.
+
 # v01-18-02
 
 * 2025-03-31 Thomas Madlener ([PR#49](https://github.com/iLCSoft/MarlinUtil/pull/49))
