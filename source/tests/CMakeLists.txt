@@ -12,7 +12,7 @@ ADD_MARLINUTIL_TEST( testmarlinutil )
 
 #--- Unit test setup. Use existing Catch2 or fetch a suitable version and build it
 if(CMAKE_CXX_STANDARD GREATER_EQUAL 20)
-  set(CATCH2_MIN_VERSION 3.4)
+  set(CATCH2_MIN_VERSION 3.5)
 else()
   set(CATCH2_MIN_VERSION 3.1)
 endif()
